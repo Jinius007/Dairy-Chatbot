@@ -1,0 +1,145 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* WhatsApp-inspired design system. All colors HSL. */
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 11%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 11%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 11%;
+
+    /* WhatsApp green */
+    --primary: 142 70% 33%;
+    --primary-foreground: 0 0% 100%;
+    --primary-dark: 174 100% 19%;
+    --primary-light: 142 70% 49%;
+
+    --secondary: 195 100% 41%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 200 18% 96%;
+    --muted-foreground: 0 0% 45%;
+
+    --accent: 142 76% 95%;
+    --accent-foreground: 142 70% 25%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 142 70% 33%;
+
+    --radius: 0.625rem;
+
+    /* Chat-specific */
+    --chat-bg: 47 23% 91%;
+    --chat-bg-pattern: 45 30% 88%;
+    --bubble-out: 142 64% 88%;
+    --bubble-out-foreground: 0 0% 11%;
+    --bubble-in: 0 0% 100%;
+    --bubble-in-foreground: 0 0% 11%;
+    --tick-read: 199 89% 48%;
+    --tick-sent: 0 0% 60%;
+    --header: 174 100% 19%;
+    --header-foreground: 0 0% 100%;
+    --sidebar-bg: 0 0% 100%;
+    --sidebar-hover: 0 0% 96%;
+    --unread-badge: 142 70% 49%;
+  }
+
+  .dark {
+    --background: 200 7% 8%;
+    --foreground: 0 0% 95%;
+    --card: 200 7% 8%;
+    --card-foreground: 0 0% 95%;
+    --popover: 200 7% 12%;
+    --popover-foreground: 0 0% 95%;
+    --primary: 174 60% 41%;
+    --primary-foreground: 0 0% 100%;
+    --primary-dark: 174 100% 13%;
+    --primary-light: 174 60% 51%;
+    --secondary: 200 8% 17%;
+    --secondary-foreground: 0 0% 95%;
+    --muted: 200 8% 14%;
+    --muted-foreground: 200 5% 60%;
+    --accent: 174 50% 22%;
+    --accent-foreground: 0 0% 100%;
+    --border: 200 8% 17%;
+    --input: 200 8% 17%;
+    --ring: 174 60% 41%;
+    --chat-bg: 200 7% 6%;
+    --chat-bg-pattern: 200 7% 9%;
+    --bubble-out: 168 80% 21%;
+    --bubble-out-foreground: 0 0% 95%;
+    --bubble-in: 200 8% 14%;
+    --bubble-in-foreground: 0 0% 95%;
+    --tick-read: 199 89% 60%;
+    --tick-sent: 0 0% 50%;
+    --header: 200 8% 14%;
+    --header-foreground: 0 0% 95%;
+    --sidebar-bg: 200 7% 10%;
+    --sidebar-hover: 200 7% 14%;
+    --unread-badge: 174 60% 41%;
+  }
+}
+
+@layer base {
+  * { @apply border-border; }
+  body { @apply bg-background text-foreground antialiased; font-family: 'Segoe UI', 'Helvetica Neue', system-ui, -apple-system, 'Noto Sans', 'Noto Sans Devanagari', 'Noto Sans Tamil', 'Noto Sans Telugu', 'Noto Sans Gujarati', 'Noto Sans Bengali', 'Noto Sans Kannada', sans-serif; }
+}
+
+/* WhatsApp doodle background */
+.chat-bg {
+  background-color: hsl(var(--chat-bg));
+  background-image:
+    radial-gradient(hsl(var(--chat-bg-pattern)) 1px, transparent 1px),
+    radial-gradient(hsl(var(--chat-bg-pattern)) 1px, transparent 1px);
+  background-size: 28px 28px;
+  background-position: 0 0, 14px 14px;
+}
+
+/* Bubble tail */
+.bubble-tail-out::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: -7px;
+  width: 0; height: 0;
+  border: 8px solid transparent;
+  border-top-color: hsl(var(--bubble-out));
+  border-right: 0;
+}
+.bubble-tail-in::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -7px;
+  width: 0; height: 0;
+  border: 8px solid transparent;
+  border-top-color: hsl(var(--bubble-in));
+  border-left: 0;
+}
+
+/* Voice waveform pulse */
+@keyframes wave {
+  0%, 100% { transform: scaleY(0.4); }
+  50% { transform: scaleY(1); }
+}
+.wave-bar { animation: wave 1s ease-in-out infinite; transform-origin: center; }
+
+@keyframes typing-dot {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+  30% { transform: translateY(-4px); opacity: 1; }
+}
+.typing-dot { animation: typing-dot 1.2s infinite; }
+
+/* Hide scrollbar utility */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
