@@ -1,3 +1,5 @@
+export const config = { runtime: "edge" };
+
 const EDGE_TOKEN = "6A5AA1D4EAFF4E9FB37E23D68491D6F4";
 
 const VOICES = {
@@ -15,6 +17,23 @@ const VOICES = {
   ur: { voice: "ur-PK-UzmaNeural", locale: "ur-PK" },
   en: { voice: "en-IN-NeerjaNeural", locale: "en-IN" },
 };
+
+function detectLang(text) {
+  for (const char of text) {
+    const cp = char.codePointAt(0) || 0;
+    if (cp >= 0x0980 && cp <= 0x09ff) return /[ৰৱ]/.test(char) ? "as" : "bn";
+    if (cp >= 0x0900 && cp <= 0x097f) return /[ळऱ]/.test(char) ? "mr" : "hi";
+    if (cp >= 0x0b80 && cp <= 0x0bff) return "ta";
+    if (cp >= 0x0c00 && cp <= 0x0c7f) return "te";
+    if (cp >= 0x0a80 && cp <= 0x0aff) return "gu";
+    if (cp >= 0x0c80 && cp <= 0x0cff) return "kn";
+    if (cp >= 0x0d00 && cp <= 0x0d7f) return "ml";
+    if (cp >= 0x0a00 && cp <= 0x0a7f) return "pa";
+    if (cp >= 0x0b00 && cp <= 0x0b7f) return "or";
+    if (cp >= 0x0600 && cp <= 0x06ff) return "ur";
+  }
+  return /[a-z]/i.test(text) ? "en" : "hi";
+}
 
 function cleanForSpeech(text) {
   return String(text || "")
@@ -66,36 +85,65 @@ async function synthesize(text, lang) {
     throw new Error(`TTS upstream error ${response.status}`);
   }
 
-  return Buffer.from(await response.arrayBuffer());
+  return new Uint8Array(await response.arrayBuffer());
 }
 
-export default async function handler(req, res) {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+function concatAudio(chunks) {
+  const total = chunks.reduce((sum, c) => sum + c.length, 0);
+  const out = new Uint8Array(total);
+  let offset = 0;
+  for (const chunk of chunks) {
+    out.set(chunk, offset);
+    offset += chunk.length;
+  }
+  return out;
+}
 
-  if (req.method === "OPTIONS") return res.status(204).end();
-  if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
+export default async function handler(request) {
+  if (request.method === "OPTIONS") {
+    return new Response(null, {
+      status: 204,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type",
+      },
+    });
+  }
+
+  if (request.method !== "POST") {
+    return new Response(JSON.stringify({ error: "Method not allowed" }), { status: 405 });
+  }
 
   try {
-    const { text, lang = "hi" } = req.body || {};
+    const { text, lang } = await request.json();
     const clean = cleanForSpeech(text);
-    if (!clean) return res.status(400).json({ error: "Empty text" });
-
-    const language = String(lang).toLowerCase();
-    const chunks = chunkText(clean);
-    const buffers = [];
-
-    for (const part of chunks) {
-      buffers.push(await synthesize(part, language));
+    if (!clean) {
+      return new Response(JSON.stringify({ error: "Empty text" }), { status: 400 });
     }
 
-    const audio = Buffer.concat(buffers);
-    res.setHeader("Content-Type", "audio/mpeg");
-    res.setHeader("Cache-Control", "no-store");
-    return res.status(200).send(audio);
+    const language = VOICES[lang] ? lang : detectLang(clean);
+    const parts = chunkText(clean);
+    const audioChunks = [];
+
+    for (const part of parts) {
+      audioChunks.push(await synthesize(part, language));
+    }
+
+    const audio = concatAudio(audioChunks);
+    return new Response(audio, {
+      status: 200,
+      headers: {
+        "Content-Type": "audio/mpeg",
+        "Cache-Control": "no-store",
+        "Access-Control-Allow-Origin": "*",
+      },
+    });
   } catch (e) {
     console.error("tts error:", e);
-    return res.status(500).json({ error: e instanceof Error ? e.message : "TTS failed" });
+    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "TTS failed" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" },
+    });
   }
 }
