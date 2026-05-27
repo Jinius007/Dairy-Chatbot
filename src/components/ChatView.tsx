@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase, isSupabaseConfigured } from "@/integrations/supabase/client";
 import { VoiceRecorder } from "@/components/VoiceRecorder";
 import { Tick } from "@/components/Tick";
 import { CallView, CallButton, type CallTurn } from "@/components/CallView";
@@ -117,6 +117,7 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
   useEffect(() => () => { abortRef.current?.abort(); }, []);
 
   const streamReply = async (history: Message[], assistantId: string) => {
+    if (!isSupabaseConfigured) throw new Error("Supabase is not configured on this deployment.");
     abortRef.current?.abort();
     const ctrl = new AbortController();
     abortRef.current = ctrl;
@@ -210,6 +211,10 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
   };
 
   const handleVoice = async (b64: string, mime: string) => {
+    if (!supabase) {
+      toast.error("Supabase is not configured on this deployment.");
+      return;
+    }
     setTranscribing(true);
     try {
       const { data, error } = await supabase.functions.invoke("transcribe", { body: { audioBase64: b64, mimeType: mime } });

@@ -29,3 +29,5 @@ terminals/
 *.njsproj
 *.sln
 *.sw?
+
+.vercel

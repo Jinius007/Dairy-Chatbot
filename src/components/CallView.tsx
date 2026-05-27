@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Phone, PhoneOff, Mic, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase, isSupabaseConfigured } from "@/integrations/supabase/client";
 import { TTS_LANG, LANG_NAMES, detectLanguageCode, prepareTextForSpeech } from "@/lib/languages";
 
 export interface CallTurn {
@@ -161,6 +161,11 @@ export function CallView({ open, onClose, history = [] }: Props) {
 
   // Process one recorded turn: transcribe -> chat -> speak -> start next
   const processBlob = async (blob: Blob, mime: string) => {
+    if (!supabase || !isSupabaseConfigured) {
+      toast.error("Supabase is not configured on this deployment.");
+      scheduleListening(500);
+      return;
+    }
     if (closedRef.current || processingRef.current) return;
     processingRef.current = true;
     setPhaseBoth("thinking");
