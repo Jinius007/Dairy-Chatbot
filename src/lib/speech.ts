@@ -1,51 +1,78 @@
 import { prepareTextForSpeech, TTS_LANG } from "@/lib/languages";
 
+let voicesCache: SpeechSynthesisVoice[] = [];
 let voicesReady: Promise<SpeechSynthesisVoice[]> | null = null;
+let speechChain: Promise<void> = Promise.resolve();
+let activeToken = 0;
+
+const delay = (ms: number) => new Promise<void>((resolve) => window.setTimeout(resolve, ms));
 
 export function isSpeechSupported(): boolean {
   return typeof window !== "undefined" && "speechSynthesis" in window;
 }
 
+function getSynth(): SpeechSynthesis | null {
+  return isSpeechSupported() ? window.speechSynthesis : null;
+}
+
+function refreshVoiceCache(): SpeechSynthesisVoice[] {
+  const synth = getSynth();
+  if (!synth) return [];
+  const voices = synth.getVoices();
+  if (voices.length > 0) voicesCache = voices;
+  return voicesCache;
+}
+
 /** Browsers often return an empty voice list until voiceschanged fires. */
 export function preloadSpeechVoices(): Promise<SpeechSynthesisVoice[]> {
   if (!isSpeechSupported()) return Promise.resolve([]);
+
+  const synth = window.speechSynthesis;
+  const cached = refreshVoiceCache();
+  if (cached.length > 0) return Promise.resolve(cached);
+
   if (voicesReady) return voicesReady;
 
   voicesReady = new Promise((resolve) => {
-    const synth = window.speechSynthesis;
-    const finish = () => resolve(synth.getVoices());
-
-    const tryLoad = () => {
-      if (synth.getVoices().length > 0) {
-        synth.removeEventListener("voiceschanged", tryLoad);
-        finish();
-        return true;
-      }
-      return false;
+    const finish = () => {
+      const voices = refreshVoiceCache();
+      resolve(voices);
+      if (voices.length === 0) voicesReady = null;
     };
 
-    if (tryLoad()) return;
+    const onVoicesChanged = () => {
+      if (refreshVoiceCache().length > 0) {
+        synth.removeEventListener("voiceschanged", onVoicesChanged);
+        finish();
+      }
+    };
 
-    synth.addEventListener("voiceschanged", tryLoad);
+    synth.addEventListener("voiceschanged", onVoicesChanged);
     synth.getVoices();
     window.setTimeout(() => {
-      synth.removeEventListener("voiceschanged", tryLoad);
+      synth.removeEventListener("voiceschanged", onVoicesChanged);
       finish();
-    }, 2500);
+    }, 3000);
   });
 
   return voicesReady;
 }
 
+if (typeof window !== "undefined" && isSpeechSupported()) {
+  window.speechSynthesis.addEventListener("voiceschanged", refreshVoiceCache);
+  preloadSpeechVoices();
+}
+
 export function getSpeechVoice(lang: string | null): SpeechSynthesisVoice | null {
-  if (!isSpeechSupported()) return null;
   const target = TTS_LANG[lang || "hi"] || "hi-IN";
   const prefix = target.slice(0, 2).toLowerCase();
-  const voices = window.speechSynthesis.getVoices();
+  const voices = refreshVoiceCache();
   return (
     voices.find((voice) => voice.lang === target)
     || voices.find((voice) => voice.lang.toLowerCase().startsWith(prefix))
     || voices.find((voice) => voice.lang.toLowerCase().includes(prefix))
+    || voices.find((voice) => voice.default)
+    || voices[0]
     || null
   );
 }
@@ -59,75 +86,148 @@ export type SpeakOptions = {
   lang?: string | null;
   rate?: number;
   pitch?: number;
-  /** Pass a ref token to cancel in-flight speech when it changes. */
-  tokenRef?: { current: number };
 };
 
-export function stopSpeech(): void {
-  if (!isSpeechSupported()) return;
-  window.speechSynthesis.cancel();
-}
-
-/**
- * Reliable browser TTS with voice preloading, chunking, and Chrome keep-alive.
- */
-export async function speakText(text: string, options: SpeakOptions = {}): Promise<void> {
-  if (!isSpeechSupported() || !text.trim()) return;
-
-  await preloadSpeechVoices();
-
-  const synth = window.speechSynthesis;
-  const token = options.tokenRef ? ++options.tokenRef.current : 0;
-  const spokenText = prepareTextForSpeech(text);
-  if (!spokenText) return;
-
+async function unstickSynth(): Promise<void> {
+  const synth = getSynth();
+  if (!synth) return;
   synth.cancel();
   synth.resume();
+  await delay(60);
+  synth.resume();
+}
 
-  const chunks = chunkSpeechText(spokenText);
-  const lang = options.lang ?? null;
+async function warmSynth(lang: string | null): Promise<void> {
+  const synth = getSynth();
+  if (!synth) return;
+  await new Promise<void>((resolve) => {
+    const utterance = new SpeechSynthesisUtterance(" ");
+    utterance.volume = 0.01;
+    utterance.lang = TTS_LANG[lang || "hi"] || "hi-IN";
+    const voice = getSpeechVoice(lang);
+    if (voice) utterance.voice = voice;
+    utterance.onend = () => resolve();
+    utterance.onerror = () => resolve();
+    synth.resume();
+    synth.speak(utterance);
+    window.setTimeout(resolve, 250);
+  });
+  synth.cancel();
+  synth.resume();
+  await delay(40);
+}
 
-  return new Promise((resolve) => {
-    let cancelled = false;
-    let index = 0;
+async function speakChunk(
+  part: string,
+  lang: string | null,
+  options: SpeakOptions,
+  token: number,
+): Promise<boolean> {
+  const synth = getSynth();
+  if (!synth || token !== activeToken) return false;
 
-    const keepAlive = window.setInterval(() => {
-      if (options.tokenRef && options.tokenRef.current !== token) return;
-      if (synth.speaking && !synth.paused) {
-        synth.pause();
-        synth.resume();
-      }
-    }, 14000);
+  for (let attempt = 0; attempt < 4; attempt++) {
+    if (token !== activeToken) return false;
 
-    const cleanup = () => {
-      if (cancelled) return;
-      cancelled = true;
-      window.clearInterval(keepAlive);
-      resolve();
-    };
+    await unstickSynth();
+    if (attempt > 0) await warmSynth(lang);
 
-    const speakNext = () => {
-      if (cancelled || (options.tokenRef && options.tokenRef.current !== token)) return cleanup();
-      if (index >= chunks.length) return cleanup();
-
-      const part = chunks[index++].trim();
-      if (!part) return speakNext();
-
+    const started = await new Promise<boolean>((resolve) => {
       const utterance = new SpeechSynthesisUtterance(part);
       utterance.lang = TTS_LANG[lang || "hi"] || "hi-IN";
       const voice = getSpeechVoice(lang);
       if (voice) utterance.voice = voice;
       utterance.rate = options.rate ?? 0.92;
       utterance.pitch = options.pitch ?? 1;
-      utterance.onend = () => window.setTimeout(speakNext, 120);
-      utterance.onerror = () => window.setTimeout(speakNext, 120);
 
-      window.setTimeout(() => {
-        synth.resume();
-        synth.speak(utterance);
-      }, 40);
-    };
+      let didStart = false;
+      let settled = false;
+      const settle = (ok: boolean) => {
+        if (settled) return;
+        settled = true;
+        window.clearTimeout(startTimer);
+        window.clearTimeout(endTimer);
+        resolve(ok);
+      };
 
-    speakNext();
-  });
+      const startTimer = window.setTimeout(() => {
+        if (!didStart) settle(false);
+      }, 900);
+
+      const endTimer = window.setTimeout(() => {
+        settle(didStart);
+      }, Math.max(8000, part.length * 120));
+
+      utterance.onstart = () => { didStart = true; };
+      utterance.onend = () => settle(true);
+      utterance.onerror = () => settle(false);
+
+      synth.resume();
+      synth.speak(utterance);
+    });
+
+    if (token !== activeToken) return false;
+    if (started) return true;
+    await delay(120 * (attempt + 1));
+  }
+
+  return false;
+}
+
+async function runSpeech(text: string, options: SpeakOptions, token: number): Promise<void> {
+  if (!isSpeechSupported() || token !== activeToken) return;
+
+  await preloadSpeechVoices();
+  const spokenText = prepareTextForSpeech(text);
+  if (!spokenText || token !== activeToken) return;
+
+  const chunks = chunkSpeechText(spokenText);
+  const lang = options.lang ?? null;
+
+  await warmSynth(lang);
+  if (token !== activeToken) return;
+
+  const keepAlive = window.setInterval(() => {
+    if (token !== activeToken) return;
+    const synth = getSynth();
+    if (!synth) return;
+    if (synth.speaking || synth.pending) synth.resume();
+  }, 4000);
+
+  try {
+    for (const part of chunks) {
+      if (token !== activeToken) return;
+      const ok = await speakChunk(part, lang, options, token);
+      if (!ok && token === activeToken) {
+        await delay(180);
+        await speakChunk(part, lang, options, token);
+      }
+      await delay(80);
+    }
+  } finally {
+    window.clearInterval(keepAlive);
+  }
+}
+
+export function stopSpeech(): void {
+  activeToken += 1;
+  const synth = getSynth();
+  if (!synth) return;
+  synth.cancel();
+  synth.resume();
+}
+
+/**
+ * Queue speech so overlapping requests don't cancel each other unpredictably.
+ */
+export function speakText(text: string, options: SpeakOptions = {}): Promise<void> {
+  if (!isSpeechSupported() || !text.trim()) return Promise.resolve();
+
+  const token = ++activeToken;
+  const task = speechChain
+    .catch(() => undefined)
+    .then(() => runSpeech(text, options, token));
+
+  speechChain = task.catch(() => undefined);
+  return task;
 }

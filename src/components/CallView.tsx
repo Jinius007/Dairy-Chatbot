@@ -78,7 +78,6 @@ export function CallView({ open, onClose, history = [] }: Props) {
   const processingRef = useRef(false);
   const restartTimerRef = useRef<number | null>(null);
   const maxRecordTimerRef = useRef<number | null>(null);
-  const speechTokenRef = useRef(0);
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyserFrameRef = useRef<number | null>(null);
 
@@ -91,10 +90,7 @@ export function CallView({ open, onClose, history = [] }: Props) {
     audioContextRef.current = null;
   };
 
-  const speak = useCallback((text: string, lang: string | null) => {
-    speechTokenRef.current += 1;
-    return speakText(text, { lang, tokenRef: speechTokenRef });
-  }, []);
+  const speak = useCallback((text: string, lang: string | null) => speakText(text, { lang }), []);
 
   const scheduleListening = useCallback((delay = 250) => {
     if (closedRef.current) return;
@@ -257,7 +253,6 @@ export function CallView({ open, onClose, history = [] }: Props) {
       mediaRef.current.stop();
     } else if (phaseRef.current === "speaking") {
       // Interrupt the assistant and start listening
-      speechTokenRef.current += 1;
       stopSpeech();
       scheduleListening(100);
     }
@@ -290,7 +285,6 @@ export function CallView({ open, onClose, history = [] }: Props) {
       if (timerRef.current) window.clearInterval(timerRef.current);
       if (restartTimerRef.current) window.clearTimeout(restartTimerRef.current);
       if (maxRecordTimerRef.current) window.clearTimeout(maxRecordTimerRef.current);
-      speechTokenRef.current += 1;
       stopSpeech();
       stopSilenceMonitor();
       try { mediaRef.current?.state === "recording" && mediaRef.current.stop(); } catch {}
@@ -305,13 +299,11 @@ export function CallView({ open, onClose, history = [] }: Props) {
     closedRef.current = true;
     if (restartTimerRef.current) window.clearTimeout(restartTimerRef.current);
     if (maxRecordTimerRef.current) window.clearTimeout(maxRecordTimerRef.current);
-    speechTokenRef.current += 1;
     stopSpeech();
     stopSilenceMonitor();
     try { mediaRef.current?.state === "recording" && mediaRef.current.stop(); } catch {}
     streamRef.current?.getTracks().forEach((t) => t.stop());
     streamRef.current = null;
-    stopSpeech();
     if (timerRef.current) window.clearInterval(timerRef.current);
     onClose(turnsRef.current);
   };

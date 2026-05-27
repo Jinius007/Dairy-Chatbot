@@ -49,10 +49,8 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
   const scrollRef = useRef<HTMLDivElement>(null);
   const abortRef = useRef<AbortController | null>(null);
   const messagesRef = useRef<Message[]>([]);
-  const speechTokenRef = useRef(0);
 
   const stopSpeak = useCallback(() => {
-    speechTokenRef.current += 1;
     stopSpeech();
     setSpeakingId(null);
     setPaused(false);
@@ -60,18 +58,13 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
 
   const speak = useCallback(async (text: string, lang?: string | null, id?: string) => {
     if (!text.trim()) return;
-    speechTokenRef.current += 1;
-    const token = speechTokenRef.current;
-    stopSpeech();
     setSpeakingId(id ?? null);
     setPaused(false);
     try {
-      await speakText(text, { lang, tokenRef: speechTokenRef });
+      await speakText(text, { lang });
     } finally {
-      if (speechTokenRef.current === token) {
-        setSpeakingId((cur) => (cur === id ? null : cur));
-        setPaused(false);
-      }
+      setSpeakingId((cur) => (cur === id ? null : cur));
+      setPaused(false);
     }
   }, []);
 
