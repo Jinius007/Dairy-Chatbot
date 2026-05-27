@@ -202,7 +202,7 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
 
     try {
       const { text: reply, lang } = await streamReply(nextHistory, assistantMsg.id);
-      if (isVoice && reply) void speak(reply, lang, assistantMsg.id);
+      if (reply) void speak(reply, lang, assistantMsg.id);
     } catch (e: any) {
       console.error(e);
       toast.error(e?.message || "Failed to get reply");
