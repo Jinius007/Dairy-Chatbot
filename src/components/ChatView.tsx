@@ -256,9 +256,9 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full min-h-0 overflow-hidden">
       {callOpen && <CallView open={callOpen} onClose={handleCallEnd} history={messages.filter((m) => m.content && !m.content.startsWith("📞")).map((m) => ({ role: m.role, content: m.content }))} />}
-      <div className="bg-header text-header-foreground px-3 py-2.5 flex items-center gap-3 shadow">
+      <div className="bg-header text-header-foreground px-3 py-2.5 flex items-center gap-3 shadow shrink-0">
         {onBack && <button onClick={onBack} className="md:hidden p-1"><ArrowLeft className="w-5 h-5" /></button>}
         <div className="w-10 h-10 rounded-full bg-primary-light flex items-center justify-center text-lg">🐄</div>
         <div className="flex-1 min-w-0">
@@ -269,7 +269,7 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
         <button className="p-1 opacity-80 hover:opacity-100"><MoreVertical className="w-5 h-5" /></button>
       </div>
 
-      <div ref={scrollRef} className="flex-1 overflow-y-auto chat-bg px-3 py-4">
+      <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto chat-bg px-3 py-4">
         {messages.length === 0 && (
           <div className="text-center mt-10 text-muted-foreground">
             <p className="text-sm">Ask anything about livestock, dairy, schemes — in your language 🌾</p>
@@ -318,7 +318,7 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
         })}
       </div>
 
-      <div className="bg-muted px-2 py-2 flex items-end gap-2">
+      <div className="bg-muted px-2 py-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] flex items-end gap-2 shrink-0">
         <button className="p-2 text-muted-foreground hover:text-foreground"><Smile className="w-6 h-6" /></button>
         <button className="p-2 text-muted-foreground hover:text-foreground hidden sm:block"><Paperclip className="w-6 h-6" /></button>
         <div className="flex-1 bg-card rounded-full px-4 py-2">

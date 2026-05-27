@@ -13,27 +13,33 @@ const loadConvs = (): Conversation[] => {
 };
 const saveConvs = (c: Conversation[]) => localStorage.setItem(STORAGE_KEY, JSON.stringify(c));
 
+const createConversation = (): Conversation => ({
+  id: crypto.randomUUID(),
+  title: "New chat",
+  last_message: null,
+  language: null,
+  updated_at: new Date().toISOString(),
+});
+
 const Index = () => {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    const c = loadConvs();
+    let c = loadConvs();
+    if (c.length === 0) {
+      c = [createConversation()];
+      saveConvs(c);
+    }
     setConversations(c);
-    if (c.length > 0) setActiveId(c[0].id);
+    setActiveId(c[0].id);
   }, []);
 
   const refresh = () => setConversations(loadConvs());
 
   const newChat = () => {
-    const conv: Conversation = {
-      id: crypto.randomUUID(),
-      title: "New chat",
-      last_message: null,
-      language: null,
-      updated_at: new Date().toISOString(),
-    };
+    const conv = createConversation();
     const next = [conv, ...conversations];
     saveConvs(next);
     setConversations(next);
@@ -54,8 +60,8 @@ const Index = () => {
   );
 
   return (
-    <div className="h-screen w-screen flex bg-background overflow-hidden">
-      <aside className={`${activeId ? "hidden md:flex" : "flex"} md:w-[380px] w-full flex-col border-r bg-sidebar`}>
+    <div className="h-full w-full flex bg-background overflow-hidden">
+      <aside className={`${activeId ? "hidden md:flex" : "flex"} md:w-[380px] w-full flex-col border-r bg-sidebar min-h-0 shrink-0`}>
         <div className="bg-header text-header-foreground p-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="w-9 h-9 rounded-full bg-primary-light flex items-center justify-center">🐄</div>
@@ -97,7 +103,7 @@ const Index = () => {
         </div>
       </aside>
 
-      <main className={`${activeId ? "flex" : "hidden md:flex"} flex-1 flex-col`}>
+      <main className={`${activeId ? "flex" : "hidden md:flex"} flex-1 flex-col min-h-0 overflow-hidden`}>
         {activeId ? (
           <ChatView conversationId={activeId} onBack={() => setActiveId(null)} onConversationUpdated={refresh} />
         ) : (

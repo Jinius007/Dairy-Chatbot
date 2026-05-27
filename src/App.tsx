@@ -12,20 +12,24 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      {!isSupabaseConfigured && (
-        <div className="bg-amber-500 text-amber-950 px-4 py-2 text-center text-sm">
-          Supabase is not configured. Add <code className="font-mono">VITE_SUPABASE_URL</code> and{" "}
-          <code className="font-mono">VITE_SUPABASE_PUBLISHABLE_KEY</code> in Vercel environment variables, then redeploy.
+      <div className="h-[100dvh] flex flex-col overflow-hidden">
+        {!isSupabaseConfigured && (
+          <div className="shrink-0 bg-amber-500 text-amber-950 px-4 py-2 text-center text-sm">
+            Supabase is not configured. Add <code className="font-mono">VITE_SUPABASE_URL</code> and{" "}
+            <code className="font-mono">VITE_SUPABASE_PUBLISHABLE_KEY</code> in Vercel environment variables, then redeploy.
+          </div>
+        )}
+        <div className="flex-1 min-h-0 overflow-hidden">
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
         </div>
-      )}
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
+      </div>
     </TooltipProvider>
   </QueryClientProvider>
 );

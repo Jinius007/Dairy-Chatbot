@@ -22,6 +22,13 @@ interface Props {
 
 type Phase = "idle" | "listening" | "thinking" | "speaking";
 
+type TranscriptItem = {
+  id: string;
+  role: "user" | "assistant";
+  content: string;
+  language?: string | null;
+};
+
 function splitLangHeader(text: unknown): { lang: string | null; body: string } {
   let source = typeof text === "string" ? text : "";
   let lang: string | null = null;
@@ -63,9 +70,7 @@ function getSupportedMimeType(): string | undefined {
 export function CallView({ open, onClose, history = [] }: Props) {
   const [seconds, setSeconds] = useState(0);
   const [phase, setPhase] = useState<Phase>("idle");
-  const [lastUser, setLastUser] = useState("");
-  const [lastReply, setLastReply] = useState("");
-  const [lastLang, setLastLang] = useState<string | null>(null);
+  const [transcript, setTranscript] = useState<TranscriptItem[]>([]);
 
   const turnsRef = useRef<CallTurn[]>([]);
   const historyRef = useRef<{ role: "user" | "assistant"; content: string }[]>([...history]);
@@ -80,8 +85,20 @@ export function CallView({ open, onClose, history = [] }: Props) {
   const maxRecordTimerRef = useRef<number | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyserFrameRef = useRef<number | null>(null);
+  const transcriptScrollRef = useRef<HTMLDivElement>(null);
 
   const setPhaseBoth = (p: Phase) => { phaseRef.current = p; setPhase(p); };
+
+  const appendTranscript = (item: TranscriptItem) => {
+    setTranscript((prev) => [...prev, item]);
+  };
+
+  useEffect(() => {
+    transcriptScrollRef.current?.scrollTo({
+      top: transcriptScrollRef.current.scrollHeight,
+      behavior: "smooth",
+    });
+  }, [transcript, phase]);
 
   const stopSilenceMonitor = () => {
     if (analyserFrameRef.current) cancelAnimationFrame(analyserFrameRef.current);
@@ -131,11 +148,12 @@ export function CallView({ open, onClose, history = [] }: Props) {
         return;
       }
       const detectedLang = detectLanguageCode(transcript);
-      setLastUser(transcript);
-      turnsRef.current.push({
+      const userTurn: CallTurn = {
         id: crypto.randomUUID(), role: "user", content: transcript,
         language: detectedLang, is_voice: true, created_at: new Date().toISOString(),
-      });
+      };
+      turnsRef.current.push(userTurn);
+      appendTranscript({ id: userTurn.id, role: "user", content: transcript, language: detectedLang });
       historyRef.current.push({ role: "user", content: transcript });
 
       const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
@@ -157,13 +175,13 @@ export function CallView({ open, onClose, history = [] }: Props) {
       const body = parsed.body;
       const answer = body.trim();
       if (!answer) throw new Error("No answer was generated. Please try again.");
-      setLastReply(answer);
-      setLastLang(lang);
-      historyRef.current.push({ role: "assistant", content: answer });
-      turnsRef.current.push({
+      const assistantTurn: CallTurn = {
         id: crypto.randomUUID(), role: "assistant", content: answer,
         language: lang, is_voice: true, created_at: new Date().toISOString(),
-      });
+      };
+      historyRef.current.push({ role: "assistant", content: answer });
+      turnsRef.current.push(assistantTurn);
+      appendTranscript({ id: assistantTurn.id, role: "assistant", content: answer, language: lang });
 
       if (closedRef.current) return;
 
@@ -275,10 +293,15 @@ export function CallView({ open, onClose, history = [] }: Props) {
     closedRef.current = false;
     turnsRef.current = [];
     historyRef.current = [...history];
+    setTranscript(
+      history.map((m, i) => ({
+        id: `history-${i}`,
+        role: m.role,
+        content: m.content,
+      })),
+    );
     setSeconds(0);
-    setLastUser("");
-    setLastReply("");
-    setLastLang(null);
+    setPhaseBoth("idle");
     timerRef.current = window.setInterval(() => setSeconds((s) => s + 1), 1000) as unknown as number;
 
     (async () => {
@@ -333,46 +356,82 @@ export function CallView({ open, onClose, history = [] }: Props) {
     "Connecting…";
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col items-center justify-between bg-gradient-to-b from-emerald-900 via-emerald-800 to-emerald-950 text-white p-8">
-      <div className="text-center mt-12 w-full max-w-md">
-        <div className="text-sm opacity-80">PashuMitra • Live Call</div>
-        <div className="text-3xl font-light mt-2">🐄</div>
-        <div className="text-2xl font-semibold mt-3">PashuMitra AI</div>
-        <div className="text-sm opacity-80 mt-1">{mm}:{ss}</div>
+    <div className="fixed inset-0 z-50 flex flex-col h-[100dvh] max-h-[100dvh] overflow-hidden bg-gradient-to-b from-emerald-900 via-emerald-800 to-emerald-950 text-white">
+      {/* Header */}
+      <div className="shrink-0 px-4 pt-[max(0.75rem,env(safe-area-inset-top))] pb-2 text-center">
+        <div className="text-xs opacity-80">PashuMitra • Live Call</div>
+        <div className="flex items-center justify-center gap-2 mt-1">
+          <span className="text-lg">🐄</span>
+          <span className="text-base font-semibold">PashuMitra AI</span>
+          <span className="text-xs opacity-70 font-mono">{mm}:{ss}</span>
+        </div>
       </div>
 
-      <div className="flex-1 flex flex-col items-center justify-center w-full max-w-md">
-        <div className={`w-32 h-32 rounded-full bg-white/10 flex items-center justify-center text-5xl mb-6 transition ${
+      {/* Status + avatar */}
+      <div className="shrink-0 flex flex-col items-center px-4 py-2">
+        <div className={`w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-white/10 flex items-center justify-center text-3xl sm:text-4xl transition ${
           phase === "listening" ? "ring-4 ring-emerald-300 animate-pulse" :
           phase === "speaking" ? "ring-4 ring-blue-300" :
           phase === "thinking" ? "ring-4 ring-yellow-300" : ""
         }`}>
-          {phase === "thinking" ? <Loader2 className="w-12 h-12 animate-spin" /> : "🐄"}
+          {phase === "thinking" ? <Loader2 className="w-8 h-8 animate-spin" /> : "🐄"}
         </div>
-        <div className="text-center text-sm opacity-90 min-h-[3rem] px-4">{statusText}</div>
-        {lastUser && (
-          <div className="mt-4 text-xs opacity-70 text-center max-w-sm line-clamp-2">You: {lastUser}</div>
+        <div className="text-center text-xs sm:text-sm opacity-90 mt-2 px-2">{statusText}</div>
+      </div>
+
+      {/* Full transcript */}
+      <div
+        ref={transcriptScrollRef}
+        className="flex-1 min-h-0 overflow-y-auto px-3 py-2 space-y-2 no-scrollbar"
+      >
+        {transcript.length === 0 && phase === "listening" && (
+          <p className="text-center text-xs opacity-60 py-4">Your conversation will appear here as you talk…</p>
         )}
-        {lastReply && (
-          <div className="mt-2 text-xs opacity-90 text-center max-w-sm line-clamp-3">
-            {lastLang && <span className="opacity-60">[{LANG_NAMES[lastLang] || lastLang}] </span>}
-            {lastReply}
+        {transcript.map((item) => {
+          const out = item.role === "user";
+          return (
+            <div key={item.id} className={`flex ${out ? "justify-end" : "justify-start"}`}>
+              <div className={`max-w-[88%] px-3 py-2 rounded-2xl text-sm leading-relaxed ${
+                out ? "bg-emerald-600/80 rounded-tr-sm" : "bg-white/15 rounded-tl-sm"
+              }`}>
+                {!out && item.language && (
+                  <div className="text-[10px] uppercase tracking-wide opacity-60 mb-0.5">
+                    {LANG_NAMES[item.language] || item.language}
+                  </div>
+                )}
+                <div className="whitespace-pre-wrap break-words">{item.content}</div>
+              </div>
+            </div>
+          );
+        })}
+        {phase === "thinking" && (
+          <div className="flex justify-start">
+            <div className="bg-white/15 rounded-2xl rounded-tl-sm px-3 py-2 inline-flex gap-1">
+              <span className="w-1.5 h-1.5 bg-white/70 rounded-full typing-dot" style={{ animationDelay: "0ms" }} />
+              <span className="w-1.5 h-1.5 bg-white/70 rounded-full typing-dot" style={{ animationDelay: "150ms" }} />
+              <span className="w-1.5 h-1.5 bg-white/70 rounded-full typing-dot" style={{ animationDelay: "300ms" }} />
+            </div>
           </div>
         )}
       </div>
 
-      <div className="flex items-center gap-6 mb-12">
+      {/* Controls */}
+      <div className="shrink-0 flex items-center justify-center gap-6 px-4 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))]">
         <button
           onClick={handleMicTap}
           disabled={phase === "thinking" || phase === "idle"}
-          className="w-16 h-16 rounded-full bg-white/15 hover:bg-white/25 flex items-center justify-center shadow-lg disabled:opacity-40"
+          className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-white/15 hover:bg-white/25 flex items-center justify-center shadow-lg disabled:opacity-40"
           aria-label="Send / interrupt"
           title="Tap to send now, or to interrupt"
         >
-          <Mic className="w-7 h-7" />
+          <Mic className="w-6 h-6 sm:w-7 sm:h-7" />
         </button>
-        <button onClick={hangUp} className="w-16 h-16 rounded-full bg-red-600 hover:bg-red-700 flex items-center justify-center shadow-lg" aria-label="End call">
-          <PhoneOff className="w-7 h-7" />
+        <button
+          onClick={hangUp}
+          className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-red-600 hover:bg-red-700 flex items-center justify-center shadow-lg"
+          aria-label="End call"
+        >
+          <PhoneOff className="w-6 h-6 sm:w-7 sm:h-7" />
         </button>
       </div>
     </div>
