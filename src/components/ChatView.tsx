@@ -5,7 +5,8 @@ import { Tick } from "@/components/Tick";
 import { CallView, CallButton, type CallTurn } from "@/components/CallView";
 import { ArrowLeft, Send, Smile, Paperclip, MoreVertical, Volume2, Pause, Play, Square } from "lucide-react";
 import { toast } from "sonner";
-import { LANG_NAMES, TTS_LANG } from "@/lib/languages";
+import { LANG_NAMES } from "@/lib/languages";
+import { speakText, stopSpeech } from "@/lib/speech";
 
 interface Message {
   id: string;
@@ -48,29 +49,37 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
   const scrollRef = useRef<HTMLDivElement>(null);
   const abortRef = useRef<AbortController | null>(null);
   const messagesRef = useRef<Message[]>([]);
+  const speechTokenRef = useRef(0);
 
   const stopSpeak = useCallback(() => {
-    if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+    speechTokenRef.current += 1;
+    stopSpeech();
     setSpeakingId(null);
     setPaused(false);
   }, []);
 
-  const speak = useCallback((text: string, lang?: string | null, id?: string) => {
-    if (!("speechSynthesis" in window) || !text) return;
-    window.speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(text);
-    u.lang = TTS_LANG[lang || "hi"] || "hi-IN";
-    u.onend = () => { setSpeakingId((cur) => (cur === id ? null : cur)); setPaused(false); };
-    u.onerror = () => { setSpeakingId((cur) => (cur === id ? null : cur)); setPaused(false); };
+  const speak = useCallback(async (text: string, lang?: string | null, id?: string) => {
+    if (!text.trim()) return;
+    speechTokenRef.current += 1;
+    const token = speechTokenRef.current;
+    stopSpeech();
     setSpeakingId(id ?? null);
     setPaused(false);
-    window.speechSynthesis.speak(u);
+    try {
+      await speakText(text, { lang, tokenRef: speechTokenRef });
+    } finally {
+      if (speechTokenRef.current === token) {
+        setSpeakingId((cur) => (cur === id ? null : cur));
+        setPaused(false);
+      }
+    }
   }, []);
 
   const togglePause = useCallback(() => {
     if (!("speechSynthesis" in window)) return;
-    if (window.speechSynthesis.paused) { window.speechSynthesis.resume(); setPaused(false); }
-    else if (window.speechSynthesis.speaking) { window.speechSynthesis.pause(); setPaused(true); }
+    const synth = window.speechSynthesis;
+    if (synth.paused) { synth.resume(); setPaused(false); }
+    else if (synth.speaking) { synth.pause(); setPaused(true); }
   }, []);
 
   const openCall = useCallback(() => {
@@ -200,7 +209,7 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
 
     try {
       const { text: reply, lang } = await streamReply(nextHistory, assistantMsg.id);
-      if (isVoice && reply) speak(reply, lang, assistantMsg.id);
+      if (isVoice && reply) void speak(reply, lang, assistantMsg.id);
     } catch (e: any) {
       console.error(e);
       toast.error(e?.message || "Failed to get reply");

@@ -2,7 +2,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Phone, PhoneOff, Mic, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase, isSupabaseConfigured } from "@/integrations/supabase/client";
-import { TTS_LANG, LANG_NAMES, detectLanguageCode, prepareTextForSpeech } from "@/lib/languages";
+import { LANG_NAMES, detectLanguageCode } from "@/lib/languages";
+import { speakText, stopSpeech } from "@/lib/speech";
 
 export interface CallTurn {
   id: string;
@@ -59,15 +60,6 @@ function getSupportedMimeType(): string | undefined {
   return ["audio/webm;codecs=opus", "audio/webm", "audio/mp4"].find((type) => MediaRecorder.isTypeSupported(type));
 }
 
-function getSpeechVoice(lang: string | null): SpeechSynthesisVoice | null {
-  if (!("speechSynthesis" in window)) return null;
-  const target = TTS_LANG[lang || "hi"] || "hi-IN";
-  const voices = window.speechSynthesis.getVoices();
-  return voices.find((voice) => voice.lang === target)
-    || voices.find((voice) => voice.lang.toLowerCase().startsWith(target.slice(0, 2).toLowerCase()))
-    || null;
-}
-
 export function CallView({ open, onClose, history = [] }: Props) {
   const [seconds, setSeconds] = useState(0);
   const [phase, setPhase] = useState<Phase>("idle");
@@ -87,7 +79,6 @@ export function CallView({ open, onClose, history = [] }: Props) {
   const restartTimerRef = useRef<number | null>(null);
   const maxRecordTimerRef = useRef<number | null>(null);
   const speechTokenRef = useRef(0);
-  const speechResolveRef = useRef<(() => void) | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyserFrameRef = useRef<number | null>(null);
 
@@ -100,52 +91,10 @@ export function CallView({ open, onClose, history = [] }: Props) {
     audioContextRef.current = null;
   };
 
-  const speak = useCallback((text: string, lang: string | null) => new Promise<void>((resolve) => {
-    if (!("speechSynthesis" in window) || !text) return resolve();
-    const synth = window.speechSynthesis;
-    const token = ++speechTokenRef.current;
-    synth.cancel();
-    synth.resume();
-
-    const spokenText = prepareTextForSpeech(text);
-    const chunks = spokenText.match(/.{1,170}(?:[।.!?;:,，、\s]|$)/g)?.map((x) => x.trim()).filter(Boolean) || [spokenText];
-
-    // Safety net only for unexpectedly long speech; normal call answers are kept short.
-    const keepAlive = window.setInterval(() => {
-      if (speechTokenRef.current !== token) return;
-      if (synth.speaking && !synth.paused) {
-        synth.pause();
-        synth.resume();
-      }
-    }, 14000);
-
-    let cancelled = false;
-    const cleanup = () => {
-      cancelled = true;
-      window.clearInterval(keepAlive);
-      if (speechResolveRef.current === cleanup) speechResolveRef.current = null;
-      resolve();
-    };
-    speechResolveRef.current = cleanup;
-
-    let i = 0;
-    const speakNext = () => {
-      if (cancelled || speechTokenRef.current !== token) return cleanup();
-      if (i >= chunks.length) return cleanup();
-      const part = chunks[i++].trim();
-      if (!part) return speakNext();
-      const u = new SpeechSynthesisUtterance(part);
-      u.lang = TTS_LANG[lang || "hi"] || "hi-IN";
-      const voice = getSpeechVoice(lang);
-      if (voice) u.voice = voice;
-      u.rate = 0.92;
-      u.pitch = 1;
-      u.onend = () => window.setTimeout(speakNext, 120);
-      u.onerror = () => window.setTimeout(speakNext, 120);
-      window.setTimeout(() => synth.speak(u), 40);
-    };
-    speakNext();
-  }), []);
+  const speak = useCallback((text: string, lang: string | null) => {
+    speechTokenRef.current += 1;
+    return speakText(text, { lang, tokenRef: speechTokenRef });
+  }, []);
 
   const scheduleListening = useCallback((delay = 250) => {
     if (closedRef.current) return;
@@ -309,8 +258,7 @@ export function CallView({ open, onClose, history = [] }: Props) {
     } else if (phaseRef.current === "speaking") {
       // Interrupt the assistant and start listening
       speechTokenRef.current += 1;
-      speechResolveRef.current?.();
-      window.speechSynthesis?.cancel();
+      stopSpeech();
       scheduleListening(100);
     }
   };
@@ -343,12 +291,12 @@ export function CallView({ open, onClose, history = [] }: Props) {
       if (restartTimerRef.current) window.clearTimeout(restartTimerRef.current);
       if (maxRecordTimerRef.current) window.clearTimeout(maxRecordTimerRef.current);
       speechTokenRef.current += 1;
-      speechResolveRef.current?.();
+      stopSpeech();
       stopSilenceMonitor();
       try { mediaRef.current?.state === "recording" && mediaRef.current.stop(); } catch {}
       streamRef.current?.getTracks().forEach((t) => t.stop());
       streamRef.current = null;
-      window.speechSynthesis?.cancel();
+      stopSpeech();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
@@ -358,12 +306,12 @@ export function CallView({ open, onClose, history = [] }: Props) {
     if (restartTimerRef.current) window.clearTimeout(restartTimerRef.current);
     if (maxRecordTimerRef.current) window.clearTimeout(maxRecordTimerRef.current);
     speechTokenRef.current += 1;
-    speechResolveRef.current?.();
+    stopSpeech();
     stopSilenceMonitor();
     try { mediaRef.current?.state === "recording" && mediaRef.current.stop(); } catch {}
     streamRef.current?.getTracks().forEach((t) => t.stop());
     streamRef.current = null;
-    window.speechSynthesis?.cancel();
+    stopSpeech();
     if (timerRef.current) window.clearInterval(timerRef.current);
     onClose(turnsRef.current);
   };
