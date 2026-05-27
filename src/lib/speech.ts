@@ -1,232 +1,157 @@
 import { prepareTextForSpeech, TTS_LANG } from "@/lib/languages";
+import { isSupabaseConfigured } from "@/integrations/supabase/client";
 
-let voicesCache: SpeechSynthesisVoice[] = [];
-let voicesReady: Promise<SpeechSynthesisVoice[]> | null = null;
 let speechChain: Promise<void> = Promise.resolve();
 let activeToken = 0;
+let activeAudio: HTMLAudioElement | null = null;
+let activeObjectUrl: string | null = null;
 
 const delay = (ms: number) => new Promise<void>((resolve) => window.setTimeout(resolve, ms));
 
 export function isSpeechSupported(): boolean {
-  return typeof window !== "undefined" && "speechSynthesis" in window;
+  return typeof window !== "undefined" && typeof Audio !== "undefined";
 }
 
-function getSynth(): SpeechSynthesis | null {
-  return isSpeechSupported() ? window.speechSynthesis : null;
+export function preloadSpeechVoices(): Promise<void> {
+  return Promise.resolve();
 }
 
-function refreshVoiceCache(): SpeechSynthesisVoice[] {
-  const synth = getSynth();
-  if (!synth) return [];
-  const voices = synth.getVoices();
-  if (voices.length > 0) voicesCache = voices;
-  return voicesCache;
+function cleanupAudio(): void {
+  if (activeAudio) {
+    activeAudio.pause();
+    activeAudio.src = "";
+    activeAudio = null;
+  }
+  if (activeObjectUrl) {
+    URL.revokeObjectURL(activeObjectUrl);
+    activeObjectUrl = null;
+  }
 }
 
-/** Browsers often return an empty voice list until voiceschanged fires. */
-export function preloadSpeechVoices(): Promise<SpeechSynthesisVoice[]> {
-  if (!isSpeechSupported()) return Promise.resolve([]);
+function base64ToBlob(base64: string, mimeType: string): Blob {
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  return new Blob([bytes], { type: mimeType });
+}
+
+async function fetchServerAudio(text: string, lang: string | null): Promise<string[] | null> {
+  if (!isSupabaseConfigured) return null;
+
+  const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/speak`;
+  const key = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+
+  const resp = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${key}`,
+      apikey: key,
+    },
+    body: JSON.stringify({ text, lang: lang || "hi" }),
+  });
+
+  if (!resp.ok) return null;
+
+  const data = await resp.json().catch(() => null);
+  if (!data) return null;
+
+  if (Array.isArray(data.audioParts) && data.audioParts.length > 0) {
+    return data.audioParts as string[];
+  }
+  if (typeof data.audioBase64 === "string" && data.audioBase64) {
+    return [data.audioBase64];
+  }
+  return null;
+}
+
+async function playAudioBase64(base64: string, mimeType: string, token: number): Promise<boolean> {
+  if (token !== activeToken) return false;
+
+  cleanupAudio();
+  const blob = base64ToBlob(base64, mimeType);
+  const objectUrl = URL.createObjectURL(blob);
+  activeObjectUrl = objectUrl;
+
+  return new Promise((resolve) => {
+    const audio = new Audio(objectUrl);
+    activeAudio = audio;
+
+    const done = (ok: boolean) => {
+      if (activeAudio === audio) cleanupAudio();
+      resolve(ok && token === activeToken);
+    };
+
+    audio.onended = () => done(true);
+    audio.onerror = () => done(false);
+
+    audio.play()
+      .then(() => undefined)
+      .catch(() => done(false));
+  });
+}
+
+async function speakViaServer(text: string, lang: string | null, token: number): Promise<boolean> {
+  const parts = await fetchServerAudio(text, lang);
+  if (!parts || token !== activeToken) return false;
+
+  for (const part of parts) {
+    if (token !== activeToken) return false;
+    const ok = await playAudioBase64(part, "audio/mpeg", token);
+    if (!ok) return false;
+    await delay(60);
+  }
+  return true;
+}
+
+async function speakViaBrowser(text: string, lang: string | null, token: number): Promise<void> {
+  if (!("speechSynthesis" in window) || token !== activeToken) return;
 
   const synth = window.speechSynthesis;
-  const cached = refreshVoiceCache();
-  if (cached.length > 0) return Promise.resolve(cached);
+  const spokenText = prepareTextForSpeech(text);
+  if (!spokenText) return;
 
-  if (voicesReady) return voicesReady;
-
-  voicesReady = new Promise((resolve) => {
-    const finish = () => {
-      const voices = refreshVoiceCache();
-      resolve(voices);
-      if (voices.length === 0) voicesReady = null;
-    };
-
-    const onVoicesChanged = () => {
-      if (refreshVoiceCache().length > 0) {
-        synth.removeEventListener("voiceschanged", onVoicesChanged);
-        finish();
-      }
-    };
-
-    synth.addEventListener("voiceschanged", onVoicesChanged);
-    synth.getVoices();
-    window.setTimeout(() => {
-      synth.removeEventListener("voiceschanged", onVoicesChanged);
-      finish();
-    }, 3000);
-  });
-
-  return voicesReady;
-}
-
-if (typeof window !== "undefined" && isSpeechSupported()) {
-  window.speechSynthesis.addEventListener("voiceschanged", refreshVoiceCache);
-  preloadSpeechVoices();
-}
-
-export function getSpeechVoice(lang: string | null): SpeechSynthesisVoice | null {
-  const target = TTS_LANG[lang || "hi"] || "hi-IN";
-  const prefix = target.slice(0, 2).toLowerCase();
-  const voices = refreshVoiceCache();
-  return (
-    voices.find((voice) => voice.lang === target)
-    || voices.find((voice) => voice.lang.toLowerCase().startsWith(prefix))
-    || voices.find((voice) => voice.lang.toLowerCase().includes(prefix))
-    || voices.find((voice) => voice.default)
-    || voices[0]
-    || null
-  );
-}
-
-function chunkSpeechText(text: string): string[] {
-  const chunks = text.match(/.{1,170}(?:[।.!?;:,，、\s]|$)/g)?.map((part) => part.trim()).filter(Boolean);
-  return chunks?.length ? chunks : [text];
-}
-
-export type SpeakOptions = {
-  lang?: string | null;
-  rate?: number;
-  pitch?: number;
-};
-
-async function unstickSynth(): Promise<void> {
-  const synth = getSynth();
-  if (!synth) return;
   synth.cancel();
   synth.resume();
-  await delay(60);
-  synth.resume();
-}
 
-async function warmSynth(lang: string | null): Promise<void> {
-  const synth = getSynth();
-  if (!synth) return;
   await new Promise<void>((resolve) => {
-    const utterance = new SpeechSynthesisUtterance(" ");
-    utterance.volume = 0.01;
+    const utterance = new SpeechSynthesisUtterance(spokenText);
     utterance.lang = TTS_LANG[lang || "hi"] || "hi-IN";
-    const voice = getSpeechVoice(lang);
-    if (voice) utterance.voice = voice;
     utterance.onend = () => resolve();
     utterance.onerror = () => resolve();
-    synth.resume();
     synth.speak(utterance);
-    window.setTimeout(resolve, 250);
   });
-  synth.cancel();
-  synth.resume();
-  await delay(40);
 }
 
-async function speakChunk(
-  part: string,
-  lang: string | null,
-  options: SpeakOptions,
-  token: number,
-): Promise<boolean> {
-  const synth = getSynth();
-  if (!synth || token !== activeToken) return false;
+async function runSpeech(text: string, lang: string | null, token: number): Promise<void> {
+  if (!text.trim() || token !== activeToken) return;
 
-  for (let attempt = 0; attempt < 4; attempt++) {
-    if (token !== activeToken) return false;
+  const serverOk = await speakViaServer(text, lang, token);
+  if (serverOk || token !== activeToken) return;
 
-    await unstickSynth();
-    if (attempt > 0) await warmSynth(lang);
-
-    const started = await new Promise<boolean>((resolve) => {
-      const utterance = new SpeechSynthesisUtterance(part);
-      utterance.lang = TTS_LANG[lang || "hi"] || "hi-IN";
-      const voice = getSpeechVoice(lang);
-      if (voice) utterance.voice = voice;
-      utterance.rate = options.rate ?? 0.92;
-      utterance.pitch = options.pitch ?? 1;
-
-      let didStart = false;
-      let settled = false;
-      const settle = (ok: boolean) => {
-        if (settled) return;
-        settled = true;
-        window.clearTimeout(startTimer);
-        window.clearTimeout(endTimer);
-        resolve(ok);
-      };
-
-      const startTimer = window.setTimeout(() => {
-        if (!didStart) settle(false);
-      }, 900);
-
-      const endTimer = window.setTimeout(() => {
-        settle(didStart);
-      }, Math.max(8000, part.length * 120));
-
-      utterance.onstart = () => { didStart = true; };
-      utterance.onend = () => settle(true);
-      utterance.onerror = () => settle(false);
-
-      synth.resume();
-      synth.speak(utterance);
-    });
-
-    if (token !== activeToken) return false;
-    if (started) return true;
-    await delay(120 * (attempt + 1));
-  }
-
-  return false;
-}
-
-async function runSpeech(text: string, options: SpeakOptions, token: number): Promise<void> {
-  if (!isSpeechSupported() || token !== activeToken) return;
-
-  await preloadSpeechVoices();
-  const spokenText = prepareTextForSpeech(text);
-  if (!spokenText || token !== activeToken) return;
-
-  const chunks = chunkSpeechText(spokenText);
-  const lang = options.lang ?? null;
-
-  await warmSynth(lang);
-  if (token !== activeToken) return;
-
-  const keepAlive = window.setInterval(() => {
-    if (token !== activeToken) return;
-    const synth = getSynth();
-    if (!synth) return;
-    if (synth.speaking || synth.pending) synth.resume();
-  }, 4000);
-
-  try {
-    for (const part of chunks) {
-      if (token !== activeToken) return;
-      const ok = await speakChunk(part, lang, options, token);
-      if (!ok && token === activeToken) {
-        await delay(180);
-        await speakChunk(part, lang, options, token);
-      }
-      await delay(80);
-    }
-  } finally {
-    window.clearInterval(keepAlive);
-  }
+  await speakViaBrowser(text, lang, token);
 }
 
 export function stopSpeech(): void {
   activeToken += 1;
-  const synth = getSynth();
-  if (!synth) return;
-  synth.cancel();
-  synth.resume();
+  cleanupAudio();
+  if ("speechSynthesis" in window) {
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.resume();
+  }
 }
 
-/**
- * Queue speech so overlapping requests don't cancel each other unpredictably.
- */
+export type SpeakOptions = {
+  lang?: string | null;
+};
+
 export function speakText(text: string, options: SpeakOptions = {}): Promise<void> {
   if (!isSpeechSupported() || !text.trim()) return Promise.resolve();
 
   const token = ++activeToken;
   const task = speechChain
     .catch(() => undefined)
-    .then(() => runSpeech(text, options, token));
+    .then(() => runSpeech(text, options.lang ?? null, token));
 
   speechChain = task.catch(() => undefined);
   return task;
