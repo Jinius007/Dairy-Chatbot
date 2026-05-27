@@ -1,11 +1,9 @@
-import { prepareTextForSpeech, resolveSpeechLang, TTS_LANG } from "@/lib/languages";
+import { prepareTextForSpeech, LANG_NAMES } from "@/lib/languages";
 
 let activeToken = 0;
 let speechChain: Promise<void> = Promise.resolve();
 let audio: HTMLAudioElement | null = null;
 let objectUrl: string | null = null;
-
-const delay = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
 
 function cleanupAudio() {
   if (audio) {
@@ -20,7 +18,7 @@ function cleanupAudio() {
   }
 }
 
-function ttsUrl(): string {
+function ttsEndpoint(): string {
   if (typeof window === "undefined") return "/api/tts";
   return `${window.location.origin}/api/tts`;
 }
@@ -45,15 +43,17 @@ function playBlob(blob: Blob, token: number): Promise<boolean> {
   });
 }
 
-async function speakViaServer(text: string, lang: string, token: number): Promise<boolean> {
+async function speakViaBhashini(text: string, lang: string | null, token: number): Promise<boolean> {
   const spoken = prepareTextForSpeech(text);
   if (!spoken || token !== activeToken) return false;
 
+  const code = lang && lang in LANG_NAMES ? lang : "hi";
+
   try {
-    const resp = await fetch(ttsUrl(), {
+    const resp = await fetch(ttsEndpoint(), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text: spoken, lang }),
+      body: JSON.stringify({ text: spoken, lang: code }),
     });
     if (!resp.ok || token !== activeToken) return false;
     const blob = await resp.blob();
@@ -64,40 +64,11 @@ async function speakViaServer(text: string, lang: string, token: number): Promis
   }
 }
 
-async function speakViaBrowser(text: string, lang: string, token: number): Promise<void> {
-  if (token !== activeToken || !("speechSynthesis" in window)) return;
-  const spoken = prepareTextForSpeech(text);
-  if (!spoken) return;
-
-  const synth = window.speechSynthesis;
-  synth.cancel();
-  synth.resume();
-
-  await new Promise<void>((resolve) => {
-    const u = new SpeechSynthesisUtterance(spoken);
-    u.lang = TTS_LANG[lang] || "hi-IN";
-    u.rate = 0.92;
-    u.onend = () => resolve();
-    u.onerror = () => resolve();
-    synth.speak(u);
-  });
-}
-
 async function runSpeech(text: string, lang: string | null, token: number): Promise<void> {
   if (!text.trim() || token !== activeToken) return;
-
-  const resolved = resolveSpeechLang(text, lang);
-
-  if (await speakViaServer(text, resolved, token)) return;
+  if (await speakViaBhashini(text, lang, token)) return;
   if (token !== activeToken) return;
-  await delay(250);
-  if (await speakViaServer(text, resolved, token)) return;
-  if (token !== activeToken) return;
-
-  // Browser fallback only for English — Windows Chrome lacks Indic voices.
-  if (resolved === "en") {
-    await speakViaBrowser(text, resolved, token);
-  }
+  await speakViaBhashini(text, lang, token);
 }
 
 export function isSpeechSupported(): boolean {
@@ -111,11 +82,11 @@ export function preloadSpeechVoices(): Promise<void> {
 export function stopSpeech(): void {
   activeToken += 1;
   cleanupAudio();
-  window.speechSynthesis?.cancel();
 }
 
 export type SpeakOptions = { lang?: string | null };
 
+/** Read text aloud via Bhashini TTS (server proxy at /api/tts). */
 export function speakText(text: string, options: SpeakOptions = {}): Promise<void> {
   if (!text.trim()) return Promise.resolve();
 

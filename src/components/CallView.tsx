@@ -150,7 +150,7 @@ export function CallView({ open, onClose, history = [] }: Props) {
       if (!chatRes.ok) throw new Error(payload?.error || `Chat failed (${chatRes.status})`);
       const raw = readTextPayload(payload);
       const parsed = splitLangHeader(raw);
-      const lang = detectedLang || parsed.lang || detectLanguageCode(answer);
+      const lang = detectedLang || parsed.lang;
       const body = parsed.body;
       const answer = body.trim();
       if (!answer) throw new Error("No answer was generated. Please try again.");

@@ -5,7 +5,7 @@ import { Tick } from "@/components/Tick";
 import { CallView, CallButton, type CallTurn } from "@/components/CallView";
 import { ArrowLeft, Send, Smile, Paperclip, MoreVertical, Volume2, Pause, Play, Square } from "lucide-react";
 import { toast } from "sonner";
-import { LANG_NAMES, detectLanguageCode } from "@/lib/languages";
+import { LANG_NAMES } from "@/lib/languages";
 import { speakText, stopSpeech } from "@/lib/speech";
 
 interface Message {
@@ -202,7 +202,7 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
 
     try {
       const { text: reply, lang } = await streamReply(nextHistory, assistantMsg.id);
-      if (isVoice && reply) void speak(reply, lang || detectLanguageCode(reply), assistantMsg.id);
+      if (isVoice && reply) void speak(reply, lang, assistantMsg.id);
     } catch (e: any) {
       console.error(e);
       toast.error(e?.message || "Failed to get reply");
@@ -303,7 +303,7 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
                         </button>
                       </>
                     ) : (
-                      <button onClick={() => speak(m.content, m.language || detectLanguageCode(m.content), m.id)} className="text-muted-foreground hover:text-primary mr-1" title="Play audio">
+                      <button onClick={() => speak(m.content, m.language, m.id)} className="text-muted-foreground hover:text-primary mr-1" title="Play audio">
                         <Volume2 className="w-3.5 h-3.5" />
                       </button>
                     )

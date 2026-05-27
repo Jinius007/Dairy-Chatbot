@@ -59,11 +59,3 @@ export function prepareTextForSpeech(text: string): string {
     .replace(/\s+/g, " ")
     .trim();
 }
-
-/** Pick TTS language from message text script, not just the LANG header. */
-export function resolveSpeechLang(text: string, lang?: string | null): string {
-  const fromText = detectLanguageCode(text);
-  if (fromText) return fromText;
-  if (lang && lang in LANG_NAMES) return lang;
-  return "hi";
-}
