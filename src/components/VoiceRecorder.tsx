@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Mic, Square } from "lucide-react";
+import { unlockAudioPlayback } from "@/lib/speech";
 
 interface Props {
   onRecorded: (audioBase64: string, mimeType: string, durationMs: number) => void;
@@ -36,6 +37,7 @@ export function VoiceRecorder({ onRecorded, disabled }: Props) {
   const start = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      await unlockAudioPlayback();
       const mimeType = getSupportedMimeType();
       const rec = mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream);
       const blobType = mimeType || rec.mimeType || "audio/webm";

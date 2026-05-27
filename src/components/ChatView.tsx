@@ -6,7 +6,7 @@ import { CallView, CallButton, type CallTurn } from "@/components/CallView";
 import { ArrowLeft, Send, Smile, Paperclip, MoreVertical, Volume2, Pause, Play, Square } from "lucide-react";
 import { toast } from "sonner";
 import { LANG_NAMES } from "@/lib/languages";
-import { speakText, stopSpeech } from "@/lib/speech";
+import { speakText, stopSpeech, unlockAudioPlayback } from "@/lib/speech";
 
 interface Message {
   id: string;
@@ -61,6 +61,7 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
     setSpeakingId(id ?? null);
     setPaused(false);
     try {
+      await unlockAudioPlayback();
       await speakText(text, { lang });
     } finally {
       setSpeakingId((cur) => (cur === id ? null : cur));

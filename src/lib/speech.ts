@@ -5,6 +5,7 @@ let speechChain: Promise<void> = Promise.resolve();
 let audio: HTMLAudioElement | null = null;
 let objectUrl: string | null = null;
 let unlocked = false;
+let pendingPlayResolve: ((ok: boolean) => void) | null = null;
 
 // Tiny silent WAV to unlock mobile/desktop audio during live call
 const SILENT_WAV =
@@ -12,8 +13,18 @@ const SILENT_WAV =
 
 const delay = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
 
+function finishPendingPlay(ok: boolean) {
+  if (!pendingPlayResolve) return;
+  const resolve = pendingPlayResolve;
+  pendingPlayResolve = null;
+  resolve(ok);
+}
+
 function cleanupAudio() {
+  finishPendingPlay(false);
   if (audio) {
+    audio.onended = null;
+    audio.onerror = null;
     audio.pause();
     audio.removeAttribute("src");
     audio.load();
@@ -51,16 +62,30 @@ function playBlob(blob: Blob, token: number): Promise<boolean> {
 
   const attempt = (retry: boolean): Promise<boolean> =>
     new Promise((resolve) => {
+      pendingPlayResolve = resolve;
       const el = new Audio(url);
       el.setAttribute("playsinline", "true");
       audio = el;
       const finish = async (ok: boolean) => {
-        if (!ok && retry) {
+        if (pendingPlayResolve !== resolve) return;
+        pendingPlayResolve = null;
+        if (!ok && retry && token === activeToken) {
           await unlockAudioPlayback();
           resolve(await attempt(false));
           return;
         }
-        cleanupAudio();
+        if (audio === el) {
+          audio.onended = null;
+          audio.onerror = null;
+          audio.pause();
+          audio.removeAttribute("src");
+          audio.load();
+          audio = null;
+        }
+        if (objectUrl === url) {
+          URL.revokeObjectURL(url);
+          objectUrl = null;
+        }
         resolve(ok && token === activeToken);
       };
       el.onended = () => finish(true);
@@ -112,6 +137,7 @@ export function preloadSpeechVoices(): Promise<void> {
 export function stopSpeech(): void {
   activeToken += 1;
   cleanupAudio();
+  speechChain = Promise.resolve();
 }
 
 export type SpeakOptions = {
