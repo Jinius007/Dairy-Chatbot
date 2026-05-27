@@ -3,7 +3,7 @@ import { Phone, PhoneOff, Mic, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase, isSupabaseConfigured } from "@/integrations/supabase/client";
 import { LANG_NAMES, detectLanguageCode } from "@/lib/languages";
-import { speakText, stopSpeech } from "@/lib/speech";
+import { speakText, stopSpeech, unlockAudioPlayback } from "@/lib/speech";
 
 export interface CallTurn {
   id: string;
@@ -90,7 +90,10 @@ export function CallView({ open, onClose, history = [] }: Props) {
     audioContextRef.current = null;
   };
 
-  const speak = useCallback((text: string, lang: string | null) => speakText(text, { lang }), []);
+  const speak = useCallback(
+    (text: string, lang: string | null) => speakText(text, { lang, priority: true }),
+    [],
+  );
 
   const scheduleListening = useCallback((delay = 250) => {
     if (closedRef.current) return;
@@ -163,6 +166,15 @@ export function CallView({ open, onClose, history = [] }: Props) {
       });
 
       if (closedRef.current) return;
+
+      // Stop mic capture so TTS can play through speakers (Chrome blocks otherwise)
+      stopSilenceMonitor();
+      try {
+        if (mediaRef.current?.state === "recording") mediaRef.current.stop();
+      } catch {}
+      mediaRef.current = null;
+
+      await unlockAudioPlayback();
       setPhaseBoth("speaking");
       await speak(answer, lang);
       if (!closedRef.current) {
@@ -273,6 +285,7 @@ export function CallView({ open, onClose, history = [] }: Props) {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         streamRef.current = stream;
+        await unlockAudioPlayback();
         startListening();
       } catch (e: any) {
         console.error(e);
