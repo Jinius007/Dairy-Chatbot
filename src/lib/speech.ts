@@ -1,4 +1,4 @@
-import { prepareTextForSpeech, LANG_NAMES } from "@/lib/languages";
+import { prepareTextForSpeech, splitForTts, LANG_NAMES } from "@/lib/languages";
 
 let activeToken = 0;
 let speechChain: Promise<void> = Promise.resolve();
@@ -96,26 +96,42 @@ function playBlob(blob: Blob, token: number): Promise<boolean> {
   return attempt(true);
 }
 
+async function fetchTtsBlob(text: string, lang: string, token: number): Promise<Blob | null> {
+  try {
+    const resp = await fetch(ttsEndpoint(), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text, lang }),
+    });
+    if (!resp.ok || token !== activeToken) return null;
+    const blob = await resp.blob();
+    if (!blob.size || blob.type.includes("json")) return null;
+    return blob;
+  } catch {
+    return null;
+  }
+}
+
 async function speakViaBhashini(text: string, lang: string | null, token: number): Promise<boolean> {
   const spoken = prepareTextForSpeech(text);
   if (!spoken || token !== activeToken) return false;
 
   const code = lang && lang in LANG_NAMES ? lang : "hi";
+  const chunks = splitForTts(spoken);
+  if (chunks.length === 0) return false;
 
-  try {
-    await unlockAudioPlayback();
-    const resp = await fetch(ttsEndpoint(), {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text: spoken, lang: code }),
-    });
-    if (!resp.ok || token !== activeToken) return false;
-    const blob = await resp.blob();
-    if (!blob.size || blob.type.includes("json")) return false;
-    return playBlob(blob, token);
-  } catch {
-    return false;
+  await unlockAudioPlayback();
+
+  for (let i = 0; i < chunks.length; i++) {
+    if (token !== activeToken) return false;
+    const blob = await fetchTtsBlob(chunks[i], code, token);
+    if (!blob || token !== activeToken) return false;
+    const played = await playBlob(blob, token);
+    if (!played || token !== activeToken) return false;
+    if (i < chunks.length - 1) await delay(120);
   }
+
+  return true;
 }
 
 async function runSpeech(text: string, lang: string | null, token: number): Promise<void> {

@@ -59,3 +59,67 @@ export function prepareTextForSpeech(text: string): string {
     .replace(/\s+/g, " ")
     .trim();
 }
+
+/** Split long replies into TTS-sized chunks (Bhashini truncates long input). */
+export function splitForTts(text: string, maxLen = 180): string[] {
+  const trimmed = text.trim();
+  if (!trimmed) return [];
+  if (trimmed.length <= maxLen) return [trimmed];
+
+  const sentences = trimmed
+    .split(/(?<=[.!?।\u0964\u0965])\s+/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+
+  if (sentences.length === 0) return hardSplitForTts(trimmed, maxLen);
+
+  const chunks: string[] = [];
+  let current = "";
+
+  for (const sentence of sentences) {
+    if (sentence.length > maxLen) {
+      if (current) {
+        chunks.push(current);
+        current = "";
+      }
+      chunks.push(...hardSplitForTts(sentence, maxLen));
+      continue;
+    }
+    const combined = current ? `${current} ${sentence}` : sentence;
+    if (combined.length > maxLen) {
+      if (current) chunks.push(current);
+      current = sentence;
+    } else {
+      current = combined;
+    }
+  }
+
+  if (current) chunks.push(current);
+  return chunks.filter(Boolean);
+}
+
+function hardSplitForTts(text: string, maxLen: number): string[] {
+  const words = text.split(/\s+/).filter(Boolean);
+  const chunks: string[] = [];
+  let current = "";
+
+  for (const word of words) {
+    const combined = current ? `${current} ${word}` : word;
+    if (combined.length > maxLen) {
+      if (current) chunks.push(current);
+      if (word.length > maxLen) {
+        for (let i = 0; i < word.length; i += maxLen) {
+          chunks.push(word.slice(i, i + maxLen));
+        }
+        current = "";
+      } else {
+        current = word;
+      }
+    } else {
+      current = combined;
+    }
+  }
+
+  if (current) chunks.push(current);
+  return chunks;
+}
