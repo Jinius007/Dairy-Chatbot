@@ -48,13 +48,14 @@ export function detectLanguageCode(text: string): string | null {
 
 export function prepareTextForSpeech(text: string): string {
   return text
+    .replace(/\[?\[?\s*LANG\s*:\s*[a-zA-Z]{2}\s*\]?\]?/gi, " ")
     .replace(/```[\s\S]*?```/g, " ")
-    .replace(/[`*_#>~]/g, "")
-    .replace(/^[\s•\-–—]+/gm, "")
+    .replace(/[`*_#>~[\]]/g, "")
+    .replace(/^\s*[-–—•]\s+/gm, "")
     .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, "")
-    // Numeric ranges like "10-25" / "10 - 25" / "10–25" -> "10 to 25"
-    // so TTS doesn't pronounce the hyphen as "minus".
     .replace(/(\d)\s*[-–—]\s*(?=\d)/g, "$1 to ")
+    .replace(/\s+[-–—]\s+/g, ", ")
+    .replace(/[-–—]+/g, " ")
     .replace(/\s+/g, " ")
     .trim();
 }

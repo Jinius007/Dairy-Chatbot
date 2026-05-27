@@ -1,109 +1,94 @@
 import { prepareTextForSpeech, TTS_LANG } from "@/lib/languages";
 
-const TTS_LANG_CODE: Record<string, string> = {
-  hi: "hi", bn: "bn", ta: "ta", te: "te", mr: "mr", gu: "gu", kn: "kn",
-  ml: "ml", pa: "pa", or: "hi", as: "hi", ur: "ur", en: "en",
-};
-
 let activeToken = 0;
-let audio: HTMLAudioElement | null = null;
-let unlocked = false;
 
-function unlockAudio(): void {
-  if (unlocked || typeof Audio === "undefined") return;
-  unlocked = true;
-  const silent = new Audio();
-  silent.play().catch(() => undefined);
+function getVoice(lang: string | null): SpeechSynthesisVoice | null {
+  if (!("speechSynthesis" in window)) return null;
+  const target = TTS_LANG[lang || "hi"] || "hi-IN";
+  const prefix = target.slice(0, 2).toLowerCase();
+  const voices = window.speechSynthesis.getVoices();
+  return (
+    voices.find((v) => v.lang === target)
+    || voices.find((v) => v.lang.toLowerCase().startsWith(prefix))
+    || voices.find((v) => v.default)
+    || voices[0]
+    || null
+  );
 }
 
-function stopAudio(): void {
-  if (!audio) return;
-  audio.pause();
-  audio.removeAttribute("src");
-  audio.load();
-  audio = null;
+function chunkText(text: string): string[] {
+  const chunks = text.match(/.{1,170}(?:[।.!?;:,|\s]|$)/g)?.map((s) => s.trim()).filter(Boolean);
+  return chunks?.length ? chunks : [text];
 }
 
-function splitForSpeech(text: string): string[] {
-  const clean = prepareTextForSpeech(text);
-  if (!clean) return [];
-  if (clean.length <= 180) return [clean];
-  return clean.match(/.{1,180}(?:[।.!?;:\s]|$)/g)?.map((s) => s.trim()).filter(Boolean) ?? [clean.slice(0, 180)];
-}
-
-function googleTtsUrl(text: string, lang: string | null): string {
-  const tl = TTS_LANG_CODE[lang || "hi"] || "hi";
-  return `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=${tl}&q=${encodeURIComponent(text)}`;
-}
-
-function playUrl(url: string, token: number): Promise<boolean> {
-  if (token !== activeToken) return Promise.resolve(false);
-  stopAudio();
-
-  return new Promise((resolve) => {
-    const el = new Audio(url);
-    el.setAttribute("playsinline", "true");
-    audio = el;
-    const done = (ok: boolean) => {
-      if (audio === el) stopAudio();
-      resolve(ok && token === activeToken);
-    };
-    el.onended = () => done(true);
-    el.onerror = () => done(false);
-    el.play().then(() => undefined).catch(() => done(false));
-  });
-}
-
-function speakBrowser(text: string, lang: string | null, token: number): Promise<void> {
+function speakChunk(text: string, lang: string | null, token: number): Promise<void> {
   if (token !== activeToken || !("speechSynthesis" in window)) return Promise.resolve();
-  const spoken = prepareTextForSpeech(text);
-  if (!spoken) return Promise.resolve();
 
   const synth = window.speechSynthesis;
-  synth.cancel();
-  synth.resume();
-
   return new Promise((resolve) => {
-    const u = new SpeechSynthesisUtterance(spoken);
-    u.lang = TTS_LANG[lang || "hi"] || "hi-IN";
-    u.onend = () => resolve();
-    u.onerror = () => resolve();
-    synth.speak(u);
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = TTS_LANG[lang || "hi"] || "hi-IN";
+    const voice = getVoice(lang);
+    if (voice) utterance.voice = voice;
+    utterance.rate = 0.92;
+    utterance.onend = () => resolve();
+    utterance.onerror = () => resolve();
+    synth.resume();
+    synth.speak(utterance);
   });
 }
 
 export function isSpeechSupported(): boolean {
-  return typeof Audio !== "undefined" || (typeof window !== "undefined" && "speechSynthesis" in window);
+  return typeof window !== "undefined" && "speechSynthesis" in window;
 }
 
 export function preloadSpeechVoices(): Promise<void> {
-  unlockAudio();
+  if (!isSpeechSupported()) return Promise.resolve();
+  window.speechSynthesis.getVoices();
   return Promise.resolve();
 }
 
 export function stopSpeech(): void {
   activeToken += 1;
-  stopAudio();
-  window.speechSynthesis?.cancel();
+  if ("speechSynthesis" in window) {
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.resume();
+  }
 }
 
 export type SpeakOptions = { lang?: string | null };
 
-/** Read text aloud — used by chat speaker button, voice replies, and live call. */
+/** Read text aloud using the browser voice (same approach as the original working version). */
 export async function speakText(text: string, options: SpeakOptions = {}): Promise<void> {
-  if (!text.trim()) return;
+  if (!text.trim() || !isSpeechSupported()) return;
 
-  unlockAudio();
   const token = ++activeToken;
   const lang = options.lang ?? null;
-  const parts = splitForSpeech(text);
-  if (!parts.length) return;
+  const spoken = prepareTextForSpeech(text);
+  if (!spoken) return;
 
-  for (const part of parts) {
-    if (token !== activeToken) return;
-    const ok = await playUrl(googleTtsUrl(part, lang), token);
-    if (!ok && token === activeToken) {
-      await speakBrowser(part, lang, token);
-    }
+  const synth = window.speechSynthesis;
+  synth.cancel();
+  synth.resume();
+
+  if (synth.getVoices().length === 0) {
+    await new Promise<void>((resolve) => {
+      const onVoices = () => {
+        synth.removeEventListener("voiceschanged", onVoices);
+        resolve();
+      };
+      synth.addEventListener("voiceschanged", onVoices);
+      window.setTimeout(resolve, 500);
+    });
   }
+
+  for (const part of chunkText(spoken)) {
+    if (token !== activeToken) return;
+    await speakChunk(part, lang, token);
+  }
+}
+
+if (typeof window !== "undefined" && isSpeechSupported()) {
+  window.speechSynthesis.addEventListener("voiceschanged", () => undefined);
+  preloadSpeechVoices();
 }
