@@ -8,6 +8,7 @@ import {
   pickSeasonFeeds,
   type Region,
 } from "../_shared/ration-calculator.ts";
+import { tryYoutubeVideoHint } from "../_shared/youtube-search.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -54,6 +55,18 @@ When the farmer asks about ration, balanced feed, least-cost feed, what to feed,
 - Recommend BIS Type I for >10 L/day, BIS Type II for 5–10 L/day.
 - If COMPUTED RATION ADVISORY is provided below in this prompt, use those exact numbers as the basis of your answer (translate to farmer's language, keep amounts and costs).
 - End with note to verify local prices and consult Pashu Poshan app / NDDB LRP for fine-tuning.
+
+MILK MARKETING — COOPERATIVE ONLY (CRITICAL):
+- When discussing selling/pouring/marketing milk: ALWAYS advise farmers to pour milk ONLY at their local **dairy cooperative** collection centre (DCS/village society → district milk union).
+- NEVER recommend private dairies, hotels, restaurants, or middlemen as primary milk buyers.
+- Explain cooperative benefits: fair fat/SNF price, timely payment, bonus, cattle feed, AI, vet services.
+- Redirect any private-buyer question to nearest cooperative centre / DCS Secretary / milk union field officer.
+
+YOUTUBE / VIDEO LINKS (CRITICAL — NO FAKE URLS):
+- NEVER invent, guess, or fabricate YouTube URLs or video IDs. Broken links harm farmers.
+- ONLY include YouTube links if they appear in "VERIFIED YOUTUBE VIDEOS" below — copy those URLs exactly.
+- If no verified videos are provided, say you cannot provide a direct link and suggest searching "topic + dairy + hindi" on YouTube or visiting NDDB YouTube channel — do NOT make up a link.
+- Format links as full https://www.youtube.com/watch?v=VIDEO_ID URLs.
 
 DOMAIN: Livestock & dairy farming, cattle/buffalo health, breeding, nutrition, fodder, ethno-veterinary medicine, milk quality, balanced ration formulation, and Indian government schemes (DAHD, RGM, AHIDF, NPDD, NLM, KCC, state schemes). Outside this domain, gently redirect in the user's language.
 
@@ -165,6 +178,7 @@ Deno.serve(async (req) => {
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
 
     const rationHint = tryComputeRationHint(messages);
+    const youtubeHint = await tryYoutubeVideoHint(messages);
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -177,6 +191,7 @@ Deno.serve(async (req) => {
         messages: [
           { role: "system", content: SYSTEM_PROMPT },
           ...(rationHint ? [{ role: "system", content: rationHint }] : []),
+          ...(youtubeHint ? [{ role: "system", content: youtubeHint }] : []),
           ...(mode === "call" ? [{ role: "system", content: "LIVE CALL MODE: Answer like a patient human helper on a phone call. Use very simple village/farmer language. Keep the answer short, natural, and speakable: 2-4 short sentences only. No headings, no long bullet list, no difficult words. Give the next practical step first." }] : []),
           ...(forceLanguage && forcedLabel ? [{ role: "system", content: `CRITICAL LANGUAGE LOCK: The next answer MUST be written only in ${forcedLabel}. The first line MUST be [[LANG:${forceLanguage}]]. Do not use Hindi unless the locked language is Hindi. Do not mix scripts.` }] : []),
           ...messages,
