@@ -7,6 +7,14 @@ import { ArrowLeft, Send, Smile, Paperclip, MoreVertical, Volume2, Pause, Play, 
 import { toast } from "sonner";
 import { LANG_NAMES } from "@/lib/languages";
 import { speakText, stopSpeech, unlockAudioPlayback } from "@/lib/speech";
+import {
+  appendVerifiedVideoBlock,
+  buildVideoQuery,
+  detectLangFromText,
+  fetchVerifiedVideos,
+  isYoutubeRequest,
+  stripUnverifiedYoutubeUrls,
+} from "@/lib/youtube";
 
 interface Message {
   id: string;
@@ -36,6 +44,19 @@ function splitLangHeader(text: string): { lang: string | null; body: string } {
   const idx = m.index ?? 0;
   const body = (text.slice(0, idx) + text.slice(idx + m[0].length)).replace(/^\s+/, "");
   return { lang: m[1].toLowerCase(), body };
+}
+
+function linkifyText(text: string) {
+  const parts = text.split(/(https?:\/\/[^\s]+)/g);
+  return parts.map((part, i) =>
+    /^https?:\/\//.test(part) ? (
+      <a key={i} href={part} target="_blank" rel="noopener noreferrer" className="underline break-all text-primary">
+        {part}
+      </a>
+    ) : (
+      part
+    ),
+  );
 }
 
 export function ChatView({ conversationId, onBack, onConversationUpdated }: Props) {
@@ -119,11 +140,17 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
 
   useEffect(() => () => { abortRef.current?.abort(); }, []);
 
-  const streamReply = async (history: Message[], assistantId: string) => {
+  const streamReply = async (history: Message[], assistantId: string, latestUserText: string) => {
     if (!isSupabaseConfigured) throw new Error("Supabase is not configured on this deployment.");
     abortRef.current?.abort();
     const ctrl = new AbortController();
     abortRef.current = ctrl;
+
+    const wantsVideo = isYoutubeRequest(latestUserText);
+    const recentUser = history.filter((m) => m.role === "user").slice(-3).map((m) => m.content).join(" ");
+    const videoLang = detectLangFromText(latestUserText + recentUser);
+    const videoQuery = buildVideoQuery(latestUserText, recentUser);
+    const videoPromise = wantsVideo ? fetchVerifiedVideos(videoQuery, videoLang) : null;
 
     const resp = await fetch(CHAT_URL, {
       method: "POST",
@@ -146,6 +173,7 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
     let buffer = "";
     let full = "";
     let done = false;
+    let allowedVideoIds = new Set<string>();
 
     while (!done) {
       const { done: rd, value } = await reader.read();
@@ -164,7 +192,10 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
           const delta = parsed.choices?.[0]?.delta?.content as string | undefined;
           if (delta) {
             full += delta;
-            const { lang, body } = splitLangHeader(full);
+            let { lang, body } = splitLangHeader(full);
+            if (wantsVideo && allowedVideoIds.size > 0) {
+              body = stripUnverifiedYoutubeUrls(body, allowedVideoIds);
+            }
             setMessages((prev) => {
               const updated = prev.map((m) =>
                 m.id === assistantId ? { ...m, content: body, language: lang ?? m.language } : m
@@ -180,7 +211,17 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
       }
     }
 
-    const { lang, body } = splitLangHeader(full);
+    let videos: Awaited<ReturnType<typeof fetchVerifiedVideos>> = [];
+    if (videoPromise) {
+      videos = await videoPromise;
+      allowedVideoIds = new Set(videos.map((v) => v.id));
+    }
+
+    let { lang, body } = splitLangHeader(full);
+    if (wantsVideo) {
+      body = appendVerifiedVideoBlock(body, videos, videoLang);
+      lang = splitLangHeader(full).lang ?? lang;
+    }
     const updated = messagesRef.current.map((m) =>
       m.id === assistantId ? { ...m, content: body, language: lang ?? m.language ?? null } : m
     );
@@ -202,7 +243,7 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
     setMessages(visibleMessages);
 
     try {
-      const { text: reply, lang } = await streamReply(nextHistory, assistantMsg.id);
+      const { text: reply, lang } = await streamReply(nextHistory, assistantMsg.id, text);
       if (isVoice && reply) void speak(reply, lang, assistantMsg.id);
     } catch (e: any) {
       console.error(e);
@@ -285,13 +326,15 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
                 out ? "bg-bubble-out text-bubble-out-foreground rounded-tr-none bubble-tail-out" : "bg-bubble-in text-bubble-in-foreground rounded-tl-none bubble-tail-in"
               }`}>
                 {!out && m.language && <div className="text-[10px] uppercase tracking-wide text-primary mb-0.5">{LANG_NAMES[m.language] || m.language}</div>}
-                <div className="whitespace-pre-wrap break-words text-sm leading-relaxed">{m.content || (
+                <div className="whitespace-pre-wrap break-words text-sm leading-relaxed">
+                  {m.content ? linkifyText(m.content) : (
                   <span className="inline-flex gap-1">
                     <span className="w-1.5 h-1.5 bg-muted-foreground rounded-full typing-dot" style={{ animationDelay: "0ms" }} />
                     <span className="w-1.5 h-1.5 bg-muted-foreground rounded-full typing-dot" style={{ animationDelay: "150ms" }} />
                     <span className="w-1.5 h-1.5 bg-muted-foreground rounded-full typing-dot" style={{ animationDelay: "300ms" }} />
                   </span>
-                )}</div>
+                )}
+                </div>
                 <div className={`flex items-center gap-1 mt-1 ${out ? "justify-end" : "justify-start"}`}>
                   {!out && m.content && (
                     speakingId === m.id ? (

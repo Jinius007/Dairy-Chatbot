@@ -45,6 +45,46 @@ async function verifyVideo(id: string): Promise<YoutubeVideo | null> {
   }
 }
 
+async function searchViaScrape(query: string, lang: string, max: number): Promise<string[]> {
+  const langHint = LANG_SEARCH[lang] || "hindi";
+  const q = `${query} dairy ${langHint} india`;
+  const url = `https://www.youtube.com/results?search_query=${encodeURIComponent(q)}`;
+  try {
+    const resp = await fetch(url, {
+      headers: {
+        "User-Agent":
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Accept-Language": lang === "en" ? "en-US,en" : "hi-IN,hi,en",
+      },
+      signal: AbortSignal.timeout(10000),
+    });
+    if (!resp.ok) return [];
+    const html = await resp.text();
+    const seen = new Set<string>();
+    const ids: string[] = [];
+    for (const m of html.matchAll(/"videoId":"([a-zA-Z0-9_-]{11})"/g)) {
+      const id = m[1];
+      if (seen.has(id)) continue;
+      seen.add(id);
+      ids.push(id);
+      if (ids.length >= max + 5) break;
+    }
+    return ids;
+  } catch {
+    return [];
+  }
+}
+
+async function verifyIds(ids: string[], max: number): Promise<YoutubeVideo[]> {
+  const out: YoutubeVideo[] = [];
+  for (const id of ids) {
+    const v = await verifyVideo(id);
+    if (v) out.push(v);
+    if (out.length >= max) break;
+  }
+  return out;
+}
+
 async function searchViaApi(query: string, lang: string, max: number): Promise<YoutubeVideo[]> {
   const key = Deno.env.get("YOUTUBE_API_KEY");
   if (!key) return [];
@@ -135,14 +175,17 @@ export async function findYoutubeVideos(
   const fromApi = await searchViaApi(query, lang, max);
   if (fromApi.length > 0) return fromApi;
 
-  const curated = matchCurated(query.toLowerCase(), lang, max);
-  const verified: YoutubeVideo[] = [];
-  for (const v of curated) {
-    const ok = await verifyVideo(v.id);
-    if (ok) verified.push(ok);
-    if (verified.length >= max) break;
+  const scrapedIds = await searchViaScrape(query, lang, max);
+  if (scrapedIds.length > 0) {
+    const fromScrape = await verifyIds(scrapedIds, max);
+    if (fromScrape.length > 0) return fromScrape;
   }
-  return verified;
+
+  const curated = matchCurated(query.toLowerCase(), lang, max);
+  const fromCurated = await verifyIds(curated.map((v) => v.id), max);
+  if (fromCurated.length > 0) return fromCurated;
+
+  return verifyIds(CURATED_VIDEOS.slice(0, max).map((v) => v.id), max);
 }
 
 export function formatYoutubeHint(videos: YoutubeVideo[], query: string): string {
@@ -159,6 +202,7 @@ export function formatYoutubeHint(videos: YoutubeVideo[], query: string): string
     "VERIFIED YOUTUBE VIDEOS (use ONLY these exact URLs — do NOT invent any other YouTube links):",
     ...lines,
     "Include these links in your answer. Copy URLs exactly as shown.",
+    "If the app will append verified links automatically, you may describe the video topic in text WITHOUT any YouTube URL.",
   ].join("\n");
 }
 
