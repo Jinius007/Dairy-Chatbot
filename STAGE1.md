@@ -15,3 +15,9 @@ Stage 1 is the first complete milestone: chat, voice notes, live call, and read-
 ## Stage 1 completion fix
 
 - **Full read-aloud**: Long replies are split into sentence chunks and played sequentially so the entire answer is spoken, not just the first 2–3 lines.
+
+## Ration balancing (NDDB RBP)
+
+- NDDB least-cost ration balancing knowledge integrated from NDDB RBP / ICAR 2013 guide
+- Chat answers balanced ration queries using location, herd size, milk yield, and seasonal feeds
+- Auto-computes ration when farmer mentions milk yield + ration/feed keywords

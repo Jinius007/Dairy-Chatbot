@@ -1,6 +1,8 @@
 // Curated knowledge base on dairy farming, livestock, ethno-veterinary medicine,
 // and Indian government schemes. Compiled from NDDB Knowledge Repo, EVM Brochure,
 // Cow Comfort manual, Pashupalan Nirdeshika, and DAHD Schemes documents.
+import { RATION_KNOWLEDGE } from "./ration-knowledge.ts";
+
 export const KNOWLEDGE_BASE = `
 # DAIRY FARMING & ANIMAL HUSBANDRY KNOWLEDGE BASE
 
@@ -122,4 +124,6 @@ Post-milking: filter through clean cloth, cool to 4°C within 2 hours. Test for 
 
 ## 10. ECONOMICS
 Small farm (2-5 animals) break-even ~8-12 L/day; medium (6-15) 60-100 L/day. Diversify with vermicompost, biogas.
+
+${RATION_KNOWLEDGE}
 `;
