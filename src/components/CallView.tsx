@@ -4,6 +4,8 @@ import { toast } from "sonner";
 import { supabase, isSupabaseConfigured } from "@/integrations/supabase/client";
 import { LANG_NAMES, detectLanguageCode } from "@/lib/languages";
 import { speakText, stopSpeech, unlockAudioPlayback } from "@/lib/speech";
+import { getSessionId } from "@/lib/session";
+import { logConversationTurn } from "@/lib/log-turn";
 
 export interface CallTurn {
   id: string;
@@ -17,6 +19,7 @@ export interface CallTurn {
 interface Props {
   open: boolean;
   onClose: (turns: CallTurn[]) => void;
+  conversationId?: string;
   history?: { role: "user" | "assistant"; content: string }[];
 }
 
@@ -67,7 +70,7 @@ function getSupportedMimeType(): string | undefined {
   return ["audio/webm;codecs=opus", "audio/webm", "audio/mp4"].find((type) => MediaRecorder.isTypeSupported(type));
 }
 
-export function CallView({ open, onClose, history = [] }: Props) {
+export function CallView({ open, onClose, conversationId, history = [] }: Props) {
   const [seconds, setSeconds] = useState(0);
   const [phase, setPhase] = useState<Phase>("idle");
   const [transcript, setTranscript] = useState<TranscriptItem[]>([]);
@@ -134,6 +137,7 @@ export function CallView({ open, onClose, history = [] }: Props) {
     if (closedRef.current || processingRef.current) return;
     processingRef.current = true;
     setPhaseBoth("thinking");
+    const startedAt = Date.now();
     try {
       const buf = await blob.arrayBuffer();
       const b64 = arrayBufferToBase64(buf);
@@ -165,7 +169,12 @@ export function CallView({ open, onClose, history = [] }: Props) {
           apikey: SUPABASE_KEY,
           Authorization: `Bearer ${SUPABASE_KEY}`,
         },
-        body: JSON.stringify({ messages: historyRef.current, stream: false, mode: "call", forceLanguage: detectedLang }),
+        body: JSON.stringify({
+          messages: historyRef.current,
+          stream: false,
+          mode: "call",
+          forceLanguage: detectedLang,
+        }),
       });
       const payload = await chatRes.json().catch(() => ({}));
       if (!chatRes.ok) throw new Error(payload?.error || `Chat failed (${chatRes.status})`);
@@ -182,6 +191,17 @@ export function CallView({ open, onClose, history = [] }: Props) {
       historyRef.current.push({ role: "assistant", content: answer });
       turnsRef.current.push(assistantTurn);
       appendTranscript({ id: assistantTurn.id, role: "assistant", content: answer, language: lang });
+
+      void logConversationTurn({
+        session_id: getSessionId(),
+        conversation_id: conversationId ?? null,
+        question: transcript,
+        answer,
+        duration_ms: Date.now() - startedAt,
+        language: lang,
+        is_voice: true,
+        mode: "call",
+      });
 
       if (closedRef.current) return;
 

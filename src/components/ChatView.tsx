@@ -7,6 +7,8 @@ import { ArrowLeft, Send, Smile, Paperclip, MoreVertical, Volume2, Pause, Play, 
 import { toast } from "sonner";
 import { LANG_NAMES } from "@/lib/languages";
 import { speakText, stopSpeech, unlockAudioPlayback } from "@/lib/speech";
+import { getSessionId } from "@/lib/session";
+import { logConversationTurn } from "@/lib/log-turn";
 import {
   appendVerifiedVideoBlock,
   buildVideoQuery,
@@ -140,7 +142,7 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
 
   useEffect(() => () => { abortRef.current?.abort(); }, []);
 
-  const streamReply = async (history: Message[], assistantId: string, latestUserText: string) => {
+  const streamReply = async (history: Message[], assistantId: string, latestUserText: string, isVoice = false, startedAt?: number) => {
     if (!isSupabaseConfigured) throw new Error("Supabase is not configured on this deployment.");
     abortRef.current?.abort();
     const ctrl = new AbortController();
@@ -227,13 +229,24 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
     messagesRef.current = updated;
     setMessages(updated);
     persist(updated);
+    void logConversationTurn({
+      session_id: getSessionId(),
+      conversation_id: conversationId,
+      question: latestUserText,
+      answer: body,
+      duration_ms: startedAt != null ? Date.now() - startedAt : null,
+      language: lang,
+      is_voice: isVoice,
+      mode: isVoice ? "voice" : "chat",
+    });
     return { text: body, lang };
   };
 
-  const send = async (text: string, isVoice = false) => {
+  const send = async (text: string, isVoice = false, voiceStartedAt?: number) => {
     if (!text.trim() || sending) return;
     setSending(true);
     setInput("");
+    const startedAt = voiceStartedAt ?? Date.now();
     const userMsg: Message = { id: crypto.randomUUID(), role: "user", content: text, is_voice: isVoice, created_at: new Date().toISOString() };
     const assistantMsg: Message = { id: crypto.randomUUID(), role: "assistant", content: "", created_at: new Date().toISOString() };
     const nextHistory = [...messages, userMsg];
@@ -242,7 +255,7 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
     setMessages(visibleMessages);
 
     try {
-      const { text: reply, lang } = await streamReply(nextHistory, assistantMsg.id, text);
+      const { text: reply, lang } = await streamReply(nextHistory, assistantMsg.id, text, isVoice, startedAt);
       if (isVoice && reply) void speak(reply, lang, assistantMsg.id);
     } catch (e: any) {
       console.error(e);
@@ -259,11 +272,14 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
       return;
     }
     setTranscribing(true);
+    const startedAt = Date.now();
     try {
-      const { data, error } = await supabase.functions.invoke("transcribe", { body: { audioBase64: b64, mimeType: mime } });
+      const { data, error } = await supabase.functions.invoke("transcribe", {
+        body: { audioBase64: b64, mimeType: mime },
+      });
       if (error) throw error;
       const txt = (data as any)?.transcript;
-      if (txt) await send(txt, true);
+      if (txt) await send(txt, true, startedAt);
       else toast.error("Could not transcribe audio");
     } catch (e: any) {
       toast.error(e.message || "Transcription failed");
@@ -297,7 +313,14 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
 
   return (
     <div className="flex flex-col h-full min-h-0 overflow-hidden">
-      {callOpen && <CallView open={callOpen} onClose={handleCallEnd} history={messages.filter((m) => m.content && !m.content.startsWith("📞")).map((m) => ({ role: m.role, content: m.content }))} />}
+      {callOpen && (
+        <CallView
+          open={callOpen}
+          onClose={handleCallEnd}
+          conversationId={conversationId}
+          history={messages.filter((m) => m.content && !m.content.startsWith("📞")).map((m) => ({ role: m.role, content: m.content }))}
+        />
+      )}
       <div className="bg-header text-header-foreground px-3 py-2.5 flex items-center gap-3 shadow shrink-0">
         {onBack && <button onClick={onBack} className="md:hidden p-1"><ArrowLeft className="w-5 h-5" /></button>}
         <div className="w-10 h-10 rounded-full bg-primary-light flex items-center justify-center text-lg">🐄</div>
