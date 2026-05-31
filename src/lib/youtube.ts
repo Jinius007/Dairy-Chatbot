@@ -27,21 +27,17 @@ export function detectLangFromText(text: string): string {
   return "hi";
 }
 
-export function buildVideoQuery(userText: string, recentContext = ""): string {
-  const combined = `${recentContext} ${userText}`;
-  const stripped = userText
+/** Build a rich search string from user message + recent chat + optional AI answer */
+export function buildVideoQuery(userText: string, recentContext = "", assistantContext = ""): string {
+  const combined = [recentContext, userText, assistantContext]
+    .filter(Boolean)
+    .join(" ")
     .replace(YOUTUBE_REQUEST, " ")
-    .replace(/link|लिंक|give me|send|share|please|कृपया|दो|de do|bhejo|भेजो/gi, " ")
+    .replace(/link|लिंक|give me|send|share|please|कृपया|दो|de do|bhejo|भेजो|verified|सत्यापित|📺/gi, " ")
     .replace(/\s+/g, " ")
     .trim();
 
-  if (stripped.length > 6) return stripped.slice(0, 120);
-
-  const topicFromContext = combined
-    .replace(YOUTUBE_REQUEST, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-  return topicFromContext.slice(0, 120) || "dairy farming india";
+  return combined.slice(0, 400) || "dairy farming india";
 }
 
 export async function fetchVerifiedVideos(query: string, lang: string): Promise<VerifiedVideo[]> {

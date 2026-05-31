@@ -147,10 +147,8 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
     abortRef.current = ctrl;
 
     const wantsVideo = isYoutubeRequest(latestUserText);
-    const recentUser = history.filter((m) => m.role === "user").slice(-3).map((m) => m.content).join(" ");
+    const recentUser = history.filter((m) => m.role === "user").slice(-4).map((m) => m.content).join(" ");
     const videoLang = detectLangFromText(latestUserText + recentUser);
-    const videoQuery = buildVideoQuery(latestUserText, recentUser);
-    const videoPromise = wantsVideo ? fetchVerifiedVideos(videoQuery, videoLang) : null;
 
     const resp = await fetch(CHAT_URL, {
       method: "POST",
@@ -211,14 +209,15 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
       }
     }
 
-    let videos: Awaited<ReturnType<typeof fetchVerifiedVideos>> = [];
-    if (videoPromise) {
-      videos = await videoPromise;
-      allowedVideoIds = new Set(videos.map((v) => v.id));
-    }
-
     let { lang, body } = splitLangHeader(full);
+
+    let videos: Awaited<ReturnType<typeof fetchVerifiedVideos>> = [];
     if (wantsVideo) {
+      // Search after AI reply so topic comes from full conversation + answer text
+      const videoQuery = buildVideoQuery(latestUserText, recentUser, body);
+      videos = await fetchVerifiedVideos(videoQuery, videoLang);
+      allowedVideoIds = new Set(videos.map((v) => v.id));
+      body = stripUnverifiedYoutubeUrls(body, allowedVideoIds);
       body = appendVerifiedVideoBlock(body, videos, videoLang);
       lang = splitLangHeader(full).lang ?? lang;
     }
