@@ -73,17 +73,17 @@ export function appendVerifiedVideoBlock(text: string, videos: VerifiedVideo[], 
   if (videos.length === 0) {
     const note =
       lang === "en"
-        ? "\n\n📺 Could not fetch a verified video link right now. Search on YouTube: \"" + buildVideoQuery(text) + " dairy hindi\""
-        : "\n\n📺 अभी सत्यापित वीडियो लिंक नहीं मिला। YouTube पर खोजें: \"" + buildVideoQuery(text) + " dairy hindi\"";
+        ? "\n\n📺 No verified video from an official NDDB / cooperative / milk union YouTube channel was found for this topic right now."
+        : "\n\n📺 अभी इस विषय पर NDDB / सहकारी / मिल्क यूनियन के आधिकारिक YouTube चैनल से कोई सत्यापित वीडियो नहीं मिला।";
     return cleaned + note;
   }
 
   const header =
     lang === "en"
-      ? "\n\n📺 Verified video links (tap to open):"
+      ? "\n\n📺 Official channel videos (NDDB / cooperative / milk union — tap to open):"
       : lang === "bn"
-        ? "\n\n📺 যাচাইকৃত ভিডিও লিংক:"
-        : "\n\n📺 सत्यापित वीडियो लिंक (खोलने के लिए टैप करें):";
+        ? "\n\n📺 সরকারি চ্যানেলের ভিডিও (NDDB / সমবায় — খুলতে ট্যাপ করুন):"
+        : "\n\n📺 आधिकारिक चैनल वीडियो (NDDB / सहकारी / मिल्क यूनियन — खोलने के लिए टैप करें):";
 
   const block = videos
     .map((v, i) => `${i + 1}. ${v.title}${v.channel ? ` — ${v.channel}` : ""}\n${v.url}`)
