@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Pashu Mitra</string>
+    <string name="title_activity_main">Pashu Mitra</string>
+    <string name="package_name">in.coop.pashumitra</string>
+    <string name="custom_url_scheme">in.coop.pashumitra</string>
+</resources>
