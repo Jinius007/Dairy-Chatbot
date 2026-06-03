@@ -8,7 +8,7 @@ import {
   pickSeasonFeeds,
   type Region,
 } from "../_shared/ration-calculator.ts";
-import { isHerdGathering, isRationComputed, isVerificationStep, tryRationAdvisoryHint } from "../_shared/herd-ration-advisor.ts";
+import { getRationAdvisoryDirectReply, isHerdGathering, isRationComputed, isVerificationStep, tryRationAdvisoryHint } from "../_shared/herd-ration-advisor.ts";
 import {
   abuseRefusalMessage,
   containsAbusiveLanguage,
@@ -237,6 +237,17 @@ Deno.serve(async (req) => {
     const effectiveForceLang = (typeof forceLanguage === "string" ? forceLanguage : null)
       ?? (isRationAdvisory && detectedUserLang ? detectedUserLang : null);
     const effectiveForcedLabel = effectiveForceLang ? LANGUAGE_LABELS[effectiveForceLang] : null;
+
+    // Ration Advisory: bypass LLM for count/gather/verify — prevents generic ration leaking from knowledge base
+    if (isRationAdvisory) {
+      const directReply = getRationAdvisoryDirectReply(safeMessages, effectiveForceLang);
+      if (directReply) {
+        if (stream) return streamStaticText(directReply);
+        return new Response(JSON.stringify({ text: directReply }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+    }
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",

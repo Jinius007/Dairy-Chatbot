@@ -3,7 +3,7 @@ import { supabase, isSupabaseConfigured } from "@/integrations/supabase/client";
 import { VoiceRecorder } from "@/components/VoiceRecorder";
 import { ArrowLeft, Send, Volume2, Pause, Play, Square, Wheat } from "lucide-react";
 import { toast } from "sonner";
-import { LANG_NAMES, detectLanguageCode, detectLanguageFromMessages, resolveTtsLanguage } from "@/lib/languages";
+import { LANG_NAMES, detectLanguageCode, detectLanguageFromMessages, prepareTextForSpeech, resolveTtsLanguage } from "@/lib/languages";
 import {
   RATION_ADVISORY_INTRO,
   LANG_ORDER,
@@ -81,6 +81,7 @@ export function RationAdvisoryView({ open, onClose }: Props) {
   const messagesRef = useRef<Message[]>([]);
   const userLangRef = useRef<string | null>(loadRationAdvisoryLang());
   const [welcomeLang, setWelcomeLang] = useState<string | null>(loadRationAdvisoryLang());
+  const [welcomeSpeaking, setWelcomeSpeaking] = useState(false);
 
   useEffect(() => {
     if (!open) return;
@@ -300,7 +301,21 @@ export function RationAdvisoryView({ open, onClose }: Props) {
     setWelcomeLang(code);
     userLangRef.current = code;
     saveRationAdvisoryLang(code);
+    void speakWelcome(getWelcomeForLang(code), code);
   };
+
+  const speakWelcome = useCallback(async (text: string, lang: string) => {
+    stopSpeak();
+    setWelcomeSpeaking(true);
+    try {
+      await unlockAudioPlayback();
+      await speakText(prepareTextForSpeech(text), { lang, priority: true, forceLang: true });
+    } catch {
+      /* autoplay blocked until user gesture — pick click usually unlocks */
+    } finally {
+      setWelcomeSpeaking(false);
+    }
+  }, [stopSpeak]);
 
   if (!open) return null;
 
@@ -348,8 +363,30 @@ export function RationAdvisoryView({ open, onClose }: Props) {
                 ))}
               </div>
               {welcomeLang && (
-                <div className="whitespace-pre-wrap break-words text-sm leading-relaxed border-t border-border/50 pt-3">
+                <div
+                  lang={welcomeLang}
+                  className="whitespace-pre-wrap break-words text-sm leading-relaxed border-t border-border/50 pt-3"
+                >
                   {getWelcomeForLang(welcomeLang)}
+                  <button
+                    type="button"
+                    onClick={() => speakWelcome(getWelcomeForLang(welcomeLang), welcomeLang)}
+                    disabled={welcomeSpeaking}
+                    className="mt-2 inline-flex items-center gap-1 text-xs text-primary hover:underline disabled:opacity-50"
+                    title="Listen again"
+                  >
+                    {welcomeSpeaking ? (
+                      <>
+                        <Square className="w-3.5 h-3.5" />
+                        Playing…
+                      </>
+                    ) : (
+                      <>
+                        <Volume2 className="w-3.5 h-3.5" />
+                        Listen
+                      </>
+                    )}
+                  </button>
                 </div>
               )}
             </div>

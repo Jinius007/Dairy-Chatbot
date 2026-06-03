@@ -6,21 +6,21 @@ const WELCOME_BY_LANG: Record<string, string> = {
 कृपया अपने डेयरी पशुओं की जानकारी दीजिए:
 • गाय या भैंस? कौन सी नस्ल?
 • कितने पशु?
-• अभी क्या हाल — दूध दे रही, सूkhi, या गर्भ में?
-• इस अवस्था में कितne din / mahine?
-• kitni baar bachha hua / gaabhin? (pehli, doosri byaat?)
-• umar kitni?
-• abhi kya khilati hain — hara chara, bhusa, dana?
+• अभी क्या हाल — दूध दे रही, सूखी, या गर्भ में?
+• इस अवस्था में कितne दिन या महीने?
+• कितनी बार बचcha हुआ / गाभिन? (पहली, दूसरी ब्यात?)
+• उम्र कितनी?
+• अभी क्या खिलाती हैं — हara chara, bhusa, dana?
 
-Apni bhasha mein likhiye ya boliye — main usi mein aage sawal poochunga.`,
+अpnī भाषा में लिखिए या बोलिए — मैं उसी में आage sawāl pūchūngā।`,
 
   bn: `🌾 সন্তুলিত খাদ্য পরামর্শ
 
-আপনার দুগ্ধ পশuদের তথ্য দিন:
+আপনার দুগ্ধ পশুদের তথ্য দিন:
 • গরু না মহিষ? কোন জাত?
 • কতগুলো পশu?
 • এখন কী অবস্থা — দুধ দিচ্ছে / শুকনো / গর্ভবতী?
-• এই অবস্থায় কত দin / মাস?
+• এই অবস্থায় কত দিন / মাস?
 • কতবার বাছুর হয়েছে / গর্ভ হয়েছে? (প্রথম, দ্বিতীয় বার?)
 • বয়স কত?
 • এখন কী খাওয়ান (সবুজ ঘাস, ভুসি, দান)?
@@ -29,14 +29,14 @@ Apni bhasha mein likhiye ya boliye — main usi mein aage sawal poochunga.`,
 
   ta: `🌾 சமச்சீர் தீவன ஆலோசனை
 
-உங்கள் dairy மிருகங்கள் பற்றி தகவல் தாருங்கள்:
-• பசு / எருமை? எந்த breed (Murrah, Gir)?
-• எத்தனை பசu?
-• இப்போது — பால் கொடுக்கிறதா / dry / கர்ப்பமா?
+உங்கள் பால் பண்ணை மிருகங்கள் பற்றி தகவல் தாருங்கள்:
+• பசு / எருமை? எந்த இனம்?
+• எத்தனை பசு?
+• இப்போது — பால் கொடுக்கிறதா, சுக்க \/ கர்ப்பமா?
 • இந்த நிலையில் எத்தனை நாட்கள் / மாதம்?
 • எத்தனை முறை கன்று ஈன்றது / கர்ப்பம்? (முதல், இரண்டாம் முறை?)
 • வயது என்ன?
-• இப்போது என்ன feed (பச்சை புல், வைக்கோல், concentrate)?
+• இப்போது என்த தீவனம் (பச்சை புல், வைக்கோல், குக்கிவகை தீவனம்)?
 
 உங்கள் மொழியில் எழுதுங்கள் அல்லது பேசுங்கள் — அதே மொழியில் தொடர்ந்து கேட்பேன்.`,
 
@@ -173,9 +173,9 @@ Type or speak in your language — I will continue in the same language.`,
 
 export const LANG_ORDER = ["hi", "bn", "ta", "te", "mr", "gu", "kn", "ml", "pa", "or", "as", "ur", "en"] as const;
 
-export const RATION_ADVISORY_INTRO = `🌾 Ration Advisory / संतुलित चारा सलाह
+export const RATION_ADVISORY_INTRO = `🌾 संतुलित चारा सलाह
 
-नीचे अपनी भाषा चुनें · Choose your language below:`;
+नीचे अपनी भाषा चुनें:`;
 
 /** Welcome for one language — shown after farmer picks a language. */
 export function getWelcomeForLang(code: string): string {

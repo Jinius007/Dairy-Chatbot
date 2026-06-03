@@ -113,11 +113,16 @@ async function fetchTtsBlob(text: string, lang: string, token: number): Promise<
   }
 }
 
-async function speakViaBhashini(text: string, lang: string | null, token: number): Promise<boolean> {
+async function speakViaBhashini(
+  text: string,
+  lang: string | null,
+  token: number,
+  forceLang = false,
+): Promise<boolean> {
   const spoken = prepareTextForSpeech(text);
   if (!spoken || token !== activeToken) return false;
 
-  const code = resolveTtsLanguage(spoken, lang);
+  const code = forceLang && lang ? lang : resolveTtsLanguage(spoken, lang);
   const chunks = splitForTts(spoken);
   if (chunks.length === 0) return false;
 
@@ -135,13 +140,18 @@ async function speakViaBhashini(text: string, lang: string | null, token: number
   return true;
 }
 
-async function runSpeech(text: string, lang: string | null, token: number): Promise<void> {
+async function runSpeech(
+  text: string,
+  lang: string | null,
+  token: number,
+  forceLang = false,
+): Promise<void> {
   const cleaned = filterAbusiveLanguage(text);
   if (!cleaned.trim() || token !== activeToken) return;
-  if (await speakViaBhashini(cleaned, lang, token)) return;
+  if (await speakViaBhashini(cleaned, lang, token, forceLang)) return;
   if (token !== activeToken) return;
   await delay(300);
-  await speakViaBhashini(cleaned, lang, token);
+  await speakViaBhashini(cleaned, lang, token, forceLang);
 }
 
 export function isSpeechSupported(): boolean {
@@ -162,13 +172,16 @@ export type SpeakOptions = {
   lang?: string | null;
   /** Skip queue — use for live call replies */
   priority?: boolean;
+  /** Use lang exactly (e.g. ration advisory welcome after language pick) */
+  forceLang?: boolean;
 };
 
 export function speakText(text: string, options: SpeakOptions = {}): Promise<void> {
   if (!text.trim()) return Promise.resolve();
 
   const token = ++activeToken;
-  const run = () => runSpeech(text, options.lang ?? null, token);
+  const run = () =>
+    runSpeech(text, options.lang ?? null, token, options.forceLang ?? false);
 
   if (options.priority) {
     return run();

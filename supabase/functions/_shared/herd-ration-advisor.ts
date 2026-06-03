@@ -7,6 +7,12 @@ import {
   pickSeasonFeeds,
   type Region,
 } from "./ration-calculator.ts";
+import {
+  buildDirectCountConflictReply,
+  buildDirectGatheringReply,
+  buildDirectNeedCountReply,
+  buildDirectVerificationReply,
+} from "./ration-advisory-replies.ts";
 
 export interface AnimalProfile {
   index: number;
@@ -49,7 +55,8 @@ const HERD_COUNT_RE = [
   /(?:i have|we have|mere paas|meri|mere|mari|mara|hamare paas|total|)\s*(\d{1,2})\s*(?:cow|cows|buffalo|buffaloes|buffalos|animal|animals|milch|milking|gaay|gai|gay|gaye|bhains|bhens|pashu|pashuon|vaca|पशु|गाय|गायें|भैंस|ગાય|ભેંસ)/i,
   /(\d{1,2})\s*(?:cow|cows|buffalo|buffaloes|animal|animals|milch|gaay|gai|bhains|pashu|गाय|भैंस|પશુ|ગાય|ભેંસ)/i,
   /(?:i have|we have|mere paas|mar[eey] paas|hamare paas)\s*(\d{1,2})\b/i,
-  /(\d{1,2})\s*(?:pashu|pashuvon|animals|cattle|milch|dairy\s*animals)/i,
+  /(\d{1,2})\s*(?:pashu|pahu|pashuvon|pasu|passu|animals|cattle|milch|dairy\s*animals)/i,
+  /(?:mere paas|mer[eey] paas|hamare paas)\s*(\d{1,2})\s*(?:pashu|pahu|pasu|passu|hain|hai|aahet|che|unnaru|aachhe)?/i,
   /herd\s*(?:of\s*)?(\d{1,2})/i,
   /(\d{1,2})\s*(?:milch|dairy)\s*(?:animal|cattle|cow)/i,
   /(?:मेर[eey]?|हमार[eey]?)\s*(?:पास|पासे)?\s*(\d{1,2})\s*(?:गाय|गायें|गौ|भैंस|पशु|मवेशी)/u,
@@ -101,6 +108,11 @@ function userText(messages: { role: string; content: string }[]): string {
 function normalizeHerdText(text: string): string {
   let t = String(text || "");
   t = t.replace(/[०-९]/g, (ch) => String(DEVANAGARI_DIGITS.indexOf(ch)));
+  // Common voice/STT typos for pashu
+  t = t.replace(/\bpahu\b/gi, "pashu");
+  t = t.replace(/\bpashu\b/gi, "pashu");
+  t = t.replace(/\bpas[uú]\b/gi, "pashu");
+  t = t.replace(/\bpassu\b/gi, "pashu");
   for (const [re, digit] of COUNT_WORDS) {
     t = t.replace(re, digit);
   }
@@ -669,35 +681,90 @@ function buildRationAdvisoryHint(
   ].join("\n");
 }
 
-/** Dedicated Ration Advisory panel — always active when farmer opens that flow. */
-export function tryRationAdvisoryHint(messages: { role: string; content: string }[]): string | null {
+export type RationAdvisoryPhase =
+  | { type: "need_count" }
+  | { type: "count_conflict"; uniqueCounts: number[] }
+  | { type: "gather"; herdSize: number; animalIndex: number; profiled: number }
+  | { type: "verify"; herdSize: number; summaryLines: string[] }
+  | { type: "compute"; herdSize: number };
+
+export function computeRationAdvisoryPhase(
+  messages: { role: string; content: string }[],
+): RationAdvisoryPhase {
   const countInfo = resolveDeclaredCount(messages);
 
   if (countInfo.conflict) {
-    return countConflictPrompt(countInfo.uniqueCounts);
+    return { type: "count_conflict", uniqueCounts: countInfo.uniqueCounts };
   }
 
   const animalCount = countInfo.count;
-  if (animalCount === null) return initialCountPrompt();
+  if (animalCount === null) return { type: "need_count" };
 
   const slots = buildSlotsFromConversation(messages, animalCount);
   const profiled = slots.filter((s) => s.complete).length;
+  const next = slots.find((s) => !s.complete) ?? slots[0];
+  const animalIndex = next.profile.index ?? 1;
 
   if (profiled < animalCount) {
-    return gatherPrompt(animalCount, slots);
+    return { type: "gather", herdSize: animalCount, animalIndex, profiled };
   }
 
   const users = messages.filter((m) => m.role === "user");
   const lastUser = users[users.length - 1]?.content.trim() ?? "";
   if (verificationWasRequested(messages) && /^(nahi|na|no|galat|wrong|गलत|नही)/iu.test(lastUser)) {
-    return gatherPrompt(animalCount, buildSlotsFromConversation(messages, animalCount));
+    const slots2 = buildSlotsFromConversation(messages, animalCount);
+    const p2 = slots2.filter((s) => s.complete).length;
+    const n2 = slots2.find((s) => !s.complete) ?? slots2[0];
+    return { type: "gather", herdSize: animalCount, animalIndex: n2.profile.index ?? 1, profiled: p2 };
   }
 
   if (!verificationWasRequested(messages) || !farmerConfirmed(messages)) {
-    return verificationPrompt(animalCount, slots);
+    const summaryLines = slots.map((s) => {
+      const p = s.profile;
+      const milk = p.milkKg && p.milkKg > 0 ? `${p.milkKg}L` : "-";
+      return `#${p.index}: ${p.breedName ?? "?"} | ${p.status ?? "?"} | milk ${milk}`;
+    });
+    return { type: "verify", herdSize: animalCount, summaryLines };
   }
 
-  return buildRationAdvisoryHint(messages, animalCount);
+  return { type: "compute", herdSize: animalCount };
+}
+
+/** Server-side reply — no LLM — for count/gather/verify phases. */
+export function getRationAdvisoryDirectReply(
+  messages: { role: string; content: string }[],
+  lang: string | null,
+): string | null {
+  const phase = computeRationAdvisoryPhase(messages);
+  switch (phase.type) {
+    case "need_count":
+      return buildDirectNeedCountReply(lang);
+    case "count_conflict":
+      return buildDirectCountConflictReply(lang, phase.uniqueCounts);
+    case "gather":
+      return buildDirectGatheringReply(lang, phase.herdSize, phase.animalIndex, phase.profiled);
+    case "verify":
+      return buildDirectVerificationReply(lang, phase.herdSize, phase.summaryLines);
+    default:
+      return null;
+  }
+}
+
+/** Dedicated Ration Advisory panel — always active when farmer opens that flow. */
+export function tryRationAdvisoryHint(messages: { role: string; content: string }[]): string | null {
+  const phase = computeRationAdvisoryPhase(messages);
+  switch (phase.type) {
+    case "need_count":
+      return initialCountPrompt();
+    case "count_conflict":
+      return countConflictPrompt(phase.uniqueCounts);
+    case "gather":
+      return gatherPrompt(phase.herdSize, buildSlotsFromConversation(messages, phase.herdSize));
+    case "verify":
+      return verificationPrompt(phase.herdSize, buildSlotsFromConversation(messages, phase.herdSize));
+    case "compute":
+      return buildRationAdvisoryHint(messages, phase.herdSize);
+  }
 }
 
 /** Legacy auto-trigger from main chat — only when 2+ animals mentioned (unused in main chat now). */
