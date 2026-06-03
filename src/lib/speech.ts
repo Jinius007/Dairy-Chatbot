@@ -1,4 +1,5 @@
 import { prepareTextForSpeech, resolveTtsLanguage, splitForTts } from "@/lib/languages";
+import { filterAbusiveLanguage } from "@/lib/content-safety";
 
 let activeToken = 0;
 let speechChain: Promise<void> = Promise.resolve();
@@ -135,11 +136,12 @@ async function speakViaBhashini(text: string, lang: string | null, token: number
 }
 
 async function runSpeech(text: string, lang: string | null, token: number): Promise<void> {
-  if (!text.trim() || token !== activeToken) return;
-  if (await speakViaBhashini(text, lang, token)) return;
+  const cleaned = filterAbusiveLanguage(text);
+  if (!cleaned.trim() || token !== activeToken) return;
+  if (await speakViaBhashini(cleaned, lang, token)) return;
   if (token !== activeToken) return;
   await delay(300);
-  await speakViaBhashini(text, lang, token);
+  await speakViaBhashini(cleaned, lang, token);
 }
 
 export function isSpeechSupported(): boolean {

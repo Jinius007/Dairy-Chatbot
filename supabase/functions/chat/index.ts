@@ -8,7 +8,14 @@ import {
   pickSeasonFeeds,
   type Region,
 } from "../_shared/ration-calculator.ts";
-import { detectHerdCount, isHerdGathering, tryHerdRationHint } from "../_shared/herd-ration-advisor.ts";
+import { isHerdGathering, tryRationAdvisoryHint } from "../_shared/herd-ration-advisor.ts";
+import {
+  abuseRefusalMessage,
+  containsAbusiveLanguage,
+  CONTENT_SAFETY_RULES,
+  detectLangForRefusal,
+  filterAbusiveLanguage,
+} from "../_shared/content-safety.ts";
 import { tryYoutubeVideoHint } from "../_shared/youtube-search.ts";
 
 const corsHeaders = {
@@ -37,6 +44,8 @@ LANGUAGE RULES (MIXED / CODE-SWITCHED INPUT SUPPORTED):
 - Keep technical/scheme/medicine names in English in parentheses when helpful. NEVER refuse due to mixed language.
 - DO NOT greet. Answer directly.
 
+${CONTENT_SAFETY_RULES}
+
 ANSWER STYLE (WhatsApp-style, farmer-friendly):
 - Use very simple words that a farmer can understand easily. Avoid difficult medical, legal, or technical words unless needed.
 - If you must use a hard term, add a simple explanation in brackets.
@@ -56,13 +65,7 @@ When the farmer asks about ration, balanced feed, least-cost feed, what to feed,
 - Recommend BIS Type I for >10 L/day, BIS Type II for 5–10 L/day.
 - If COMPUTED RATION ADVISORY is provided below in this prompt, use those exact numbers as the basis of your answer (translate to farmer's language, keep amounts and costs).
 - End with note to verify local prices and consult Pashu Poshan app / NDDB LRP for fine-tuning.
-
-HERD RATION — MULTI-ANIMAL (2 OR MORE COWS/BUFFALOES):
-When the farmer says they have 2+ animals (e.g. "4 cows", "5 bhains", "meri 3 gaay"):
-- FIRST turns: ONLY ask simple follow-up questions in the farmer's language. Do NOT give ration kg or costs yet.
-- Collect for EACH animal: breed, in milk/dry/pregnant, daily milk litres, lactation or age, current feed (green/dry/concentrate kg).
-- When a system message says "QUESTIONS ONLY" or "GATHER INFORMATION" — you must ask questions only; no ration table.
-- When "COMPUTED RESULTS" appears below — then give per-animal + herd totals with exact numbers.
+- For generic ration questions without full details, give practical guidance from the knowledge base — do NOT force a long interview unless the farmer opened Ration Advisory mode.
 
 MILK MARKETING — COOPERATIVE ONLY (CRITICAL):
 - When discussing selling/pouring/marketing milk: ALWAYS advise farmers to pour milk ONLY at their local **dairy cooperative** collection centre (DCS/village society → district milk union).
@@ -82,6 +85,14 @@ KNOWLEDGE BASE:
 ${KNOWLEDGE_BASE}
 
 REMEMBER: First line = [[LANG:xx]] then newline then answer. The language of the answer MUST match xx and MUST match the user's last message.`;
+
+const RATION_ADVISORY_MODE_PROMPT = `RATION ADVISORY PANEL MODE (ACTIVE):
+The farmer opened the dedicated "Ration Advisory" tool — NOT regular chat.
+- FIRST turns: ONLY ask simple follow-up questions in the farmer's language. Do NOT give ration kg or costs until system says COMPUTED RESULTS.
+- Collect for EACH animal: breed, in milk/dry/pregnant, daily milk litres, lactation or age, current feed (green/dry/concentrate kg).
+- When a system message says "QUESTIONS ONLY" or "GATHER INFORMATION" — ask questions only; no ration table, no kg, no ₹.
+- When "COMPUTED RESULTS" appears below — give per-animal + herd totals with exact numbers from that block.
+- Keep questions short (2–4 at a time), easy words, farmer's language.`;
 
 const LANGUAGE_LABELS: Record<string, string> = {
   hi: "Hindi / हिन्दी",
@@ -148,10 +159,6 @@ function detectBreed(text: string): string {
 }
 
 function tryComputeRationHint(messages: { role: string; content: string }[]): string | null {
-  const userCtx = messages.filter((m) => m.role === "user").map((m) => m.content).join(" ");
-  if (detectHerdCount(userCtx)) return null;
-
-  const lastUser = [...messages].reverse().find((m) => m.role === "user")?.content || "";
   const context = messages.filter((m) => m.role === "user").slice(-3).map((m) => m.content).join(" ");
   if (!RATION_KEYWORDS.test(context)) return null;
 
@@ -179,6 +186,13 @@ function tryComputeRationHint(messages: { role: string; content: string }[]): st
   return `COMPUTED RATION ADVISORY (NDDB LCF — use these numbers in your answer):\n${advisory}`;
 }
 
+function streamStaticText(text: string): Response {
+  const chunk = `data: ${JSON.stringify({ choices: [{ delta: { content: text } }] })}\n\n`;
+  return new Response(`${chunk}data: [DONE]\n\n`, {
+    headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
+  });
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
@@ -188,9 +202,23 @@ Deno.serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
 
-    const herdHint = tryHerdRationHint(messages);
-    const rationHint = herdHint ? null : tryComputeRationHint(messages);
-    const youtubeHint = await tryYoutubeVideoHint(messages);
+    const lastUser = [...messages].reverse().find((m: { role: string; content: string }) => m.role === "user");
+    if (lastUser?.content && containsAbusiveLanguage(lastUser.content)) {
+      const refusal = abuseRefusalMessage(detectLangForRefusal(lastUser.content));
+      if (stream) return streamStaticText(refusal);
+      return new Response(JSON.stringify({ text: refusal }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const safeMessages = messages.map((m: { role: string; content: string }) =>
+      m.role === "user" ? { ...m, content: filterAbusiveLanguage(m.content) } : m
+    );
+
+    const isRationAdvisory = mode === "ration_advisory";
+    const advisoryHint = isRationAdvisory ? tryRationAdvisoryHint(safeMessages) : null;
+    const rationHint = isRationAdvisory ? null : tryComputeRationHint(safeMessages);
+    const youtubeHint = await tryYoutubeVideoHint(safeMessages);
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -202,15 +230,14 @@ Deno.serve(async (req) => {
         model: "google/gemini-3-flash-preview",
         messages: [
           { role: "system", content: SYSTEM_PROMPT },
-          ...(herdHint ? [{ role: "system", content: herdHint }] : []),
+          ...(isRationAdvisory ? [{ role: "system", content: RATION_ADVISORY_MODE_PROMPT }] : []),
+          ...(advisoryHint ? [{ role: "system", content: advisoryHint }] : []),
           ...(rationHint ? [{ role: "system", content: rationHint }] : []),
           ...(youtubeHint ? [{ role: "system", content: youtubeHint }] : []),
-          ...(mode === "call" ? [{ role: "system", content: isHerdGathering(herdHint)
-            ? "LIVE CALL — HERD QUESTIONS ONLY: Ask 2–3 very simple spoken questions. No ration numbers. Wait for answers."
-            : "LIVE CALL MODE: Answer like a patient human helper on a phone call. Use very simple village/farmer language. Keep the answer short, natural, and speakable: 2-4 short sentences only. No headings, no long bullet list, no difficult words. Give the next practical step first." }] : []),
+          ...(mode === "call" ? [{ role: "system", content: "LIVE CALL MODE: Answer like a patient human helper on a phone call. Use very simple village/farmer language. Keep the answer short, natural, and speakable: 2-4 short sentences only. No headings, no long bullet list, no difficult words. Give the next practical step first." }] : []),
           ...(forceLanguage && forcedLabel ? [{ role: "system", content: `CRITICAL LANGUAGE LOCK: The next answer MUST be written only in ${forcedLabel}. The first line MUST be [[LANG:${forceLanguage}]]. Do not use Hindi unless the locked language is Hindi. Do not mix scripts.` }] : []),
-          ...messages,
-          ...(isHerdGathering(herdHint) ? [{ role: "system", content: "FINAL INSTRUCTION: Reply with ONLY 2–4 simple questions for the farmer. No ration advice, no kg, no ₹, no bullet feed list. First line must still be [[LANG:xx]]." }] : []),
+          ...safeMessages,
+          ...(isRationAdvisory && isHerdGathering(advisoryHint) ? [{ role: "system", content: "FINAL INSTRUCTION: Reply with ONLY 2–4 simple questions for the farmer. No ration advice, no kg, no ₹, no bullet feed list. First line must still be [[LANG:xx]]." }] : []),
           ...(forceLanguage && forcedLabel ? [{ role: "system", content: `FINAL CHECK BEFORE ANSWERING: Reply in ${forcedLabel} only, with [[LANG:${forceLanguage}]] as the first line. Keep it simple enough for a farmer.` }] : []),
         ],
         stream,
@@ -242,7 +269,7 @@ Deno.serve(async (req) => {
     }
 
     const data = await response.json();
-    const text = data.choices?.[0]?.message?.content || "";
+    const text = filterAbusiveLanguage(data.choices?.[0]?.message?.content || "");
     return new Response(JSON.stringify({ text }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

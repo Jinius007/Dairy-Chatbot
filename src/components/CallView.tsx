@@ -6,6 +6,10 @@ import { LANG_NAMES, detectLanguageCode, resolveTtsLanguage } from "@/lib/langua
 import { speakText, stopSpeech, unlockAudioPlayback } from "@/lib/speech";
 import { getSessionId } from "@/lib/session";
 import { logConversationTurn } from "@/lib/log-turn";
+import {
+  containsAbusiveLanguage,
+  filterAbusiveLanguage,
+} from "@/lib/content-safety";
 
 export interface CallTurn {
   id: string;
@@ -145,8 +149,15 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
         body: { audioBase64: b64, mimeType: mime },
       });
       if (tErr) throw tErr;
-      const transcript = typeof (tData as any)?.transcript === "string" ? (tData as any).transcript.trim() : "";
-      if (!transcript) {
+      if ((tData as any)?.blocked) {
+        toast.message("Please use respectful language.");
+        scheduleListening(500);
+        return;
+      }
+      const transcript = filterAbusiveLanguage(
+        typeof (tData as any)?.transcript === "string" ? (tData as any).transcript.trim() : "",
+      );
+      if (!transcript || containsAbusiveLanguage(transcript)) {
         toast.message("Didn't catch that — please speak again.");
         scheduleListening(500);
         return;
@@ -180,7 +191,7 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
       if (!chatRes.ok) throw new Error(payload?.error || `Chat failed (${chatRes.status})`);
       const raw = readTextPayload(payload);
       const parsed = splitLangHeader(raw);
-      const body = parsed.body;
+      const body = filterAbusiveLanguage(parsed.body);
       const lang = resolveTtsLanguage(body, parsed.lang || detectedLang);
       const answer = body.trim();
       if (!answer) throw new Error("No answer was generated. Please try again.");

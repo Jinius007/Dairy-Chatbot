@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { ChatView } from "@/components/ChatView";
-import { Search, Plus, MessageCircle, Trash2 } from "lucide-react";
+import { Search, Plus, MessageCircle, Trash2, Wheat } from "lucide-react";
+import { RationAdvisoryView } from "@/components/RationAdvisoryView";
 
 interface Conversation {
   id: string; title: string; last_message: string | null; language: string | null; updated_at: string;
@@ -25,6 +26,7 @@ const Index = () => {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [search, setSearch] = useState("");
+  const [rationAdvisoryOpen, setRationAdvisoryOpen] = useState(false);
 
   useEffect(() => {
     let c = loadConvs();
@@ -61,6 +63,9 @@ const Index = () => {
 
   return (
     <div className="h-full w-full flex bg-background overflow-hidden">
+      {rationAdvisoryOpen && (
+        <RationAdvisoryView open={rationAdvisoryOpen} onClose={() => setRationAdvisoryOpen(false)} />
+      )}
       <aside className={`${activeId ? "hidden md:flex" : "flex"} md:w-[380px] w-full flex-col border-r bg-sidebar min-h-0 shrink-0`}>
         <div className="bg-header text-header-foreground p-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -71,7 +76,19 @@ const Index = () => {
             <button onClick={newChat} className="p-2 hover:bg-white/10 rounded-full" title="New chat"><Plus className="w-5 h-5" /></button>
           </div>
         </div>
-        <div className="p-2 bg-muted/50">
+        <div className="p-2 bg-muted/50 space-y-2">
+          <button
+            onClick={() => setRationAdvisoryOpen(true)}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg bg-emerald-700/10 hover:bg-emerald-700/20 border border-emerald-700/20 text-left transition"
+          >
+            <div className="w-10 h-10 rounded-full bg-emerald-700 text-white flex items-center justify-center shrink-0">
+              <Wheat className="w-5 h-5" />
+            </div>
+            <div className="min-w-0">
+              <div className="font-medium text-sm">Ration Advisory</div>
+              <div className="text-xs text-muted-foreground truncate">Detailed balanced feed for your herd</div>
+            </div>
+          </button>
           <div className="flex items-center gap-2 bg-card rounded-full px-3 py-1.5">
             <Search className="w-4 h-4 text-muted-foreground" />
             <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search chats" className="flex-1 bg-transparent outline-none text-sm" />

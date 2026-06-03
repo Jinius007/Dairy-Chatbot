@@ -30,12 +30,31 @@ export interface ParsedAnimalSlot {
   complete: boolean;
 }
 
+const DEVANAGARI_DIGITS = "०१२३४५६७८९";
+
+const COUNT_WORDS: [RegExp, string][] = [
+  [/(?:^|\s)(?:एक|ek|one)(?:\s|$)/giu, " 1 "],
+  [/(?:^|\s)(?:दो|do|two)(?:\s|$)/giu, " 2 "],
+  [/(?:^|\s)(?:तीन|teen|three)(?:\s|$)/giu, " 3 "],
+  [/(?:^|\s)(?:चार|char|chaar|four)(?:\s|$)/giu, " 4 "],
+  [/(?:^|\s)(?:पांच|पाँच|panch|paanch|five)(?:\s|$)/giu, " 5 "],
+  [/(?:^|\s)(?:छह|छः|chhe|che|six)(?:\s|$)/giu, " 6 "],
+  [/(?:^|\s)(?:सात|saat|seven)(?:\s|$)/giu, " 7 "],
+  [/(?:^|\s)(?:आठ|aath|eight)(?:\s|$)/giu, " 8 "],
+  [/(?:^|\s)(?:नौ|nau|nine)(?:\s|$)/giu, " 9 "],
+  [/(?:^|\s)(?:दस|das|ten)(?:\s|$)/giu, " 10 "],
+];
+
 const HERD_COUNT_RE = [
   /(?:i have|we have|mere paas|meri|mere|mari|mara|hamare paas|total|)\s*(\d{1,2})\s*(?:cow|cows|buffalo|buffaloes|buffalos|animal|animals|milch|milking|gaay|gai|gay|gaye|bhains|bhens|pashu|pashuon|vaca|पशु|गाय|गायें|भैंस|ગાય|ભેંસ)/i,
   /(\d{1,2})\s*(?:cow|cows|buffalo|buffaloes|animal|animals|milch|gaay|gai|bhains|pashu|गाय|भैंस|પશુ|ગાય|ભેંસ)/i,
   /herd\s*(?:of\s*)?(\d{1,2})/i,
   /(\d{1,2})\s*(?:milch|dairy)\s*(?:animal|cattle|cow)/i,
+  /(?:मेर[eey]?|हमार[eey]?)\s*(?:पास|पासे)?\s*(\d{1,2})\s*(?:गाय|गायें|गौ|भैंस|पशु|मवेशी)/u,
+  /(\d{1,2})\s*(?:गाय|गायें|भैंस|पशु|मवेशी)/u,
 ];
+
+const HERD_RATION_QUERY = /ration|rasan|rashan|aahar|feed|fodder|chara|chare|poshan|खुराक|चारा|संतुलित|राशन|रेशन|आहार|diet|balanced|least.?cost|lcf|tdn|mittha|dan|daana|concentrate|bhusa|ghaas/i;
 
 const HERD_KEYWORDS = /herd|sabhi|saari|saare|each|har ek|per animal|poori mandli|badha|badhi|sab same|ek jaise|सभी|हर|प्रत्येक|herd ration|mandli|pashuon|બધ/i;
 
@@ -55,10 +74,10 @@ const BREED_PATTERNS: [RegExp, string][] = [
 ];
 
 const STATUS_PATTERNS: [RegExp, AnimalProfile["status"]][] = [
-  [/dry|sukhi|sukha|sookhi|without milk|no milk|doodh nahi|dudh nahi|दूध नही|સૂક/i, "dry"],
-  [/pregnant|gaabhan|garbh|gestation|गर्भ|ગાભ|expecting|garbhi/i, "pregnant"],
+  [/dry|sukhi|sukha|sookhi|without milk|no milk|doodh nahi|dudh nahi|दूध नही|सूख|शुष्क|સૂક/u, "dry"],
+  [/pregnant|gaabhan|garbh|gestation|गर्भ|गर्भवती|गाभिन|ગાભ|expecting|garbhi/u, "pregnant"],
   [/heifer|bachiya|young|not calved|pehli bar|बछिया|young cow|વાછરડ/i, "heifer"],
-  [/in milk|milking|doodh de|dudh de|milk giving|दूध दे|giving milk|lactating|દૂધ આપ/i, "in_milk"],
+  [/in milk|milking|doodh de|dudh de|milk giving|दूध दे|दूध देती|दूधार|giving milk|lactating|દૂધ આપ/u, "in_milk"],
 ];
 
 const REGION_KEYWORDS: [RegExp, Region][] = [
@@ -77,15 +96,41 @@ function userText(messages: { role: string; content: string }[]): string {
   return messages.filter((m) => m.role === "user").map((m) => m.content).join("\n");
 }
 
+function normalizeHerdText(text: string): string {
+  let t = String(text || "");
+  t = t.replace(/[०-९]/g, (ch) => String(DEVANAGARI_DIGITS.indexOf(ch)));
+  for (const [re, digit] of COUNT_WORDS) {
+    t = t.replace(re, digit);
+  }
+  return t.replace(/\s+/g, " ").trim();
+}
+
 export function detectHerdCount(text: string): number | null {
+  const normalized = normalizeHerdText(text);
   let best = 0;
   for (const re of HERD_COUNT_RE) {
-    for (const m of text.matchAll(new RegExp(re.source, re.flags + "g"))) {
+    for (const m of normalized.matchAll(new RegExp(re.source, re.flags + "g"))) {
       const n = parseInt(m[1], 10);
       if (n >= 2 && n <= 50) best = Math.max(best, n);
     }
   }
   return best >= 2 ? best : null;
+}
+
+/** 1–50 animals — used only in the dedicated Ration Advisory panel. */
+export function detectAnimalCount(text: string): number | null {
+  const herd = detectHerdCount(text);
+  if (herd !== null) return herd;
+  const normalized = normalizeHerdText(text);
+  const singlePatterns = [
+    /(?:^|\s)(?:1|ek|one)\s*(?:cow|buffalo|gaay|gai|bhains|bhens|milch|pashu|animal|गाय|भैंस|पशु|ગાય|ભેંસ)/iu,
+    /(?:mer[eey]?|i have|we have|hamare paas|मेर[eey]?)\s*(?:ek|one|1)\s*(?:cow|buffalo|gaay|gai|bhains|pashu|गाय|भैंस|पशu)/iu,
+    /(?:^|\s)(?:1|१)\s*(?:गाय|भैंस|पशu|milch)/u,
+  ];
+  for (const re of singlePatterns) {
+    if (re.test(normalized)) return 1;
+  }
+  return null;
 }
 
 export function detectRegion(text: string): Region {
@@ -199,8 +244,8 @@ function parseMilkKg(text: string, herdSize: number | null): number {
     /(\d+(?:\.\d+)?)\s*(?:litre|liter|ltr|l\b)\s*(?:milk|doodh|dudh|दूध|દૂધ)/i,
     /(\d+(?:\.\d+)?)\s*(?:kg|l)\s*(?:milk|doodh|dudh)/i,
     /(?:milk|doodh|dudh|दूध|દૂધ)[^\d]{0,12}(\d+(?:\.\d+)?)\s*(?:litre|liter|ltr|l\b|kg)/i,
-    /(\d+(?:\.\d+)?)\s*(?:litre|liter|ltr|l\b)\s*(?:\/|per|roz|daily|din)/i,
-    /roz\s*(\d+(?:\.\d+)?)\s*(?:litre|liter|ltr|l\b|kg)/i,
+    /(\d+(?:\.\d+)?)\s*(?:litre|liter|ltr|l\b|लीटर|लिटर)\s*(?:\/|per|roz|daily|din|रोज)?/iu,
+    /(?:roz|रोज|प्रतिदिन)\s*(\d+(?:\.\d+)?)\s*(?:litre|liter|ltr|l\b|kg|लीटर|लिटर)/iu,
     /subah[^.\d]{0,40}(\d+(?:\.\d+)?)[^\d]{0,20}(?:shaam|sandhya)[^\d]{0,20}(\d+(?:\.\d+)?)/i,
   ];
   const morningEvening = text.match(/subah[^.\d]{0,40}(\d+(?:\.\d+)?)[^\d]{0,30}(?:shaam|sandhya|saam)[^\d]{0,20}(\d+(?:\.\d+)?)/i);
@@ -442,34 +487,45 @@ function gatherPrompt(herdSize: number, slots: ParsedAnimalSlot[]): string {
     `Herd size: ${herdSize} animals. Fully profiled: ${profiled}/${herdSize}.`,
     `Ask about Animal #${idx} now — in the farmer's own simple language (same as their last message).`,
     "",
-    "Ask 2–4 short easy questions, for example:",
-    "  • Kaun si nasl hai? (Gir, Murrah, crossbred?)",
-    "  • Ab doodh de rahi hai, sukhi hai, ya garbh mein?",
-    "  • Roz kitna litre dudh? (agar doodh de rahi ho)",
-    "  • Pehli/doosri vyaat? Ya kitne saal ki?",
-    "  • Ab kya khilati ho — hara chara, sukha bhusa, dana kitna kg?",
+    "Ask 2–4 short easy questions in the farmer's language (Hindi example):",
+    "  • Kaun si nasl hai? (Murrah, Gir, crossbred?)",
+    "  • Kya ab doodh de rahi hain, sookhi hain, ya garbh mein hain?",
+    "  • Roz kitna litre dudh deti hain?",
+    "  • Pehli/doosri byaat? Ya kitne saal ki hain?",
+    "  • Ab kya khilati hain — hara chara, sukha bhusa, dana kitna kg?",
     "",
     `Still missing for Animal #${idx}:`,
     missingList,
     "",
     "If all animals are the same, you may ask once and say 'kya badha ek jaisa hai?'",
-    "End with a friendly line like: 'Jawab do, phir main sahi ration batata/bataati hoon.'",
+    "End with: 'Jawab dijiye, phir main sahi balanced ration batata/bataati hoon.'",
   ].join("\n");
 }
 
-export function tryHerdRationHint(messages: { role: string; content: string }[]): string | null {
-  const all = conversationText(messages);
-  const users = userText(messages);
-  const herdSize = detectHerdCount(users) ?? detectHerdCount(all);
-  if (herdSize === null) return null;
+function initialCountPrompt(): string {
+  return [
+    "⚠️ RATION ADVISORY — QUESTIONS ONLY (MANDATORY THIS TURN)",
+    "The farmer opened the dedicated Ration Advisory panel but has not said how many animals yet.",
+    "Ask ONLY 2–3 simple questions in the farmer's language:",
+    "  • Aapke paas kitni gaay/bhains hain? (kitne pashu milk dete hain?)",
+    "  • Kaun se area/rajya mein farm hai? (optional — short)",
+    "FORBIDDEN this turn: ration tables, kg amounts, feed plans, cost estimates.",
+    "End with: 'Jawab dijiye, phir main har pashu ka sahi balanced ration batata/bataati hoon.'",
+  ].join("\n");
+}
 
+function buildRationAdvisoryHint(
+  messages: { role: string; content: string }[],
+  animalCount: number,
+): string {
+  const all = conversationText(messages);
   const region = detectRegion(all);
   const season = detectSeason();
-  const slots = buildSlotsFromConversation(messages, herdSize);
+  const slots = buildSlotsFromConversation(messages, animalCount);
   const allComplete = slots.every((s) => s.complete);
 
   if (!allComplete) {
-    return gatherPrompt(herdSize, slots);
+    return gatherPrompt(animalCount, slots);
   }
 
   const profiles: AnimalProfile[] = slots.map((s) => ({
@@ -497,22 +553,40 @@ export function tryHerdRationHint(messages: { role: string; content: string }[])
 
   return [
     "HERD RATION ADVISORY — COMPUTED RESULTS (use these EXACT numbers)",
-    `Herd: ${herdSize} animals | Region: ${region} | Season: ${season}`,
+    `Herd: ${animalCount} animals | Region: ${region} | Season: ${season}`,
     "",
     "PER ANIMAL:",
     perAnimal,
     "",
     "TOTAL DAILY FOR WHOLE HERD:",
     ...herdLines,
-    `  • Mineral mixture: ${(0.15 * herdSize).toFixed(2)} kg/day`,
+    `  • Mineral mixture: ${(0.15 * animalCount).toFixed(2)} kg/day`,
     "",
     `Herd cost: ₹${agg.totalOptimal.toFixed(0)}/day (₹${(agg.totalOptimal * 30).toFixed(0)}/month)`,
     agg.totalCurrent > 0
       ? `Saving ~₹${agg.totalSavings.toFixed(0)}/day vs current feed`
-      : `Typical saving ~₹${(25.5 * herdSize).toFixed(0)}/day (NDDB average)`,
+      : `Typical saving ~₹${(25.5 * animalCount).toFixed(0)}/day (NDDB average)`,
     "",
     "Explain in SIMPLE farmer language: per-animal feed, total herd prep, savings.",
   ].join("\n");
+}
+
+/** Dedicated Ration Advisory panel — always active when farmer opens that flow. */
+export function tryRationAdvisoryHint(messages: { role: string; content: string }[]): string | null {
+  const all = conversationText(messages);
+  const users = userText(messages);
+  const animalCount = detectAnimalCount(users) ?? detectAnimalCount(all);
+  if (animalCount === null) return initialCountPrompt();
+  return buildRationAdvisoryHint(messages, animalCount);
+}
+
+/** Legacy auto-trigger from main chat — only when 2+ animals mentioned (unused in main chat now). */
+export function tryHerdRationHint(messages: { role: string; content: string }[]): string | null {
+  const all = conversationText(messages);
+  const users = userText(messages);
+  const herdSize = detectHerdCount(users) ?? detectHerdCount(all);
+  if (herdSize === null) return null;
+  return buildRationAdvisoryHint(messages, herdSize);
 }
 
 export function isHerdGathering(hint: string | null): boolean {

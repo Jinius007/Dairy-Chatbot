@@ -1,3 +1,9 @@
+import {
+  CONTENT_SAFETY_RULES,
+  containsAbusiveLanguage,
+  filterAbusiveLanguage,
+} from "../_shared/content-safety.ts";
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -30,7 +36,9 @@ Deno.serve(async (req) => {
               "Punjabi (Gurmukhi), Odia, Assamese, Urdu (Nastaliq), English (Latin). " +
               "Transcribe the audio EXACTLY as spoken, in the NATIVE SCRIPT of the spoken language. " +
               "If the speaker mixes languages, transcribe each part in its own native script. " +
-              "Output ONLY the transcript with no commentary, no quotes, no language label.",
+              "Output ONLY the transcript with no commentary, no quotes, no language label. " +
+              CONTENT_SAFETY_RULES +
+              " If the speech is abusive, output exactly: [BLOCKED]",
           },
           {
             role: "user",
@@ -55,7 +63,13 @@ Deno.serve(async (req) => {
     }
 
     const data = await response.json();
-    const transcript = data.choices?.[0]?.message?.content?.trim() || "";
+    let transcript = data.choices?.[0]?.message?.content?.trim() || "";
+    if (transcript === "[BLOCKED]" || containsAbusiveLanguage(transcript)) {
+      return new Response(JSON.stringify({ transcript: "", blocked: true }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    transcript = filterAbusiveLanguage(transcript);
     return new Response(JSON.stringify({ transcript }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
