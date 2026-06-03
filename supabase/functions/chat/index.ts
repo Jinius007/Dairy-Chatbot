@@ -8,7 +8,7 @@ import {
   pickSeasonFeeds,
   type Region,
 } from "../_shared/ration-calculator.ts";
-import { tryHerdRationHint } from "../_shared/herd-ration-advisor.ts";
+import { detectHerdCount, isHerdGathering, tryHerdRationHint } from "../_shared/herd-ration-advisor.ts";
 import { tryYoutubeVideoHint } from "../_shared/youtube-search.ts";
 
 const corsHeaders = {
@@ -59,11 +59,10 @@ When the farmer asks about ration, balanced feed, least-cost feed, what to feed,
 
 HERD RATION — MULTI-ANIMAL (2 OR MORE COWS/BUFFALOES):
 When the farmer says they have 2+ animals (e.g. "4 cows", "5 bhains", "meri 3 gaay"):
-- Do NOT jump to a single-animal ration. First collect details for EACH animal using simple questions in the farmer's language.
-- Ask in easy village language (see Balanced Ration Guide Section 3): breed, age or lactation number (pehli/doosri vyaat), in milk or dry or pregnant, daily milk litres if milking, and what they feed now (green kg, dry straw kg, concentrate kg).
-- On live call: ask only 2–3 short questions per turn. In chat: up to 4 questions at a time.
-- When HERD RATION ADVISORY — COMPUTED RESULTS appears below, use those exact kg and ₹ numbers for each animal AND herd totals.
-- Explain: daily amount for each animal, total to prepare for the whole herd, and estimated savings per day/month in simple words.
+- FIRST turns: ONLY ask simple follow-up questions in the farmer's language. Do NOT give ration kg or costs yet.
+- Collect for EACH animal: breed, in milk/dry/pregnant, daily milk litres, lactation or age, current feed (green/dry/concentrate kg).
+- When a system message says "QUESTIONS ONLY" or "GATHER INFORMATION" — you must ask questions only; no ration table.
+- When "COMPUTED RESULTS" appears below — then give per-animal + herd totals with exact numbers.
 
 MILK MARKETING — COOPERATIVE ONLY (CRITICAL):
 - When discussing selling/pouring/marketing milk: ALWAYS advise farmers to pour milk ONLY at their local **dairy cooperative** collection centre (DCS/village society → district milk union).
@@ -149,6 +148,9 @@ function detectBreed(text: string): string {
 }
 
 function tryComputeRationHint(messages: { role: string; content: string }[]): string | null {
+  const userCtx = messages.filter((m) => m.role === "user").map((m) => m.content).join(" ");
+  if (detectHerdCount(userCtx)) return null;
+
   const lastUser = [...messages].reverse().find((m) => m.role === "user")?.content || "";
   const context = messages.filter((m) => m.role === "user").slice(-3).map((m) => m.content).join(" ");
   if (!RATION_KEYWORDS.test(context)) return null;
@@ -203,11 +205,12 @@ Deno.serve(async (req) => {
           ...(herdHint ? [{ role: "system", content: herdHint }] : []),
           ...(rationHint ? [{ role: "system", content: rationHint }] : []),
           ...(youtubeHint ? [{ role: "system", content: youtubeHint }] : []),
-          ...(mode === "call" ? [{ role: "system", content: herdHint?.includes("GATHER INFORMATION")
-            ? "LIVE CALL MODE — HERD INFO: Ask 2–3 very simple questions only. One animal at a time. Short spoken sentences. Wait for answers before calculating ration."
+          ...(mode === "call" ? [{ role: "system", content: isHerdGathering(herdHint)
+            ? "LIVE CALL — HERD QUESTIONS ONLY: Ask 2–3 very simple spoken questions. No ration numbers. Wait for answers."
             : "LIVE CALL MODE: Answer like a patient human helper on a phone call. Use very simple village/farmer language. Keep the answer short, natural, and speakable: 2-4 short sentences only. No headings, no long bullet list, no difficult words. Give the next practical step first." }] : []),
           ...(forceLanguage && forcedLabel ? [{ role: "system", content: `CRITICAL LANGUAGE LOCK: The next answer MUST be written only in ${forcedLabel}. The first line MUST be [[LANG:${forceLanguage}]]. Do not use Hindi unless the locked language is Hindi. Do not mix scripts.` }] : []),
           ...messages,
+          ...(isHerdGathering(herdHint) ? [{ role: "system", content: "FINAL INSTRUCTION: Reply with ONLY 2–4 simple questions for the farmer. No ration advice, no kg, no ₹, no bullet feed list. First line must still be [[LANG:xx]]." }] : []),
           ...(forceLanguage && forcedLabel ? [{ role: "system", content: `FINAL CHECK BEFORE ANSWERING: Reply in ${forcedLabel} only, with [[LANG:${forceLanguage}]] as the first line. Keep it simple enough for a farmer.` }] : []),
         ],
         stream,

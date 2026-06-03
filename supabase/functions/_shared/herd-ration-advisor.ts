@@ -13,7 +13,7 @@ export interface AnimalProfile {
   breedKey: string;
   breedName: string;
   bodyWeight: number;
-  status: "in_milk" | "dry" | "pregnant" | "heifer";
+  status: "in_milk" | "dry" | "pregnant" | "heifer" | "unknown";
   milkKg: number;
   fatPct: number;
   lactationStage: string;
@@ -31,37 +31,39 @@ export interface ParsedAnimalSlot {
 }
 
 const HERD_COUNT_RE = [
-  /(?:i have|we have|mere paas|meri|mere|hamare paas|total|)\s*(\d{1,2})\s*(?:cow|cows|buffalo|buffaloes|buffalos|animal|animals|milch|milking|gaay|gai|gay|gaye|bhains|bhens|pashu|pashuon|पशु|गाय|गायें|भैंस)/i,
-  /(\d{1,2})\s*(?:cow|cows|buffalo|buffaloes|animal|animals|milch|gaay|gai|bhains|pashu|गाय|भैंस|पशु)/i,
+  /(?:i have|we have|mere paas|meri|mere|mari|mara|hamare paas|total|)\s*(\d{1,2})\s*(?:cow|cows|buffalo|buffaloes|buffalos|animal|animals|milch|milking|gaay|gai|gay|gaye|bhains|bhens|pashu|pashuon|vaca|पशु|गाय|गायें|भैंस|ગાય|ભેંસ)/i,
+  /(\d{1,2})\s*(?:cow|cows|buffalo|buffaloes|animal|animals|milch|gaay|gai|bhains|pashu|गाय|भैंस|પશુ|ગાય|ભેંસ)/i,
   /herd\s*(?:of\s*)?(\d{1,2})/i,
   /(\d{1,2})\s*(?:milch|dairy)\s*(?:animal|cattle|cow)/i,
 ];
 
-const HERD_KEYWORDS = /herd|sabhi|saari|saare|each|har ek|per animal|poori mandli|सभी|हर|प्रत्येक|herd ration|mandli|pashuon/i;
+const HERD_KEYWORDS = /herd|sabhi|saari|saare|each|har ek|per animal|poori mandli|badha|badhi|sab same|ek jaise|सभी|हर|प्रत्येक|herd ration|mandli|pashuon|બધ/i;
+
+const HOMOGENEOUS_HERD = /sab same|all same|same breed|ek jaise|ek jaisi|badha same|badhi same|saru same|same type|બધા સમાન|એક જ/pr/i;
 
 const BREED_PATTERNS: [RegExp, string][] = [
-  [/murrah|मुर्रा/i, "murrah_buffalo"],
+  [/murrah|मुर्रा|મુર્રા/i, "murrah_buffalo"],
   [/jaffarabadi|jaff/i, "jaffarabadi"],
-  [/surti|सurti/i, "surti_buffalo"],
-  [/gir|गिर/i, "gir_cow"],
+  [/surti|સુરતી/i, "surti_buffalo"],
+  [/gir|गिर|ગીર/i, "gir_cow"],
   [/sahiwal|साहीवाल/i, "gir_cow"],
   [/tharparkar/i, "tharparkar"],
   [/holstein|hf\b|friesian|crossbred|cross|क्रॉस/i, "hf_jersey_cross"],
   [/jersey/i, "hf_jersey_cross"],
-  [/buffalo|भैंस|bhains|bhens/i, "murrah_buffalo"],
-  [/desi|indigenous|local|स्थानीय/i, "gir_cow"],
+  [/buffalo|भैंस|bhains|bhens|ભેંસ/i, "murrah_buffalo"],
+  [/desi|indigenous|local|स्थानीय|દેસી/i, "gir_cow"],
 ];
 
 const STATUS_PATTERNS: [RegExp, AnimalProfile["status"]][] = [
-  [/dry|sukhi|sukha|sookhi|without milk|no milk|doodh nahi|दूध नही|सूख/i, "dry"],
-  [/pregnant|gaabhan|garbh|gestation|गर्भ|गाबhin|expecting/i, "pregnant"],
-  [/heifer|bachiya|young|not calved|pehli bar|बछिया|young cow/i, "heifer"],
-  [/in milk|milking|doodh|dudh|milk giving|दूध दे|giving milk|lactating/i, "in_milk"],
+  [/dry|sukhi|sukha|sookhi|without milk|no milk|doodh nahi|dudh nahi|दूध नही|સૂક/i, "dry"],
+  [/pregnant|gaabhan|garbh|gestation|गर्भ|ગાભ|expecting|garbhi/i, "pregnant"],
+  [/heifer|bachiya|young|not calved|pehli bar|बछिया|young cow|વાછરડ/i, "heifer"],
+  [/in milk|milking|doodh de|dudh de|milk giving|दूध दे|giving milk|lactating|દૂધ આપ/i, "in_milk"],
 ];
 
 const REGION_KEYWORDS: [RegExp, Region][] = [
   [/punjab|haryana|up\b|uttar pradesh|north india|delhi|rajasthan.*north/i, "north"],
-  [/gujarat|rajasthan|madhya pradesh|mp\b|west india|गुजरात/i, "west"],
+  [/gujarat|rajasthan|madhya pradesh|mp\b|west india|गुजरात|ગુજરાત/i, "west"],
   [/karnataka|andhra|telangana|tamil|kerala|south india|दक्षिण/i, "south"],
   [/bengal|bihar|odisha|orissa|assam|east india|wb\b/i, "east"],
   [/maharashtra|deccan|central india|महाराष्ट्र/i, "central"],
@@ -100,11 +102,11 @@ function detectSeason(): "kharif" | "rabi" | "summer" {
   return "summer";
 }
 
-function detectBreed(text: string): string {
+function detectBreed(text: string): string | null {
   for (const [re, key] of BREED_PATTERNS) {
     if (re.test(text)) return key;
   }
-  return "hf_jersey_cross";
+  return null;
 }
 
 function detectStatus(text: string): AnimalProfile["status"] | null {
@@ -139,16 +141,16 @@ function lactationStageFromDim(dim: number | null): string {
 }
 
 function parseLactationNumber(text: string): number | null {
-  if (/pehli|first|1st|pahli|पहली|pratham/i.test(text)) return 1;
-  if (/doosri|second|2nd|dusri|दूसरी/i.test(text)) return 2;
-  if (/teesri|third|3rd|3\+|teen|तीसरी|zyada|more than 2/i.test(text)) return 3;
-  const n = extractNumber(text, [/lactation\s*(?:no\.?|number)?\s*[:\s]?\s*(\d+)/i, /(\d+)\s*(?:th|rd|nd|st)\s*lactation/i]);
+  if (/pehli|first|1st|pahli|पहली|pratham|પહેલ/i.test(text)) return 1;
+  if (/doosri|second|2nd|dusri|दूसरी|બીજ/i.test(text)) return 2;
+  if (/teesri|third|3rd|3\+|teen|तीसरी|zyada|more than 2|ત્રીજ/i.test(text)) return 3;
+  const n = extractNumber(text, [/lactation\s*(?:no\.?|number)?\s*[:\s]?\s*(\d+)/i, /(\d+)\s*(?:th|rd|nd|st)\s*lactation/i, /(\d+)\s*(?:vi|mi|th)\s*(?:vyaat|lactation|calving)/i]);
   return n !== null && n >= 1 && n <= 12 ? Math.round(n) : null;
 }
 
 function parseAgeYears(text: string): number | null {
   const n = extractNumber(text, [
-    /(\d+(?:\.\d+)?)\s*(?:year|years|saal|varsh|वर्ष|yr)/i,
+    /(\d+(?:\.\d+)?)\s*(?:year|years|saal|varsh|वर्ष|yr|વર્ષ)/i,
     /age[:\s]+(\d+(?:\.\d+)?)/i,
     /(\d+)\s*saal/i,
   ]);
@@ -157,13 +159,12 @@ function parseAgeYears(text: string): number | null {
 
 function parseDim(text: string): number | null {
   const months = extractNumber(text, [
-    /(\d+)\s*(?:month|months|mahine|mahina|महीने|mo)\s*(?:since|after|pehle|ago|calv)/i,
+    /(\d+)\s*(?:month|months|mahine|mahina|महीने|mo|મહિન)/i,
     /calv(?:ed|ing)?\s*(?:\d+\s*)?(?:month|months|mahine|ago|pehle)/i,
-    /(\d+)\s*(?:month|months|mahine)\s*(?:ka|ki|old calf|bachha)/i,
+    /bachha\s*(\d+)\s*(?:month|mahine)/i,
   ]);
   if (months !== null) return Math.min(Math.round(months * 30), 400);
-  const days = extractNumber(text, [/(\d+)\s*(?:day|days|din)\s*(?:in milk|dim|since calv)/i]);
-  return days !== null ? days : null;
+  return null;
 }
 
 function parsePregnancyMonth(text: string): number | null {
@@ -177,66 +178,100 @@ function parsePregnancyMonth(text: string): number | null {
 
 function parseCurrentFeed(text: string): AnimalProfile["currentFeed"] {
   const greenKg = extractNumber(text, [
-    /(\d+(?:\.\d+)?)\s*kg\s*(?:green|hari|berseem|napier|fodder|chara|ghaas|grass)/i,
-    /(?:green|hari|berseem|napier|chara|ghaas)[^\d]{0,20}(\d+(?:\.\d+)?)\s*kg/i,
+    /(\d+(?:\.\d+)?)\s*kg\s*(?:green|hari|berseem|napier|fodder|chara|ghaas|grass|lili|ઘાસ)/i,
+    /(?:green|hari|berseem|napier|chara|ghaas|lili)[^\d]{0,24}(\d+(?:\.\d+)?)\s*kg/i,
   ]) ?? 0;
   const dryKg = extractNumber(text, [
-    /(\d+(?:\.\d+)?)\s*kg\s*(?:dry|straw|bhusa|sukha|parali|stover)/i,
-    /(?:straw|bhusa|sukha|dry)[^\d]{0,20}(\d+(?:\.\d+)?)\s*kg/i,
+    /(\d+(?:\.\d+)?)\s*kg\s*(?:dry|straw|bhusa|sukha|parali|stover|bhosa)/i,
+    /(?:straw|bhusa|sukha|dry|bhosa|parali)[^\d]{0,24}(\d+(?:\.\d+)?)\s*kg/i,
   ]) ?? 0;
   const concentrateKg = extractNumber(text, [
-    /(\d+(?:\.\d+)?)\s*kg\s*(?:concentrate|compound|feed|dana|daana|khali|cake|pellet|mittha)/i,
-    /(?:concentrate|compound feed|dana|daana|khali|cake)[^\d]{0,20}(\d+(?:\.\d+)?)\s*kg/i,
+    /(\d+(?:\.\d+)?)\s*kg\s*(?:concentrate|compound|feed|dana|daana|khali|cake|pellet|mittha|dan)/i,
+    /(?:concentrate|compound feed|dana|daana|khali|cake|dan)[^\d]{0,24}(\d+(?:\.\d+)?)\s*kg/i,
   ]) ?? 0;
-  const note = text.slice(0, 120).replace(/\s+/g, " ");
+  const hasFeedWords = /chara|chare|feed|fodder|bhusa|straw|dana|daana|khali|berseem|ghaas|ચાર/i.test(text);
+  const note = hasFeedWords ? text.slice(0, 160).replace(/\s+/g, " ") : "";
   return { greenKg, dryKg, concentrateKg, note };
 }
 
-function splitAnimalSegments(text: string, herdSize: number): string[] {
-  const numbered = text.split(/\b(?:animal|cow|buffalo|gaay|bhains|pashu)\s*#?\s*(\d+)\b[:\-—]?\s*/i);
-  if (numbered.length > 2) {
-    const segments: string[] = [];
-    for (let i = 1; i < numbered.length; i += 2) {
-      segments.push(numbered[i + 1] || "");
-    }
-    if (segments.length >= 2) return segments.slice(0, herdSize);
+function parseMilkKg(text: string, herdSize: number | null): number {
+  const patterns = [
+    /(\d+(?:\.\d+)?)\s*(?:litre|liter|ltr|l\b)\s*(?:milk|doodh|dudh|दूध|દૂધ)/i,
+    /(\d+(?:\.\d+)?)\s*(?:kg|l)\s*(?:milk|doodh|dudh)/i,
+    /(?:milk|doodh|dudh|दूध|દૂધ)[^\d]{0,12}(\d+(?:\.\d+)?)\s*(?:litre|liter|ltr|l\b|kg)/i,
+    /(\d+(?:\.\d+)?)\s*(?:litre|liter|ltr|l\b)\s*(?:\/|per|roz|daily|din)/i,
+    /roz\s*(\d+(?:\.\d+)?)\s*(?:litre|liter|ltr|l\b|kg)/i,
+    /subah[^.\d]{0,40}(\d+(?:\.\d+)?)[^\d]{0,20}(?:shaam|sandhya)[^\d]{0,20}(\d+(?:\.\d+)?)/i,
+  ];
+  const morningEvening = text.match(/subah[^.\d]{0,40}(\d+(?:\.\d+)?)[^\d]{0,30}(?:shaam|sandhya|saam)[^\d]{0,20}(\d+(?:\.\d+)?)/i);
+  if (morningEvening) {
+    return parseFloat(morningEvening[1]) + parseFloat(morningEvening[2]);
   }
-
-  const listParts = text.split(/\n|\.\s+|;\s+|,\s+(?=\d)/).filter(Boolean);
-  const milkHits = listParts.filter((p) => /(\d+(?:\.\d+)?)\s*(?:l|litre|liter|kg)\b/i.test(p) || detectBreed(p) !== "hf_jersey_cross" || detectStatus(p));
-  if (milkHits.length >= 2) return milkHits.slice(0, herdSize);
-
-  return [text];
+  for (const p of patterns) {
+    const m = text.match(p);
+    if (m?.[1]) {
+      const n = parseFloat(m[1]);
+      if (n > 0 && n <= 60) {
+        if (herdSize !== null && n === herdSize && !/(?:litre|liter|ltr|l\b|milk|doodh|dudh)/i.test(m[0])) continue;
+        return n;
+      }
+    }
+  }
+  return 0;
 }
 
-function buildProfileFromSegment(segment: string, index: number): ParsedAnimalSlot {
-  const breedKey = detectBreed(segment);
+function emptySlot(index: number): ParsedAnimalSlot {
+  return {
+    profile: { index, status: "unknown" },
+    missing: ["breed", "status (in milk / dry / pregnant)", "lactation or age", "current feed"],
+    complete: false,
+  };
+}
+
+function mergeProfile(base: Partial<AnimalProfile>, incoming: Partial<AnimalProfile>): Partial<AnimalProfile> {
+  const out = { ...base, ...incoming, index: base.index ?? incoming.index };
+  if (incoming.breedKey && incoming.breedKey !== "hf_jersey_cross") out.breedKey = incoming.breedKey;
+  else if (!out.breedKey && incoming.breedKey) out.breedKey = incoming.breedKey;
+  if (incoming.status && incoming.status !== "unknown") out.status = incoming.status;
+  if (incoming.milkKg && incoming.milkKg > 0) out.milkKg = incoming.milkKg;
+  if (incoming.lactationNumber) out.lactationNumber = incoming.lactationNumber;
+  if (incoming.ageYears) out.ageYears = incoming.ageYears;
+  if (incoming.currentFeed) {
+    out.currentFeed = {
+      greenKg: Math.max(base.currentFeed?.greenKg ?? 0, incoming.currentFeed.greenKg),
+      dryKg: Math.max(base.currentFeed?.dryKg ?? 0, incoming.currentFeed.dryKg),
+      concentrateKg: Math.max(base.currentFeed?.concentrateKg ?? 0, incoming.currentFeed.concentrateKg),
+      note: incoming.currentFeed.note || base.currentFeed?.note || "",
+    };
+  }
+  return out;
+}
+
+function buildProfileFromSegment(segment: string, index: number, herdSize: number | null): ParsedAnimalSlot {
+  const breedKey = detectBreed(segment) ?? "hf_jersey_cross";
   const breedName = BREED_WEIGHTS[breedKey]?.name ?? "Dairy animal";
-  const status = detectStatus(segment) ?? (extractNumber(segment, [/(\d+(?:\.\d+)?)\s*(?:l|litre|liter|kg)\b/i, /(\d+(?:\.\d+)?)\s*(?:kg|l)\s*(?:milk|doodh|dudh)/i]) ? "in_milk" : null);
-  const milkKg = extractNumber(segment, [
-    /(\d+(?:\.\d+)?)\s*(?:litre|liter|l\b|kg)\s*(?:milk|doodh|dudh|दूध)/i,
-    /(\d+(?:\.\d+)?)\s*(?:l|kg)\s*(?:\/|per)?\s*day/i,
-    /(\d+(?:\.\d+)?)\s*(?:litre|liter|l\b)/i,
-    /doodh[:\s]+(\d+(?:\.\d+)?)/i,
-    /milk[:\s]+(\d+(?:\.\d+)?)/i,
-  ]) ?? 0;
+  const statusDetected = detectStatus(segment);
+  const milkKg = parseMilkKg(segment, herdSize);
   const fatPct = extractNumber(segment, [/fat[:\s]+(\d+(?:\.\d+)?)/i, /(\d+(?:\.\d+)?)\s*%\s*fat/i]) ?? defaultFat(breedKey);
   const dim = parseDim(segment);
   const lactationNumber = parseLactationNumber(segment);
   const ageYears = parseAgeYears(segment);
   const pregnancyMonth = parsePregnancyMonth(segment);
-  const pregnant = status === "pregnant" || pregnancyMonth !== null;
-  const resolvedStatus: AnimalProfile["status"] = status ?? (milkKg > 0 ? "in_milk" : pregnant ? "pregnant" : "dry");
-  const lactationStage = resolvedStatus === "dry" ? "dry" : lactationStageFromDim(dim);
+  const pregnant = statusDetected === "pregnant" || pregnancyMonth !== null;
   const currentFeed = parseCurrentFeed(segment);
+
+  let status: AnimalProfile["status"] = statusDetected ?? "unknown";
+  if (status === "unknown" && milkKg > 0) status = "in_milk";
+
+  const lactationStage = status === "dry" ? "dry" : lactationStageFromDim(dim);
 
   const profile: Partial<AnimalProfile> = {
     index,
     breedKey,
     breedName,
     bodyWeight: BREED_WEIGHTS[breedKey]?.bw ?? 450,
-    status: resolvedStatus,
-    milkKg: resolvedStatus === "in_milk" ? milkKg : 0,
+    status,
+    milkKg: status === "in_milk" ? milkKg : 0,
     fatPct,
     lactationStage,
     lactationNumber,
@@ -246,48 +281,79 @@ function buildProfileFromSegment(segment: string, index: number): ParsedAnimalSl
     currentFeed,
   };
 
-  const breedExplicit = BREED_PATTERNS.some(([re]) => re.test(segment));
-  const statusExplicit = detectStatus(segment) !== null;
+  const breedDetected = detectBreed(segment);
+  const breedExplicit = breedDetected !== null;
+  const statusExplicit = statusDetected !== null || (milkKg > 0 && /milk|doodh|dudh|litre|liter|ltr|l\b|roz|subah|shaam/i.test(segment));
+  const hasLactationOrAge = lactationNumber !== null || ageYears !== null;
+  const hasFeedData =
+    currentFeed.greenKg + currentFeed.dryKg + currentFeed.concentrateKg > 0 ||
+    (currentFeed.note.length > 0 && /chara|feed|bhusa|dana|khali|berseem|ghaas|straw/i.test(segment));
 
   const missing: string[] = [];
-  if (!breedExplicit) {
-    missing.push("breed (nasl — Gir, Murrah, crossbred, etc.)");
-  }
-  if (!statusExplicit && milkKg <= 0 && !pregnant) {
-    missing.push("status (doodh de rahi hai, sukhi hai, ya garbh mein hai?)");
-  }
-  if (resolvedStatus === "in_milk" && milkKg <= 0) {
-    missing.push("daily milk yield (roz kitna litre dudh?)");
-  }
-  if (lactationNumber === null && ageYears === null) {
-    missing.push("age or lactation number (pehli/doosri vyaat, ya kitne saal ki?)");
-  }
-  if (currentFeed.greenKg + currentFeed.dryKg + currentFeed.concentrateKg === 0) {
-    missing.push("current feed (ab kya khilati ho — hara chara, sukha, dana kitna kg?)");
-  }
+  if (!breedExplicit) missing.push("breed (kaun si nasl — Gir, Murrah, crossbred?)");
+  if (!statusExplicit) missing.push("status (ab doodh de rahi hai, sukhi hai, ya garbh mein?)");
+  if (status === "in_milk" && milkKg <= 0) missing.push("daily milk (roz kitna litre dudh?)");
+  if (!hasLactationOrAge) missing.push("age or lactation (pehli/doosri vyaat, ya kitne saal ki?)");
+  if (!hasFeedData) missing.push("current feed (ab kya khilati ho — hara chara, sukha, dana kitna kg?)");
 
-  const hasCoreData =
+  const complete =
     breedExplicit &&
-    (statusExplicit || milkKg > 0 || pregnant || resolvedStatus === "dry") &&
-    (resolvedStatus !== "in_milk" || milkKg > 0);
-
-  const complete = hasCoreData;
+    statusExplicit &&
+    (status !== "in_milk" || milkKg > 0) &&
+    hasLactationOrAge &&
+    hasFeedData;
 
   return { profile, missing, complete };
 }
 
-function expandProfiles(segments: string[], herdSize: number): ParsedAnimalSlot[] {
-  const slots: ParsedAnimalSlot[] = [];
-  for (let i = 0; i < herdSize; i++) {
-    const segment = segments[i] ?? segments[segments.length - 1] ?? "";
-    slots.push(buildProfileFromSegment(segment, i + 1));
-  }
-  if (segments.length === 1 && herdSize > 1) {
-    for (let i = 1; i < herdSize; i++) {
-      slots[i] = buildProfileFromSegment(segments[0], i + 1);
-      slots[i].profile.index = i + 1;
+function evaluateSlot(profile: Partial<AnimalProfile>): ParsedAnimalSlot {
+  const segment = [
+    profile.breedName,
+    profile.status,
+    profile.milkKg ? `${profile.milkKg} litre` : "",
+    profile.lactationNumber ? `lactation ${profile.lactationNumber}` : "",
+    profile.ageYears ? `${profile.ageYears} years` : "",
+    profile.currentFeed?.note,
+    profile.currentFeed?.greenKg ? `${profile.currentFeed.greenKg} kg green` : "",
+    profile.currentFeed?.dryKg ? `${profile.currentFeed.dryKg} kg dry` : "",
+    profile.currentFeed?.concentrateKg ? `${profile.currentFeed.concentrateKg} kg concentrate` : "",
+  ].filter(Boolean).join(" ");
+  return buildProfileFromSegment(segment, profile.index ?? 1, null);
+}
+
+function buildSlotsFromConversation(
+  messages: { role: string; content: string }[],
+  herdSize: number,
+): ParsedAnimalSlot[] {
+  const slots: ParsedAnimalSlot[] = Array.from({ length: herdSize }, (_, i) => emptySlot(i + 1));
+  const userMsgs = messages.filter((m) => m.role === "user").map((m) => m.content);
+  const allUser = userMsgs.join("\n");
+  const homogeneous = HOMOGENEOUS_HERD.test(allUser);
+
+  let activeIdx = 0;
+  for (const msg of userMsgs) {
+    const isHerdAnnouncement = detectHerdCount(msg) !== null && msg.length < 120;
+    if (isHerdAnnouncement && !detectBreed(msg) && !parseMilkKg(msg, herdSize)) continue;
+
+    const parsed = buildProfileFromSegment(msg, activeIdx + 1, herdSize);
+    slots[activeIdx].profile = mergeProfile(slots[activeIdx].profile, parsed.profile);
+    const evaluated = evaluateSlot(slots[activeIdx].profile);
+    slots[activeIdx] = { ...evaluated, profile: { ...evaluated.profile, index: activeIdx + 1 } };
+
+    if (slots[activeIdx].complete && activeIdx < herdSize - 1) {
+      activeIdx += 1;
     }
   }
+
+  if (homogeneous && slots[0].complete) {
+    for (let i = 1; i < herdSize; i++) {
+      slots[i] = {
+        ...evaluateSlot({ ...slots[0].profile, index: i + 1 }),
+        profile: { ...slots[0].profile, index: i + 1 },
+      };
+    }
+  }
+
   return slots;
 }
 
@@ -315,10 +381,7 @@ function computeAnimalRation(profile: AnimalProfile, region: Region, season: Ret
   return { profile, req, result, currentCost, optimalCost, savings };
 }
 
-function formatAnimalBlock(
-  computed: ReturnType<typeof computeAnimalRation>,
-  region: Region,
-): string {
+function formatAnimalBlock(computed: ReturnType<typeof computeAnimalRation>): string {
   const { profile, req, result, currentCost, optimalCost, savings } = computed;
   const lines = result.ration.map((r) => `    • ${r.name}: ${r.asFeKg} kg/day (₹${r.cost.toFixed(0)}/day)`);
   const statusLabel = profile.status === "in_milk"
@@ -338,7 +401,7 @@ function formatAnimalBlock(
     ...lines,
     `    Optimal cost: ₹${optimalCost.toFixed(0)}/day`,
     currentCost > 0 ? `    Current feed cost (estimated): ₹${currentCost.toFixed(0)}/day` : "",
-    `    Estimated saving: ₹${savings.toFixed(0)}/day${currentCost <= 0 ? " (approx — farmer did not give current feed amounts; NDDB avg ~₹16–25/animal/day)" : ""}`,
+    `    Estimated saving: ₹${savings.toFixed(0)}/day${currentCost <= 0 ? " (approx — NDDB avg ~₹16–25/animal/day)" : ""}`,
   ].filter(Boolean).join("\n");
 }
 
@@ -364,42 +427,49 @@ function aggregateHerd(computed: ReturnType<typeof computeAnimalRation>[]) {
   return { ingredientTotals, totalOptimal, totalCurrent, totalSavings };
 }
 
+function gatherPrompt(herdSize: number, slots: ParsedAnimalSlot[]): string {
+  const next = slots.find((s) => !s.complete) ?? slots[0];
+  const idx = next.profile.index ?? 1;
+  const missingList = next.missing.slice(0, 4).map((m) => `- ${m}`).join("\n");
+  const profiled = slots.filter((s) => s.complete).length;
+
+  return [
+    "⚠️ HERD RATION — QUESTIONS ONLY (MANDATORY THIS TURN)",
+    "The farmer has NOT given enough details yet. You MUST ask follow-up questions.",
+    "FORBIDDEN this turn: ration tables, kg amounts, feed plans, cost estimates, bullet lists of feed.",
+    "FORBIDDEN: answering from general knowledge — only ask questions.",
+    "",
+    `Herd size: ${herdSize} animals. Fully profiled: ${profiled}/${herdSize}.`,
+    `Ask about Animal #${idx} now — in the farmer's own simple language (same as their last message).`,
+    "",
+    "Ask 2–4 short easy questions, for example:",
+    "  • Kaun si nasl hai? (Gir, Murrah, crossbred?)",
+    "  • Ab doodh de rahi hai, sukhi hai, ya garbh mein?",
+    "  • Roz kitna litre dudh? (agar doodh de rahi ho)",
+    "  • Pehli/doosri vyaat? Ya kitne saal ki?",
+    "  • Ab kya khilati ho — hara chara, sukha bhusa, dana kitna kg?",
+    "",
+    `Still missing for Animal #${idx}:`,
+    missingList,
+    "",
+    "If all animals are the same, you may ask once and say 'kya badha ek jaisa hai?'",
+    "End with a friendly line like: 'Jawab do, phir main sahi ration batata/bataati hoon.'",
+  ].join("\n");
+}
+
 export function tryHerdRationHint(messages: { role: string; content: string }[]): string | null {
   const all = conversationText(messages);
   const users = userText(messages);
   const herdSize = detectHerdCount(users) ?? detectHerdCount(all);
-  if (herdSize === null && !HERD_KEYWORDS.test(users)) return null;
   if (herdSize === null) return null;
 
   const region = detectRegion(all);
   const season = detectSeason();
-  const segments = splitAnimalSegments(users, herdSize);
-  const slots = expandProfiles(segments, herdSize);
-  const completeCount = slots.filter((s) => s.complete).length;
+  const slots = buildSlotsFromConversation(messages, herdSize);
   const allComplete = slots.every((s) => s.complete);
 
   if (!allComplete) {
-    const next = slots.find((s) => !s.complete) ?? slots[0];
-    const idx = next.profile.index ?? 1;
-    const missingList = next.missing.slice(0, 4).map((m) => `- ${m}`).join("\n");
-    const profiled = slots.filter((s) => s.complete).length;
-
-    return [
-      "HERD RATION ADVISORY — GATHER INFORMATION (do NOT calculate final ration yet)",
-      `Farmer mentioned a herd of ${herdSize} animals. Profiled so far: ${profiled}/${herdSize}.`,
-      `Now ask about Animal #${idx} in VERY SIMPLE farmer-friendly language — same language as the farmer's last message.`,
-      "Ask only 2–4 short questions at a time (especially on live call). Use easy words, not technical terms.",
-      "Questions to cover (from NDDB Balanced Ration Guide Section 3):",
-      "  1) Cow or buffalo? Which breed (Gir, Murrah, crossbred…)?",
-      "  2) Is she giving milk now, dry, or pregnant?",
-      "  3) If milking: how many litres per day? Fat % if known.",
-      "  4) Which lactation (pehli/doosri/teesri) or age in years?",
-      "  5) What do you feed now — green fodder kg, dry straw kg, concentrate/dana kg?",
-      `Still needed for Animal #${idx}:`,
-      missingList || "- breed, milk/dry/pregnant status, current feed",
-      "Do NOT give the final ration table until all animals have breed + status + milk (if milking) + current feed.",
-      "Be warm and patient — like a village extension worker on WhatsApp.",
-    ].join("\n");
+    return gatherPrompt(herdSize, slots);
   }
 
   const profiles: AnimalProfile[] = slots.map((s) => ({
@@ -407,7 +477,7 @@ export function tryHerdRationHint(messages: { role: string; content: string }[])
     breedKey: s.profile.breedKey ?? "hf_jersey_cross",
     breedName: s.profile.breedName ?? "Dairy animal",
     bodyWeight: s.profile.bodyWeight ?? 450,
-    status: s.profile.status ?? "in_milk",
+    status: (s.profile.status === "unknown" ? "in_milk" : s.profile.status) as AnimalProfile["status"],
     milkKg: s.profile.milkKg ?? 0,
     fatPct: s.profile.fatPct ?? 4,
     lactationStage: s.profile.lactationStage ?? "mid",
@@ -420,34 +490,31 @@ export function tryHerdRationHint(messages: { role: string; content: string }[])
 
   const computed = profiles.map((p) => computeAnimalRation(p, region, season));
   const agg = aggregateHerd(computed);
-
   const herdLines = Object.values(agg.ingredientTotals)
     .sort((a, b) => b.kg - a.kg)
-    .map((i) => `  • ${i.name}: ${i.kg.toFixed(1)} kg/day total for ${herdSize} animals (₹${i.cost.toFixed(0)}/day)`);
-
-  const perAnimal = computed.map((c) => formatAnimalBlock(c, region)).join("\n\n");
+    .map((i) => `  • ${i.name}: ${i.kg.toFixed(1)} kg/day total (₹${i.cost.toFixed(0)}/day)`);
+  const perAnimal = computed.map((c) => formatAnimalBlock(c)).join("\n\n");
 
   return [
-    "HERD RATION ADVISORY — COMPUTED RESULTS (use these EXACT numbers in your answer)",
-    `Herd: ${herdSize} animals | Region: ${region} India | Season: ${season}`,
+    "HERD RATION ADVISORY — COMPUTED RESULTS (use these EXACT numbers)",
+    `Herd: ${herdSize} animals | Region: ${region} | Season: ${season}`,
     "",
-    "PER ANIMAL (balanced least-cost ration — ICAR/NDDB):",
+    "PER ANIMAL:",
     perAnimal,
     "",
-    "TOTAL TO PREPARE DAILY FOR THE WHOLE HERD:",
+    "TOTAL DAILY FOR WHOLE HERD:",
     ...herdLines,
-    `  • Mineral mixture (ASMM): ${(0.15 * herdSize).toFixed(2)} kg/day total`,
+    `  • Mineral mixture: ${(0.15 * herdSize).toFixed(2)} kg/day`,
     "",
-    `Herd optimal feed cost: ₹${agg.totalOptimal.toFixed(0)}/day (₹${(agg.totalOptimal * 30).toFixed(0)}/month)`,
+    `Herd cost: ₹${agg.totalOptimal.toFixed(0)}/day (₹${(agg.totalOptimal * 30).toFixed(0)}/month)`,
     agg.totalCurrent > 0
-      ? `Estimated current feed cost: ₹${agg.totalCurrent.toFixed(0)}/day → Saving ~₹${agg.totalSavings.toFixed(0)}/day (₹${(agg.totalSavings * 30).toFixed(0)}/month)`
-      : `Estimated saving vs typical over-feeding: ~₹${(25.5 * herdSize).toFixed(0)}/day (NDDB field average ₹25.5/animal/day)`,
+      ? `Saving ~₹${agg.totalSavings.toFixed(0)}/day vs current feed`
+      : `Typical saving ~₹${(25.5 * herdSize).toFixed(0)}/day (NDDB average)`,
     "",
-    "Tell the farmer in SIMPLE language:",
-    "- For EACH animal: what to give daily (kg of green, dry, concentrate)",
-    "- For the WHOLE herd: total kg to prepare/mix each morning",
-    "- How much money they can save per day and month",
-    "- Remind: verify local prices; use cooperative compound feed if available; clean water 40–50 L/animal",
-    "- Suggest Pashu Poshan app or NDDB LRP for fine-tuning",
+    "Explain in SIMPLE farmer language: per-animal feed, total herd prep, savings.",
   ].join("\n");
+}
+
+export function isHerdGathering(hint: string | null): boolean {
+  return hint !== null && hint.includes("QUESTIONS ONLY");
 }
