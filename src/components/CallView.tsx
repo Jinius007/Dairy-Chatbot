@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Phone, PhoneOff, Mic, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase, isSupabaseConfigured } from "@/integrations/supabase/client";
-import { LANG_NAMES, detectLanguageCode } from "@/lib/languages";
+import { LANG_NAMES, detectLanguageCode, resolveTtsLanguage } from "@/lib/languages";
 import { speakText, stopSpeech, unlockAudioPlayback } from "@/lib/speech";
 import { getSessionId } from "@/lib/session";
 import { logConversationTurn } from "@/lib/log-turn";
@@ -180,8 +180,8 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
       if (!chatRes.ok) throw new Error(payload?.error || `Chat failed (${chatRes.status})`);
       const raw = readTextPayload(payload);
       const parsed = splitLangHeader(raw);
-      const lang = detectedLang || parsed.lang;
       const body = parsed.body;
+      const lang = resolveTtsLanguage(body, parsed.lang || detectedLang);
       const answer = body.trim();
       if (!answer) throw new Error("No answer was generated. Please try again.");
       const assistantTurn: CallTurn = {

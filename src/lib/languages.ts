@@ -46,6 +46,20 @@ export function detectLanguageCode(text: string): string | null {
   return /[a-z]/i.test(text) ? "en" : null;
 }
 
+/** Bhashini needs the lang code to match the script in the reply text. */
+export function resolveTtsLanguage(text: string, hint: string | null): string {
+  const fromText = detectLanguageCode(text);
+  const tag = hint && hint in LANG_NAMES ? hint : null;
+
+  if (fromText) {
+    if (!tag) return fromText;
+    // AI often mis-tags Indic replies as hi or en (Gujarati is the common TTS failure).
+    if (fromText !== tag && (tag === "hi" || tag === "en")) return fromText;
+  }
+
+  return tag || fromText || "hi";
+}
+
 export function prepareTextForSpeech(text: string): string {
   return text
     .replace(/\[?\[?\s*LANG\s*:\s*[a-zA-Z]{2}\s*\]?\]?/gi, " ")

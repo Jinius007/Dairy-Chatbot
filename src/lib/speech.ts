@@ -1,4 +1,4 @@
-import { prepareTextForSpeech, splitForTts, LANG_NAMES } from "@/lib/languages";
+import { prepareTextForSpeech, resolveTtsLanguage, splitForTts } from "@/lib/languages";
 
 let activeToken = 0;
 let speechChain: Promise<void> = Promise.resolve();
@@ -116,7 +116,7 @@ async function speakViaBhashini(text: string, lang: string | null, token: number
   const spoken = prepareTextForSpeech(text);
   if (!spoken || token !== activeToken) return false;
 
-  const code = lang && lang in LANG_NAMES ? lang : "hi";
+  const code = resolveTtsLanguage(spoken, lang);
   const chunks = splitForTts(spoken);
   if (chunks.length === 0) return false;
 
