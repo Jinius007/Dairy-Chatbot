@@ -48,6 +48,8 @@ const COUNT_WORDS: [RegExp, string][] = [
 const HERD_COUNT_RE = [
   /(?:i have|we have|mere paas|meri|mere|mari|mara|hamare paas|total|)\s*(\d{1,2})\s*(?:cow|cows|buffalo|buffaloes|buffalos|animal|animals|milch|milking|gaay|gai|gay|gaye|bhains|bhens|pashu|pashuon|vaca|पशु|गाय|गायें|भैंस|ગાય|ભેંસ)/i,
   /(\d{1,2})\s*(?:cow|cows|buffalo|buffaloes|animal|animals|milch|gaay|gai|bhains|pashu|गाय|भैंस|પશુ|ગાય|ભેંસ)/i,
+  /(?:i have|we have|mere paas|mar[eey] paas|hamare paas)\s*(\d{1,2})\b/i,
+  /(\d{1,2})\s*(?:pashu|pashuvon|animals|cattle|milch|dairy\s*animals)/i,
   /herd\s*(?:of\s*)?(\d{1,2})/i,
   /(\d{1,2})\s*(?:milch|dairy)\s*(?:animal|cattle|cow)/i,
   /(?:मेर[eey]?|हमार[eey]?)\s*(?:पास|पासे)?\s*(\d{1,2})\s*(?:गाय|गायें|गौ|भैंस|पशु|मवेशी)/u,
@@ -491,27 +493,32 @@ function gatherPrompt(herdSize: number, slots: ParsedAnimalSlot[]): string {
   return [
     "⚠️ HERD RATION — QUESTIONS ONLY (MANDATORY THIS TURN)",
     "The farmer has NOT given enough details yet. You MUST ask follow-up questions.",
-    "FORBIDDEN this turn: ration tables, kg amounts, feed plans, cost estimates, bullet lists of feed.",
+    "FORBIDDEN this turn: ration tables, kg amounts, feed plans, cost estimates, generic ration advice from knowledge base.",
     "FORBIDDEN: answering from general knowledge — only ask questions.",
     "",
-    `Herd size: ${herdSize} animals. Fully profiled: ${profiled}/${herdSize}.`,
-    `Ask about Animal #${idx} now — MUST use the farmer's language (all 12 Indian languages + English). Hindi examples below are ONLY templates — translate to locked language.`,
+    `DECLARED HERD SIZE: ${herdSize} animals. Fully profiled: ${profiled}/${herdSize}.`,
+    profiled === 0
+      ? `Farmer stated ${herdSize} animals but gave NO per-animal details yet. Acknowledge the count, then ask about Animal #1.`
+      : `Still need details for ${herdSize - profiled} more animal(s). Now ask about Animal #${idx}.`,
     "",
-    "NEVER use hard words like 'lactation', 'DIM', 'parity' with the farmer.",
-    "Use simple village words: byaat/vyaat, bachha hua, gaabhin/garbh, doodh deti, sukhi.",
+    `You MUST collect complete details for ALL ${herdSize} animals (breed, status, milk if milking, byaat/age, current feed) before any ration can be calculated.`,
+    `Ask about Animal #${idx} — use farmer's language (all 12 Indian languages + English).`,
     "",
-    "Ask 2–4 short easy questions (translate to farmer's language — e.g. Tamil farmer gets Tamil questions):",
-    "  • Kaun si nasl hai? (Murrah, Gir, desi?)",
-    "  • Ab doodh de rahi hai, sukhi hai, ya garbh mein hai?",
-    "  • Is haalat mein kitne din/mahine? Roz kitna litre dudh?",
-    "  • Kitni baar bachha hua / gaabhin hui? (pehli, doosri byaat?) Kitne saal ki?",
-    "  • Ab kya khilati hain — hara chara, sukha bhusa, dana kitna kg?",
+    "NEVER use hard words like 'lactation', 'DIM', 'parity'. Use: byaat, bachha hua, gaabhin, doodh deti, sukhi.",
+    "",
+    "Ask 2–4 short questions for THIS animal:",
+    "  • Breed? (Murrah, Gir, desi, cross?)",
+    "  • Milking, dry, or pregnant?",
+    "  • How long in this state? Daily milk litres if milking?",
+    "  • How many times calved / pregnant before? Age?",
+    "  • Current feed — green fodder, straw, concentrate (kg)?",
     "",
     `Still missing for Animal #${idx}:`,
     missingList,
     "",
-    "If all animals are the same, you may ask once and say 'kya badha ek jaisa hai?'",
-    "End with: 'Jawab dijiye, phir main sahi balanced ration batata/bataati hoon.'",
+    `After Animal #${idx}, continue until all ${herdSize} animals are profiled.`,
+    "If all animals are identical, ask once: 'Are all the same?' then copy details.",
+    "End with a line inviting the farmer to reply.",
   ].join("\n");
 }
 
@@ -519,15 +526,83 @@ function initialCountPrompt(): string {
   return [
     "⚠️ RATION ADVISORY — QUESTIONS ONLY (MANDATORY THIS TURN)",
     "Farmer opened Ration Advisory. Reply in THEIR language only (from language lock).",
-    "Ask 2–4 short easy questions about what they have NOT told yet (NO hard words — no 'lactation'):",
-    "  • Kitni gaay/bhains? Kaun si nasl (Murrah, Gir...)?",
-    "  • Har pashu — doodh deti hai, sukhi hai, ya garbh mein?",
-    "  • Is haalat mein kitne din/mahine? Roz kitna dudh?",
-    "  • Kitni baar bachha hua / gaabhin hui? (pehli, doosri byaat?) Kitne saal ki?",
-    "  • Ab kya khilati hain (hara chara, bhusa, dana kitna kg)?",
-    "FORBIDDEN this turn: ration tables, kg amounts, feed plans, cost estimates.",
-    "Translate all questions into the farmer's language — do not use English unless farmer wrote in English.",
+    "First ask: how many dairy animals (gaay/bhains/pashu)?",
+    "Then ask 2–3 more about breed, status (doodh/sukhi/garbh), feed — for Animal #1.",
+    "FORBIDDEN this turn: ration tables, kg amounts, feed plans, cost estimates, generic ration advice.",
+    "Do NOT give balanced ration until ALL animals are fully profiled and farmer confirms summary.",
   ].join("\n");
+}
+
+interface DeclaredCountInfo {
+  count: number | null;
+  uniqueCounts: number[];
+  conflict: boolean;
+}
+
+function resolveDeclaredCount(messages: { role: string; content: string }[]): DeclaredCountInfo {
+  const declared: number[] = [];
+  for (const m of messages.filter((x) => x.role === "user")) {
+    const c = detectAnimalCount(m.content);
+    if (c !== null) declared.push(c);
+  }
+  const unique = [...new Set(declared)];
+  if (unique.length === 0) {
+    const all = detectAnimalCount(userText(messages)) ?? detectAnimalCount(conversationText(messages));
+    return { count: all, uniqueCounts: all !== null ? [all] : [], conflict: false };
+  }
+  if (unique.length > 1) {
+    return { count: declared[declared.length - 1], uniqueCounts: unique, conflict: true };
+  }
+  return { count: unique[0], uniqueCounts: unique, conflict: false };
+}
+
+function countConflictPrompt(uniqueCounts: number[]): string {
+  return [
+    "⚠️ HERD COUNT MISMATCH — QUESTIONS ONLY (MANDATORY THIS TURN)",
+    `Farmer mentioned different animal counts: ${uniqueCounts.join(", ")}.`,
+    "Ask in farmer's language: 'Aapne alag alag sankhya batayi — asal mein kitne pashu hain?'",
+    "Clarify the EXACT total before continuing. No ration advice this turn.",
+  ].join("\n");
+}
+
+function formatSlotSummary(slots: ParsedAnimalSlot[]): string {
+  return slots.map((s) => {
+    const p = s.profile;
+    const st = p.status ?? "unknown";
+    const milk = p.milkKg && p.milkKg > 0 ? `${p.milkKg} L/day` : "-";
+    return `  Animal #${p.index}: ${p.breedName ?? "?"} | ${st} | milk ${milk} | byaat/age ${p.lactationNumber ?? p.ageYears ?? "?"}`;
+  }).join("\n");
+}
+
+function verificationPrompt(herdSize: number, slots: ParsedAnimalSlot[]): string {
+  return [
+    "⚠️ HERD RATION — VERIFY BEFORE COMPUTE (MANDATORY THIS TURN)",
+    `All ${herdSize} animals profiled. Read back summary and ask farmer to CONFIRM before giving ration.`,
+    "FORBIDDEN this turn: ration kg amounts, feed tables, cost estimates.",
+    "",
+    "PARSED SUMMARY (read back in farmer's language):",
+    formatSlotSummary(slots),
+    "",
+    `Confirm total count: ${herdSize} animals matches what farmer said.`,
+    "Ask: 'Kya yeh sab sahi hai? Haan likhein to main ration batata/bataati hoon.'",
+    "If farmer says no or corrects details, ask only about the corrected animal — do not compute yet.",
+  ].join("\n");
+}
+
+const CONFIRM_RE = /^(haan|han|ha|ji|yes|y|ok|okay|theek|thik|sahi|correct|confirm|right|हाँ|हां|जी|ठीक|सही|बराबर|બરાબર|ஆம்|అవును|হ্যাঁ|ঠিক|yes please)/iu;
+
+function verificationWasRequested(messages: { role: string; content: string }[]): boolean {
+  const assistants = messages.filter((m) => m.role === "assistant").map((m) => m.content);
+  const last = assistants[assistants.length - 1] ?? "";
+  return /verify|confirm|sahi|theek|thik|punah|dohra|summary|इस तरह|ठीक है|confirm/i.test(last);
+}
+
+function farmerConfirmed(messages: { role: string; content: string }[]): boolean {
+  const users = messages.filter((m) => m.role === "user");
+  const last = users[users.length - 1]?.content.trim() ?? "";
+  if (!last) return false;
+  if (/^(nahi|na|no|galat|wrong|गलत|नही)/iu.test(last)) return false;
+  return CONFIRM_RE.test(last) || /^(haan|han|ji)\b/iu.test(last);
 }
 
 function buildRationAdvisoryHint(
@@ -596,10 +671,32 @@ function buildRationAdvisoryHint(
 
 /** Dedicated Ration Advisory panel — always active when farmer opens that flow. */
 export function tryRationAdvisoryHint(messages: { role: string; content: string }[]): string | null {
-  const all = conversationText(messages);
-  const users = userText(messages);
-  const animalCount = detectAnimalCount(users) ?? detectAnimalCount(all);
+  const countInfo = resolveDeclaredCount(messages);
+
+  if (countInfo.conflict) {
+    return countConflictPrompt(countInfo.uniqueCounts);
+  }
+
+  const animalCount = countInfo.count;
   if (animalCount === null) return initialCountPrompt();
+
+  const slots = buildSlotsFromConversation(messages, animalCount);
+  const profiled = slots.filter((s) => s.complete).length;
+
+  if (profiled < animalCount) {
+    return gatherPrompt(animalCount, slots);
+  }
+
+  const users = messages.filter((m) => m.role === "user");
+  const lastUser = users[users.length - 1]?.content.trim() ?? "";
+  if (verificationWasRequested(messages) && /^(nahi|na|no|galat|wrong|गलत|नही)/iu.test(lastUser)) {
+    return gatherPrompt(animalCount, buildSlotsFromConversation(messages, animalCount));
+  }
+
+  if (!verificationWasRequested(messages) || !farmerConfirmed(messages)) {
+    return verificationPrompt(animalCount, slots);
+  }
+
   return buildRationAdvisoryHint(messages, animalCount);
 }
 
@@ -613,7 +710,11 @@ export function tryHerdRationHint(messages: { role: string; content: string }[])
 }
 
 export function isHerdGathering(hint: string | null): boolean {
-  return hint !== null && hint.includes("QUESTIONS ONLY");
+  return hint !== null && (hint.includes("QUESTIONS ONLY") || hint.includes("VERIFY BEFORE COMPUTE"));
+}
+
+export function isVerificationStep(hint: string | null): boolean {
+  return hint !== null && hint.includes("VERIFY BEFORE COMPUTE");
 }
 
 export function isRationComputed(hint: string | null): boolean {

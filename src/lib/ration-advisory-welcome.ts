@@ -1,23 +1,23 @@
 import { LANG_NAMES } from "@/lib/languages";
 
 const WELCOME_BY_LANG: Record<string, string> = {
-  hi: `🌾 Ration Advisory (संतुलित चारा)
+  hi: `🌾 संतुलित चारा सलाह
 
-कृपया अपने dairy पशुओं की जानकारी दीजिए:
-• गाय या भैंस? कौन सी नस्ल (Murrah, Gir)?
+कृपया अपने डेयरी पशुओं की जानकारी दीजिए:
+• गाय या भैंस? कौन सी नस्ल?
 • कितने पशु?
-• अभी क्या हाल — दूध दे रही / sukhi / गर्भ में?
-• इस haalat में kitne din / mahine?
-• kitni baar bachha hua / gaabhin hui? (pehli, doosri byaat?)
+• अभी क्या हाल — दूध दे रही, सूkhi, या गर्भ में?
+• इस अवस्था में कितne din / mahine?
+• kitni baar bachha hua / gaabhin? (pehli, doosri byaat?)
 • umar kitni?
-• abhi kya khilati hain (hara chara, bhusa, dana)?
+• abhi kya khilati hain — hara chara, bhusa, dana?
 
-apni bhasha mein likhiye ya boliye — main usi mein aage sawal poochunga/poochungi.`,
+Apni bhasha mein likhiye ya boliye — main usi mein aage sawal poochunga.`,
 
-  bn: `🌾 Ration Advisory (সন্তুলিত খাদ্য)
+  bn: `🌾 সন্তুলিত খাদ্য পরামর্শ
 
-আপনার dairy পশuদের তথ্য দিন:
-• গরু না মহিষ? কোন breed (Murrah, Gir)?
+আপনার দুগ্ধ পশuদের তথ্য দিন:
+• গরু না মহিষ? কোন জাত?
 • কতগুলো পশu?
 • এখন কী অবস্থা — দুধ দিচ্ছে / শুকনো / গর্ভবতী?
 • এই অবস্থায় কত দin / মাস?
@@ -27,7 +27,7 @@ apni bhasha mein likhiye ya boliye — main usi mein aage sawal poochunga/poochu
 
 আপনার ভাষায় লিখুন বা বলুন — আমি সেই ভাষায় পরের প্রশ্ন করব।`,
 
-  ta: `🌾 Ration Advisory (சமச்சீர் தீவனம்)
+  ta: `🌾 சமச்சீர் தீவன ஆலோசனை
 
 உங்கள் dairy மிருகங்கள் பற்றி தகவல் தாருங்கள்:
 • பசு / எருமை? எந்த breed (Murrah, Gir)?
@@ -40,7 +40,7 @@ apni bhasha mein likhiye ya boliye — main usi mein aage sawal poochunga/poochu
 
 உங்கள் மொழியில் எழுதுங்கள் அல்லது பேசுங்கள் — அதே மொழியில் தொடர்ந்து கேட்பேன்.`,
 
-  te: `🌾 Ration Advisory (సమతుల్య మేత)
+  te: `🌾 సమతుల్య మేత సలహా
 
 మీ dairy పశuvula vivaralu ivvandi:
 • ఆవu / గేదె? ఏ breed (Murrah, Gir)?
@@ -53,7 +53,7 @@ apni bhasha mein likhiye ya boliye — main usi mein aage sawal poochunga/poochu
 
 me bhashalo rayandi leda matladandi — ade bhashalo adugutanu.`,
 
-  mr: `🌾 Ration Advisory (संतुलित चारा)
+  mr: `🌾 संतुलित चारा सलाह
 
 कृपया तumchya dairy pashuanchi mahiti dya:
 • gaay ki mhais? konti breed (Murrah, Gir)?
@@ -66,7 +66,7 @@ me bhashalo rayandi leda matladandi — ade bhashalo adugutanu.`,
 
 tumchya bhashhet liha kinva bola — tych bhashhet pudhe prashna vicharel.`,
 
-  gu: `🌾 Ration Advisory (સંતુલિત ચારો)
+  gu: `🌾 સંતુલિત ચારો
 
 કૃપા કરીને તમારા dairy પશuની માહિતી આપો:
 • ગાય કે ભેંસ? કઈ breed (Murrah, Gir)?
@@ -79,7 +79,7 @@ tumchya bhashhet liha kinva bola — tych bhashhet pudhe prashna vicharel.`,
 
 તમારી ભાષામાં લખો અથવા બોલો — હું એ જ ભાષામાં પૂછis.`,
 
-  kn: `🌾 Ration Advisory (ಸಮತೋಲಿತ ಆಹಾರ)
+  kn: `🌾 ಸಮತೋಲಿತ ಆಹಾರ
 
 ದಯವಿಟ್ಟು ನಿಮ್ಮ dairy pashugala mahiti kodiyri:
 • hasu / eMme? yaav breed (Murrah, Gir)?
@@ -92,7 +92,7 @@ tumchya bhashhet liha kinva bola — tych bhashhet pudhe prashna vicharel.`,
 
 nimma bhasheyalli bariyiri athava helri — ade bhasheyalli kelutteeni.`,
 
-  ml: `🌾 Ration Advisory (സമതുല്യ ആഹാരം)
+  ml: `🌾 സമതുല്യ ആഹാരം
 
 ദയവായി നിങ്ങളുടെ dairy pashukalude vivaram tharuka:
 • pasu / eruma? ethu breed (Murrah, Gir)?
@@ -105,7 +105,7 @@ nimma bhasheyalli bariyiri athava helri — ade bhasheyalli kelutteeni.`,
 
 ningalude bhashayil ezhuthuka atho parayuka — athu pole thudarnnu chodikkum.`,
 
-  pa: `🌾 Ration Advisory (ਸੰਤੁਲਿਤ ਚਾਰਾ)
+  pa: `🌾 ਸੰਤੁਲਿਤ ਚਾਰਾ
 
 ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ dairy pashuaan di jaankari dvo:
 • gaay ja bhains? kis breed di (Murrah, Gir)?
@@ -118,7 +118,7 @@ ningalude bhashayil ezhuthuka atho parayuka — athu pole thudarnnu chodikkum.`,
 
 apni bhasha vich likho ja bolo — main usi vich agge puchunga.`,
 
-  or: `🌾 Ration Advisory (ସନ୍ତୁଳିତ ଚାରା)
+  or: `🌾 ସନ୍ତୁଳିତ ଚାରା
 
 ଦୟାକରି ଆପଣଙ୍କ dairy pashu ra jaankaari debi:
 • gai na bhaains? kana breed (Murrah, Gir)?
@@ -131,7 +131,7 @@ apni bhasha vich likho ja bolo — main usi vich agge puchunga.`,
 
 apananka bhaashare likhantu ba kuhantu — sei bhaashare aage pacharibi.`,
 
-  as: `🌾 Ration Advisory (সন্তুলিত খাদ্য)
+  as: `🌾 সন্তুলিত খাদ্য
 
 অনুগ্ৰহ কৰি আপোনাৰ dairy pashu bur tolot dibo:
 • gai ne gahori? kond breed (Murrah, Gir)?
@@ -144,7 +144,7 @@ apananka bhaashare likhantu ba kuhantu — sei bhaashare aage pacharibi.`,
 
 apunar bhashat likhok ba kobo — hei bhashatei aage prashna korim.`,
 
-  ur: `🌾 Ration Advisory (متوازن چارہ)
+  ur: `🌾 متوازن چارہ
 
 براہِ کرم اپنے dairy pashu ki maloomat dein:
 • gaay ya bhains? kis breed (Murrah, Gir)?
@@ -171,16 +171,23 @@ Please share details about your dairy animals:
 Type or speak in your language — I will continue in the same language.`,
 };
 
-const LANG_ORDER = ["hi", "bn", "ta", "te", "mr", "gu", "kn", "ml", "pa", "or", "as", "ur", "en"] as const;
+export const LANG_ORDER = ["hi", "bn", "ta", "te", "mr", "gu", "kn", "ml", "pa", "or", "as", "ur", "en"] as const;
 
-export function buildRationAdvisoryWelcome(): string {
-  return LANG_ORDER.map((code) => {
-    const label = LANG_NAMES[code] || code;
-    return `── ${label} ──\n${WELCOME_BY_LANG[code]}`;
-  }).join("\n\n");
+export const RATION_ADVISORY_INTRO = `🌾 Ration Advisory / संतुलित चारा सलाह
+
+नीचे अपनी भाषा चुनें · Choose your language below:`;
+
+/** Welcome for one language — shown after farmer picks a language. */
+export function getWelcomeForLang(code: string): string {
+  return WELCOME_BY_LANG[code] ?? WELCOME_BY_LANG.en;
 }
 
-export const RATION_ADVISORY_WELCOME = buildRationAdvisoryWelcome();
+/** @deprecated Use getWelcomeForLang — kept for compatibility */
+export function buildRationAdvisoryWelcome(): string {
+  return getWelcomeForLang("hi");
+}
+
+export const RATION_ADVISORY_WELCOME = RATION_ADVISORY_INTRO;
 
 export const RATION_ADVISORY_LANG_KEY = "pashumitra_ration_advisory_lang";
 

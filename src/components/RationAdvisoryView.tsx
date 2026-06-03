@@ -5,7 +5,9 @@ import { ArrowLeft, Send, Volume2, Pause, Play, Square, Wheat } from "lucide-rea
 import { toast } from "sonner";
 import { LANG_NAMES, detectLanguageCode, detectLanguageFromMessages, resolveTtsLanguage } from "@/lib/languages";
 import {
-  RATION_ADVISORY_WELCOME,
+  RATION_ADVISORY_INTRO,
+  LANG_ORDER,
+  getWelcomeForLang,
   loadRationAdvisoryLang,
   saveRationAdvisoryLang,
 } from "@/lib/ration-advisory-welcome";
@@ -78,6 +80,7 @@ export function RationAdvisoryView({ open, onClose }: Props) {
   const abortRef = useRef<AbortController | null>(null);
   const messagesRef = useRef<Message[]>([]);
   const userLangRef = useRef<string | null>(loadRationAdvisoryLang());
+  const [welcomeLang, setWelcomeLang] = useState<string | null>(loadRationAdvisoryLang());
 
   useEffect(() => {
     if (!open) return;
@@ -287,9 +290,16 @@ export function RationAdvisoryView({ open, onClose }: Props) {
     messagesRef.current = [];
     userLangRef.current = null;
     saveRationAdvisoryLang(null);
+    setWelcomeLang(null);
     setMessages([]);
     localStorage.removeItem(STORAGE_KEY);
     toast.message("Ration advisory reset — start fresh");
+  };
+
+  const pickWelcomeLang = (code: string) => {
+    setWelcomeLang(code);
+    userLangRef.current = code;
+    saveRationAdvisoryLang(code);
   };
 
   if (!open) return null;
@@ -318,12 +328,30 @@ export function RationAdvisoryView({ open, onClose }: Props) {
         {showWelcome && (
           <div className="flex justify-start mb-3">
             <div className="max-w-[95%] md:max-w-[90%] px-3 py-3 rounded-lg bg-bubble-in text-bubble-in-foreground rounded-tl-none shadow-sm">
-              <div className="text-[10px] uppercase tracking-wide text-primary mb-2">
-                Choose your language below · नीचे अपni भाषa chunein
+              <div className="whitespace-pre-wrap break-words text-sm leading-relaxed mb-3">
+                {RATION_ADVISORY_INTRO}
               </div>
-              <div className="whitespace-pre-wrap break-words text-xs sm:text-sm leading-relaxed max-h-[55vh] overflow-y-auto">
-                {RATION_ADVISORY_WELCOME}
+              <div className="flex flex-wrap gap-1.5 mb-3">
+                {LANG_ORDER.map((code) => (
+                  <button
+                    key={code}
+                    type="button"
+                    onClick={() => pickWelcomeLang(code)}
+                    className={`text-xs px-2.5 py-1.5 rounded-full border transition-colors ${
+                      welcomeLang === code
+                        ? "bg-primary text-primary-foreground border-primary"
+                        : "bg-background/80 border-border hover:border-primary"
+                    }`}
+                  >
+                    {LANG_NAMES[code] || code}
+                  </button>
+                ))}
               </div>
+              {welcomeLang && (
+                <div className="whitespace-pre-wrap break-words text-sm leading-relaxed border-t border-border/50 pt-3">
+                  {getWelcomeForLang(welcomeLang)}
+                </div>
+              )}
             </div>
           </div>
         )}

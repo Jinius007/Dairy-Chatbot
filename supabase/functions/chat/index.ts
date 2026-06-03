@@ -8,7 +8,7 @@ import {
   pickSeasonFeeds,
   type Region,
 } from "../_shared/ration-calculator.ts";
-import { isHerdGathering, isRationComputed, tryRationAdvisoryHint } from "../_shared/herd-ration-advisor.ts";
+import { isHerdGathering, isRationComputed, isVerificationStep, tryRationAdvisoryHint } from "../_shared/herd-ration-advisor.ts";
 import {
   abuseRefusalMessage,
   containsAbusiveLanguage,
@@ -253,9 +253,11 @@ Deno.serve(async (req) => {
           ...(rationHint ? [{ role: "system", content: rationHint }] : []),
           ...(youtubeHint ? [{ role: "system", content: youtubeHint }] : []),
           ...(mode === "call" ? [{ role: "system", content: "LIVE CALL MODE: Answer like a patient human helper on a phone call. Use very simple village/farmer language. Keep the answer short, natural, and speakable: 2-4 short sentences only. No headings, no long bullet list, no difficult words. Give the next practical step first." }] : []),
+          ...(isRationAdvisory && isHerdGathering(advisoryHint) ? [{ role: "system", content: "RATION DATA COLLECTION MODE: The main prompt's RATION BALANCING rules are DISABLED this turn. Do NOT give generic ration advice, kg amounts, or feed plans. ONLY ask questions or read back summary for confirmation." }] : []),
           ...(effectiveForceLang && effectiveForcedLabel ? [{ role: "system", content: `CRITICAL LANGUAGE LOCK: The next answer MUST be written only in ${effectiveForcedLabel}. The first line MUST be [[LANG:${effectiveForceLang}]]. Do not use Hindi unless the locked language is Hindi. Do not mix scripts.` }] : []),
           ...safeMessages,
-          ...(isRationAdvisory && isHerdGathering(advisoryHint) ? [{ role: "system", content: "FINAL INSTRUCTION: Reply with ONLY 2–4 simple questions for the farmer in the LOCKED language. No ration advice, no kg, no ₹. First line must still be [[LANG:xx]]." }] : []),
+          ...(isRationAdvisory && isHerdGathering(advisoryHint) && !isVerificationStep(advisoryHint) ? [{ role: "system", content: "FINAL INSTRUCTION: Reply with ONLY 2–4 simple questions for the farmer in the LOCKED language. Acknowledge herd size if stated. Ask about the next animal. NO ration advice, NO kg, NO ₹. First line must still be [[LANG:xx]]." }] : []),
+          ...(isRationAdvisory && isVerificationStep(advisoryHint) ? [{ role: "system", content: "FINAL INSTRUCTION: Read back ALL animal details from PARSED SUMMARY in farmer's language. Confirm total count matches. Ask 'Kya sab sahi hai?' NO ration kg amounts yet. First line [[LANG:xx]]." }] : []),
           ...(isRationAdvisory && isRationComputed(advisoryHint) ? [{ role: "system", content: "FINAL INSTRUCTION: Present COMPUTED RESULTS in farmer's language. ORDER: (1) HERD PREP — total kg to mix/prepare for whole herd today; (2) PER ANIMAL — each animal's daily share with breed and status. Use exact kg from system block." }] : []),
           ...(effectiveForceLang && effectiveForcedLabel ? [{ role: "system", content: `FINAL CHECK BEFORE ANSWERING: Reply in ${effectiveForcedLabel} only, with [[LANG:${effectiveForceLang}]] as the first line. Keep it simple enough for a farmer.` }] : []),
         ],
