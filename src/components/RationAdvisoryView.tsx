@@ -14,7 +14,7 @@ import {
 } from "@/lib/ration-advisory-welcome";
 import { speakText, stopSpeech, pauseSpeech, resumeSpeech, isSpeechPaused, unlockAudioPlayback } from "@/lib/speech";
 import { filterAbusiveLanguage } from "@/lib/content-safety";
-import { parseAnimalFromVoice, parseHerdCount } from "@/lib/parse-animal-voice";
+import { parseAnimalFromVoice, parseHerdCount, applyStatusMilkDefaults } from "@/lib/parse-animal-voice";
 import { computeHerdRation } from "@/lib/herd-ration-compute";
 import {
   type RationAdvisorySession,
@@ -141,9 +141,14 @@ export function RationAdvisoryView({ open, onClose }: Props) {
   };
 
   const updateAnimal = (index: number, patch: Partial<AnimalFormData>) => {
-    const animals = session.animals.map((a) =>
-      a.index === index ? { ...a, ...patch, approved: false } : a,
-    );
+    const animals = session.animals.map((a) => {
+      if (a.index !== index) return a;
+      const merged = { ...a, ...patch, approved: false };
+      if (patch.status !== undefined) {
+        merged.milkLitres = applyStatusMilkDefaults(merged.status, merged.milkLitres);
+      }
+      return merged;
+    });
     persist({ ...session, animals, ration: null });
   };
 
@@ -164,7 +169,12 @@ export function RationAdvisoryView({ open, onClose }: Props) {
         return;
       }
       const parsed = parseAnimalFromVoice(txt);
-      updateAnimal(index, parsed);
+      updateAnimal(index, {
+        ...parsed,
+        milkLitres: parsed.status
+          ? applyStatusMilkDefaults(parsed.status, parsed.milkLitres ?? "")
+          : parsed.milkLitres,
+      });
       toast.message(`Animal #${index} details updated — please check`);
     } catch (e: unknown) {
       toast.error(e instanceof Error ? e.message : "Transcription failed");
@@ -313,6 +323,7 @@ export function RationAdvisoryView({ open, onClose }: Props) {
                 <HerdAnimalBlock
                   key={a.index}
                   data={a}
+                  lang={welcomeLang}
                   onChange={(patch) => updateAnimal(a.index, patch)}
                   onVoice={(b64, mime) => handleBlockVoice(a.index, b64, mime)}
                   transcribing={transcribingBlock === a.index}
@@ -339,7 +350,7 @@ export function RationAdvisoryView({ open, onClose }: Props) {
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
               {session.animals.map((a) => (
-                <HerdAnimalBlock key={a.index} data={a} onChange={() => {}} onVoice={() => {}} readOnly />
+                <HerdAnimalBlock key={a.index} data={a} lang={welcomeLang} onChange={() => {}} onVoice={() => {}} readOnly />
               ))}
             </div>
             <div className="flex gap-2">
@@ -389,6 +400,7 @@ export function RationAdvisoryView({ open, onClose }: Props) {
                   <HerdAnimalBlock
                     key={a.index}
                     data={a}
+                    lang={welcomeLang}
                     onChange={() => {}}
                     onVoice={() => {}}
                     readOnly

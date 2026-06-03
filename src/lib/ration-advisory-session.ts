@@ -61,6 +61,18 @@ export function createAnimals(count: number): AnimalFormData[] {
 
 export function isAnimalFilled(a: AnimalFormData): boolean {
   if (!a.breed.trim() || !a.status) return false;
+
+  // Young / calf — age is enough; milk always 0
+  if (a.status === "heifer") {
+    return !!a.ageYears.trim();
+  }
+
+  // Dry — milk must be 0; need age or gaabhin count
+  if (a.status === "dry") {
+    if (parseFloat(a.milkLitres) > 0) return false;
+    return !!(a.lactationNumber.trim() || a.ageYears.trim());
+  }
+
   if (!a.lactationNumber.trim() && !a.ageYears.trim()) return false;
   if (a.status === "in_milk" && !(parseFloat(a.milkLitres) > 0)) return false;
   return true;

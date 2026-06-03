@@ -1,7 +1,9 @@
 import { CheckCircle2, Mic } from "lucide-react";
 import { VoiceRecorder } from "@/components/VoiceRecorder";
 import type { AnimalFormData, AnimalStatus } from "@/lib/ration-advisory-session";
-import { isAnimalFilled, statusLabel } from "@/lib/ration-advisory-session";
+import { isAnimalFilled } from "@/lib/ration-advisory-session";
+import { getAnimalFieldLabels, localizedStatusLabel } from "@/lib/ration-advisory-labels";
+import { applyStatusMilkDefaults } from "@/lib/parse-animal-voice";
 import type { RationLine } from "@/lib/ration-calculator";
 
 interface Props {
@@ -12,14 +14,8 @@ interface Props {
   readOnly?: boolean;
   showRation?: RationLine[];
   dailyCost?: number;
+  lang?: string | null;
 }
-
-const STATUS_OPTIONS: { value: AnimalStatus; label: string }[] = [
-  { value: "in_milk", label: "Giving milk (doodh)" },
-  { value: "dry", label: "Dry (sukhi)" },
-  { value: "pregnant", label: "Pregnant (garbh)" },
-  { value: "heifer", label: "Young / calf (bachiya)" },
-];
 
 export function HerdAnimalBlock({
   data,
@@ -29,23 +25,39 @@ export function HerdAnimalBlock({
   readOnly = false,
   showRation,
   dailyCost,
+  lang,
 }: Props) {
+  const L = getAnimalFieldLabels(lang);
   const filled = isAnimalFilled(data);
   const milkDisabled = data.status !== "in_milk";
+
+  const statusOptions: { value: AnimalStatus; label: string }[] = [
+    { value: "in_milk", label: L.stageInMilk },
+    { value: "dry", label: L.stageDry },
+    { value: "pregnant", label: L.stagePregnant },
+    { value: "heifer", label: L.stageHeifer },
+  ];
+
+  const handleStatusChange = (status: AnimalStatus) => {
+    onChange({
+      status,
+      milkLitres: applyStatusMilkDefaults(status, data.milkLitres),
+    });
+  };
 
   return (
     <div className={`rounded-lg border bg-card shadow-sm overflow-hidden ${filled ? "border-emerald-500/50" : "border-border"}`}>
       <div className="flex items-center justify-between gap-2 px-3 py-2 bg-emerald-800/10 border-b border-border/50">
         <div className="flex items-center gap-2 min-w-0">
           <span className="font-medium text-sm text-emerald-900 dark:text-emerald-100">
-            Animal #{data.index}
+            {L.animal(data.index)}
           </span>
           {filled && <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" aria-label="Details filled" />}
         </div>
         {!readOnly && (
           <div className="shrink-0 flex items-center gap-1">
             {transcribing ? (
-              <span className="text-xs text-muted-foreground animate-pulse px-2">Listening…</span>
+              <span className="text-xs text-muted-foreground animate-pulse px-2">{L.listening}</span>
             ) : (
               <VoiceRecorder
                 onRecorded={(b64, mime) => onVoice(b64, mime)}
@@ -56,93 +68,87 @@ export function HerdAnimalBlock({
         )}
       </div>
 
-      <div className="p-3 space-y-2.5 text-sm">
+      <div className="p-3 space-y-2.5 text-sm" lang={lang ?? undefined}>
         {!readOnly && (
           <p className="text-xs text-muted-foreground flex items-start gap-1">
             <Mic className="w-3.5 h-3.5 mt-0.5 shrink-0" />
-            Tap mic and say: breed, age, doodh/sukhi/garbh, byaat number, milk litres/day
+            {L.micHint}
           </p>
         )}
 
         {data.voiceTranscript && !readOnly && (
           <p className="text-xs italic text-muted-foreground border-l-2 border-primary/30 pl-2">
-            Heard: &ldquo;{data.voiceTranscript.slice(0, 120)}{data.voiceTranscript.length > 120 ? "…" : ""}&rdquo;
+            {L.heard}: &ldquo;{data.voiceTranscript.slice(0, 120)}{data.voiceTranscript.length > 120 ? "…" : ""}&rdquo;
           </p>
         )}
 
-        <Field label="Breed (nasl)">
+        <Field label={L.breed}>
           {readOnly ? (
             <span>{data.breed || "—"}</span>
           ) : (
             <input
               value={data.breed}
               onChange={(e) => onChange({ breed: e.target.value })}
-              placeholder="e.g. Murrah, Gir, cross"
+              placeholder={L.breedPh}
               className="w-full rounded-md border border-input bg-background px-2 py-1.5 text-sm outline-none focus:ring-1 focus:ring-primary"
             />
           )}
         </Field>
 
-        <Field label="Age (umar)">
+        <Field label={L.age}>
           {readOnly ? (
-            <span>{data.ageYears ? `${data.ageYears} years` : "—"}</span>
+            <span>{data.ageYears ? `${data.ageYears}` : "—"}</span>
           ) : (
             <input
               value={data.ageYears}
               onChange={(e) => onChange({ ageYears: e.target.value })}
-              placeholder="e.g. 5"
+              placeholder={L.agePh}
               inputMode="decimal"
               className="w-full rounded-md border border-input bg-background px-2 py-1.5 text-sm outline-none focus:ring-1 focus:ring-primary"
             />
           )}
         </Field>
 
-        <Field label="Stage (doodh / sukhi / garbh)">
+        <Field label={L.stage}>
           {readOnly ? (
-            <span>{statusLabel(data.status)}</span>
+            <span>{localizedStatusLabel(data.status, lang)}</span>
           ) : (
             <select
               value={data.status}
-              onChange={(e) => {
-                const status = e.target.value as AnimalStatus;
-                onChange({
-                  status,
-                  milkLitres: status === "in_milk" ? data.milkLitres : "0",
-                });
-              }}
+              onChange={(e) => handleStatusChange(e.target.value as AnimalStatus)}
               className="w-full rounded-md border border-input bg-background px-2 py-1.5 text-sm outline-none focus:ring-1 focus:ring-primary"
             >
-              <option value="">Select…</option>
-              {STATUS_OPTIONS.map((o) => (
+              <option value="">{L.stageSelect}</option>
+              {statusOptions.map((o) => (
                 <option key={o.value} value={o.value}>{o.label}</option>
               ))}
             </select>
           )}
         </Field>
 
-        <Field label="Byaat / lactation no.">
+        <Field label={L.gaabhinCount}>
           {readOnly ? (
-            <span>{data.lactationNumber ? `${data.lactationNumber}${data.lactationNumber === "1" ? "st" : data.lactationNumber === "2" ? "nd" : "rd"}` : "—"}</span>
+            <span>{data.lactationNumber || "—"}</span>
           ) : (
             <input
               value={data.lactationNumber}
               onChange={(e) => onChange({ lactationNumber: e.target.value })}
-              placeholder="e.g. 1 (pehli byaat)"
+              placeholder={L.gaabhinPh}
               inputMode="numeric"
               className="w-full rounded-md border border-input bg-background px-2 py-1.5 text-sm outline-none focus:ring-1 focus:ring-primary"
             />
           )}
         </Field>
 
-        <Field label="Milk (litre/day)">
+        <Field label={L.milk}>
           {readOnly ? (
-            <span>{data.status === "in_milk" ? `${data.milkLitres} L` : "0 (dry/calf)"}</span>
+            <span>{data.status === "in_milk" ? `${data.milkLitres} L` : L.milkZeroNote}</span>
           ) : (
             <input
               value={milkDisabled ? "0" : data.milkLitres}
               onChange={(e) => onChange({ milkLitres: e.target.value })}
               disabled={milkDisabled}
-              placeholder={milkDisabled ? "0 for dry/calf" : "e.g. 8"}
+              placeholder={milkDisabled ? L.milkZeroNote : L.milkPh}
               inputMode="decimal"
               className="w-full rounded-md border border-input bg-background px-2 py-1.5 text-sm outline-none focus:ring-1 focus:ring-primary disabled:opacity-60"
             />
@@ -152,7 +158,7 @@ export function HerdAnimalBlock({
         {showRation && showRation.length > 0 && (
           <div className="mt-3 pt-3 border-t border-border/60">
             <p className="text-xs font-medium text-emerald-800 dark:text-emerald-200 mb-1.5">
-              Daily share from herd ration
+              {L.dailyShare}
             </p>
             <ul className="space-y-0.5 text-xs">
               {showRation.map((r) => (
