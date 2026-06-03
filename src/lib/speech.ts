@@ -168,6 +168,22 @@ export function stopSpeech(): void {
   speechChain = Promise.resolve();
 }
 
+export function pauseSpeech(): boolean {
+  if (!audio || audio.paused) return false;
+  audio.pause();
+  return true;
+}
+
+export function resumeSpeech(): boolean {
+  if (!audio || !audio.paused) return false;
+  void audio.play().catch(() => undefined);
+  return true;
+}
+
+export function isSpeechPaused(): boolean {
+  return !!audio && audio.paused;
+}
+
 export type SpeakOptions = {
   lang?: string | null;
   /** Skip queue — use for live call replies */
