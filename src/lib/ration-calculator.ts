@@ -106,7 +106,10 @@ export function buildRation(
   dryFodder: string,
   concentrate: string,
   prices: Record<string, number>,
+  options?: { minConcKg?: number; maxConcKg?: number },
 ) {
+  const minConc = options?.minConcKg ?? 1.0;
+  const maxConc = options?.maxConcKg ?? 10;
   let remTDN = requirements.total.tdn;
   let remCP = requirements.total.cp;
   let remDM = requirements.total.dm;
@@ -136,8 +139,8 @@ export function buildRation(
   const cIng = FEED_INGREDIENTS[concentrate] ?? FEED_INGREDIENTS.cattle_feed_bis1;
   const concByTDN = Math.max(0, remTDN / ((cIng.dm / 100) * (cIng.tdnDM / 100)));
   const concByCP = Math.max(0, remCP / ((cIng.dm / 100) * (cIng.cpDM / 100)));
-  const concKg = Math.min(Math.max(concByTDN, concByCP, 1.0), 10);
-  if (concKg > 0.1) ration.push(addIngredient(concentrate, +concKg.toFixed(1), prices));
+  const concKg = Math.min(Math.max(concByTDN, concByCP, minConc), maxConc);
+  if (concKg > 0.05) ration.push(addIngredient(concentrate, +concKg.toFixed(1), prices));
 
   const totals = ration.reduce(
     (acc, r) => ({ asFeKg: acc.asFeKg + r.asFeKg, dm: acc.dm + r.dryMatter, tdn: acc.tdn + r.tdn, cp: acc.cp + r.cp, cost: acc.cost + r.cost }),

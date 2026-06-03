@@ -16,6 +16,8 @@ import { speakText, stopSpeech, pauseSpeech, resumeSpeech, isSpeechPaused, unloc
 import { filterAbusiveLanguage } from "@/lib/content-safety";
 import { parseAnimalFromVoice, parseHerdCount, applyStatusMilkDefaults } from "@/lib/parse-animal-voice";
 import { computeHerdRation } from "@/lib/herd-ration-compute";
+import { INDIAN_STATES, regionForState } from "@/lib/india-regions";
+import { getAnimalFieldLabels, seasonLabelLocalized } from "@/lib/ration-advisory-labels";
 import {
   type RationAdvisorySession,
   type AnimalFormData,
@@ -108,6 +110,7 @@ export function RationAdvisoryView({ open, onClose }: Props) {
     persist({
       step: "animals",
       herdCount: count,
+      stateCode: session.stateCode ?? "UP",
       animals: createAnimals(count),
       ration: null,
     });
@@ -193,7 +196,11 @@ export function RationAdvisoryView({ open, onClose }: Props) {
 
   const confirmAndCompute = () => {
     const animals = session.animals.map((a) => ({ ...a, approved: true }));
-    const ration = computeHerdRation(animals);
+    const ration = computeHerdRation(
+      animals,
+      regionForState(session.stateCode ?? "UP"),
+      welcomeLang,
+    );
     persist({ ...session, animals, step: "ration", ration });
   };
 
@@ -203,7 +210,7 @@ export function RationAdvisoryView({ open, onClose }: Props) {
     saveRationAdvisoryLang(null);
     setWelcomeLang(null);
     setHerdCountInput("");
-    setSession({ step: "welcome", herdCount: null, animals: [], ration: null });
+    setSession({ step: "welcome", herdCount: null, stateCode: "UP", animals: [], ration: null });
     toast.message("Ration advisory reset");
   };
 
@@ -211,6 +218,8 @@ export function RationAdvisoryView({ open, onClose }: Props) {
 
   const step = session.step;
   const filledCount = session.animals.filter(isAnimalFilled).length;
+  const L = getAnimalFieldLabels(welcomeLang);
+  const stateName = INDIAN_STATES.find((s) => s.code === session.stateCode)?.name ?? "Uttar Pradesh";
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col h-[100dvh] max-h-[100dvh] overflow-hidden bg-background">
@@ -318,6 +327,18 @@ export function RationAdvisoryView({ open, onClose }: Props) {
                 Filled: {filledCount}/{session.animals.length}
               </span>
             </div>
+            <div className="rounded-lg bg-card border shadow-sm p-3">
+              <label className="block text-xs text-muted-foreground mb-1">{L.stateLabel}</label>
+              <select
+                value={session.stateCode ?? "UP"}
+                onChange={(e) => persist({ ...session, stateCode: e.target.value, ration: null })}
+                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+              >
+                {INDIAN_STATES.map((s) => (
+                  <option key={s.code} value={s.code}>{s.name}</option>
+                ))}
+              </select>
+            </div>
             <div className="grid gap-3 sm:grid-cols-2">
               {session.animals.map((a) => (
                 <HerdAnimalBlock
@@ -376,8 +397,15 @@ export function RationAdvisoryView({ open, onClose }: Props) {
         {step === "ration" && session.ration && (
           <>
             <div className="rounded-lg bg-emerald-800 text-white p-4 shadow-md">
-              <h2 className="font-semibold text-base mb-1">Whole herd — prepare today</h2>
-              <p className="text-xs opacity-90 mb-3">Poori mandli ke liye aaj itna mix/tayyar karein (daily total):</p>
+              <h2 className="font-semibold text-base mb-1">{L.herdPrepTitle}</h2>
+              <p className="text-xs opacity-90 mb-1">{L.herdPrepSub}</p>
+              <p className="text-[11px] opacity-80 mb-3">
+                {stateName} · {L.seasonNote(
+                  session.ration.seasonFeeds.green,
+                  session.ration.seasonFeeds.dry,
+                  seasonLabelLocalized(session.ration.season, welcomeLang),
+                )}
+              </p>
               <ul className="space-y-1.5 text-sm">
                 {session.ration.herdTotals.map((t) => (
                   <li key={t.name} className="flex justify-between gap-3">
@@ -386,13 +414,16 @@ export function RationAdvisoryView({ open, onClose }: Props) {
                   </li>
                 ))}
               </ul>
+              <p className="mt-2 text-xs opacity-90">
+                Total feed: {session.ration.totalFeedKg} kg/day
+              </p>
               <p className="mt-3 pt-3 border-t border-white/20 text-sm font-medium">
                 Total cost ≈ ₹{session.ration.totalDailyCost}/day (₹{(session.ration.totalDailyCost * 30).toLocaleString()}/month)
               </p>
-              <p className="text-[11px] opacity-75 mt-2">Prices indicative — verify locally. Clean water 40–50 L/animal/day.</p>
+              <p className="text-[11px] opacity-75 mt-2">ICAR/NDDB least-cost · verify local prices · water 40–50 L/animal/day</p>
             </div>
 
-            <h3 className="text-sm font-medium px-1">Per animal — daily share from above</h3>
+            <h3 className="text-sm font-medium px-1">{L.perAnimalTitle}</h3>
             <div className="grid gap-3 sm:grid-cols-2">
               {session.animals.map((a) => {
                 const r = session.ration!.perAnimal.find((p) => p.index === a.index);
@@ -404,7 +435,7 @@ export function RationAdvisoryView({ open, onClose }: Props) {
                     onChange={() => {}}
                     onVoice={() => {}}
                     readOnly
-                    showRation={r?.ration}
+                    shareLines={r?.shareLines}
                     dailyCost={r?.dailyCost}
                   />
                 );

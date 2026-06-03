@@ -127,6 +127,20 @@ function parseMilkLitres(text: string): number {
   return 0;
 }
 
+function parseStageSince(text: string): string {
+  const patterns = [
+    /(\d+(?:\.\d+)?)\s*(?:mahine|mahina|month|months|mas|mo|महीne|मास|महीने)[^\d]{0,20}(?:se|s[eey]|tha|hai|hain|since|pahle|pahle se)?/iu,
+    /(\d+(?:\.\d+)?)\s*(?:din|day|days|roj|दिन|দিন|நாட்கள்)[^\d]{0,20}(?:se|s[eey]|tha|hai|since)?/iu,
+    /(?:kab\s*se|kitne\s*(?:din|mahine)|since)\s*(\d+(?:\.\d+)?)\s*(?:mahine|mahina|din|month|day|महीne|दिन)/iu,
+    /(?:is|iss)\s*(?:avastha|haalat|stithi|stage)[^\d]{0,30}(\d+(?:\.\d+)?)\s*(?:mahine|mahina|din|month|saal|महीne|दिन|साल)/iu,
+  ];
+  for (const p of patterns) {
+    const m = text.match(p);
+    if (m?.[0]) return m[0].replace(/\s+/g, " ").trim().slice(0, 48);
+  }
+  return "";
+}
+
 function parseDimStage(text: string): string {
   const months = extractNumber(text, [
     /(\d+)\s*(?:month|months|mahine|mahina|महीने|mo|મહિન)/i,
@@ -153,6 +167,7 @@ export function parseAnimalFromVoice(transcript: string): Partial<AnimalFormData
   const milkFromText = parseMilkLitres(text);
   const lactationNumber = parseGaabhinOrCalvingCount(text);
   const ageYears = parseAgeYears(text);
+  const stageSince = parseStageSince(text);
   const dimStage = parseDimStage(text);
 
   let resolvedStatus: AnimalStatus = detectStatus(text) ?? "unknown";
@@ -181,6 +196,7 @@ export function parseAnimalFromVoice(transcript: string): Partial<AnimalFormData
   if (resolvedStatus !== "unknown") patch.status = resolvedStatus;
   if (lactationNumber !== null) patch.lactationNumber = String(lactationNumber);
   if (ageYears !== null) patch.ageYears = String(Math.round(ageYears * 10) / 10);
+  if (stageSince) patch.stageSince = stageSince;
 
   if (resolvedStatus === "in_milk") {
     if (milk > 0) patch.milkLitres = String(milk);
