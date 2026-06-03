@@ -189,7 +189,17 @@ function parseLactationNumber(text: string): number | null {
   if (/pehli|first|1st|pahli|पहली|pratham|પહેલ/i.test(text)) return 1;
   if (/doosri|second|2nd|dusri|दूसरी|બીજ/i.test(text)) return 2;
   if (/teesri|third|3rd|3\+|teen|तीसरी|zyada|more than 2|ત્રીજ/i.test(text)) return 3;
-  const n = extractNumber(text, [/lactation\s*(?:no\.?|number)?\s*[:\s]?\s*(\d+)/i, /(\d+)\s*(?:th|rd|nd|st)\s*lactation/i, /(\d+)\s*(?:vi|mi|th)\s*(?:vyaat|lactation|calving)/i]);
+  const baar = extractNumber(text, [
+    /(\d+)\s*(?:baar|bar|vaar|sari|saari|times)\s*(?:bachha|bacha|gaabhin|garbh|calv|byaat|vyaat|vaat)/i,
+    /(?:kitni|kiti|kinni|keti|ethra|eshtu)\s*(?:baar|bar|vaar)[^\d]{0,24}(\d+)/i,
+    /(?:baar|bar|vaar)\s*(\d+)/i,
+  ]);
+  if (baar !== null && baar >= 1 && baar <= 12) return Math.round(baar);
+  const n = extractNumber(text, [
+    /lactation\s*(?:no\.?|number)?\s*[:\s]?\s*(\d+)/i,
+    /(\d+)\s*(?:th|rd|nd|st)\s*lactation/i,
+    /(\d+)\s*(?:vi|mi|th)\s*(?:vyaat|byaat|vaat|calving)/i,
+  ]);
   return n !== null && n >= 1 && n <= 12 ? Math.round(n) : null;
 }
 
@@ -268,7 +278,7 @@ function parseMilkKg(text: string, herdSize: number | null): number {
 function emptySlot(index: number): ParsedAnimalSlot {
   return {
     profile: { index, status: "unknown" },
-    missing: ["breed", "status (in milk / dry / pregnant)", "lactation or age", "current feed"],
+    missing: ["breed (kaun si nasl)", "status (doodh / sukhi / garbh)", "kitni baar bachha ya umar", "current feed (ab kya khilati hain)"],
     complete: false,
   };
 }
@@ -338,7 +348,7 @@ function buildProfileFromSegment(segment: string, index: number, herdSize: numbe
   if (!breedExplicit) missing.push("breed (kaun si nasl — Gir, Murrah, crossbred?)");
   if (!statusExplicit) missing.push("status (ab doodh de rahi hai, sukhi hai, ya garbh mein?)");
   if (status === "in_milk" && milkKg <= 0) missing.push("daily milk (roz kitna litre dudh?)");
-  if (!hasLactationOrAge) missing.push("age or lactation (pehli/doosri vyaat, ya kitne saal ki?)");
+  if (!hasLactationOrAge) missing.push("kitni baar bachha hua / gaabhin hui, ya kitne saal ki (pehli/doosri byaat)?");
   if (!hasFeedData) missing.push("current feed (ab kya khilati ho — hara chara, sukha, dana kitna kg?)");
 
   const complete =
@@ -439,7 +449,7 @@ function formatAnimalBlock(computed: ReturnType<typeof computeAnimalRation>): st
 
   return [
     `  Animal #${profile.index}: ${profile.breedName} | ${statusLabel}`,
-    profile.lactationNumber ? `    Lactation: ${profile.lactationNumber}` : "",
+    profile.lactationNumber ? `    Byaat (kitni baar bachha): ${profile.lactationNumber}` : "",
     profile.ageYears ? `    Age: ~${profile.ageYears} years` : "",
     profile.status === "in_milk" ? `    4% FCM: ${req.fcm.toFixed(1)} kg` : "",
     `    Balanced daily ration:`,
@@ -487,11 +497,14 @@ function gatherPrompt(herdSize: number, slots: ParsedAnimalSlot[]): string {
     `Herd size: ${herdSize} animals. Fully profiled: ${profiled}/${herdSize}.`,
     `Ask about Animal #${idx} now — in the farmer's own simple language (same as their last message).`,
     "",
+    "NEVER use hard words like 'lactation', 'DIM', 'parity' with the farmer.",
+    "Use simple village words: byaat/vyaat, bachha hua, gaabhin/garbh, doodh deti, sukhi.",
+    "",
     "Ask 2–4 short easy questions in the farmer's language (Hindi example):",
-    "  • Kaun si nasl hai? (Murrah, Gir, crossbred?)",
-    "  • Kya ab doodh de rahi hain, sookhi hain, ya garbh mein hain?",
-    "  • Roz kitna litre dudh deti hain?",
-    "  • Pehli/doosri byaat? Ya kitne saal ki hain?",
+    "  • Kaun si nasl hai? (Murrah, Gir, desi?)",
+    "  • Ab doodh de rahi hai, sukhi hai, ya garbh mein hai?",
+    "  • Is haalat mein kitne din/mahine? Roz kitna litre dudh?",
+    "  • Kitni baar bachha hua / gaabhin hui? (pehli, doosri byaat?) Kitne saal ki?",
     "  • Ab kya khilati hain — hara chara, sukha bhusa, dana kitna kg?",
     "",
     `Still missing for Animal #${idx}:`,
@@ -505,12 +518,15 @@ function gatherPrompt(herdSize: number, slots: ParsedAnimalSlot[]): string {
 function initialCountPrompt(): string {
   return [
     "⚠️ RATION ADVISORY — QUESTIONS ONLY (MANDATORY THIS TURN)",
-    "The farmer opened the dedicated Ration Advisory panel but has not said how many animals yet.",
-    "Ask ONLY 2–3 simple questions in the farmer's language:",
-    "  • Aapke paas kitni gaay/bhains hain? (kitne pashu milk dete hain?)",
-    "  • Kaun se area/rajya mein farm hai? (optional — short)",
+    "Farmer opened Ration Advisory. Reply in THEIR language only (from language lock).",
+    "Ask 2–4 short easy questions about what they have NOT told yet (NO hard words — no 'lactation'):",
+    "  • Kitni gaay/bhains? Kaun si nasl (Murrah, Gir...)?",
+    "  • Har pashu — doodh deti hai, sukhi hai, ya garbh mein?",
+    "  • Is haalat mein kitne din/mahine? Roz kitna dudh?",
+    "  • Kitni baar bachha hua / gaabhin hui? (pehli, doosri byaat?) Kitne saal ki?",
+    "  • Ab kya khilati hain (hara chara, bhusa, dana kitna kg)?",
     "FORBIDDEN this turn: ration tables, kg amounts, feed plans, cost estimates.",
-    "End with: 'Jawab dijiye, phir main har pashu ka sahi balanced ration batata/bataati hoon.'",
+    "Translate all questions into the farmer's language — do not use English unless farmer wrote in English.",
   ].join("\n");
 }
 

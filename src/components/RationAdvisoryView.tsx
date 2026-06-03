@@ -3,7 +3,12 @@ import { supabase, isSupabaseConfigured } from "@/integrations/supabase/client";
 import { VoiceRecorder } from "@/components/VoiceRecorder";
 import { ArrowLeft, Send, Volume2, Pause, Play, Square, Wheat } from "lucide-react";
 import { toast } from "sonner";
-import { LANG_NAMES } from "@/lib/languages";
+import { LANG_NAMES, detectLanguageCode, resolveTtsLanguage } from "@/lib/languages";
+import {
+  RATION_ADVISORY_WELCOME,
+  loadRationAdvisoryLang,
+  saveRationAdvisoryLang,
+} from "@/lib/ration-advisory-welcome";
 import { speakText, stopSpeech, unlockAudioPlayback } from "@/lib/speech";
 import { getSessionId } from "@/lib/session";
 import { logConversationTurn } from "@/lib/log-turn";
@@ -28,11 +33,12 @@ interface Props {
   onClose: () => void;
 }
 
-const STORAGE_KEY = "pashumitra_ration_advisory_v1";
+const STORAGE_KEY = "pashumitra_ration_advisory_v2";
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
 
-const WELCOME_HI =
-  "🌾 Ration Advisory\n\nMain aapke har pashu ka sahi balanced chara tayyar karunga.\n\nPehle batayein — aapke paas kitni gaay ya bhains hain? Aur kaun se area/rajya mein farm hai?";
+function resolveUserLang(text: string, stored: string | null): string {
+  return detectLanguageCode(text) || stored || "hi";
+}
 
 function splitLangHeader(text: string): { lang: string | null; body: string } {
   const re = /\[?\[?\s*LANG\s*:\s*([a-zA-Z]{2})\s*\]?\]?/i;
@@ -65,6 +71,7 @@ export function RationAdvisoryView({ open, onClose }: Props) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const abortRef = useRef<AbortController | null>(null);
   const messagesRef = useRef<Message[]>([]);
+  const userLangRef = useRef<string | null>(loadRationAdvisoryLang());
 
   useEffect(() => {
     if (!open) return;
@@ -105,7 +112,14 @@ export function RationAdvisoryView({ open, onClose }: Props) {
     else if (synth.speaking) { synth.pause(); setPaused(true); }
   }, []);
 
-  const streamReply = async (history: Message[], assistantId: string, latestUserText: string, isVoice = false, startedAt?: number) => {
+  const streamReply = async (
+    history: Message[],
+    assistantId: string,
+    latestUserText: string,
+    forceLanguage: string | null,
+    isVoice = false,
+    startedAt?: number,
+  ) => {
     if (!isSupabaseConfigured) throw new Error("Supabase is not configured on this deployment.");
     abortRef.current?.abort();
     const ctrl = new AbortController();
@@ -120,6 +134,7 @@ export function RationAdvisoryView({ open, onClose }: Props) {
       body: JSON.stringify({
         messages: history.map((m) => ({ role: m.role, content: m.content })),
         mode: "ration_advisory",
+        ...(forceLanguage ? { forceLanguage } : {}),
       }),
       signal: ctrl.signal,
     });
@@ -204,6 +219,9 @@ export function RationAdvisoryView({ open, onClose }: Props) {
     setSending(true);
     setInput("");
     const startedAt = voiceStartedAt ?? Date.now();
+    const lang = resolveUserLang(text, userLangRef.current);
+    userLangRef.current = lang;
+    saveRationAdvisoryLang(lang);
     const userMsg: Message = { id: crypto.randomUUID(), role: "user", content: text, is_voice: isVoice, created_at: new Date().toISOString() };
     const assistantMsg: Message = { id: crypto.randomUUID(), role: "assistant", content: "", created_at: new Date().toISOString() };
     const nextHistory = [...messagesRef.current, userMsg];
@@ -212,8 +230,16 @@ export function RationAdvisoryView({ open, onClose }: Props) {
     setMessages(visibleMessages);
 
     try {
-      const { text: reply, lang } = await streamReply(nextHistory, assistantMsg.id, text, isVoice, startedAt);
-      if (isVoice && reply) void speak(reply, lang, assistantMsg.id);
+      const { text: reply, lang: replyLang } = await streamReply(
+        nextHistory,
+        assistantMsg.id,
+        text,
+        lang,
+        isVoice,
+        startedAt,
+      );
+      const speakLang = resolveTtsLanguage(reply, replyLang || lang);
+      if (isVoice && reply) void speak(reply, speakLang, assistantMsg.id);
     } catch (e: any) {
       console.error(e);
       toast.error(e?.message || "Failed to get reply");
@@ -253,6 +279,8 @@ export function RationAdvisoryView({ open, onClose }: Props) {
   const clearSession = () => {
     stopSpeak();
     messagesRef.current = [];
+    userLangRef.current = null;
+    saveRationAdvisoryLang(null);
     setMessages([]);
     localStorage.removeItem(STORAGE_KEY);
     toast.message("Ration advisory reset — start fresh");
@@ -283,8 +311,13 @@ export function RationAdvisoryView({ open, onClose }: Props) {
       <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto chat-bg px-3 py-4">
         {showWelcome && (
           <div className="flex justify-start mb-3">
-            <div className="max-w-[85%] px-3 py-2 rounded-lg bg-bubble-in text-bubble-in-foreground rounded-tl-none shadow-sm">
-              <div className="whitespace-pre-wrap break-words text-sm leading-relaxed">{WELCOME_HI}</div>
+            <div className="max-w-[95%] md:max-w-[90%] px-3 py-3 rounded-lg bg-bubble-in text-bubble-in-foreground rounded-tl-none shadow-sm">
+              <div className="text-[10px] uppercase tracking-wide text-primary mb-2">
+                Choose your language below · नीचे अपni भाषa chunein
+              </div>
+              <div className="whitespace-pre-wrap break-words text-xs sm:text-sm leading-relaxed max-h-[55vh] overflow-y-auto">
+                {RATION_ADVISORY_WELCOME}
+              </div>
             </div>
           </div>
         )}

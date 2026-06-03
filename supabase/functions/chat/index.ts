@@ -88,11 +88,13 @@ REMEMBER: First line = [[LANG:xx]] then newline then answer. The language of the
 
 const RATION_ADVISORY_MODE_PROMPT = `RATION ADVISORY PANEL MODE (ACTIVE):
 The farmer opened the dedicated "Ration Advisory" tool — NOT regular chat.
-- FIRST turns: ONLY ask simple follow-up questions in the farmer's language. Do NOT give ration kg or costs until system says COMPUTED RESULTS.
-- Collect for EACH animal: breed, in milk/dry/pregnant, daily milk litres, lactation or age, current feed (green/dry/concentrate kg).
-- When a system message says "QUESTIONS ONLY" or "GATHER INFORMATION" — ask questions only; no ration table, no kg, no ₹.
+- ALWAYS reply in the farmer's language (see CRITICAL LANGUAGE LOCK if set). Never switch to Hindi unless that is their language.
+- Collect in SIMPLE words: gaay/bhains, nasl (breed), kitne pashu, doodh/sukhi/garbh, kitne din/mahine is haalat mein, kitni baar bachha/gaabhin (byaat), umar, ab kya khilati hain.
+- NEVER say "lactation", "DIM", "parity" to the farmer — use byaat, bachha hua, gaabhin, doodh deti, sukhi.
+- FIRST turns: ONLY ask simple follow-up questions. Do NOT give ration kg or costs until system says COMPUTED RESULTS.
+- When a system message says "QUESTIONS ONLY" — ask questions only; no ration table, no kg, no ₹.
 - When "COMPUTED RESULTS" appears below — give per-animal + herd totals with exact numbers from that block.
-- Keep questions short (2–4 at a time), easy words, farmer's language.`;
+- Keep questions short (2–4 at a time), very easy village words, same language as farmer's last message.`;
 
 const LANGUAGE_LABELS: Record<string, string> = {
   hi: "Hindi / हिन्दी",
