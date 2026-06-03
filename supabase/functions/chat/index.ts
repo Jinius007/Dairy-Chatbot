@@ -8,6 +8,7 @@ import {
   pickSeasonFeeds,
   type Region,
 } from "../_shared/ration-calculator.ts";
+import { tryHerdRationHint } from "../_shared/herd-ration-advisor.ts";
 import { tryYoutubeVideoHint } from "../_shared/youtube-search.ts";
 
 const corsHeaders = {
@@ -55,6 +56,14 @@ When the farmer asks about ration, balanced feed, least-cost feed, what to feed,
 - Recommend BIS Type I for >10 L/day, BIS Type II for 5–10 L/day.
 - If COMPUTED RATION ADVISORY is provided below in this prompt, use those exact numbers as the basis of your answer (translate to farmer's language, keep amounts and costs).
 - End with note to verify local prices and consult Pashu Poshan app / NDDB LRP for fine-tuning.
+
+HERD RATION — MULTI-ANIMAL (2 OR MORE COWS/BUFFALOES):
+When the farmer says they have 2+ animals (e.g. "4 cows", "5 bhains", "meri 3 gaay"):
+- Do NOT jump to a single-animal ration. First collect details for EACH animal using simple questions in the farmer's language.
+- Ask in easy village language (see Balanced Ration Guide Section 3): breed, age or lactation number (pehli/doosri vyaat), in milk or dry or pregnant, daily milk litres if milking, and what they feed now (green kg, dry straw kg, concentrate kg).
+- On live call: ask only 2–3 short questions per turn. In chat: up to 4 questions at a time.
+- When HERD RATION ADVISORY — COMPUTED RESULTS appears below, use those exact kg and ₹ numbers for each animal AND herd totals.
+- Explain: daily amount for each animal, total to prepare for the whole herd, and estimated savings per day/month in simple words.
 
 MILK MARKETING — COOPERATIVE ONLY (CRITICAL):
 - When discussing selling/pouring/marketing milk: ALWAYS advise farmers to pour milk ONLY at their local **dairy cooperative** collection centre (DCS/village society → district milk union).
@@ -177,7 +186,8 @@ Deno.serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
 
-    const rationHint = tryComputeRationHint(messages);
+    const herdHint = tryHerdRationHint(messages);
+    const rationHint = herdHint ? null : tryComputeRationHint(messages);
     const youtubeHint = await tryYoutubeVideoHint(messages);
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
@@ -190,9 +200,12 @@ Deno.serve(async (req) => {
         model: "google/gemini-3-flash-preview",
         messages: [
           { role: "system", content: SYSTEM_PROMPT },
+          ...(herdHint ? [{ role: "system", content: herdHint }] : []),
           ...(rationHint ? [{ role: "system", content: rationHint }] : []),
           ...(youtubeHint ? [{ role: "system", content: youtubeHint }] : []),
-          ...(mode === "call" ? [{ role: "system", content: "LIVE CALL MODE: Answer like a patient human helper on a phone call. Use very simple village/farmer language. Keep the answer short, natural, and speakable: 2-4 short sentences only. No headings, no long bullet list, no difficult words. Give the next practical step first." }] : []),
+          ...(mode === "call" ? [{ role: "system", content: herdHint?.includes("GATHER INFORMATION")
+            ? "LIVE CALL MODE — HERD INFO: Ask 2–3 very simple questions only. One animal at a time. Short spoken sentences. Wait for answers before calculating ration."
+            : "LIVE CALL MODE: Answer like a patient human helper on a phone call. Use very simple village/farmer language. Keep the answer short, natural, and speakable: 2-4 short sentences only. No headings, no long bullet list, no difficult words. Give the next practical step first." }] : []),
           ...(forceLanguage && forcedLabel ? [{ role: "system", content: `CRITICAL LANGUAGE LOCK: The next answer MUST be written only in ${forcedLabel}. The first line MUST be [[LANG:${forceLanguage}]]. Do not use Hindi unless the locked language is Hindi. Do not mix scripts.` }] : []),
           ...messages,
           ...(forceLanguage && forcedLabel ? [{ role: "system", content: `FINAL CHECK BEFORE ANSWERING: Reply in ${forcedLabel} only, with [[LANG:${forceLanguage}]] as the first line. Keep it simple enough for a farmer.` }] : []),
