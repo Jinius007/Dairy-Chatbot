@@ -8,7 +8,7 @@ import {
   pickSeasonFeeds,
   type Region,
 } from "../_shared/ration-calculator.ts";
-import { isHerdGathering, tryRationAdvisoryHint } from "../_shared/herd-ration-advisor.ts";
+import { isHerdGathering, isRationComputed, tryRationAdvisoryHint } from "../_shared/herd-ration-advisor.ts";
 import {
   abuseRefusalMessage,
   containsAbusiveLanguage,
@@ -88,13 +88,24 @@ REMEMBER: First line = [[LANG:xx]] then newline then answer. The language of the
 
 const RATION_ADVISORY_MODE_PROMPT = `RATION ADVISORY PANEL MODE (ACTIVE):
 The farmer opened the dedicated "Ration Advisory" tool — NOT regular chat.
-- ALWAYS reply in the farmer's language (see CRITICAL LANGUAGE LOCK if set). Never switch to Hindi unless that is their language.
-- Collect in SIMPLE words: gaay/bhains, nasl (breed), kitne pashu, doodh/sukhi/garbh, kitne din/mahine is haalat mein, kitni baar bachha/gaabhin (byaat), umar, ab kya khilati hain.
-- NEVER say "lactation", "DIM", "parity" to the farmer — use byaat, bachha hua, gaabhin, doodh deti, sukhi.
-- FIRST turns: ONLY ask simple follow-up questions. Do NOT give ration kg or costs until system says COMPUTED RESULTS.
-- When a system message says "QUESTIONS ONLY" — ask questions only; no ration table, no kg, no ₹.
-- When "COMPUTED RESULTS" appears below — give per-animal + herd totals with exact numbers from that block.
-- Keep questions short (2–4 at a time), very easy village words, same language as farmer's last message.`;
+
+LANGUAGE (ALL 12 + English — equally important, not only Hindi or Gujarati):
+- Supported: hi, bn, ta, te, mr, gu, kn, ml, pa, or, as, ur, en.
+- ALWAYS reply in the SAME language as the farmer's messages (see CRITICAL LANGUAGE LOCK).
+- Bengali farmer → Bengali reply. Tamil → Tamil. Telugu → Telugu. Gujarati → Gujarati. etc.
+- Never switch to Hindi unless the farmer is writing/speaking Hindi.
+
+DATA COLLECTION (simple village words in farmer's language):
+- gaay/bhains, nasl (breed), kitne pashu, doodh/sukhi/garbh, kitne din/mahine, kitni baar bachha/gaabhin (byaat), umar, ab kya khilati hain.
+- NEVER say "lactation", "DIM", "parity".
+- Use farmer's answers to compute per-animal ration (system calculates numbers).
+
+WHEN "QUESTIONS ONLY" in system message: ask 2–4 short follow-ups only — no kg, no ₹.
+
+WHEN "COMPUTED RESULTS" in system message — present in this ORDER:
+1. HERD PREP FIRST: total kg to prepare/mix for the whole herd today (green fodder + dry + concentrate + mineral).
+2. PER ANIMAL SECOND: each animal's daily share (breed, doodh/sukhi/garbh, milk litres, kg of each feed).
+Use exact numbers from COMPUTED RESULTS. Simple words only.`;
 
 const LANGUAGE_LABELS: Record<string, string> = {
   hi: "Hindi / हिन्दी",
@@ -200,7 +211,6 @@ Deno.serve(async (req) => {
 
   try {
     const { messages, stream = true, mode = "chat", forceLanguage = null } = await req.json();
-    const forcedLabel = typeof forceLanguage === "string" ? LANGUAGE_LABELS[forceLanguage] : null;
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
 
@@ -222,6 +232,12 @@ Deno.serve(async (req) => {
     const rationHint = isRationAdvisory ? null : tryComputeRationHint(safeMessages);
     const youtubeHint = await tryYoutubeVideoHint(safeMessages);
 
+    const userCtx = safeMessages.filter((m: { role: string }) => m.role === "user").map((m: { content: string }) => m.content).join("\n");
+    const detectedUserLang = userCtx.trim() ? detectLangForRefusal(userCtx) : null;
+    const effectiveForceLang = (typeof forceLanguage === "string" ? forceLanguage : null)
+      ?? (isRationAdvisory && detectedUserLang ? detectedUserLang : null);
+    const effectiveForcedLabel = effectiveForceLang ? LANGUAGE_LABELS[effectiveForceLang] : null;
+
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -237,10 +253,11 @@ Deno.serve(async (req) => {
           ...(rationHint ? [{ role: "system", content: rationHint }] : []),
           ...(youtubeHint ? [{ role: "system", content: youtubeHint }] : []),
           ...(mode === "call" ? [{ role: "system", content: "LIVE CALL MODE: Answer like a patient human helper on a phone call. Use very simple village/farmer language. Keep the answer short, natural, and speakable: 2-4 short sentences only. No headings, no long bullet list, no difficult words. Give the next practical step first." }] : []),
-          ...(forceLanguage && forcedLabel ? [{ role: "system", content: `CRITICAL LANGUAGE LOCK: The next answer MUST be written only in ${forcedLabel}. The first line MUST be [[LANG:${forceLanguage}]]. Do not use Hindi unless the locked language is Hindi. Do not mix scripts.` }] : []),
+          ...(effectiveForceLang && effectiveForcedLabel ? [{ role: "system", content: `CRITICAL LANGUAGE LOCK: The next answer MUST be written only in ${effectiveForcedLabel}. The first line MUST be [[LANG:${effectiveForceLang}]]. Do not use Hindi unless the locked language is Hindi. Do not mix scripts.` }] : []),
           ...safeMessages,
-          ...(isRationAdvisory && isHerdGathering(advisoryHint) ? [{ role: "system", content: "FINAL INSTRUCTION: Reply with ONLY 2–4 simple questions for the farmer. No ration advice, no kg, no ₹, no bullet feed list. First line must still be [[LANG:xx]]." }] : []),
-          ...(forceLanguage && forcedLabel ? [{ role: "system", content: `FINAL CHECK BEFORE ANSWERING: Reply in ${forcedLabel} only, with [[LANG:${forceLanguage}]] as the first line. Keep it simple enough for a farmer.` }] : []),
+          ...(isRationAdvisory && isHerdGathering(advisoryHint) ? [{ role: "system", content: "FINAL INSTRUCTION: Reply with ONLY 2–4 simple questions for the farmer in the LOCKED language. No ration advice, no kg, no ₹. First line must still be [[LANG:xx]]." }] : []),
+          ...(isRationAdvisory && isRationComputed(advisoryHint) ? [{ role: "system", content: "FINAL INSTRUCTION: Present COMPUTED RESULTS in farmer's language. ORDER: (1) HERD PREP — total kg to mix/prepare for whole herd today; (2) PER ANIMAL — each animal's daily share with breed and status. Use exact kg from system block." }] : []),
+          ...(effectiveForceLang && effectiveForcedLabel ? [{ role: "system", content: `FINAL CHECK BEFORE ANSWERING: Reply in ${effectiveForcedLabel} only, with [[LANG:${effectiveForceLang}]] as the first line. Keep it simple enough for a farmer.` }] : []),
         ],
         stream,
       }),

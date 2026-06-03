@@ -5,14 +5,14 @@ const WELCOME_BY_LANG: Record<string, string> = {
 
 कृपया अपने dairy पशुओं की जानकारी दीजिए:
 • गाय या भैंस? कौन सी नस्ल (Murrah, Gir)?
-• कितने पशu?
-• अभी क्या हाल — दूध दे रही / सूkhi / गर्भ में?
-• इस हालat में कितne din / mahine?
-• कितni baar bachha hua / gaabhin hui? (pehli, doosri byaat?)
-• उम्र कितni?
-• अभी क्या खिलातe hain (hara chara, bhusa, dana)?
+• कितने पशु?
+• अभी क्या हाल — दूध दे रही / sukhi / गर्भ में?
+• इस haalat में kitne din / mahine?
+• kitni baar bachha hua / gaabhin hui? (pehli, doosri byaat?)
+• umar kitni?
+• abhi kya khilati hain (hara chara, bhusa, dana)?
 
-अपni भाषa mein likhiye ya boliye — main usi mein aage sawal poochunga/poochungi.`,
+apni bhasha mein likhiye ya boliye — main usi mein aage sawal poochunga/poochungi.`,
 
   bn: `🌾 Ration Advisory (সন্তুলিত খাদ্য)
 

@@ -495,12 +495,12 @@ function gatherPrompt(herdSize: number, slots: ParsedAnimalSlot[]): string {
     "FORBIDDEN: answering from general knowledge — only ask questions.",
     "",
     `Herd size: ${herdSize} animals. Fully profiled: ${profiled}/${herdSize}.`,
-    `Ask about Animal #${idx} now — in the farmer's own simple language (same as their last message).`,
+    `Ask about Animal #${idx} now — MUST use the farmer's language (all 12 Indian languages + English). Hindi examples below are ONLY templates — translate to locked language.`,
     "",
     "NEVER use hard words like 'lactation', 'DIM', 'parity' with the farmer.",
     "Use simple village words: byaat/vyaat, bachha hua, gaabhin/garbh, doodh deti, sukhi.",
     "",
-    "Ask 2–4 short easy questions in the farmer's language (Hindi example):",
+    "Ask 2–4 short easy questions (translate to farmer's language — e.g. Tamil farmer gets Tamil questions):",
     "  • Kaun si nasl hai? (Murrah, Gir, desi?)",
     "  • Ab doodh de rahi hai, sukhi hai, ya garbh mein hai?",
     "  • Is haalat mein kitne din/mahine? Roz kitna litre dudh?",
@@ -571,10 +571,8 @@ function buildRationAdvisoryHint(
     "HERD RATION ADVISORY — COMPUTED RESULTS (use these EXACT numbers)",
     `Herd: ${animalCount} animals | Region: ${region} | Season: ${season}`,
     "",
-    "PER ANIMAL:",
-    perAnimal,
-    "",
-    "TOTAL DAILY FOR WHOLE HERD:",
+    "══ STEP 1 — HERD PREP (tell farmer FIRST: how much to prepare/mix for whole herd today) ══",
+    "TOTAL DAILY FOR WHOLE HERD — mix/prepare these amounts for all animals together:",
     ...herdLines,
     `  • Mineral mixture: ${(0.15 * animalCount).toFixed(2)} kg/day`,
     "",
@@ -583,7 +581,16 @@ function buildRationAdvisoryHint(
       ? `Saving ~₹${agg.totalSavings.toFixed(0)}/day vs current feed`
       : `Typical saving ~₹${(25.5 * animalCount).toFixed(0)}/day (NDDB average)`,
     "",
-    "Explain in SIMPLE farmer language: per-animal feed, total herd prep, savings.",
+    "══ STEP 2 — PER ANIMAL (tell farmer SECOND: each animal's daily share) ══",
+    "PER ANIMAL — how much of the ration each animal gets:",
+    perAnimal,
+    "",
+    "PRESENTATION RULES FOR FARMER (mandatory):",
+    "1. Reply in farmer's language (hi/bn/ta/te/mr/gu/kn/ml/pa/or/as/ur/en — same as their messages).",
+    "2. Section A first: 'Poori mandli ke liye aaj itna tayyar karein' + herd totals (green, dry, concentrate, mineral kg).",
+    "3. Section B second: 'Har pashu ko alag' — each animal with breed, status (doodh/sukhi/garbh), milk if any, and its kg.",
+    "4. Simple village words only — no lactation/DIM/parity.",
+    "5. Use exact kg and ₹ from this block — do not recalculate.",
   ].join("\n");
 }
 
@@ -607,4 +614,8 @@ export function tryHerdRationHint(messages: { role: string; content: string }[])
 
 export function isHerdGathering(hint: string | null): boolean {
   return hint !== null && hint.includes("QUESTIONS ONLY");
+}
+
+export function isRationComputed(hint: string | null): boolean {
+  return hint !== null && hint.includes("COMPUTED RESULTS");
 }

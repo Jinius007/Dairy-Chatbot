@@ -76,11 +76,23 @@ export function abuseRefusalMessage(lang = "hi"): string {
 }
 
 export function detectLangForRefusal(text: string): string {
-  if (/[\u0a80-\u0aff]/.test(text)) return "gu";
-  if (/[\u0980-\u09ff]/.test(text)) return "bn";
-  if (/[\u0b80-\u0bff]/.test(text)) return "ta";
-  if (/[\u0c00-\u0c7f]/.test(text)) return "te";
-  if (/[\u0900-\u097f]/.test(text)) return "hi";
+  const counts: Record<string, number> = {};
+  const add = (code: string) => { counts[code] = (counts[code] || 0) + 1; };
+  for (const char of text) {
+    const cp = char.codePointAt(0) || 0;
+    if (cp >= 0x0900 && cp <= 0x097f) add(/[ळऱ]/.test(char) ? "mr" : "hi");
+    else if (cp >= 0x0980 && cp <= 0x09ff) add(/[ৰৱ]/.test(char) ? "as" : "bn");
+    else if (cp >= 0x0b00 && cp <= 0x0b7f) add("or");
+    else if (cp >= 0x0a00 && cp <= 0x0a7f) add("pa");
+    else if (cp >= 0x0a80 && cp <= 0x0aff) add("gu");
+    else if (cp >= 0x0b80 && cp <= 0x0bff) add("ta");
+    else if (cp >= 0x0c00 && cp <= 0x0c7f) add("te");
+    else if (cp >= 0x0c80 && cp <= 0x0cff) add("kn");
+    else if (cp >= 0x0d00 && cp <= 0x0d7f) add("ml");
+    else if (cp >= 0x0600 && cp <= 0x06ff) add("ur");
+  }
+  const best = Object.entries(counts).sort((a, b) => b[1] - a[1])[0]?.[0];
+  if (best) return best;
   if (/^[a-z0-9\s.,!?'"()-]+$/i.test(text)) return "en";
   return "hi";
 }

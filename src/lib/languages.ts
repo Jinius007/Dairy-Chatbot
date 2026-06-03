@@ -43,18 +43,27 @@ export function detectLanguageCode(text: string): string | null {
 
   const best = Object.entries(counts).sort((a, b) => b[1] - a[1])[0]?.[0];
   if (best) return best;
-  return /[a-z]/i.test(text) ? "en" : null;
+  if (/[a-z]/i.test(text)) return "en";
+  return null;
 }
 
-/** Bhashini needs the lang code to match the script in the reply text. */
+/** Scan all user turns — strongest signal for ration advisory language lock. */
+export function detectLanguageFromMessages(messages: { role: string; content: string }[]): string | null {
+  const userText = messages
+    .filter((m) => m.role === "user")
+    .map((m) => m.content)
+    .join("\n");
+  if (!userText.trim()) return null;
+  return detectLanguageCode(userText);
+}
+
+/** Bhashini TTS: prefer the script actually used in the reply body. */
 export function resolveTtsLanguage(text: string, hint: string | null): string {
   const fromText = detectLanguageCode(text);
   const tag = hint && hint in LANG_NAMES ? hint : null;
 
   if (fromText) {
-    if (!tag) return fromText;
-    // AI often mis-tags Indic replies as hi or en (Gujarati is the common TTS failure).
-    if (fromText !== tag && (tag === "hi" || tag === "en")) return fromText;
+    if (!tag || fromText !== tag) return fromText;
   }
 
   return tag || fromText || "hi";

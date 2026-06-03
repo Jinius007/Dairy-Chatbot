@@ -3,7 +3,7 @@ import { supabase, isSupabaseConfigured } from "@/integrations/supabase/client";
 import { VoiceRecorder } from "@/components/VoiceRecorder";
 import { ArrowLeft, Send, Volume2, Pause, Play, Square, Wheat } from "lucide-react";
 import { toast } from "sonner";
-import { LANG_NAMES, detectLanguageCode, resolveTtsLanguage } from "@/lib/languages";
+import { LANG_NAMES, detectLanguageCode, detectLanguageFromMessages, resolveTtsLanguage } from "@/lib/languages";
 import {
   RATION_ADVISORY_WELCOME,
   loadRationAdvisoryLang,
@@ -36,8 +36,14 @@ interface Props {
 const STORAGE_KEY = "pashumitra_ration_advisory_v2";
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
 
-function resolveUserLang(text: string, stored: string | null): string {
-  return detectLanguageCode(text) || stored || "hi";
+function resolveUserLang(latest: string, history: Message[], stored: string | null): string {
+  const fromAll = detectLanguageFromMessages(history);
+  const fromLatest = detectLanguageCode(latest);
+  // Prefer native script from any user turn; keep locked lang for romanized follow-ups.
+  if (fromLatest && fromLatest !== "en") return fromLatest;
+  if (fromAll && fromAll !== "en") return fromAll;
+  if (fromLatest === "en" && stored) return stored;
+  return stored || fromLatest || fromAll || "hi";
 }
 
 function splitLangHeader(text: string): { lang: string | null; body: string } {
@@ -219,12 +225,12 @@ export function RationAdvisoryView({ open, onClose }: Props) {
     setSending(true);
     setInput("");
     const startedAt = voiceStartedAt ?? Date.now();
-    const lang = resolveUserLang(text, userLangRef.current);
+    const userMsg: Message = { id: crypto.randomUUID(), role: "user", content: text, is_voice: isVoice, created_at: new Date().toISOString() };
+    const nextHistory = [...messagesRef.current, userMsg];
+    const lang = resolveUserLang(text, nextHistory, userLangRef.current);
     userLangRef.current = lang;
     saveRationAdvisoryLang(lang);
-    const userMsg: Message = { id: crypto.randomUUID(), role: "user", content: text, is_voice: isVoice, created_at: new Date().toISOString() };
     const assistantMsg: Message = { id: crypto.randomUUID(), role: "assistant", content: "", created_at: new Date().toISOString() };
-    const nextHistory = [...messagesRef.current, userMsg];
     const visibleMessages = [...nextHistory, assistantMsg];
     messagesRef.current = visibleMessages;
     setMessages(visibleMessages);
@@ -351,7 +357,7 @@ export function RationAdvisoryView({ open, onClose }: Props) {
                         </button>
                       </>
                     ) : (
-                      <button onClick={() => speak(m.content, m.language, m.id)} className="text-muted-foreground hover:text-primary mr-1" title="Play audio">
+                      <button onClick={() => speak(m.content, resolveTtsLanguage(m.content, m.language || userLangRef.current), m.id)} className="text-muted-foreground hover:text-primary mr-1" title="Play audio">
                         <Volume2 className="w-3.5 h-3.5" />
                       </button>
                     )
