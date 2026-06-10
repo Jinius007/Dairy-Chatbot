@@ -536,6 +536,8 @@ const RationAdvisor = () => {
         const milking = parseMilkingFromVoice(text);
         if (milking === true) chooseMilking(true, isVoice);
         else if (milking === false) chooseMilking(false, isVoice);
+        else if (isYes(text)) chooseMilking(true, isVoice);
+        else if (isNo(text)) chooseMilking(false, isVoice);
         else reprompt(text, isVoice);
         return;
       }

@@ -117,7 +117,16 @@ describe("voice parsing — milking status", () => {
   it("recognises Devanagari milking phrases", () => {
     expect(parseMilkingFromVoice("वह आजकल दूध दे रही है")).toBe(true);
     expect(parseMilkingFromVoice("हाँ दूध देती है")).toBe(true);
+    expect(parseMilkingFromVoice("हां, वह दूध दे रही है")).toBe(true);
     expect(parseMilkingFromVoice("दूध नहीं देती")).toBe(false);
+  });
+
+  it("recognises Bengali milking phrases", () => {
+    expect(parseMilkingFromVoice("হ্যাঁ, দুধ দিচ্ছে")).toBe(true);
+    expect(parseMilkingFromVoice("হ্যাঁ দুধ দিচ্ছে")).toBe(true);
+    expect(parseMilkingFromVoice("দুধ দিচ্ছে")).toBe(true);
+    expect(parseMilkingFromVoice("হ্যাঁ")).toBe(true);
+    expect(parseMilkingFromVoice("না, দুধ দিচ্ছে না")).toBe(false);
   });
 
   it("recognises short yes/no at milking step", () => {

@@ -20,16 +20,28 @@ export function extractFirstNumber(text: string): number | null {
   return m ? parseFloat(m[1]) : null;
 }
 
+function normalizeVoiceAnswer(text: string): string {
+  return normalizeDigits(text)
+    .replace(/[^\p{L}\p{M}\p{N}\s]/gu, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 export function isYes(text: string): boolean {
-  const s = text.toLowerCase().trim();
-  if (/^(y|yes|haan|ha|haa|ji|ji haan|theek|thik|sahi|bilkul|ho|correct|right|ok|okay|undu|am|ahe|avunu|shi|ঠিক|হ্যাঁ|हाँ|हां)$/i.test(s)) return true;
-  return /\b(yes|haan|haanji|ji haan|theek hai|thik hai|sahi hai|bilkul|correct|right)\b/i.test(s);
+  const raw = text.trim();
+  const s = raw.toLowerCase();
+  if (/^(y|yes|haan|haanji|ha|haa|hain|han|ji|ji haan|theek|thik|sahi|bilkul|ho|hoy|hoyee|correct|right|ok|okay|undu|am|ahe|avunu|shi|ঠিক|হ্যাঁ|হ্যা|हाँ|हां|जी|हो)$/i.test(s)) return true;
+  if (/^(haan|ha|ji|yes|y|ho|hoy|হ্যাঁ|হ্যা|हाँ|हां|जी)\b/i.test(s)) return true;
+  return /\b(yes|haan|haanji|ji haan|theek hai|thik hai|sahi hai|bilkul|correct|right|hoy ta|hoyeche)\b/i.test(s)
+    || /হ্যাঁ|হ্যা\b|हाँ|हां|जी\s*हाँ|हाँ\s*जी|ठीक\s*है|बिल्कुल/i.test(raw);
 }
 
 export function isNo(text: string): boolean {
-  const s = text.toLowerCase().trim();
-  if (/^(n|no|na|nahi|nahin|nai|galat|wrong|illa|ledu|naahi|না|नहीं|नही)$/i.test(s)) return true;
-  return /\b(no|nahi|nahin|not|galat|wrong|na re)\b/i.test(s);
+  const raw = text.trim();
+  const s = raw.toLowerCase();
+  if (/^(n|no|na|nahi|nahin|nai|naa|galat|wrong|illa|ledu|naahi|না|नहीं|नही|न)$/i.test(s)) return true;
+  return /\b(no|nahi|nahin|not|galat|wrong|na re|dey na|dicche na)\b/i.test(s)
+    || /না\b|नहीं|नही|नहीं\s*दे|দুধ\s*দিচ্ছে\s*না/i.test(raw);
 }
 
 export function isSkip(text: string): boolean {
@@ -45,49 +57,60 @@ export function isNotCalved(text: string): boolean {
 
 const DRY_MILK_PATTERNS = [
   /\b(dry|sukhi|sookhi|sukha|sookha|no milk|not milk|band|bandh)\b/i,
-  /doodh\s*nahi|dudh\s*nahi|doodh\s*nahin|milk\s*nahi|nahi\s*de(?:ti|r|ta)?/i,
+  /doodh\s*nahi|dudh\s*nahi|doodh\s*nahin|milk\s*nahi|dudh\s*dey\s*na|dudh\s*dicche\s*na/i,
+  /nahi\s*de(?:ti|r|ta)?(?!\s*rahi)/i,
   /दूध\s*नहीं?|नहीं?\s*दे(?:ती|र)?|सूख|शुष्क|दूध\s*बंद/i,
+  /দুধ\s*দিচ্ছ(?:ে\s*)?না|দুধ\s*দেয়\s*না|দুধ\s*না/i,
   /doodh\s*bandh?|dudh\s*bandh?/i,
 ];
 
 const IN_MILK_PATTERNS = [
-  /doodh\s*de(?:ti|r|ta)?(?:\s*rahi|\s*rhi|\s*rahe|\s*rah)?(?:\s*hai|\s*he)?/i,
+  /doodh\s*de(?:ti|r|ta)?(?:\s*rahi|\s*rhi|\s*rahe|\s*rah)?(?:\s*hai|\s*he|a)?/i,
   /dudh\s*de(?:ti|r|ta)?(?:\s*rahi|\s*rhi|\s*rahe)?(?:\s*hai|\s*he)?/i,
+  /dudh\s*dey|dudh\s*dicch(?:e|i)|dudh\s*de\s*rahi/i,
   /milk\s*de(?:ti|r|ta)?(?:\s*rahi|\s*rhi)?(?:\s*hai)?/i,
   /दूध\s*दे(?:ती|ता|र)?(?:\s*रही|\s*रह)?(?:\s*है)?/,
   /दूध\s*दे\s*रही/,
   /दूध\s*देती/,
   /(?:aaj|aj)\s*kal\s*(?:doodh|dudh|se\s*doodh)/i,
   /आज\s*कल\s*दूध/,
+  /দুধ\s*দি(?:চ্ছ|য়|চ্ছে|চ্ছ)/,
+  /দুধ\s*দে(?:য়|ত)?(?:\s*র)?(?:\s*হয়)?/,
+  /দুধ\s*দিচ্ছে/,
+  /दूध\s*दet(?:e|a)?(?:\s*आhe)?/i,
+  /पाल(?:u)?\s*de(?:ti|r)?/i,
+  /பால(?:்)?\s*(?:koduk|kotuk|thar)/i,
+  /పాల(?:u)?\s*(?:ist|istun)/i,
+  /ಗಾಲ(?:u)?\s*(?:kodu|kodut)/i,
   /\b(in milk|milking|giving milk|lactating|dairy)\b/i,
-  /(\d+(?:\.\d+)?)\s*(?:litre|liter|ltr|l|kg|लीटर|लिटर)\s*(?:doodh|dudh|milk|दूध)/i,
-  /(?:doodh|dudh|milk|दूध)[^\d]{0,30}(\d+(?:\.\d+)?)\s*(?:litre|liter|ltr|l|kg|लीटर|लिटर)?/i,
+  /(\d+(?:\.\d+)?)\s*(?:litre|liter|ltr|l|kg|लीटर|লিটার|লিটার)\s*(?:doodh|dudh|milk|दूध|দুধ)/i,
+  /(?:doodh|dudh|milk|दूध|দুধ|पाल|পাল)[^\d]{0,40}(\d+(?:\.\d+)?)\s*(?:litre|liter|ltr|l|kg|लीटर|লিটার)?/i,
 ];
+
+const MILK_WORD = /doodh|dudh|milk|दूध|দুধ|पाल|পাল|பால|పాల|ಹಾಲ|dairy/i;
+const GIVE_VERB = /de(?:ti|r|ta|y)?|de rahi|de rhi|de raha|deti|dey|dicch|dichch|dichhe|দে|দিচ্ছ|दे(?:ती|र)?|देती|दे रही|koduk|istun|kodut|kotuk|thar|de ta|det ahe/i;
 
 /**
  * Parse whether the animal is currently giving milk.
  * Returns true (in milk), false (dry), or null (unclear).
  */
 export function parseMilkingFromVoice(text: string): boolean | null {
-  const t = normalizeDigits(text).trim();
+  const t = normalizeVoiceAnswer(text);
   if (!t) return null;
 
   if (DRY_MILK_PATTERNS.some((p) => p.test(t))) return false;
   if (IN_MILK_PATTERNS.some((p) => p.test(t))) return true;
 
-  // Colloquial Hindi/Hinglish: "doodh" + giving verb
-  if (/doodh|dudh|milk|दूध|पाल/i.test(t) && /de(?:ti|r|ta)?|deti|de rahi|de rhi|de raha|दे(?:ती|र)?|देती|दे रही/i.test(t)) {
-    return true;
+  if (MILK_WORD.test(t) && GIVE_VERB.test(t)) return true;
+
+  if (isYes(t) && MILK_WORD.test(t)) return true;
+  if (isYes(t) && !isNo(t) && !/\b(dry|sukhi|sookhi|sukha|band|nahi|nahin|না|नही)\b/i.test(t)) {
+    // Plain "haan" / "হ্যাঁ" to a yes/no milking question
+    if (/^(haan|ha|ji|yes|y|ho|hoy|haanji|bilkul|theek|thik|হ্যাঁ|হ্যা|हाँ|हां|जी|हो|hain|han)\b/i.test(t)) return true;
   }
 
-  // Affirmative + milk mention: "haan doodh deti hai"
-  if (/haan|haa|ha\b|ji|yes|हाँ|हां|जी|bilkul|theek|thik/i.test(t) && /doodh|dudh|milk|दूध/i.test(t)) {
-    return true;
-  }
-
-  // Short yes/no answers to "is she giving milk?"
-  if (/^(haan|haa|ha|ji|yes|y|ho|bilkul|theek|thik|हाँ|हां|जी|जी हाँ|हाँ जी)$/i.test(t)) return true;
-  if (/^(nahi|na|no|nahin|nai|नहीं|नही|न|^n)$/i.test(t)) return false;
+  if (isYes(t)) return true;
+  if (isNo(t)) return false;
 
   return null;
 }
