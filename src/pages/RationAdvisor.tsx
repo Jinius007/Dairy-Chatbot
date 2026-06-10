@@ -1,24 +1,25 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Camera, Plus, Search, Trash2, Wheat, X } from "lucide-react";
+import { ArrowLeft, Wheat } from "lucide-react";
 import { VoiceRecorder } from "@/components/VoiceRecorder";
 import { LANG_NAMES } from "@/lib/languages";
 import { speakText, stopSpeech } from "@/lib/speech";
 import { t } from "@/lib/rationI18n";
 import {
   detectSpecies,
-  extractFirstNumber,
   isDry,
+  isDoneAddingFeeds,
   isInMilk,
   isNo,
   isNotCalved,
   isSkip,
   isYes,
+  matchFeedFromText,
   matchLangCode,
 } from "@/lib/rationVoice";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { FEED_BY_ID, FeedItem, searchFeeds } from "@/lib/feedLibrary";
+import { FEED_BY_ID, FeedItem } from "@/lib/feedLibrary";
 import {
   AnimalProfile,
   RequirementBreakdown,
@@ -28,18 +29,12 @@ import {
 import { RationFeedInput, RationResult, optimizeRation } from "@/lib/rationOptimizer";
 import { detectLocation, mineralMixtureIdForLocation } from "@/lib/location";
 
-// ----------------------------------------------------------------------------
-// Conversation model
-// ----------------------------------------------------------------------------
-
 type Step =
   | "language"
   | "locating"
   | "locationConfirm"
   | "locationManual"
   | "species"
-  | "herd"
-  | "weight"
   | "calvings"
   | "milking"
   | "months"
@@ -49,22 +44,21 @@ type Step =
   | "price"
   | "pregnant"
   | "pregMonth"
-  | "photo"
-  | "feeds"
+  | "feedName"
+  | "feedMore"
+  | "optimizing"
   | "done";
 
 interface Msg {
   id: string;
   role: "bot" | "user";
   text?: string;
-  image?: string;
   requirement?: RequirementBreakdown;
   plan?: { result: RationResult; title: string; better?: boolean };
 }
 
 interface Answers {
   species: Species;
-  herd: number;
   weight: number;
   calvings: number;
   inMilk: boolean;
@@ -79,14 +73,13 @@ interface Answers {
 
 interface FarmerFeed {
   feed: FeedItem;
-  qty: number;
   price: number;
 }
 
 const uid = () => Math.random().toString(36).slice(2);
 
-// Widely available market feeds offered to the optimizer for the "even
-// cheaper" plan (district feed library approximation).
+const DEFAULT_WEIGHT: Record<Species, number> = { cattle: 400, buffalo: 450 };
+
 const MARKET_FEED_IDS = [
   "barseem_fodder",
   "maize_fodder",
@@ -116,27 +109,24 @@ const RationAdvisor = () => {
   const [place, setPlace] = useState<{ district: string; state: string; label: string } | null>(null);
   const [answers, setAnswers] = useState<Partial<Answers>>({});
   const [feeds, setFeeds] = useState<FarmerFeed[]>([]);
-  const [feedSearch, setFeedSearch] = useState("");
-  const [pendingFeed, setPendingFeed] = useState<FeedItem | null>(null);
-  const [pendingQty, setPendingQty] = useState("");
-  const [pendingPrice, setPendingPrice] = useState("");
   const [busy, setBusy] = useState(false);
   const [transcribing, setTranscribing] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
-  const fileRef = useRef<HTMLInputElement>(null);
   const stepRef = useRef(step);
   const langRef = useRef(lang);
   const answersRef = useRef(answers);
   const placeRef = useRef(place);
+  const feedsRef = useRef(feeds);
 
   useEffect(() => { stepRef.current = step; }, [step]);
   useEffect(() => { langRef.current = lang; }, [lang]);
   useEffect(() => { answersRef.current = answers; }, [answers]);
   useEffect(() => { placeRef.current = place; }, [place]);
+  useEffect(() => { feedsRef.current = feeds; }, [feeds]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, step, feeds, pendingFeed, transcribing]);
+  }, [messages, step, transcribing, busy]);
 
   useEffect(() => () => stopSpeech(), []);
 
@@ -153,10 +143,6 @@ const RationAdvisor = () => {
     const display = isVoice ? `🎤 ${text}` : text;
     setMessages((m) => [...m, { id: uid(), role: "user", text: display, ...extra }]);
   }, []);
-
-  // ------------------------------------------------------------------
-  // Flow
-  // ------------------------------------------------------------------
 
   const startLocation = async (chosenLang: string) => {
     setStep("locating");
@@ -210,10 +196,10 @@ const RationAdvisor = () => {
   };
 
   const chooseSpecies = (s: Species, isVoice = false) => {
-    setAnswers((a) => ({ ...a, species: s }));
+    setAnswers((a) => ({ ...a, species: s, weight: DEFAULT_WEIGHT[s] }));
     userMsg(s === "cattle" ? t("cow", lang) : t("buffalo", lang), undefined, isVoice);
-    bot(t("askHerd", lang));
-    setStep("herd");
+    bot(t("askCalvings", lang));
+    setStep("calvings");
   };
 
   const submitNumber = (raw: string, isVoice = false) => {
@@ -222,24 +208,6 @@ const RationAdvisor = () => {
     const L = langRef.current;
     const sp = answersRef.current.species;
     switch (currentStep) {
-      case "herd": {
-        if (!valid(v, 1, 500, "3")) return;
-        setAnswers((a) => ({ ...a, herd: v }));
-        userMsg(String(v), undefined, isVoice);
-        if (v > 1) bot(t("herdNote", lang));
-        bot(t("askWeight", lang));
-        bot(t("weightHint", lang));
-        setStep("weight");
-        break;
-      }
-      case "weight": {
-        if (!valid(v, 50, 1000, "400")) return;
-        setAnswers((a) => ({ ...a, weight: v }));
-        userMsg(`${v} kg`, undefined, isVoice);
-        bot(t("askCalvings", lang));
-        setStep("calvings");
-        break;
-      }
       case "months": {
         if (!valid(v, 0, 24, "8")) return;
         setAnswers((a) => ({ ...a, months: v }));
@@ -305,7 +273,6 @@ const RationAdvisor = () => {
     setAnswers((a) => ({ ...a, calvings: n }));
     userMsg(n === 0 ? t("notCalved", lang) : String(n), undefined, isVoice);
     if (n === 0) {
-      // Heifer — no milk questions
       setAnswers((a) => ({ ...a, calvings: 0, inMilk: false, months: 0, yield: 0, fat: 0, price: 30 }));
       askPregnant();
     } else {
@@ -357,39 +324,19 @@ const RationAdvisor = () => {
       setStep("pregMonth");
     } else {
       setAnswers((a) => ({ ...a, pregnant: false, pregMonth: 0 }));
-      askPhoto();
+      showRequirement({ pregnant: false, pregMonth: 0 });
     }
   };
 
   const choosePregMonth = (m: number, isVoice = false) => {
     setAnswers((a) => ({ ...a, pregMonth: m }));
     userMsg(String(m), undefined, isVoice);
-    askPhoto();
-  };
-
-  const askPhoto = () => {
-    bot(t("askPhoto", lang));
-    setStep("photo");
-  };
-
-  const onPhoto = (file: File | null) => {
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      userMsg("📷", { image: String(reader.result) });
-      showRequirement();
-    };
-    reader.readAsDataURL(file);
-  };
-
-  const skipPhoto = (isVoice = false) => {
-    userMsg(t("skip", lang), undefined, isVoice);
-    showRequirement();
+    showRequirement({ pregMonth: m, pregnant: true });
   };
 
   const buildProfile = (a: Partial<Answers>): AnimalProfile => ({
     species: a.species || "cattle",
-    weight: a.weight || 400,
+    weight: a.weight || DEFAULT_WEIGHT[a.species || "cattle"],
     adult: (a.calvings ?? 0) >= 1,
     pregnant: !!a.pregnant,
     pregnancyMonth: a.pregMonth || 0,
@@ -400,13 +347,133 @@ const RationAdvisor = () => {
     milkPrice: a.price || 30,
   });
 
-  const showRequirement = () => {
-    const profile = buildProfile(answers);
+  const showRequirement = (override?: Partial<Answers>) => {
+    const merged = { ...answersRef.current, ...override };
+    const profile = buildProfile(merged);
     const req = computeRequirement(profile);
     bot(t("reqIntro", lang), { requirement: req });
     bot(t("nutrientNote", lang));
+    askFeedName();
+  };
+
+  const askFeedName = () => {
     bot(t("askFeeds", lang));
-    setStep("feeds");
+    setStep("feedName");
+  };
+
+  const askFeedMore = () => {
+    bot(t("askFeedMore", lang));
+    setStep("feedMore");
+  };
+
+  const addFeedByName = (feed: FeedItem, isVoice = false) => {
+    setFeeds((prev) => {
+      if (prev.some((f) => f.feed.id === feed.id)) return prev;
+      return [...prev, { feed, price: feed.rate }];
+    });
+    userMsg(feed.name, undefined, isVoice);
+    bot(t("feedAdded", lang, { feed: feed.name }));
+    askFeedMore();
+  };
+
+  const submitFeedName = (text: string, isVoice = false) => {
+    const feed = matchFeedFromText(text);
+    if (!feed) {
+      bot(t("feedNotFound", lang));
+      return;
+    }
+    addFeedByName(feed, isVoice);
+  };
+
+  const finishFeedsAndOptimize = () => {
+    const list = feedsRef.current;
+    if (list.length === 0) {
+      bot(t("needOneFeed", lang));
+      setStep("feedName");
+      bot(t("askFeeds", lang));
+      return;
+    }
+    runOptimize();
+  };
+
+  const handleFeedStep = (text: string, isVoice: boolean, s: Step) => {
+    if (s === "feedName") {
+      submitFeedName(text, isVoice);
+      return;
+    }
+    if (s === "feedMore") {
+      if (isDoneAddingFeeds(text)) {
+        userMsg(text, undefined, isVoice);
+        finishFeedsAndOptimize();
+        return;
+      }
+      submitFeedName(text, isVoice);
+    }
+  };
+
+  const runOptimize = () => {
+    const list = feedsRef.current;
+    if (list.length === 0) {
+      bot(t("needOneFeed", lang));
+      askFeedName();
+      return;
+    }
+
+    setBusy(true);
+    setStep("optimizing");
+    bot(t("optimizing", lang));
+    userMsg(list.map((f) => f.feed.name).join(", "));
+
+    setTimeout(() => {
+      try {
+        const a = answersRef.current;
+        const p = placeRef.current;
+        const L = langRef.current;
+        const profile = buildProfile(a);
+        const req = computeRequirement(profile);
+        const mineralId = mineralMixtureIdForLocation(p?.district || "", p?.state || "");
+        const mineral = FEED_BY_ID[mineralId] || FEED_BY_ID["mineral_mixture_bis"];
+
+        const inputsA: RationFeedInput[] = list.map((f) => ({
+          feed: f.feed,
+          currentQty: 0,
+          price: f.price,
+        }));
+        if (!inputsA.some((i) => i.feed.category === "mineral")) {
+          inputsA.push({ feed: mineral, currentQty: 0, price: mineral.rate, suggested: true });
+        }
+        const planA = optimizeRation(inputsA, profile, req);
+
+        const marketIds = new Set(MARKET_FEED_IDS);
+        list.forEach((f) => marketIds.delete(f.feed.id));
+        const inputsB: RationFeedInput[] = [
+          ...list.map((f) => ({ feed: f.feed, currentQty: 0, price: f.price })),
+          ...[...marketIds]
+            .map((id) => FEED_BY_ID[id])
+            .filter(Boolean)
+            .map((feed) => ({ feed, currentQty: 0, price: feed.rate, suggested: true })),
+        ];
+        if (!inputsB.some((i) => i.feed.category === "mineral")) {
+          inputsB.push({ feed: mineral, currentQty: 0, price: mineral.rate, suggested: true });
+        }
+        const planB = optimizeRation(inputsB, profile, req);
+
+        if (planA.feasible) {
+          if (planA.relaxed.length > 0) bot(t("notMetWarn", L));
+          bot(t("planTitle", L), { plan: { result: planA, title: t("planTitle", L) } });
+        } else {
+          bot(t("infeasible", L));
+        }
+        if (planB.feasible && (!planA.feasible || planB.totalCost < planA.totalCost - 1)) {
+          bot(t("planBetter", L), { plan: { result: planB, title: t("planBetter", L), better: true } });
+        }
+        bot(t("mineralNote", L));
+        bot(t("disclaimer", L));
+        setStep("done");
+      } finally {
+        setBusy(false);
+      }
+    }, 80);
   };
 
   const handleUserAnswer = useCallback((raw: string, isVoice = false) => {
@@ -446,11 +513,10 @@ const RationAdvisor = () => {
         if (isSkip(text)) skipSnf(isVoice);
         else submitNumber(text, isVoice);
         return;
-      case "photo":
-        if (isSkip(text)) skipPhoto(isVoice);
+      case "feedName":
+      case "feedMore":
+        handleFeedStep(text, isVoice, s);
         return;
-      case "herd":
-      case "weight":
       case "months":
       case "yield":
       case "fat":
@@ -462,14 +528,14 @@ const RationAdvisor = () => {
       default:
         break;
     }
-  }, [lang, place, answers]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [lang, place, answers, feeds]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleVoice = async (b64: string, mime: string) => {
     if (!supabase) {
       toast.error("Voice needs Supabase configured on this deployment.");
       return;
     }
-    if (busy || transcribing) return;
+    if (busy || transcribing || stepRef.current === "locating" || stepRef.current === "optimizing") return;
     setTranscribing(true);
     try {
       const { data, error } = await supabase.functions.invoke("transcribe", {
@@ -490,105 +556,16 @@ const RationAdvisor = () => {
     }
   };
 
-  // ------------------------------------------------------------------
-  // Feeds & optimization
-  // ------------------------------------------------------------------
-
-  const addFeed = () => {
-    if (!pendingFeed) return;
-    const qty = parseFloat(pendingQty);
-    const price = parseFloat(pendingPrice);
-    if (!Number.isFinite(qty) || qty <= 0) return;
-    const finalPrice = Number.isFinite(price) && price > 0 ? price : pendingFeed.rate;
-    setFeeds((f) => [
-      ...f.filter((x) => x.feed.id !== pendingFeed.id),
-      { feed: pendingFeed, qty, price: finalPrice },
-    ]);
-    setPendingFeed(null);
-    setPendingQty("");
-    setPendingPrice("");
-    setFeedSearch("");
-  };
-
-  const makePlan = () => {
-    if (feeds.length === 0) {
-      bot(t("needOneFeed", lang));
-      return;
-    }
-    setBusy(true);
-    userMsg(t("makePlan", lang));
-    userMsg(
-      feeds.map((f) => `${f.feed.name}: ${f.qty} kg @ ₹${f.price}`).join("\n")
-    );
-    bot(t("optimizing", lang));
-
-    // Defer so the UI paints before the solver runs
-    setTimeout(() => {
-      try {
-        const profile = buildProfile(answers);
-        const req = computeRequirement(profile);
-        const mineralId = mineralMixtureIdForLocation(place?.district || "", place?.state || "");
-        const mineral = FEED_BY_ID[mineralId] || FEED_BY_ID["mineral_mixture_bis"];
-
-        // Plan A: optimize the farmer's own feeds (+/-25%), mineral forced in
-        const inputsA: RationFeedInput[] = feeds.map((f) => ({
-          feed: f.feed,
-          currentQty: f.qty,
-          price: f.price,
-        }));
-        if (!inputsA.some((i) => i.feed.category === "mineral")) {
-          inputsA.push({ feed: mineral, currentQty: 0, price: mineral.rate, suggested: true });
-        }
-        const planA = optimizeRation(inputsA, profile, req);
-
-        // Plan B: same feeds (free quantities) + locally available market feeds
-        const marketIds = new Set(MARKET_FEED_IDS);
-        feeds.forEach((f) => marketIds.delete(f.feed.id));
-        const inputsB: RationFeedInput[] = [
-          ...feeds.map((f) => ({ feed: f.feed, currentQty: 0, price: f.price })),
-          ...[...marketIds]
-            .map((id) => FEED_BY_ID[id])
-            .filter(Boolean)
-            .map((feed) => ({ feed, currentQty: 0, price: feed.rate, suggested: true })),
-        ];
-        if (!inputsB.some((i) => i.feed.category === "mineral")) {
-          inputsB.push({ feed: mineral, currentQty: 0, price: mineral.rate, suggested: true });
-        }
-        const currentCost = feeds.reduce((acc, f) => acc + f.qty * f.price, 0);
-        const planB = optimizeRation(inputsB, profile, req);
-        planB.currentCost = Math.round(currentCost * 100) / 100;
-
-        if (planA.feasible) {
-          if (planA.relaxed.length > 0) bot(t("notMetWarn", lang));
-          bot(t("planTitle", lang), { plan: { result: planA, title: t("planTitle", lang) } });
-        } else {
-          bot(t("infeasible", lang));
-        }
-        if (planB.feasible && (!planA.feasible || planB.totalCost < planA.totalCost - 1)) {
-          bot(t("planBetter", lang), { plan: { result: planB, title: t("planBetter", lang), better: true } });
-        }
-        bot(t("mineralNote", lang));
-        bot(t("disclaimer", lang));
-        setStep("done");
-      } finally {
-        setBusy(false);
-      }
-    }, 80);
-  };
-
   const restart = () => {
     stopSpeech();
     setMessages([]);
     setAnswers({});
     setFeeds([]);
-    setPendingFeed(null);
-    setStep("species");
-    bot(t("askSpecies", lang));
+    setPlace(null);
+    setLang("en");
+    setStep("language");
+    bot(t("chooseLanguage", "en"), undefined, "en");
   };
-
-  // ------------------------------------------------------------------
-  // Render helpers
-  // ------------------------------------------------------------------
 
   const Chip = ({ label, onClick }: { label: string; onClick: () => void }) => (
     <button
@@ -611,96 +588,6 @@ const RationAdvisor = () => {
           <>
             <Chip label={t("yes", lang)} onClick={() => confirmLocation(true)} />
             <Chip label={t("no", lang)} onClick={() => confirmLocation(false)} />
-          </>
-        );
-      case "species":
-        return (
-          <>
-            <Chip label={t("cow", lang)} onClick={() => chooseSpecies("cattle")} />
-            <Chip label={t("buffalo", lang)} onClick={() => chooseSpecies("buffalo")} />
-          </>
-        );
-      case "herd":
-        return [1, 2, 3, 5, 10].map((n) => (
-          <Chip key={n} label={String(n)} onClick={() => submitNumber(String(n))} />
-        ));
-      case "weight": {
-        const opts = answers.species === "buffalo" ? [350, 400, 450, 500, 550] : [300, 350, 400, 450, 500];
-        return opts.map((n) => <Chip key={n} label={`${n} kg`} onClick={() => submitNumber(String(n))} />);
-      }
-      case "calvings":
-        return (
-          <>
-            <Chip label={t("notCalved", lang)} onClick={() => chooseCalvings(0)} />
-            {[1, 2, 3, 4, 5].map((n) => (
-              <Chip key={n} label={String(n)} onClick={() => chooseCalvings(n)} />
-            ))}
-          </>
-        );
-      case "milking":
-        return (
-          <>
-            <Chip label={t("inMilk", lang)} onClick={() => chooseMilking(true)} />
-            <Chip label={t("dryAnimal", lang)} onClick={() => chooseMilking(false)} />
-          </>
-        );
-      case "months":
-        return [1, 2, 3, 4, 6, 8, 10, 12].map((n) => (
-          <Chip key={n} label={String(n)} onClick={() => submitNumber(String(n))} />
-        ));
-      case "yield":
-        return [4, 6, 8, 10, 12, 15, 20].map((n) => (
-          <Chip key={n} label={`${n} L`} onClick={() => submitNumber(String(n))} />
-        ));
-      case "fat": {
-        const opts = answers.species === "buffalo" ? [6, 6.5, 7, 7.5, 8] : [3.5, 4, 4.5, 5];
-        return (
-          <>
-            {opts.map((n) => (
-              <Chip key={n} label={`${n}%`} onClick={() => submitNumber(String(n))} />
-            ))}
-            <Chip
-              label={t("dontKnow", lang)}
-              onClick={() => submitNumber(answers.species === "buffalo" ? "7" : "4")}
-            />
-          </>
-        );
-      }
-      case "snf":
-        return (
-          <>
-            {[8, 8.5, 9].map((n) => (
-              <Chip key={n} label={`${n}%`} onClick={() => submitNumber(String(n))} />
-            ))}
-            <Chip label={t("skip", lang)} onClick={skipSnf} />
-          </>
-        );
-      case "price":
-        return [25, 30, 34, 40, 50].map((n) => (
-          <Chip key={n} label={`₹${n}`} onClick={() => submitNumber(String(n))} />
-        ));
-      case "pregnant":
-        return (
-          <>
-            <Chip label={t("yes", lang)} onClick={() => choosePregnant(true)} />
-            <Chip label={t("no", lang)} onClick={() => choosePregnant(false)} />
-          </>
-        );
-      case "pregMonth":
-        return [1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => (
-          <Chip key={n} label={String(n)} onClick={() => choosePregMonth(n)} />
-        ));
-      case "photo":
-        return (
-          <>
-            <button
-              onClick={() => fileRef.current?.click()}
-              disabled={busy}
-              className="px-4 py-2 rounded-full bg-primary text-primary-foreground text-sm font-medium flex items-center gap-2 shadow-sm"
-            >
-              <Camera className="w-4 h-4" /> {t("uploadPhoto", lang)}
-            </button>
-            <Chip label={t("skip", lang)} onClick={skipPhoto} />
           </>
         );
       case "done":
@@ -778,16 +665,9 @@ const RationAdvisor = () => {
             </tr>
           </tbody>
         </table>
-        {r.currentCost > 0 && (
-          <div className="mt-2 text-xs space-y-0.5">
-            <div>
-              {t("currentCostLbl", lang)}: <b>₹{fmt(r.currentCost, 1)}</b> · {t("planCostLbl", lang)}: <b>₹{fmt(r.totalCost, 1)}</b>
-            </div>
-            {savings > 1 && (
-              <div className="text-primary font-semibold">
-                {t("savingsLbl", lang, { x: fmt(savings, 0), m: fmt(savings * 30, 0) })}
-              </div>
-            )}
+        {r.currentCost > 0 && savings > 1 && (
+          <div className="mt-2 text-xs text-primary font-semibold">
+            {t("savingsLbl", lang, { x: fmt(savings, 0), m: fmt(savings * 30, 0) })}
           </div>
         )}
         <div className="mt-2 text-[11px] text-muted-foreground">
@@ -799,127 +679,11 @@ const RationAdvisor = () => {
     );
   };
 
-  const grouped = (cat: "roughage" | "concentrate" | "mineral") =>
-    searchFeeds(feedSearch, cat).slice(0, feedSearch ? 12 : 6);
-
-  // Rendered via function call (not as a component) so React does not remount
-  // it on every parent render — keeps the search/qty inputs focused.
-  const renderFeedPicker = () => (
-    <div className="mx-3 mb-2 rounded-2xl border bg-card shadow-sm p-3 space-y-2">
-      <div className="flex items-center gap-2 bg-muted rounded-full px-3 py-1.5">
-        <Search className="w-4 h-4 text-muted-foreground shrink-0" />
-        <input
-          value={feedSearch}
-          onChange={(e) => setFeedSearch(e.target.value)}
-          placeholder={t("searchFeed", lang)}
-          className="flex-1 bg-transparent outline-none text-sm min-w-0"
-        />
-      </div>
-
-      {pendingFeed ? (
-        <div className="rounded-xl border border-primary/40 p-2 space-y-2">
-          <div className="flex items-center justify-between gap-2">
-            <div className="text-sm font-medium">{pendingFeed.name}</div>
-            <button onClick={() => setPendingFeed(null)} className="text-muted-foreground p-1">
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-          <div className="flex gap-2">
-            <label className="flex-1 text-xs">
-              {t("qtyLabel", lang)}
-              <input
-                autoFocus
-                inputMode="decimal"
-                value={pendingQty}
-                onChange={(e) => setPendingQty(e.target.value)}
-                className="mt-1 w-full border rounded-lg px-2 py-1.5 text-sm bg-background"
-                placeholder="5"
-              />
-            </label>
-            <label className="flex-1 text-xs">
-              {t("priceLabel", lang)}
-              <input
-                inputMode="decimal"
-                value={pendingPrice}
-                onChange={(e) => setPendingPrice(e.target.value)}
-                className="mt-1 w-full border rounded-lg px-2 py-1.5 text-sm bg-background"
-                placeholder={String(pendingFeed.rate)}
-              />
-            </label>
-          </div>
-          <button
-            onClick={addFeed}
-            className="w-full py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium flex items-center justify-center gap-1"
-          >
-            <Plus className="w-4 h-4" /> {t("addBtn", lang)}
-          </button>
-        </div>
-      ) : (
-        <div className="space-y-2 max-h-56 overflow-y-auto">
-          {(["roughage", "concentrate", "mineral"] as const).map((cat) => {
-            const items = grouped(cat);
-            if (items.length === 0) return null;
-            return (
-              <div key={cat}>
-                <div className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide mb-1">
-                  {t(cat === "roughage" ? "groupRoughage" : cat === "concentrate" ? "groupConcentrate" : "groupMineral", lang)}
-                </div>
-                <div className="flex flex-wrap gap-1.5">
-                  {items.map((f) => (
-                    <button
-                      key={f.id}
-                      onClick={() => {
-                        setPendingFeed(f);
-                        setPendingPrice(String(f.rate));
-                      }}
-                      className="px-2.5 py-1 rounded-full border text-xs hover:bg-primary/10 hover:border-primary/50 transition"
-                    >
-                      {f.name} <span className="text-muted-foreground">₹{f.rate}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
-
-      {feeds.length > 0 && (
-        <div className="pt-1 border-t">
-          <div className="text-[11px] font-semibold text-muted-foreground mb-1">{t("yourFeeds", lang)}</div>
-          <div className="space-y-1">
-            {feeds.map((f) => (
-              <div key={f.feed.id} className="flex items-center justify-between text-xs bg-muted/60 rounded-lg px-2 py-1.5">
-                <span className="font-medium truncate">{f.feed.name}</span>
-                <span className="shrink-0 ml-2 text-muted-foreground">
-                  {f.qty} kg · ₹{f.price}/kg
-                  <button
-                    onClick={() => setFeeds((x) => x.filter((y) => y.feed.id !== f.feed.id))}
-                    className="ml-2 text-destructive align-middle"
-                  >
-                    <Trash2 className="w-3.5 h-3.5 inline" />
-                  </button>
-                </span>
-              </div>
-            ))}
-          </div>
-          <button
-            onClick={makePlan}
-            disabled={busy}
-            className="mt-2 w-full py-2.5 rounded-xl bg-primary text-primary-foreground font-medium text-sm disabled:opacity-60"
-          >
-            {t("makePlan", lang)}
-          </button>
-        </div>
-      )}
-    </div>
-  );
-
-  const showInputBar = !["locating", "feeds", "done"].includes(step);
+  const showInputBar = !["locating", "done"].includes(step);
+  const numericStep = ["months", "yield", "fat", "snf", "price", "calvings", "pregMonth"].includes(step);
 
   return (
     <div className="h-full w-full flex flex-col bg-muted overflow-hidden">
-      {/* Header */}
       <div className="bg-header text-header-foreground px-3 py-2.5 flex items-center gap-3 shrink-0">
         <button onClick={() => navigate("/")} className="p-1.5 hover:bg-white/10 rounded-full">
           <ArrowLeft className="w-5 h-5" />
@@ -933,7 +697,6 @@ const RationAdvisor = () => {
         </div>
       </div>
 
-      {/* Messages */}
       <div className="flex-1 overflow-y-auto px-3 py-3 space-y-2">
         {step === "language" && (
           <div className="text-center text-sm text-muted-foreground py-2">
@@ -949,7 +712,6 @@ const RationAdvisor = () => {
                   : "bg-card rounded-bl-md"
               }`}
             >
-              {m.image && <img src={m.image} alt="" className="rounded-xl mb-1 max-h-56 object-cover" />}
               {m.text}
               {m.requirement && <RequirementTable req={m.requirement} />}
               {m.plan && <PlanCard plan={m.plan} />}
@@ -975,11 +737,8 @@ const RationAdvisor = () => {
         <div ref={bottomRef} />
       </div>
 
-      {/* Quick reply chips */}
       <div className="shrink-0">
         <div className="flex flex-wrap gap-2 px-3 pb-2 justify-center">{renderChips()}</div>
-
-        {step === "feeds" && renderFeedPicker()}
 
         {showInputBar && (
           <div className="px-3 pb-3">
@@ -995,7 +754,7 @@ const RationAdvisor = () => {
               <input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                inputMode={["herd", "weight", "months", "yield", "fat", "snf", "price", "calvings", "pregMonth"].includes(step) ? "decimal" : "text"}
+                inputMode={numericStep ? "decimal" : "text"}
                 placeholder={t("orSpeak", lang)}
                 disabled={busy || transcribing}
                 className="flex-1 bg-transparent outline-none text-sm min-w-0 px-2 disabled:opacity-50"
@@ -1012,15 +771,6 @@ const RationAdvisor = () => {
           </div>
         )}
       </div>
-
-      <input
-        ref={fileRef}
-        type="file"
-        accept="image/*"
-        capture="environment"
-        className="hidden"
-        onChange={(e) => onPhoto(e.target.files?.[0] || null)}
-      />
     </div>
   );
 };

@@ -1,5 +1,6 @@
 import { detectLanguageCode, LANG_NAMES } from "@/lib/languages";
 import type { Species } from "@/lib/nutrientRequirements";
+import { FEED_LIBRARY, FeedItem, searchFeeds } from "@/lib/feedLibrary";
 
 const ENGLISH_LANG: Record<string, string> = {
   hindi: "hi", bengali: "bn", tamil: "ta", telugu: "te", marathi: "mr",
@@ -67,4 +68,53 @@ export function detectSpecies(text: string): Species | null {
   if (buffalo) return "buffalo";
   if (cow) return "cattle";
   return null;
+}
+
+/** Farmer said they have no more feeds to add. */
+export function isDoneAddingFeeds(text: string): boolean {
+  const s = text.toLowerCase();
+  return /\b(done|enough|bas|bus|khatam|ho gaya|hogaya|hogy|that'?s all|no more|kuch nahi|koi nahi|nahi aur|nothing else|finish|complete|over|ant|samapt)\b/i.test(s);
+}
+
+/** Use library default price when farmer doesn't know. */
+export function isDefaultPrice(text: string): boolean {
+  const s = text.toLowerCase();
+  return isSkip(text) || /\b(default|market|pata nahi|malum nahi|mujhe nahi pata|don'?t know)\b/i.test(s);
+}
+
+const FEED_ALIASES: [string, string][] = [
+  ["bhusa", "wheat_straw"], ["bhoosa", "wheat_straw"], ["gehu", "wheat_straw"],
+  ["parali", "paddy_straw"], ["paddy", "paddy_straw"], ["dhan", "paddy_straw"],
+  ["berseem", "barseem_fodder"], ["lucerne", "barseem_fodder"], ["lasun", "barseem_fodder"],
+  ["makka", "maize_fodder"], ["maize", "maize_fodder"], ["corn fodder", "maize_fodder"],
+  ["jowar", "jowar_fodder"], ["sorghum", "jowar_fodder"],
+  ["napier", "napier_bajra___nb_21"], ["hybrid napier", "napier_bajra___nb_21"],
+  ["chokar", "wheat_bran"], ["choker", "wheat_bran"], ["wheat bran", "wheat_bran"],
+  ["rice bran", "rice_bran_deoiled"], ["dhan chokar", "rice_bran_deoiled"],
+  ["mustard", "mustard_cake"], ["sarson", "mustard_cake"], ["khal", "mustard_cake"],
+  ["groundnut", "groundnut_cake"], ["moongfali", "groundnut_cake"], ["mungfali", "groundnut_cake"],
+  ["cottonseed", "cottonseed_meal"], ["binola", "cottonseed_meal"],
+  ["soya", "soyabean_meal"], ["soybean", "soyabean_meal"],
+  ["cattle feed", "cattle_feed_bis_i"], ["dan", "cattle_feed_bis_i"], ["pellet", "cattle_feed_bis_i"],
+  ["mineral", "mineral_mixture_bis"], ["mineral mixture", "mineral_mixture_bis"],
+  ["molasses", "molasses"], ["gur", "molasses"],
+];
+
+export function matchFeedFromText(text: string): FeedItem | null {
+  const lower = text.toLowerCase().trim();
+  if (!lower) return null;
+
+  for (const [alias, id] of FEED_ALIASES) {
+    if (lower.includes(alias)) {
+      const f = FEED_LIBRARY.find((x) => x.id === id);
+      if (f) return f;
+    }
+  }
+
+  const hits = searchFeeds(lower);
+  if (hits.length === 0) return null;
+  const exact = hits.find((f) => lower.includes(f.name.toLowerCase()));
+  if (exact) return exact;
+  // Prefer shortest name match (most specific search hit)
+  return hits.sort((a, b) => a.name.length - b.name.length)[0];
 }
