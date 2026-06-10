@@ -2,7 +2,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Wheat } from "lucide-react";
 import { VoiceRecorder } from "@/components/VoiceRecorder";
-import { LANG_NAMES } from "@/lib/languages";
+import { detectLanguageCode, LANG_NAMES } from "@/lib/languages";
+import { rationAdvisorSttLang } from "@/lib/browserStt";
 import { speakText, stopSpeech, waitForSpeechIdle } from "@/lib/speech";
 import { t } from "@/lib/rationI18n";
 import {
@@ -108,7 +109,7 @@ const MARKET_FEED_IDS = [
 
 const RationAdvisor = () => {
   const navigate = useNavigate();
-  const [lang, setLang] = useState<string>("en");
+  const [lang, setLang] = useState<string>("hi");
   const [step, setStep] = useState<Step>("language");
   const [messages, setMessages] = useState<Msg[]>([]);
   const [place, setPlace] = useState<{ district: string; state: string; label: string } | null>(null);
@@ -141,7 +142,7 @@ const RationAdvisor = () => {
   useEffect(() => {
     if (startedRef.current) return;
     startedRef.current = true;
-    bot(t("chooseLanguage", "en"), undefined, "en");
+    bot(t("chooseLanguage", "hi"), undefined, "hi");
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const bot = useCallback((text: string, extra?: Partial<Msg>, speakIn?: string) => {
@@ -177,7 +178,10 @@ const RationAdvisor = () => {
     }
   };
 
+  const langExplicitRef = useRef(false);
+
   const chooseLanguage = (code: string, isVoice = false) => {
+    langExplicitRef.current = true;
     setLang(code);
     userMsg(LANG_NAMES[code], undefined, isVoice);
     void startLocation(code);
@@ -514,7 +518,7 @@ const RationAdvisor = () => {
         if (code) chooseLanguage(code, isVoice);
         else {
           userMsg(text, undefined, isVoice);
-          bot(t("chooseLanguage", "en"), undefined, "en");
+          bot(t("chooseLanguage", langRef.current), undefined, langRef.current);
         }
         return;
       }
@@ -628,8 +632,20 @@ const RationAdvisor = () => {
     speechPendingRef.current = 0;
     setSpeaking(false);
     const text = txt.trim();
-    if (text) handleUserAnswer(text, true);
-    else toast.error("Could not understand. Please try again.");
+    if (!text) {
+      toast.error("Could not understand. Please try again.");
+      return;
+    }
+    const fromScript = detectLanguageCode(text);
+    if (
+      fromScript &&
+      fromScript !== "en" &&
+      langRef.current === "en" &&
+      !langExplicitRef.current
+    ) {
+      setLang(fromScript);
+    }
+    handleUserAnswer(text, true);
   }, [handleUserAnswer]);
 
   const handleVoice = async (b64: string, mime: string) => {
@@ -674,9 +690,10 @@ const RationAdvisor = () => {
     setAnswers({});
     setFeeds([]);
     setPlace(null);
-    setLang("en");
+    setLang("hi");
+    langExplicitRef.current = false;
     setStep("language");
-    bot(t("chooseLanguage", "en"), undefined, "en");
+    bot(t("chooseLanguage", "hi"), undefined, "hi");
   };
 
   const micDisabled = busy || transcribing || speaking || ["locating", "optimizing", "done"].includes(step);
@@ -832,7 +849,7 @@ const RationAdvisor = () => {
               <p className="text-sm text-primary text-center">{t("transcribing", lang)}</p>
             )}
             <VoiceRecorder
-              speechLang={lang}
+              speechLang={rationAdvisorSttLang(lang, step)}
               onTranscript={handleTranscript}
               onRecorded={handleVoice}
               disabled={micDisabled}

@@ -7,6 +7,21 @@ const STT_LOCALE: Record<string, string> = {
   ur: "ur-PK",
 };
 
+/** Alternate tags Chrome on Windows sometimes needs. */
+const LOCALE_ALIASES: Record<string, string[]> = {
+  "hi-IN": ["hi"],
+  "bn-IN": ["bn"],
+  "ta-IN": ["ta"],
+  "te-IN": ["te"],
+  "mr-IN": ["mr"],
+  "gu-IN": ["gu"],
+  "kn-IN": ["kn"],
+  "ml-IN": ["ml"],
+  "pa-IN": ["pa"],
+  "or-IN": ["or"],
+  "en-IN": ["en-US", "en-GB"],
+};
+
 type SpeechRecognitionCtor = new () => SpeechRecognition;
 
 function getSpeechRecognition(): SpeechRecognitionCtor | null {
@@ -26,16 +41,35 @@ export function browserSttLocale(langCode: string): string {
   return STT_LOCALE[langCode] || "hi-IN";
 }
 
+/**
+ * STT language for Ration Advisor mic.
+ * Uses Hindi unless the farmer explicitly chose English.
+ */
+export function rationAdvisorSttLang(selectedLang: string, step: string): string {
+  if (selectedLang === "en") return "en";
+  if (step === "language") return "hi";
+  return selectedLang || "hi";
+}
+
+/** Ordered BCP-47 locales to try (primary + aliases + Hindi fallback). */
+export function sttLocalesForLang(langCode: string): string[] {
+  const primary = browserSttLocale(langCode);
+  const out: string[] = [primary];
+  for (const alias of LOCALE_ALIASES[primary] || []) {
+    if (!out.includes(alias)) out.push(alias);
+  }
+  if (langCode !== "hi" && !out.includes("hi-IN")) out.push("hi-IN");
+  if (!out.includes("hi")) out.push("hi");
+  return out;
+}
+
 export interface BrowserSttSession {
   promise: Promise<string>;
   stop: () => void;
 }
 
-/**
- * Listen for one farmer utterance using the browser's built-in speech recognition.
- * No API keys — works in Chrome / Edge on desktop and Android.
- */
-export function startBrowserSttListen(langCode: string, maxMs = 20000): BrowserSttSession {
+/** Listen using an explicit BCP-47 locale string. */
+export function startBrowserSttListenForLocale(locale: string, maxMs = 20000): BrowserSttSession {
   const SR = getSpeechRecognition();
   if (!SR) {
     return {
@@ -48,7 +82,7 @@ export function startBrowserSttListen(langCode: string, maxMs = 20000): BrowserS
 
   const promise = new Promise<string>((resolve, reject) => {
     rec = new SR();
-    rec.lang = browserSttLocale(langCode);
+    rec.lang = locale;
     rec.continuous = true;
     rec.interimResults = false;
     rec.maxAlternatives = 1;
@@ -112,7 +146,27 @@ export function startBrowserSttListen(langCode: string, maxMs = 20000): BrowserS
   };
 }
 
-/** @deprecated Use startBrowserSttListen */
-export function listenWithBrowserStt(langCode: string, maxMs = 20000): Promise<string> {
-  return startBrowserSttListen(langCode, maxMs).promise;
+export function startBrowserSttListen(langCode: string, maxMs = 20000): BrowserSttSession {
+  return startBrowserSttListenForLocale(browserSttLocale(langCode), maxMs);
+}
+
+/**
+ * Try primary locale then fallbacks (e.g. hi-IN → hi) so Hindi speech is not captured as English.
+ */
+export async function listenWithSttFallbacks(langCode: string, maxMs = 20000): Promise<string> {
+  const locales = sttLocalesForLang(langCode);
+  let lastError: Error | null = null;
+
+  for (const locale of locales) {
+    const session = startBrowserSttListenForLocale(locale, maxMs);
+    try {
+      const text = await session.promise;
+      if (text.trim()) return text;
+    } catch (e) {
+      lastError = e instanceof Error ? e : new Error(String(e));
+      if (lastError.message !== "no-speech") break;
+    }
+  }
+
+  throw lastError || new Error("no-speech");
 }

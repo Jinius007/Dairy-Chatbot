@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Mic, Square } from "lucide-react";
-import { isBrowserSttSupported, startBrowserSttListen } from "@/lib/browserStt";
+import { isBrowserSttSupported, listenWithSttFallbacks } from "@/lib/browserStt";
 import { stopSpeech, unlockAudioPlayback } from "@/lib/speech";
 
 interface Props {
@@ -33,10 +33,11 @@ export function VoiceRecorder({ onRecorded, onTranscript, speechLang, disabled, 
   const chunksRef = useRef<Blob[]>([]);
   const startTimeRef = useRef(0);
   const timerRef = useRef<number | null>(null);
-  const browserSessionRef = useRef<ReturnType<typeof startBrowserSttListen> | null>(null);
+  const abortListenRef = useRef(false);
   const useBrowser = !!(speechLang && onTranscript && isBrowserSttSupported());
 
   useEffect(() => () => {
+    abortListenRef.current = true;
     if (timerRef.current) window.clearInterval(timerRef.current);
     mediaRef.current?.stream.getTracks().forEach((t) => t.stop());
   }, []);
@@ -45,26 +46,24 @@ export function VoiceRecorder({ onRecorded, onTranscript, speechLang, disabled, 
     if (!speechLang || !onTranscript) return;
     stopSpeech();
     await unlockAudioPlayback();
+    abortListenRef.current = false;
     setSeconds(0);
     setRecording(true);
     startTimeRef.current = Date.now();
     timerRef.current = window.setInterval(() => setSeconds((s) => s + 1), 1000) as unknown as number;
-    const session = startBrowserSttListen(speechLang);
-    browserSessionRef.current = session;
     try {
-      const text = await session.promise;
-      onTranscript(text);
+      const text = await listenWithSttFallbacks(speechLang);
+      if (!abortListenRef.current) onTranscript(text);
     } catch {
-      onTranscript("");
+      if (!abortListenRef.current) onTranscript("");
     } finally {
-      browserSessionRef.current = null;
       if (timerRef.current) window.clearInterval(timerRef.current);
       setRecording(false);
     }
   };
 
   const stopBrowserListen = () => {
-    browserSessionRef.current?.stop();
+    abortListenRef.current = true;
     setRecording(false);
   };
 

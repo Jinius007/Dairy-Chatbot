@@ -3,7 +3,21 @@ import { computeRequirement, dmRangePercent, maxConcentratePercent, AnimalProfil
 import { FEED_BY_ID } from "../feedLibrary";
 import { optimizeRation, RationFeedInput } from "../rationOptimizer";
 import { parseCalvingsFromVoice, detectSpecies, isDontKnow, isDoneAddingFeeds, isNo, isYes, parseMilkingFromVoice, parseNumericAnswer, parsePregnantFromVoice, parseSpokenNumber, parseYesNoFromVoice } from "../rationVoice";
+import { rationAdvisorSttLang, sttLocalesForLang } from "../browserStt";
 import { RATION_STRINGS, type RationLang } from "../rationI18n";
+
+describe("browser STT locale", () => {
+  it("defaults to Hindi STT for Indian farmers", () => {
+    expect(rationAdvisorSttLang("hi", "species")).toBe("hi");
+    expect(rationAdvisorSttLang("hi", "language")).toBe("hi");
+    expect(sttLocalesForLang("hi")[0]).toBe("hi-IN");
+  });
+
+  it("uses English STT only when English was chosen", () => {
+    expect(rationAdvisorSttLang("en", "species")).toBe("en");
+    expect(sttLocalesForLang("en")[0]).toBe("en-IN");
+  });
+});
 
 // Reference case from INAPH RBP: adult pregnant cattle 400 kg, 10 kg milk/day
 // at 4% fat -> Maintenance TDN 4150, CP 890, Ca 26, P 16;
