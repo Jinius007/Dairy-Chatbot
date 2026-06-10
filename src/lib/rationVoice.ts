@@ -20,6 +20,67 @@ export function extractFirstNumber(text: string): number | null {
   return m ? parseFloat(m[1]) : null;
 }
 
+/** Hindi / Bengali / English number words → digit (voice answers). */
+const SPOKEN_NUMBER_WORDS: [string, number][] = [
+  ["zero", 0], ["one", 1], ["two", 2], ["three", 3], ["four", 4], ["five", 5],
+  ["six", 6], ["seven", 7], ["eight", 8], ["nine", 9], ["ten", 10],
+  ["eleven", 11], ["twelve", 12], ["thirteen", 13], ["fourteen", 14], ["fifteen", 15],
+  ["sixteen", 16], ["seventeen", 17], ["eighteen", 18], ["nineteen", 19], ["twenty", 20],
+  ["ek", 1], ["do", 2], ["teen", 3], ["tin", 3], ["char", 4], ["chaar", 4], ["chhar", 4],
+  ["paanch", 5], ["panch", 5], ["paach", 5],
+  ["chhe", 6], ["chhah", 6], ["chha", 6], ["che", 6], ["chhay", 6],
+  ["saat", 7], ["sat", 7], ["sath", 7],
+  ["aath", 8], ["aat", 8], ["ath", 8], ["aathh", 8],
+  ["nau", 9], ["noi", 9],
+  ["das", 10], ["dus", 10],
+  ["gyarah", 11], ["gyara", 11], ["barah", 12], ["baarah", 12],
+  ["terah", 13], ["tehrah", 13], ["chaudah", 14], ["chauda", 14],
+  ["pandrah", 15], ["pandhra", 15], ["solah", 16], ["sola", 16],
+  ["satrah", 17], ["satra", 17], ["atharah", 18], ["athara", 18],
+  ["bees", 20], ["bis", 20],
+  ["tees", 30], ["teis", 30], ["tiis", 30], ["taintalis", 34], ["chautis", 34], ["chhtis", 34],
+  ["paintis", 35], ["paitis", 35], ["chhattis", 36],
+  ["एक", 1], ["दो", 2], ["तीन", 3], ["चार", 4], ["पांच", 5], ["पाँच", 5],
+  ["छह", 6], ["छः", 6], ["सात", 7], ["आठ", 8], ["नौ", 9], ["दस", 10],
+  ["ग्यारह", 11], ["बारह", 12], ["तेरह", 13], ["चौदह", 14], ["पंद्रह", 15],
+  ["सोलह", 16], ["सत्रह", 17], ["अठारह", 18], ["उन्नीस", 19], ["बीस", 20],
+  ["এক", 1], ["দুই", 2], ["তিন", 3], ["চার", 4], ["পাঁচ", 5], ["ছয়", 6],
+  ["সাত", 7], ["আট", 8], ["নয়", 9], ["দশ", 10],
+];
+
+function escapeRe(s: string): string {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function containsWord(text: string, word: string): boolean {
+  const w = escapeRe(word);
+  return new RegExp(`(?:^|[\\s])${w}(?:[\\s]|$)`, "iu").test(text) || new RegExp(`^${w}$`, "iu").test(text);
+}
+
+/** Parse a spoken or written number from farmer voice input. */
+export function parseSpokenNumber(text: string): number | null {
+  const t = normalizeVoiceAnswer(text);
+  if (!t) return null;
+
+  const fromDigit = extractFirstNumber(t);
+  if (fromDigit !== null) return fromDigit;
+
+  // साढ़े / saadhe 4 → 4.5
+  const saadhe = t.match(/(?:saadhe|saadha|sadhe|sade|साढ़े|সাড়ে|সাড়)\s*(\S+(?:\s*\S)?)/iu);
+  if (saadhe) {
+    const base = parseSpokenNumber(saadhe[1]);
+    if (base !== null) return base + 0.5;
+  }
+  if (/\b(?:dedh|dhai|डेढ़|ढाई|derh|dher)\b/i.test(t)) return 1.5;
+  if (/\b(?:saadhe|saadha|sadhe)\s*(?:das|dus|10|दस|দশ)\b/i.test(t)) return 10.5;
+
+  const sorted = [...SPOKEN_NUMBER_WORDS].sort((a, b) => b[0].length - a[0].length);
+  for (const [word, val] of sorted) {
+    if (containsWord(t, word)) return val;
+  }
+  return null;
+}
+
 function normalizeVoiceAnswer(text: string): string {
   return normalizeDigits(text)
     .replace(/[^\p{L}\p{M}\p{N}\s]/gu, " ")
@@ -45,8 +106,83 @@ export function isNo(text: string): boolean {
 }
 
 export function isSkip(text: string): boolean {
-  const s = text.toLowerCase();
-  return /\b(skip|chhod|chod|chhodo|bad|baad|pata nahi|patani|malum nahi|dont know|don't know|unknown|na jane|nahi pata)\b/i.test(s);
+  const t = normalizeVoiceAnswer(text).toLowerCase();
+  return /\b(skip|chhod|chod|chhodo|chharo|chhere|bad|baad|pata nahi|patani|malum nahi|dont know|don't know|unknown|na jane|nahi pata|jani na|janina|জানি না|छोड|छोड़)\b/i.test(t);
+}
+
+export function isDontKnow(text: string): boolean {
+  const t = normalizeVoiceAnswer(text).toLowerCase();
+  return isSkip(text)
+    || /\b(dont know|don't know|pata nahi|patani|malum nahi|mujhe nahi pata|nahi pata|jad khu|jani na|janina|mahiit nahi|khabar nahi|teliyadu|ariyilla|na jane)\b/i.test(t)
+    || /पता नहीं|जानकारी नहीं|মালুম নেই|জানি না/i.test(t);
+}
+
+/** Yes/no for pregnancy question (Hindi/Bengali phrases). */
+export function parsePregnantFromVoice(text: string): boolean | null {
+  const t = normalizeVoiceAnswer(text);
+  if (!t) return null;
+  if (/\b(garbh|pregnant|gaabhin|gaabhan|gestation|expecting|garbhi|hamla)\b/i.test(t) && !isNo(t)) return true;
+  if (/गर्भ|गाभ|गर्भवती|गाभिन|গর্ভ|গাভিন/i.test(t) && !/नहीं|না/i.test(t)) return true;
+  if (/\b(not pregnant|garbh nahi|pregnant nahi|no pregnancy)\b/i.test(t)) return false;
+  if (/गर्भ\s*नहीं|गाभ\s*नहीं|গর্ভ\s*নেই/i.test(t)) return false;
+  if (isYes(t)) return true;
+  if (isNo(t)) return false;
+  return null;
+}
+
+export type NumericContext = "months" | "yield" | "fat" | "snf" | "price" | "pregMonth";
+
+const CONTEXT_PATTERNS: Record<NumericContext, RegExp[]> = {
+  months: [
+    /(\d+(?:\.\d+)?)\s*(?:mahine|mahina|maheena|month|months|मही|মাস)/iu,
+    /(?:mahine|mahina|month|months|मही|মাস)[^\d]{0,16}(\d+(?:\.\d+)?)/iu,
+  ],
+  yield: [
+    /(\d+(?:\.\d+)?)\s*(?:litre|liter|ltr|l\b|kg|लीटर|लिटर|লিটার|litre)/iu,
+    /(?:doodh|dudh|milk|दूध|দুধ|pal|पाल)[^\d]{0,24}(\d+(?:\.\d+)?)\s*(?:litre|liter|ltr|l|kg)?/iu,
+    /(?:roz|daily|din|रोज|prati din)[^\d]{0,20}(\d+(?:\.\d+)?)\s*(?:litre|liter|ltr|l|kg)?/iu,
+  ],
+  fat: [
+    /(\d+(?:\.\d+)?)\s*(?:percent|pct|pratishat|pratishat|fat|fait|फैट|%.)/iu,
+    /(?:fat|fait|pratishat|fat%|फैट)[^\d]{0,16}(\d+(?:\.\d+)?)/iu,
+  ],
+  snf: [
+    /(\d+(?:\.\d+)?)\s*(?:percent|pct|pratishat|snf|%.)/iu,
+    /(?:snf|pratishat)[^\d]{0,12}(\d+(?:\.\d+)?)/iu,
+  ],
+  price: [
+    /(\d+(?:\.\d+)?)\s*(?:rupaye|rupee|rs|₹|taka|টাকা|रु|rupya)/iu,
+    /(?:rate|daam|dam|price|bhav|bhaav|भाव|দাম|rate)[^\d]{0,16}(\d+(?:\.\d+)?)/iu,
+  ],
+  pregMonth: [
+    /(\d+(?:\.\d+)?)\s*(?:month|mahina|mahine|मह|মাস|maas)/iu,
+    /(?:mahina|month|महीने|মাস)[^\d]{0,12}(\d+(?:\.\d+)?)/iu,
+  ],
+};
+
+/** Parse numeric answer for a specific ration question step. */
+export function parseNumericAnswer(text: string, context: NumericContext): number | null {
+  const t = normalizeVoiceAnswer(text);
+  if (!t) return null;
+
+  let n = parseSpokenNumber(t);
+  if (n !== null) return n;
+
+  for (const re of CONTEXT_PATTERNS[context]) {
+    const m = t.match(re);
+    if (m?.[1]) {
+      const v = parseFloat(m[1]);
+      if (Number.isFinite(v)) return v;
+    }
+  }
+
+  // Scan clause after common joiners: "char pratishat fat", "das litre doodh"
+  for (const part of t.split(/\s+(?:ka|ki|ke|k|ko|me|mein|mai|me|mot|fat|percent|pratishat|litre|liter|mahine|month|hai|hain|ache|ache|de|deti)\s+/iu)) {
+    n = parseSpokenNumber(part.trim());
+    if (n !== null) return n;
+  }
+
+  return null;
 }
 
 export function isNotCalved(text: string): boolean {
@@ -151,20 +287,20 @@ export function detectSpecies(text: string): Species | null {
 
 /** Parse calving count from spoken answer (Hindi/English numbers and words). */
 export function parseCalvingsFromVoice(text: string): number | null {
-  const t = normalizeDigits(text);
+  const t = normalizeVoiceAnswer(text);
+  if (!t) return null;
   if (isNotCalved(t)) return 0;
-  if (/pehli|first|1st|pahli|पहली|pratham|બીજ|ek\s|एक|\bone\b/i.test(t)) return 1;
-  if (/doosri|second|2nd|dusri|दूसरी|do\s|दो|\btwo\b/i.test(t)) return 2;
-  if (/teesri|third|3rd|तीसरी|teen|तीन|\bthree\b/i.test(t)) return 3;
-  const n = extractFirstNumber(t);
+  if (/pehli|first|1st|pahli|पहली|pratham|প্রথম|\bone\b/i.test(t)) return 1;
+  if (/doosri|second|2nd|dusri|दूसरी|দ্বিতীয়|\btwo\b/i.test(t)) return 2;
+  if (/teesri|third|3rd|तीसरी|তৃতীয়|\bthree\b/i.test(t)) return 3;
+  const n = parseSpokenNumber(t);
   if (n !== null && n >= 0 && n <= 20) return Math.round(n);
   return null;
 }
 
 /** Parse pregnancy month from voice. */
 export function parsePregMonthFromVoice(text: string): number | null {
-  const t = normalizeDigits(text);
-  const n = extractFirstNumber(t);
+  const n = parseNumericAnswer(text, "pregMonth");
   if (n !== null && n >= 1 && n <= 9) return Math.round(n);
   return null;
 }

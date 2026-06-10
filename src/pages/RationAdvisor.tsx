@@ -7,8 +7,9 @@ import { speakText, stopSpeech, waitForSpeechIdle } from "@/lib/speech";
 import { t } from "@/lib/rationI18n";
 import {
   detectSpecies,
-  extractFirstNumber,
+  isDefaultPrice,
   isDoneAddingFeeds,
+  isDontKnow,
   isNo,
   isSkip,
   isYes,
@@ -16,7 +17,10 @@ import {
   matchLangCode,
   parseCalvingsFromVoice,
   parseMilkingFromVoice,
+  parseNumericAnswer,
+  parsePregnantFromVoice,
   parsePregMonthFromVoice,
+  type NumericContext,
 } from "@/lib/rationVoice";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -215,14 +219,28 @@ const RationAdvisor = () => {
     setStep("calvings");
   };
 
-  const submitNumber = (raw: string, isVoice = false) => {
-    const v = extractFirstNumber(raw) ?? parseFloat(raw.replace(/[^\d.]/g, ""));
+  const submitNumber = (raw: string, isVoice = false, context: NumericContext) => {
+    const examples: Record<NumericContext, string> = {
+      months: "8",
+      yield: "10",
+      fat: answersRef.current.species === "buffalo" ? "7" : "4",
+      snf: "8.5",
+      price: "34",
+      pregMonth: "7",
+    };
+    const example = examples[context];
+    const v = parseNumericAnswer(raw, context);
     const currentStep = stepRef.current;
     const L = langRef.current;
     const sp = answersRef.current.species;
+    if (v === null || !Number.isFinite(v)) {
+      userMsg(raw, undefined, isVoice);
+      bot(t("invalidNumber", L, { x: example }));
+      return;
+    }
     switch (currentStep) {
       case "months": {
-        if (!valid(v, 0, 24, "8")) return;
+        if (!valid(v, 0, 24, example, L, isVoice, raw)) return;
         setAnswers((a) => ({ ...a, months: v }));
         userMsg(String(v), undefined, isVoice);
         bot(t("askYield", lang));
@@ -230,7 +248,7 @@ const RationAdvisor = () => {
         break;
       }
       case "yield": {
-        if (!valid(v, 0.5, 60, "10")) return;
+        if (!valid(v, 0.5, 60, example, L, isVoice, raw)) return;
         setAnswers((a) => ({ ...a, yield: v }));
         userMsg(`${v} L`, undefined, isVoice);
         bot(t("askFat", lang));
@@ -240,19 +258,19 @@ const RationAdvisor = () => {
       case "fat": {
         const min = sp === "buffalo" ? 5 : 3;
         const max = sp === "buffalo" ? 14 : 6;
-        if (!valid(v, min, max, sp === "buffalo" ? "7" : "4", L)) return;
+        if (!valid(v, min, max, example, L, isVoice, raw)) return;
         setFat(v, isVoice);
         break;
       }
       case "snf": {
-        if (!valid(v, 6, 12, "8.5", L)) return;
+        if (!valid(v, 6, 12, example, L, isVoice, raw)) return;
         setAnswers((a) => ({ ...a, snf: v }));
         userMsg(`${v} %`, undefined, isVoice);
         askPrice();
         break;
       }
       case "price": {
-        if (!valid(v, 10, 150, "34", L)) return;
+        if (!valid(v, 10, 150, example, L, isVoice, raw)) return;
         setAnswers((a) => ({ ...a, price: v }));
         userMsg(`₹${v}`, undefined, isVoice);
         askPregnant();
@@ -261,8 +279,9 @@ const RationAdvisor = () => {
     }
   };
 
-  const valid = (v: number, min: number, max: number, example: string, L = langRef.current): boolean => {
+  const valid = (v: number, min: number, max: number, example: string, L = langRef.current, isVoice = false, spoken = ""): boolean => {
     if (Number.isFinite(v) && v >= min && v <= max) return true;
+    if (spoken) userMsg(spoken, undefined, isVoice);
     bot(t("invalidNumber", L, { x: example }));
     return false;
   };
@@ -521,7 +540,6 @@ const RationAdvisor = () => {
           chooseCalvings(n, isVoice);
           return;
         }
-        // Farmer answered about milk instead of calving count — treat as calved
         const milkingHint = parseMilkingFromVoice(text);
         if (milkingHint !== null) {
           setAnswers((a) => ({ ...a, calvings: 1 }));
@@ -529,7 +547,8 @@ const RationAdvisor = () => {
           chooseMilking(milkingHint, isVoice);
           return;
         }
-        reprompt(text, isVoice);
+        userMsg(text, undefined, isVoice);
+        bot(t("invalidNumber", langRef.current, { x: "2" }));
         return;
       }
       case "milking": {
@@ -541,30 +560,54 @@ const RationAdvisor = () => {
         else reprompt(text, isVoice);
         return;
       }
-      case "pregnant":
-        if (isYes(text)) choosePregnant(true, isVoice);
+      case "pregnant": {
+        const preg = parsePregnantFromVoice(text);
+        if (preg === true) choosePregnant(true, isVoice);
+        else if (preg === false) choosePregnant(false, isVoice);
+        else if (isYes(text)) choosePregnant(true, isVoice);
         else if (isNo(text)) choosePregnant(false, isVoice);
         else reprompt(text, isVoice);
         return;
+      }
       case "pregMonth": {
         const m = parsePregMonthFromVoice(text);
         if (m !== null) choosePregMonth(m, isVoice);
-        else reprompt(text, isVoice);
+        else {
+          userMsg(text, undefined, isVoice);
+          bot(t("invalidNumber", langRef.current, { x: "7" }));
+        }
         return;
       }
       case "snf":
-        if (isSkip(text)) skipSnf(isVoice);
-        else submitNumber(text, isVoice);
+        if (isSkip(text) || isDontKnow(text)) skipSnf(isVoice);
+        else submitNumber(text, isVoice, "snf");
         return;
       case "feedName":
       case "feedMore":
         handleFeedStep(text, isVoice, s);
         return;
       case "months":
+        submitNumber(text, isVoice, "months");
+        return;
       case "yield":
+        submitNumber(text, isVoice, "yield");
+        return;
       case "fat":
+        if (isSkip(text) || isDontKnow(text)) {
+          userMsg(t("dontKnow", langRef.current), undefined, isVoice);
+          setFat(answersRef.current.species === "buffalo" ? 7 : 4, isVoice);
+          return;
+        }
+        submitNumber(text, isVoice, "fat");
+        return;
       case "price":
-        submitNumber(text, isVoice);
+        if (isDefaultPrice(text) || isDontKnow(text)) {
+          userMsg(t("dontKnow", langRef.current), undefined, isVoice);
+          setAnswers((a) => ({ ...a, price: 30 }));
+          askPregnant();
+          return;
+        }
+        submitNumber(text, isVoice, "price");
         return;
       default:
         break;

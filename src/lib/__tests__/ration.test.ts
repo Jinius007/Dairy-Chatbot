@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { computeRequirement, dmRangePercent, maxConcentratePercent, AnimalProfile } from "../nutrientRequirements";
 import { FEED_BY_ID } from "../feedLibrary";
 import { optimizeRation, RationFeedInput } from "../rationOptimizer";
-import { parseMilkingFromVoice } from "../rationVoice";
+import { parseCalvingsFromVoice, parseMilkingFromVoice, parseNumericAnswer, parsePregnantFromVoice, parseSpokenNumber } from "../rationVoice";
 
 // Reference case from INAPH RBP: adult pregnant cattle 400 kg, 10 kg milk/day
 // at 4% fat -> Maintenance TDN 4150, CP 890, Ca 26, P 16;
@@ -132,5 +132,39 @@ describe("voice parsing — milking status", () => {
   it("recognises short yes/no at milking step", () => {
     expect(parseMilkingFromVoice("haan")).toBe(true);
     expect(parseMilkingFromVoice("nahi")).toBe(false);
+  });
+});
+
+describe("voice parsing — spoken numbers", () => {
+  it("parses Hindi number words", () => {
+    expect(parseSpokenNumber("teen")).toBe(3);
+    expect(parseSpokenNumber("aath")).toBe(8);
+    expect(parseSpokenNumber("aath baar byai")).toBe(8);
+    expect(parseSpokenNumber("teen baar")).toBe(3);
+    expect(parseSpokenNumber("das litre doodh")).toBe(10);
+    expect(parseSpokenNumber("आठ")).toBe(8);
+    expect(parseSpokenNumber("तीन")).toBe(3);
+  });
+
+  it("parses Bengali number words", () => {
+    expect(parseSpokenNumber("aat")).toBe(8);
+    expect(parseSpokenNumber("তিন")).toBe(3);
+    expect(parseSpokenNumber("আট বার")).toBe(8);
+  });
+
+  it("parses calving count from voice", () => {
+    expect(parseCalvingsFromVoice("teen")).toBe(3);
+    expect(parseCalvingsFromVoice("aath")).toBe(8);
+    expect(parseCalvingsFromVoice("आठ बार ब्याई")).toBe(8);
+  });
+
+  it("parses numeric answers for later ration steps", () => {
+    expect(parseNumericAnswer("aath mahine", "months")).toBe(8);
+    expect(parseNumericAnswer("das litre doodh", "yield")).toBe(10);
+    expect(parseNumericAnswer("char pratishat fat", "fat")).toBe(4);
+    expect(parseNumericAnswer("saadhe char pratishat", "fat")).toBe(4.5);
+    expect(parseNumericAnswer("saat mahina garbh", "pregMonth")).toBe(7);
+    expect(parsePregnantFromVoice("haan garbh hai")).toBe(true);
+    expect(parsePregnantFromVoice("nahi")).toBe(false);
   });
 });
