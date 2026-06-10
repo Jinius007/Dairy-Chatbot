@@ -15,7 +15,6 @@ import {
   isSkip,
   isYes,
   matchFeedFromText,
-  matchLangCode,
   parseCalvingsFromVoice,
   parseMilkingFromVoice,
   parseNumericAnswer,
@@ -38,6 +37,7 @@ import { detectLocation, mineralMixtureIdForLocation } from "@/lib/location";
 
 type Step =
   | "language"
+  | "name"
   | "locating"
   | "locationConfirm"
   | "locationManual"
@@ -87,6 +87,8 @@ const uid = () => Math.random().toString(36).slice(2);
 
 const DEFAULT_WEIGHT: Record<Species, number> = { cattle: 400, buffalo: 450 };
 
+const LANG_ORDER = ["hi", "bn", "ta", "te", "mr", "gu", "kn", "ml", "pa", "or", "as", "ur", "en"];
+
 const MARKET_FEED_IDS = [
   "barseem_fodder",
   "maize_fodder",
@@ -115,6 +117,7 @@ const RationAdvisor = () => {
   const [place, setPlace] = useState<{ district: string; state: string; label: string } | null>(null);
   const [answers, setAnswers] = useState<Partial<Answers>>({});
   const [feeds, setFeeds] = useState<FarmerFeed[]>([]);
+  const [farmerName, setFarmerName] = useState("");
   const [busy, setBusy] = useState(false);
   const [transcribing, setTranscribing] = useState(false);
   const [speaking, setSpeaking] = useState(false);
@@ -125,7 +128,6 @@ const RationAdvisor = () => {
   const placeRef = useRef(place);
   const feedsRef = useRef(feeds);
   const speechPendingRef = useRef(0);
-  const startedRef = useRef(false);
 
   useEffect(() => { stepRef.current = step; }, [step]);
   useEffect(() => { langRef.current = lang; }, [lang]);
@@ -138,12 +140,6 @@ const RationAdvisor = () => {
   }, [messages, step, transcribing, busy]);
 
   useEffect(() => () => stopSpeech(), []);
-
-  useEffect(() => {
-    if (startedRef.current) return;
-    startedRef.current = true;
-    bot(t("chooseLanguage", "hi"), undefined, "hi");
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const bot = useCallback((text: string, extra?: Partial<Msg>, speakIn?: string) => {
     const speakLang = speakIn ?? langRef.current;
@@ -163,9 +159,11 @@ const RationAdvisor = () => {
     setMessages((m) => [...m, { id: uid(), role: "user", text: display, ...extra }]);
   }, []);
 
-  const startLocation = async (chosenLang: string) => {
+  const startLocation = async (chosenLang: string, skipIntro = false) => {
     setStep("locating");
-    bot(t("intro", chosenLang), undefined, chosenLang);
+    if (!skipIntro) {
+      bot(t("intro", chosenLang), undefined, chosenLang);
+    }
     bot(t("detectingLocation", chosenLang), undefined, chosenLang);
     const loc = await detectLocation();
     if (loc) {
@@ -183,8 +181,25 @@ const RationAdvisor = () => {
   const chooseLanguage = (code: string, isVoice = false) => {
     langExplicitRef.current = true;
     setLang(code);
+    setMessages([]);
     userMsg(LANG_NAMES[code], undefined, isVoice);
-    void startLocation(code);
+    bot(t("askName", code), undefined, code);
+    setStep("name");
+  };
+
+  const submitName = (text: string, isVoice = false) => {
+    const name = text.trim();
+    if (name.length < 2 || /^\d+$/.test(name)) {
+      userMsg(text, undefined, isVoice);
+      bot(t("invalidName", langRef.current));
+      return;
+    }
+    const trimmed = name.slice(0, 40);
+    setFarmerName(trimmed);
+    userMsg(trimmed, undefined, isVoice);
+    const L = langRef.current;
+    bot(t("nameHello", L, { name: trimmed }), undefined, L);
+    void startLocation(L, true);
   };
 
   const confirmLocation = (ok: boolean, isVoice = false) => {
@@ -513,15 +528,9 @@ const RationAdvisor = () => {
     const s = stepRef.current;
 
     switch (s) {
-      case "language": {
-        const code = matchLangCode(text);
-        if (code) chooseLanguage(code, isVoice);
-        else {
-          userMsg(text, undefined, isVoice);
-          bot(t("chooseLanguage", langRef.current), undefined, langRef.current);
-        }
+      case "name":
+        submitName(text, isVoice);
         return;
-      }
       case "locationConfirm": {
         const loc = parseYesNoFromVoice(text);
         if (loc === true || isYes(text)) confirmLocation(true, isVoice);
@@ -690,14 +699,14 @@ const RationAdvisor = () => {
     setAnswers({});
     setFeeds([]);
     setPlace(null);
+    setFarmerName("");
     setLang("hi");
     langExplicitRef.current = false;
     setStep("language");
-    bot(t("chooseLanguage", "hi"), undefined, "hi");
   };
 
-  const micDisabled = busy || transcribing || speaking || ["locating", "optimizing", "done"].includes(step);
-  const showVoiceBar = !["locating", "done"].includes(step);
+  const micDisabled = busy || transcribing || speaking || ["language", "locating", "optimizing", "done"].includes(step);
+  const showVoiceBar = !["language", "locating", "done"].includes(step);
 
   const fmt = (n: number, d = 0) =>
     n.toLocaleString("en-IN", { minimumFractionDigits: d, maximumFractionDigits: d });
@@ -792,14 +801,28 @@ const RationAdvisor = () => {
         </div>
         <div className="flex-1 min-w-0">
           <div className="font-medium leading-tight">{t("title", lang)}</div>
+          {farmerName && <div className="text-xs opacity-75 truncate">{farmerName}</div>}
           {place && <div className="text-xs opacity-75 truncate">📍 {place.label}</div>}
         </div>
       </div>
 
       <div className="flex-1 overflow-y-auto px-3 py-3 space-y-2">
         {step === "language" && (
-          <div className="text-center text-sm text-muted-foreground py-2">
-            {t("chooseLanguage", "en")} · अपनी भाषा चुनें
+          <div className="py-4 px-1">
+            <h2 className="text-center text-lg font-semibold mb-1">{t("title", "hi")}</h2>
+            <p className="text-center text-sm text-muted-foreground mb-4">{t("chooseLanguage", "hi")}</p>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-w-lg mx-auto">
+              {LANG_ORDER.map((code) => (
+                <button
+                  key={code}
+                  type="button"
+                  onClick={() => chooseLanguage(code)}
+                  className="px-3 py-3 rounded-xl bg-card border border-border shadow-sm hover:bg-primary/10 hover:border-primary text-sm font-medium transition-colors"
+                >
+                  {LANG_NAMES[code]}
+                </button>
+              ))}
+            </div>
           </div>
         )}
         {messages.map((m) => (
