@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { computeRequirement, dmRangePercent, maxConcentratePercent, AnimalProfile } from "../nutrientRequirements";
 import { FEED_BY_ID } from "../feedLibrary";
 import { optimizeRation, RationFeedInput } from "../rationOptimizer";
-import { parseCalvingsFromVoice, detectSpecies, parseMilkingFromVoice, parseNumericAnswer, parsePregnantFromVoice, parseSpokenNumber } from "../rationVoice";
+import { parseCalvingsFromVoice, detectSpecies, isDontKnow, isDoneAddingFeeds, isNo, isYes, parseMilkingFromVoice, parseNumericAnswer, parsePregnantFromVoice, parseSpokenNumber, parseYesNoFromVoice } from "../rationVoice";
 import { RATION_STRINGS, type RationLang } from "../rationI18n";
 
 // Reference case from INAPH RBP: adult pregnant cattle 400 kg, 10 kg milk/day
@@ -212,5 +212,45 @@ describe("voice parsing — spoken numbers", () => {
     expect(parseNumericAnswer("saat mahina garbh", "pregMonth")).toBe(7);
     expect(parsePregnantFromVoice("haan garbh hai")).toBe(true);
     expect(parsePregnantFromVoice("nahi")).toBe(false);
+    expect(parseNumericAnswer("rendu masam", "months")).toBe(2);
+    expect(parseNumericAnswer("padi litre paalu", "yield")).toBe(10);
+    expect(parseNumericAnswer("ondu tingalu", "months")).toBe(1);
+    expect(parseNumericAnswer("tees rupaye", "price")).toBe(30);
+  });
+});
+
+describe("voice parsing — yes/no all languages", () => {
+  it.each(RATION_LANGS)("recognises native yes (%s)", (lang) => {
+    const yes = stripEmoji(RATION_STRINGS.yes[lang] || RATION_STRINGS.yes.en);
+    expect(isYes(yes)).toBe(true);
+    expect(parseYesNoFromVoice(yes)).toBe(true);
+  });
+
+  it.each(RATION_LANGS)("recognises native no (%s)", (lang) => {
+    const no = stripEmoji(RATION_STRINGS.no[lang] || RATION_STRINGS.no.en);
+    expect(isNo(no)).toBe(true);
+    expect(parseYesNoFromVoice(no)).toBe(false);
+  });
+});
+
+describe("voice parsing — not calved all languages", () => {
+  it.each(RATION_LANGS)("recognises not calved phrase (%s)", (lang) => {
+    const phrase = stripEmoji(RATION_STRINGS.notCalved[lang] || RATION_STRINGS.notCalved.en);
+    expect(parseCalvingsFromVoice(phrase)).toBe(0);
+  });
+});
+
+describe("voice parsing — dont know / skip all languages", () => {
+  it.each(RATION_LANGS)("recognises dont know (%s)", (lang) => {
+    const phrase = stripEmoji(RATION_STRINGS.dontKnow[lang] || RATION_STRINGS.dontKnow.en);
+    expect(isDontKnow(phrase)).toBe(true);
+  });
+});
+
+describe("voice parsing — feed done", () => {
+  it("recognises done phrases", () => {
+    expect(isDoneAddingFeeds("bas")).toBe(true);
+    expect(isDoneAddingFeeds("bus ho gaya")).toBe(true);
+    expect(isDoneAddingFeeds("done")).toBe(true);
   });
 });

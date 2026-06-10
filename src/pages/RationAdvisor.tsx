@@ -20,6 +20,7 @@ import {
   parseNumericAnswer,
   parsePregnantFromVoice,
   parsePregMonthFromVoice,
+  parseYesNoFromVoice,
   type NumericContext,
 } from "@/lib/rationVoice";
 import { supabase } from "@/integrations/supabase/client";
@@ -517,11 +518,13 @@ const RationAdvisor = () => {
         }
         return;
       }
-      case "locationConfirm":
-        if (isYes(text)) confirmLocation(true, isVoice);
-        else if (isNo(text)) confirmLocation(false, isVoice);
+      case "locationConfirm": {
+        const loc = parseYesNoFromVoice(text);
+        if (loc === true || isYes(text)) confirmLocation(true, isVoice);
+        else if (loc === false || isNo(text)) confirmLocation(false, isVoice);
         else reprompt(text, isVoice);
         return;
+      }
       case "locationManual":
         submitManualLocation(text, isVoice);
         return;
@@ -555,18 +558,24 @@ const RationAdvisor = () => {
         const milking = parseMilkingFromVoice(text);
         if (milking === true) chooseMilking(true, isVoice);
         else if (milking === false) chooseMilking(false, isVoice);
-        else if (isYes(text)) chooseMilking(true, isVoice);
-        else if (isNo(text)) chooseMilking(false, isVoice);
-        else reprompt(text, isVoice);
+        else {
+          const yn = parseYesNoFromVoice(text);
+          if (yn === true) chooseMilking(true, isVoice);
+          else if (yn === false) chooseMilking(false, isVoice);
+          else reprompt(text, isVoice);
+        }
         return;
       }
       case "pregnant": {
         const preg = parsePregnantFromVoice(text);
         if (preg === true) choosePregnant(true, isVoice);
         else if (preg === false) choosePregnant(false, isVoice);
-        else if (isYes(text)) choosePregnant(true, isVoice);
-        else if (isNo(text)) choosePregnant(false, isVoice);
-        else reprompt(text, isVoice);
+        else {
+          const yn = parseYesNoFromVoice(text);
+          if (yn === true) choosePregnant(true, isVoice);
+          else if (yn === false) choosePregnant(false, isVoice);
+          else reprompt(text, isVoice);
+        }
         return;
       }
       case "pregMonth": {

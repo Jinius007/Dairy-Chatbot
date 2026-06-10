@@ -11,10 +11,21 @@ const corsHeaders = {
 };
 
 const STEP_HINTS: Record<string, string> = {
-  species: "The farmer is answering whether their animal is a cow (गाय / gaay) or buffalo (भैंस / bhains).",
-  milking: "The farmer is answering whether the animal is currently giving milk (yes/no or doodh deti hai).",
+  language: "The farmer is choosing their language (Hindi, Bengali, Tamil, etc.).",
+  locationConfirm: "The farmer is confirming yes or no whether the detected location is correct.",
+  locationManual: "The farmer is saying their village and district name.",
+  species: "The farmer is answering cow (गाय / gaay) or buffalo (भैंस / bhains).",
+  calvings: "The farmer is saying how many times the animal has calved (a number like teen, aath, or not yet).",
+  milking: "The farmer is answering whether the animal gives milk now (yes/no or doodh deti hai).",
+  months: "The farmer is saying months since calving (e.g. aath mahine, rendu masam).",
+  yield: "The farmer is saying daily milk yield in litres (e.g. das litre, padi litre).",
+  fat: "The farmer is saying milk fat percent (e.g. char pratishat) or don't know.",
+  snf: "The farmer is saying SNF percent or skip/don't know.",
+  price: "The farmer is saying milk price per litre in rupees (e.g. tees rupaye) or don't know.",
   pregnant: "The farmer is answering whether the animal is pregnant (garbh / haan / nahi).",
-  calvings: "The farmer is giving how many times the animal has calved (a number word like teen, aath).",
+  pregMonth: "The farmer is saying pregnancy month number (1-9, e.g. saat mahina).",
+  feedName: "The farmer is naming a feed they give (e.g. bhusa, berseem, chokar).",
+  feedMore: "The farmer is naming another feed or saying done/bas when finished.",
 };
 
 async function transcribeWithBhashini(
