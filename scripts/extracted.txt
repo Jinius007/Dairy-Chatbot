@@ -1,0 +1,330 @@
+===== SHEET: Feed library (dims A1:J277) =====
+Feed Name | Group | By default | Rate | DM | TDN | CP | Ca | P | Select/ tick
+Maize Bran | Bran | No | 7 | 900 | 540 | 99 | 1.728 | 2.268 | 
+Bengal Gram Bran | Bran | No | 4 | 900 | 495 | 36 | 0.864 | 1.944 | 
+Wheat Bran | Bran | No | 11 | 900 | 585 | 144 | 1.08 | 3.996 | 
+Maize Bran (HM) | Bran | No | 4 | 310 | 186 | 34.1 | 0.595 | 0.673 | 
+Rice Bran- 16% oil | Bran | No | 10 | 900 | 765 | 126 | 0.432 | 6.804 | 
+Rice Bran Deoiled | Bran | No | 9 | 900 | 540 | 153 | 0.432 | 5.724 | 
+Blackgram Chunni | Chunni | No | 7 | 900 | 540 | 153 | 1.944 | 1.296 | 
+Red gram chunni | Chunni | No | 11 | 900 | 540 | 153 | 2.16 | 1.26 | 
+Tur Chunni | Chunni | No | 18 | 900 | 540 | 165 | 1.776 | 0.648 | 
+Babul seed chunni | Chunni | No | 6 | 900 | 495 | 144 | 3.888 | 0.864 | 
+Masoor Chunni | Chunni | No | 8 | 900 | 540 | 171 | 2.16 | 1.296 | 
+Mung Chunni | Chunni | No | 9 | 900 | 540 | 177 | 2.376 | 1.944 | 
+Urd Chunni | Chunni | No | 18 | 900 | 540 | 180 | 0.78 | 0.384 | 
+Greengram chunni | Chunni | No | 8 | 900 | 540 | 153 | 2.64 | 0.9 | 
+Bengalgram chunni | Chunni | No | 9 | 900 | 594 | 135 | 1.632 | 0.9 | 
+Banas Hyprodaan | Compound Feed | No | 17 | 900 | 650 | 198 | 3.6 | 2.16 | 
+KMF Bypass protein feed | Compound Feed | No | 12 | 900 | 648 | 225 | 3.6 | 2.7 | 
+Cattle feed BIS-II | Compound Feed | No | 15 | 900 | 585 | 180 | 3.6 | 2.7 | 
+Cattle feed BIS-I | Compound Feed | No | 16 | 900 | 648 | 198 | 3.6 | 2.7 | 
+Bypass protein feed | Compound Feed | No | 17 | 900 | 648 | 225 | 3.6 | 2.7 | 
+Buffalo feed | Compound Feed | No | 12 | 900 | 675 | 198 | 6.3 | 6.3 | 
+Samrudhi Dan( Cattle feed) Mehsana | Compound Feed | No | 13.5 | 900 | 675 | 198 | 2.88 | 1.35 | 
+KMF Cattle feed | Compound Feed | No | 11 | 900 | 585 | 180 | 3.6 | 2.7 | 
+Calf feed | Compound Feed | No | 20 | 900 | 675 | 207 | 7.2 | 6.3 | 
+Cattle feed below BIS | Compound Feed | No | 10 | 900 | 495 | 162 | 3.6 | 2.7 | 
+Cattle Feed High Protein | Compound Feed | No | 22 | 900 | 720 | 225 | 3.6 | 2.7 | 
+Soyabean meal | DOC/Meal | No | 19 | 900 | 720 | 477 | 1.404 | 2.7 | 
+Kardi Meal | DOC/Meal | No | 7 | 900 | 495 | 207 | 1.296 | 2.592 | 
+Sunflower meal | DOC/Meal | No | 14 | 900 | 594 | 279 | 2.16 | 3.996 | 
+Coconut meal | DOC/Meal | No | 8 | 900 | 648 | 270 | 0.972 | 2.16 | 
+Maize Gluten | DOC/Meal | No | 10 | 900 | 720 | 522 | 0.324 | 1.944 | 
+G.nut meal | DOC/Meal | No | 12 | 900 | 702 | 396 | 1.188 | 2.592 | 
+Rapeseed meal | DOC/Meal | No | 12 | 900 | 666 | 378 | 4.752 | 3.672 | 
+Guar korma | DOC/Meal | No | 12 | 900 | 720 | 486 | 2.376 | 1.944 | 
+Cottonseed meal | DOC/Meal | No | 11 | 900 | 702 | 369 | 1.296 | 2.808 | 
+Guar Meal | DOC/Meal | No | 9 | 900 | 675 | 450 | 2.376 | 1.944 | 
+Palm kernel meal | DOC/Meal | No | 8 | 900 | 540 | 180 | 1.512 | 1.944 | 
+Maize Cake | DOC/Meal | No | 20 | 900 | 720 | 216 | 2.484 | 5.616 | 
+Rice Bhardo/ Broken | Grain/Seed | No | 9 | 900 | 730 | 87 | 0.12 | 1.2 | 
+Bengalgram grain | Grain/Seed | No | 30 | 900 | 675 | 162 | 1.128 | 1.32 | 
+Black gram | Grain/Seed | No | 25 | 900 | 680 | 23.7 | 2.64 | 5.88 | 
+Taramira seed | Grain/Seed | No | 23 | 950 | 880 | 280 | 1.56 | 2.7 | 
+Dhaincha seeds (Sesbania) | Grain/Seed | No | 30 | 900 | 581 | 309 | 1.056 | 2.736 | 
+Bajra bhardo/broken | Grain/Seed | No | 7.5 | 900 | 616 | 80 | 0.348 | 1.188 | 
+Maize bhardo/broken | Grain/Seed | No | 10 | 900 | 713 | 85 | 0.132 | 1.068 | 
+Wheat bhardo/broken | Grain/Seed | No | 9 | 900 | 697 | 117 | 0.348 | 1.296 | 
+Greengram | Grain/Seed | No | 25 | 900 | 690 | 258 | 1.92 | 5.4 | 
+Soya seeds | Grain/Seed | No | 24 | 900 | 820 | 378 | 1.596 | 2.208 | 
+Ragi grain | Grain/Seed | No | 9 | 900 | 700 | 90 | 0.48 | 0.324 | 
+Barley Bhardo/ Broken | Grain/Seed | No | 10 | 900 | 710 | 108 | 0.324 | 1.56 | 
+Horse gram grain | Grain/Seed | No | 35 | 900 | 675 | 198 | 1.296 | 0.492 | 
+Cowpea Seed | Grain/Seed | No | 20 | 900 | 594 | 240 | 0.468 | 1.8 | 
+Methi Seeds (Fenugreek) | Grain/Seed | No | 30 | 900 | 607 | 240 | 1.056 | 1.98 | 
+Whole Cotton Seed | Grain/Seed | No | 10 | 900 | 810 | 198 | 1.512 | 4.104 | 
+Blackgram grain | Grain/Seed | No | 20 | 900 | 702 | 261 | 0.648 | 1.188 | 
+Jowar grain | Grain/Seed | No | 8 | 900 | 720 | 78 | 0.216 | 1.08 | 
+Rice grain | Grain/Seed | No | 9 | 900 | 738 | 81 | 0.108 | 1.188 | 
+Barley Grain | Grain/Seed | No | 9 | 900 | 711 | 108 | 0.324 | 1.62 | 
+Oat Grain | Grain/Seed | No | 8 | 900 | 657 | 99 | 0.432 | 1.296 | 
+Wheat grain | Grain/Seed | No | 10 | 900 | 774 | 99 | 0.216 | 1.188 | 
+Bajra grain | Grain/Seed | No | 9 | 900 | 684 | 108 | 0.54 | 1.62 | 
+Maize grain | Grain/Seed | No | 11 | 900 | 792 | 81 | 0.108 | 1.512 | 
+Grass Guinea | Grass | No | 0.8 | 200 | 110 | 22 | 0.624 | 0.24 | 
+Grass Hybrid Napier | Grass | No | 0.8 | 200 | 110 | 20 | 0.648 | 0.24 | 
+Grass Rye | Grass | No | 0.8 | 200 | 100 | 20 | 0.408 | 0.168 | 
+Begharo Grass | Grass | No | 0.5 | 200 | 110 | 30 | 1.968 | 0.288 | 
+Grass Elephant | Grass | No | 0.8 | 200 | 110 | 12 | 0.48 | 0.192 | 
+Grass Para | Grass | No | 0.8 | 200 | 104 | 22 | 0.336 | 0.144 | 
+Guar Grass | Grass | No | 0.5 | 200 | 104 | 24 | 2.736 | 0.204 | 
+Grass- Sorg. Sudan | Grass | No | 0.5 | 300 | 165 | 24 | 1.548 | 1.476 | 
+Dhaman Grass | Grass | No | 0.5 | 200 | 100 | 8 | 5.28 | 0.144 | 
+Grasses | Grass | No | 0.8 | 200 | 100 | 8 | 0.384 | 0.144 | 
+Gandhir Grass | Grass | No | 0.5 | 200 | 100 | 16 | 1.248 | 0.6 | 
+Lano Grass | Grass | No | 0.5 | 200 | 110 | 30 | 1.512 | 0.336 | 
+Lamp Grass | Grass | No | 0.5 | 200 | 100 | 12 | 0.504 | 0.192 | 
+Dhrabal Grass | Grass | No | 0.5 | 200 | 100 | 16 | 1.032 | 0.144 | 
+Puyadi Grass | Grass | No | 0.5 | 200 | 100 | 10 | 0.72 | 0.12 | 
+Liyar Grass | Grass | No | 0.5 | 200 | 104 | 24 | 2.736 | 0.24 | 
+Uein Grass | Grass | No | 0.5 | 200 | 110 | 32 | 3.24 | 0.36 | 
+Liber Waker Grass | Grass | No | 0.5 | 200 | 104 | 20 | 10.992 | 0.216 | 
+Pillipesara | Grass | No | 1 | 200 | 112.62 | 33.28 | 1.814 | 0.209 | 
+Rhodes grass | Grass | No | 0.8 | 200 | 110 | 16 | 0.252 | 0.24 | 
+Johnson grass | Grass | No | 0.8 | 200 | 113.94 | 16.9 | 0.48 | 0.23 | 
+Deer Grass | Grass | No | 0.5 | 200 | 100 | 16 | 0.72 | 0.384 | 
+Wheat Fodder | Green Fodder | No | 1.25 | 200 | 110 | 15 | 0.336 | 0.216 | 
+Barseem Fodder | Green Fodder | No | 1.2 | 200 | 130 | 34 | 1.584 | 0.216 | 
+Mustard Fodder | Green Fodder | No | 1.2 | 200 | 110 | 18 | 3.528 | 1.032 | 
+Bajra Fodder | Green Fodder | No | 0.8 | 200 | 110 | 16 | 0.576 | 0.144 | 
+Barley fodder | Green Fodder | No | 0.8 | 250 | 120 | 21 | 0.588 | 0.24 | 
+Velvet bean fodder | Green Fodder | No | 1 | 300 | 180 | 45 | 2.376 | 0.648 | 
+Stylosanthes fodder | Green Fodder | No | 1.2 | 200 | 115 | 24 | 1.224 | 0.276 | 
+Sunflower Fodder | Green Fodder | No | 1.2 | 200 | 110 | 22 | 0.912 | 0.168 | 
+Ragi fodder / leaves | Green Fodder | No | 0.8 | 200 | 104 | 13 | 0.576 | 0.492 | 
+Napier Bajra / NB-21 | Green Fodder | No | 1.25 | 200 | 115 | 16 | 0.504 | 0.408 | 
+Oat Fodder | Green Fodder | No | 0.8 | 200 | 120 | 22 | 0.408 | 0.192 | 
+Cowpea Fodder | Green Fodder | No | 1.2 | 200 | 130 | 36 | 1.368 | 0.216 | 
+Lucerne Fodder | Green Fodder | No | 1.2 | 200 | 130 | 34 | 1.872 | 0.264 | 
+Maize Fodder | Green Fodder | No | 0.8 | 200 | 130 | 15 | 0.648 | 0.144 | 
+Jowar Fodder | Green Fodder | No | 0.8 | 200 | 110 | 16 | 0.384 | 0.24 | 
+Paddy Fodder | Green Fodder | No | 0.8 | 200 | 110 | 12 | 0.288 | 0.192 | 
+Horse gram Fodder | Green Fodder | No | 1.2 | 200 | 110 | 30 | 1.296 | 0.168 | 
+Berseem hay | Hay | No | 4.5 | 900 | 495 | 135 | 12.96 | 1.62 | 
+Grass Hay | Hay | No | 3 | 900 | 432 | 63 | 2.7 | 1.08 | 
+Oats Hay | Hay | No | 4.5 | 900 | 477 | 72 | 1.944 | 1.512 | 
+Jowar Hay | Hay | No | 4 | 900 | 450 | 63 | 5.4 | 3.24 | 
+Cowpea Hay | Hay | No | 4 | 900 | 477 | 135 | 15.12 | 3.78 | 
+Lucerne Hay | Hay | No | 4.5 | 900 | 495 | 144 | 12.96 | 1.728 | 
+Rhodes grass hay | Hay | No | 2.5 | 900 | 460 | 54 | 1.68 | 0.72 | 
+Sun hemp hay | Hay | No | 5 | 900 | 497.83 | 140.18 | 5.64 | 0.744 | 
+Jowar husk | Husk | No | 2 | 900 | 450 | 42 | 0.96 | 0.288 | 
+Maize Husk | Husk | No | 4 | 900 | 468 | 91 | 1.8 | 2.88 | 
+Saunf Husk | Husk | No | 2 | 900 | 405 | 81 | 1.296 | 0.216 | 
+Ragi Husk | Husk | No | 4 | 900 | 450 | 40 | 0.96 | 0.288 | 
+Isabgol (Jeeraru) | Husk | No | 14 | 900 | 675 | 170 | 1.2 | 2.28 | 
+Barley Husk | Husk | No | 4 | 900 | 450 | 42 | 0.96 | 0.288 | 
+Kodra Husk | Husk | No | 3 | 900 | 450 | 72 | 1.512 | 0.324 | 
+Pine Apple Leaves | Leaves | No | 0.4 | 400 | 180 | 16 | 2.112 | 0.432 | 
+Areca sheath | Leaves | No | 1 | 200 | 98.6 | 7 | 0.96 | 0.192 | 
+Coconut Leaves | Leaves | No | 0.4 | 400 | 160 | 28 | 0.816 | 0.528 | 
+Eucalyptus Leaves | Leaves | No | 0.5 | 300 | 150 | 48 | 2.184 | 0.396 | 
+Areca leaves | Leaves | No | 1 | 200 | 108 | 8 | 0.96 | 0.192 | 
+S.cane top/leaves | Leaves | No | 2 | 250 | 113 | 8 | 0.756 | 0.156 | 
+Anjan Leaves | Leaves | No | 1 | 300 | 150 | 33 | 2.58 | 0.15 | 
+Banana Leaves | Leaves | No | 0.4 | 200 | 100 | 24 | 1.344 | 0.072 | 
+Palash leaves | Leaves | No | 0.4 | 400 | 450 | 54 | 10.2 | 0.3 | 
+Glyricidia leaves | Leaves | No | 0.8 | 200 | 110 | 40 | 2.28 | 0.72 | 
+Chinese Cabbage | Leaves | No | 1 | 150 | 75 | 27 | 1.368 | 0.144 | 
+Tapioca leaves | Leaves | No | 0.8 | 200 | 92 | 25 | 2.4 | 1.92 | 
+Mulbery Leaves | Leaves | No | 0.4 | 300 | 180 | 66 | 3.024 | 0.36 | 
+Chicory Leaves | Leaves | No | 0.4 | 150 | 78 | 34.5 | 0.852 | 0.216 | 
+Khejari Leaves | Leaves | No | 2 | 900 | 450 | 144 | 14.256 | 0.432 | 
+Neem Leaves | Leaves | No | 0.4 | 200 | 80 | 30 | 2.4 | 0.168 | 
+Pipal Leaves | Leaves | No | 0.4 | 200 | 80 | 14 | 3.552 | 0.12 | 
+Anjawan Leaves | Leaves | No | 0.4 | 200 | 90 | 24 | 1.152 | 0.288 | 
+Subabul leaves | Leaves | No | 1.5 | 200 | 120 | 44 | 2.4 | 0.408 | 
+Babul Leaves | Leaves | No | 0.5 | 200 | 120 | 26 | 1.68 | 0.264 | 
+Grape leaves | Leaves | No | 2 | 350 | 290 | 20 | 9.6 | 0.72 | 
+Mango Leaves | Leaves | No | 0.4 | 200 | 80 | 6 | 2.592 | 0.048 | 
+Shewari / Sesbania Leaves | Leaves | No | 1 | 200 | 104 | 46 | 8.64 | 0.72 | 
+Bamboo Leaves | Leaves | No | 0.4 | 200 | 80 | 10 | 0.672 | 0.048 | 
+Castor leaves | Leaves | No | 1 | 200 | 110 | 50 | 4.8 | 0.144 | 
+ASMM-Mathura | Minerals | No | 30 | 980 | 0 | 0 | 205.8 | 122.5 | 
+ASMM-Jalgaon | Minerals | No | 30 | 980 | 0 | 0 | 215.6 | 107.8 | 
+ASMM-Etawah | Minerals | No | 30 | 980 | 0 | 0 | 205.8 | 122.5 | 
+ASMM-Chittoor | Minerals | No | 30 | 980 | 0 | 0 | 230.3 | 122.5 | 
+ASMM-Bihar | Minerals | No | 30 | 980 | 0 | 0 | 156.8 | 88.2 | 
+ASMM-Bikaner | Minerals | No | 30 | 980 | 0 | 0 | 220.5 | 137.2 | 
+ASMM-Jodhpur | Minerals | No | 30 | 980 | 0 | 0 | 220.5 | 137.2 | 
+ASMM-Meerut | Minerals | No | 30 | 980 | 0 | 0 | 196 | 122.5 | 
+ASMM-Kolhapur | Minerals | No | 30 | 980 | 0 | 0 | 213.64 | 122.5 | 
+ASMM-Moradabad | Minerals | No | 30 | 980 | 0 | 0 | 215.6 | 127.4 | 
+ASMM-Ajmer | Minerals | No | 30 | 980 | 0 | 0 | 220.5 | 137.2 | 
+ASMM-Dhaulpur | Minerals | No | 30 | 980 | 0 | 0 | 210.7 | 146.02 | 
+ASMM-Mehsana | Minerals | No | 30 | 980 | 0 | 0 | 215.6 | 141.12 | 
+ASMM-Surat | Minerals | No | 30 | 980 | 0 | 0 | 225.4 | 137.2 | 
+ASMM-Panchmahal | Minerals | No | 30 | 980 | 0 | 0 | 225.4 | 107.8 | 
+ASMM-Anand | Minerals | No | 30 | 980 | 0 | 0 | 215.6 | 137.2 | 
+ASMM-Kaira | Minerals | No | 30 | 980 | 0 | 0 | 215.6 | 137.2 | 
+ASMM-Kutch | Minerals | No | 30 | 980 | 0 | 0 | 205.8 | 135.24 | 
+ASMM-Junagadh | Minerals | No | 30 | 980 | 0 | 0 | 215.6 | 145.04 | 
+ASMM-Udaipur | Minerals | No | 30 | 980 | 0 | 0 | 220.5 | 137.2 | 
+ASMM-Bharatpur | Minerals | No | 30 | 980 | 0 | 0 | 210.7 | 146.02 | 
+Mineral Mixture BIS | Minerals | No | 45 | 980 | 0 | 0 | 196 | 117.6 | 
+ASMM - Western UP | Minerals | No | 60 | 980 | 0 | 0 | 250 | 118 | 
+Calcite powder | Minerals | No | 3 | 900 | 0 | 0 | 370 | 0 | 
+ASMM Madhya Pradesh | Minerals | No | 55 | 980 | 0 | 0 | 259 | 98 | 
+ASMM Kerala | Minerals | No | 70 | 980 | 0 | 0 | 220 | 125 | 
+MILMA MIN | Minerals | No | 56 | 980 | 0 | 0 | 220 | 125 | 
+ASMM-Sabarkantha | Minerals | No | 50 | 980 | 0 | 0 | 220 | 140 | 
+Liquid Calcium | Minerals | No | 150 | 450 | 0 | 0 | 15.75 | 7.87 | 
+ASMM - Rajasthan | Minerals | No | 57 | 980 | 0 | 0 | 215.6 | 137.2 | 
+ASMM-Bangalore | Minerals | No | 40 | 980 | 0 | 0 | 192 | 90 | 
+Calsagar | Minerals | No | 140 | 990 | 0 | 0 | 200 | 100 | 
+ASMM-Banaskantha | Minerals | No | 30 | 980 | 0 | 0 | 215.6 | 141.12 | 
+ASMM-J P Nagar | Minerals | No | 30 | 980 | 0 | 0 | 215.6 | 127.4 | 
+ASMM-Agra | Minerals | No | 30 | 980 | 0 | 0 | 205.8 | 122.5 | 
+ASMM-Bulandshahr | Minerals | No | 30 | 980 | 0 | 0 | 215.6 | 122.5 | 
+Cotton seed cake | Oil Cake | No | 12 | 900 | 720 | 333 | 0.756 | 1.296 | 
+Kardi Oil Cake | Oil Cake | No | 12 | 900 | 523 | 160 | 5.4 | 4.32 | 
+Mustard cake | Oil Cake | No | 14 | 900 | 720 | 324 | 4.644 | 3.996 | 
+Sunflower cake | Oil Cake | No | 12 | 900 | 648 | 234 | 2.052 | 3.996 | 
+Und. cottonseed cake | Oil Cake | No | 11 | 900 | 666 | 216 | 0.864 | 1.512 | 
+Rapeseed Cake | Oil Cake | No | 14 | 900 | 720 | 342 | 4.644 | 3.996 | 
+Linseed oil Cake | Oil Cake | No | 14 | 900 | 648 | 270 | 2.592 | 5.184 | 
+Palm kernel oil Cake | Oil Cake | No | 10 | 900 | 549 | 153 | 1.512 | 1.944 | 
+Coconut Cake | Oil Cake | No | 10 | 900 | 738 | 234 | 1.944 | 2.7 | 
+Groundnut cake | Oil Cake | No | 17 | 900 | 765 | 360 | 0.972 | 2.16 | 
+Til Cake | Oil Cake | No | 16 | 900 | 675 | 360 | 8.64 | 3.888 | 
+Karanj Cake | Other conc. | No | 5 | 900 | 540 | 306 | 3.996 | 2.268 | 
+Barley Brewery Waste | Other conc. | No | 8 | 300 | 168 | 72 | 1.32 | 0.48 | 
+Sesame / Gingelly oil | Other conc. | No | 150 | 999 | 1940 | 0 | 0 | 0 | 
+Whey liquid | Other conc. | No | 1 | 60 | 48 | 7.2 | 1.32 | 0.96 | 
+Molasses | Other conc. | No | 5 | 820 | 492 | 16 | 2.364 | 0.888 | 
+Ragi waste | Other conc. | No | 11 | 890 | 523.8 | 116.8 | 0.6 | 0.384 | 
+Babul Pods | Other conc. | No | 5 | 900 | 495 | 108 | 5.616 | 0.864 | 
+Brewery waste maize | Other conc. | No | 5 | 350 | 259 | 55 | 0.096 | 0.18 | 
+Mahua Cake | Other conc. | No | 5 | 900 | 540 | 189 | 0.648 | 1.944 | 
+Tamarind Seed Powder | Other conc. | No | 4 | 900 | 576 | 108 | 1.62 | 0.972 | 
+Spent Pepper Waste | Other conc. | No | 3 | 900 | 405 | 117 | 1.944 | 0.54 | 
+Tapioca Starch Waste | Other conc. | No | 4 | 900 | 576 | 108 | 1.62 | 0.972 | 
+Ambadi Cake | Other conc. | No | 7 | 900 | 540 | 211 | 1.728 | 2.484 | 
+Brewery waste wheat | Other conc. | No | 4 | 250 | 137 | 18 | 0.24 | 0.324 | 
+Brewery waste tapioca | Other conc. | No | 5 | 200 | 148 | 10 | 0.624 | 0.036 | 
+Mustard oil | Other conc. | No | 80 | 999 | 1940 | 0 | 0 | 0 | 
+Whole pomegranate | Other conc. | No | 4 | 200 | 133 | 83.4 | 0.336 | 0.18 | 
+Vaal Bean | Other conc. | No | 4 | 900 | 585 | 231 | 1.344 | 1.476 | 
+TMR | Other conc. | No | 10 | 900 | 585 | 140 | 3.12 | 1.2 | 
+Niger Seed Cake | Other conc. | No | 7 | 900 | 450 | 306 | 1.08 | 1.296 | 
+Soybean flakes | Other conc. | No | 12 | 900 | 566 | 120 | 3.84 | 0.96 | 
+Casia Tora Seeds | Other conc. | No | 4 | 900 | 495 | 144 | 3.24 | 1.188 | 
+Rubber Seed Cake | Other conc. | No | 4 | 900 | 495 | 315 | 4.212 | 2.7 | 
+Bypass Fat | Other conc. | No | 120 | 990 | 1855 | 0 | 96 | 0 | 
+Tapioca Meal | Other conc. | No | 5 | 200 | 144.8 | 1 | 0.144 | 0.007 | 
+Neem Seed Cake | Other conc. | No | 9 | 900 | 495 | 135 | 2.916 | 0.756 | 
+Isabgol (Lali) | Other conc. | No | 20 | 900 | 735 | 290 | 2.76 | 4.32 | 
+Mangoseed Kernal | Other conc. | No | 3 | 900 | 495 | 54 | 1.08 | 0.864 | 
+Subabul Seeds | Other conc. | No | 4 | 900 | 585 | 261 | 1.944 | 1.188 | 
+Tapioca Peel | Other conc. | No | 5 | 200 | 132.1 | 7.46 | 0.192 | 0.012 | 
+Cashewnut Waste | Other conc. | No | 3 | 900 | 450 | 86 | 1.512 | 0.972 | 
+Cocoa pods | Other conc. | No | 0.5 | 900 | 572 | 57 | 2.462 | 1.102 | 
+Jack Fruit Seed | Other conc. | No | 4 | 550 | 303 | 66 | 1.056 | 0.396 | 
+Barley Sprout | Other conc. | No | 2 | 300 | 180 | 60 | 0.576 | 0.432 | 
+Tomato Waste | Other conc. | No | 0.75 | 200 | 110 | 30 | 0.408 | 0.312 | 
+Biscuit Waste | Other conc. | No | 3 | 900 | 820 | 61 | 0.24 | 0.24 | 
+Apple Pomace | Other conc. | No | 0.75 | 200 | 120 | 24 | 0.192 | 0.144 | 
+Tapioca beer waste - Moist | Other conc. | No | 5 | 200 | 166.4 | 14.44 | 0.096 | 0.12 | 
+Whole Jack Fruit | Other conc. | No | 3 | 220 | 110 | 17 | 0.372 | 0.084 | 
+Maize cob waste | Other roughage | No | 0.8 | 900 | 468 | 20 | 0.132 | 0.708 | 
+Banana Bunch Stalk | Other roughage | No | 1 | 900 | 366 | 9 | 0.18 | 0.132 | 
+Sugarcane trash | Other roughage | No | 0.5 | 900 | 405 | 36 | 0.348 | 1.176 | 
+Banana Roots | Other roughage | No | 1 | 200 | 100 | 24 | 0.672 | 0.144 | 
+Banana Flowers | Other roughage | No | 1 | 200 | 100 | 40 | 0.48 | 0.216 | 
+Maize Sheeth | Other roughage | No | 2 | 900 | 360 | 18 | 1.296 | 0.324 | 
+Banana pseudo stem | Other roughage | No | 1.5 | 200 | 100 | 24 | 0.864 | 0.144 | 
+Pros.juliflora pods | Other roughage | No | 5 | 900 | 585 | 108 | 1.944 | 0.54 | 
+G.nut Shell powder | Other roughage | No | 2 | 900 | 342 | 63 | 1.08 | 0.216 | 
+Whole Sugarcane | Other roughage | No | 1.5 | 350 | 193 | 7 | 0.84 | 0.132 | 
+Cashew apple | Other roughage | No | 1 | 150 | 83.33 | 18.98 | 0.048 | 0.12 | 
+Cashew apple waste | Other roughage | No | 0.8 | 200 | 110 | 27.4 | 0.6 | 0.816 | 
+Swt. potato creepers | Other roughage | No | 2 | 150 | 60 | 26 | 1.296 | 0.144 | 
+Whole carrot | Other roughage | No | 2 | 150 | 123 | 15 | 0.288 | 0.192 | 
+Sugarcane top (dry) | Other roughage | No | 1 | 900 | 378 | 28 | 1.08 | 0.168 | 
+Cauliflower | Other roughage | No | 2 | 200 | 100 | 36 | 3.744 | 0.408 | 
+Cabbage | Other roughage | No | 2 | 200 | 100 | 38 | 3.12 | 0.336 | 
+Sugarcane Bagasse | Other roughage | No | 2 | 800 | 280 | 28 | 1.536 | 0.288 | 
+Cotton Hulls | Other roughage | No | 2 | 900 | 405 | 108 | 0.972 | 0.54 | 
+Banana Suckers | Other roughage | No | 1.5 | 200 | 100 | 24 | 0.864 | 0.144 | 
+Jackfruit leaves | Other roughage | No | 0.5 | 400 | 240 | 62.4 | 0.276 | 0.048 | 
+Banana peel | Other roughage | No | 2 | 100 | 114 | 11.8 | 1.392 | 0.6 | 
+Vaal Bean Plant | Other roughage | No | 1 | 200 | 110 | 46.8 | 1.872 | 0.324 | 
+Rice Husk | Other roughage | No | 1 | 900 | 250 | 80 | 0.24 | 1.404 | 
+Azolla | Other roughage | No | 0.5 | 60 | 42 | 14 | 0.072 | 0.036 | 
+Maize silage | Silage | No | 1 | 300 | 165 | 24 | 0.792 | 0.864 | 
+Oats Silage | Silage | No | 1 | 300 | 162 | 24 | 1.224 | 0.792 | 
+Hybrid Napier silage | Silage | No | 1.25 | 300 | 165 | 19 | 1.728 | 0.648 | 
+Jowar Silage | Silage | No | 1 | 300 | 150 | 18 | 0.864 | 0.684 | 
+Methi straw | Straw | No | 4 | 900 | 396 | 64 | 5.88 | 0.456 | 
+Gram straw | Straw | No | 4 | 900 | 487 | 50 | 6.192 | 0.504 | 
+Ragi Straw | Straw | No | 3.5 | 900 | 405 | 31 | 1.944 | 0.432 | 
+Dhania Straw | Straw | No | 2 | 900 | 405 | 54 | 1.728 | 0.324 | 
+Pulse Straw | Straw | No | 3.5 | 900 | 405 | 36 | 8.64 | 0.648 | 
+Mustard Straw | Straw | No | 2 | 900 | 360 | 54 | 1.512 | 0.324 | 
+Bajra Straw / Stover | Straw | No | 3.5 | 900 | 405 | 32 | 1.836 | 0.54 | 
+Pulse pod straw | Straw | No | 3.5 | 900 | 450 | 90 | 5.28 | 0.54 | 
+Paddy straw urea trtd. | Straw | No | 3.4 | 850 | 383 | 68 | 1.632 | 0.312 | 
+Paddy Straw | Straw | No | 3 | 900 | 378 | 41 | 1.728 | 0.324 | 
+Wheat Straw Urea Treated | Straw | No | 4.4 | 850 | 408 | 43 | 1.836 | 0.408 | 
+Groundnut Straw | Straw | No | 3.5 | 900 | 432 | 54 | 7.668 | 0.54 | 
+Black gram straw | Straw | No | 2.5 | 900 | 405 | 80 | 4.32 | 0.576 | 
+Red gram straw | Straw | No | 3.5 | 900 | 410 | 90 | 2.88 | 0.432 | 
+Soyabean Straw | Straw | No | 3 | 900 | 405 | 45 | 5.4 | 1.296 | 
+Jowar Straw / Stover | Straw | No | 3.5 | 900 | 405 | 36 | 2.7 | 0.432 | 
+Barley Straw | Straw | No | 3 | 900 | 405 | 36 | 1.944 | 1.296 | 
+Wheat Straw | Straw | No | 4 | 900 | 396 | 27 | 1.944 | 0.432 | 
+Maize Straw / Stover | Straw | No | 3.5 | 900 | 405 | 36 | 2.16 | 0.648 | 
+Guar Straw | Straw | No | 3.5 | 900 | 405 | 117 | 3.888 | 1.188 | 
+===== SHEET: Sheet2 (dims B1:Q10) =====
+ |  |  |  |  | % |  |  |  |  |  | Kg as such basis |  |  |  |  | 
+ |  | Feed Name | Group | Price | DM | TDN | CP | Ca | P |  | DM | TDN | CP | Ca | P | 
+ | 1 | Tamarind seed husk | Husk | 2 | 90 | 25.15 | 7.7 | 0.42 | 0.06 |  | 900 | 226.35 | 69.3 | 1.8900000000000001 | 0.21600000000000003 | k
+ | 2 | Rosemary hay | Hay | 3 | 90 | 50.37 | 8.22 | 1.74 | 0.08 |  | 900 | 453.33 | 73.98 | 7.829999999999999 | 0.28800000000000003 | k
+ | 3 | Tamarind waste | Other Con | 9 | 90 | 39.31 | 11.16 | 0.26 | 0.38 |  | 900 | 353.79 | 100.44 | 1.1700000000000002 | 1.368 | k
+ | 4 | Touch me not (lajwanti) leaves | Leaves | 2 |  |  |  |  |  |  |  |  |  |  |  | not added
+ | 5 | Tapioca stem | Other Rough | 2 | 90 | 40 | 3.4 | 1.1 | 0.29 |  | 900 | 360 | 30.6 | 4.95 | 1.044 | k
+ | 6 | Lily leaves | other rough | 2 | 90 | 70 | 9.38 | 0.78 | 0.39 |  |  |  |  |  |  | 
+ |  |  |  |  | 20 | 15.555555555555555 | 2.0844444444444448 | 0.17333333333333334 | 0.08666666666666667 |  | 200 | 140 | 18.760000000000005 | 0.78 | 0.31200000000000006 | k
+===== SHEET: Sheet3 (dims A1:A1) =====
+===== DOCX: Other constraints used for RBP =====
+Other constraints used for LP/ RBP:
+Dry matter requirement 
+Dry matter range is editable
+Pregnancy requirement 
+Fixed constraints
+Concentrate forage ratio 
+Ratio is editable - L, E, G – Lower, Equal, Greater and numeric value is also editable.
+Feed item related other logic:
+Add mineral mixture in the final formulation
+Take ± 25 % of the farmer entered value as minimum and maximum range (editable)
+At least one forage item should be there in final formulation
+Use district specific feed library
+--- DOCX TABLE 0 ---
+Species | Milking Ftag | Calving month range | Dry matter range (%)
+Buffalo | N |  | 2.00 - 4.00
+Buffalo | Y | <= 2.00 | 2.00 - 2.50
+Buffalo | Y | 2.00 - 3.00 | 2.00 - 3.00
+Buffalo | Y | 3.00 - 24.00 | 2.00 - 4.00
+Cattle | N |  | 2.00 - 4.00
+Cattle | Y | <= 2.00 | 2.00 - 2.50
+Cattle | Y | 2.00 - 3.00 | 2.00 - 3.00
+Cattle | Y | 3.00 - 24.00 | 2.00 - 4.00
+--- DOCX TABLE 1 ---
+Species | Pregnancy Months
+Cattle | 7 and above
+Buffalo | 7 and above
+--- DOCX TABLE 2 ---
+Species | Milking stag | Milk production 
+Range, Kg | Ratio 
+(L = Lower) | Concentrate %
+Buffalo | N |  | L | 40
+Buffalo | Y | <= 5.00 | L | 40
+Buffalo | Y | 5.00 - 10.00 | L | 50
+Buffalo | Y | 10.00 - 15.00 | L | 60
+Buffalo | Y | 15.00 - 55.00 | L | 70
+Cattle | N |  | L | 40
+Cattle | Y | <= 5.00 | L | 40
+Cattle | Y | 5.00 - 10.00 | L | 50
+Cattle | Y | 10.00 - 15.00 | L | 60
+Cattle | Y | 15.00 - 55.00 | L | 70

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { ChatView } from "@/components/ChatView";
-import { Search, Plus, MessageCircle, Trash2, Wheat } from "lucide-react";
-import { RationAdvisoryView } from "@/components/RationAdvisoryView";
+import { Search, Plus, MessageCircle, Trash2, Wheat, ChevronRight } from "lucide-react";
 
 interface Conversation {
   id: string; title: string; last_message: string | null; language: string | null; updated_at: string;
@@ -23,10 +23,10 @@ const createConversation = (): Conversation => ({
 });
 
 const Index = () => {
+  const navigate = useNavigate();
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [search, setSearch] = useState("");
-  const [rationAdvisoryOpen, setRationAdvisoryOpen] = useState(false);
 
   useEffect(() => {
     let c = loadConvs();
@@ -63,9 +63,6 @@ const Index = () => {
 
   return (
     <div className="h-full w-full flex bg-background overflow-hidden">
-      {rationAdvisoryOpen && (
-        <RationAdvisoryView open={rationAdvisoryOpen} onClose={() => setRationAdvisoryOpen(false)} />
-      )}
       <aside className={`${activeId ? "hidden md:flex" : "flex"} md:w-[380px] w-full flex-col border-r bg-sidebar min-h-0 shrink-0`}>
         <div className="bg-header text-header-foreground p-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -76,18 +73,19 @@ const Index = () => {
             <button onClick={newChat} className="p-2 hover:bg-white/10 rounded-full" title="New chat"><Plus className="w-5 h-5" /></button>
           </div>
         </div>
-        <div className="p-2 bg-muted/50 space-y-2">
+        <div className="p-2 bg-muted/50">
           <button
-            onClick={() => setRationAdvisoryOpen(true)}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg bg-emerald-700/10 hover:bg-emerald-700/20 border border-emerald-700/20 text-left transition"
+            onClick={() => navigate("/ration")}
+            className="w-full mb-2 flex items-center gap-3 rounded-xl border border-primary/30 bg-primary/5 px-3 py-3 text-left hover:bg-primary/10 transition"
           >
-            <div className="w-10 h-10 rounded-full bg-emerald-700 text-white flex items-center justify-center shrink-0">
+            <div className="w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center shrink-0">
               <Wheat className="w-5 h-5" />
             </div>
-            <div className="min-w-0">
-              <div className="font-medium text-sm">Ration Advisory</div>
-              <div className="text-xs text-muted-foreground truncate">Detailed balanced feed for your herd</div>
+            <div className="flex-1 min-w-0">
+              <div className="font-medium text-sm">Ration Advisor · राशन सलाहकार</div>
+              <div className="text-xs text-muted-foreground truncate">Low-cost balanced feed plan for your animal</div>
             </div>
+            <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
           </button>
           <div className="flex items-center gap-2 bg-card rounded-full px-3 py-1.5">
             <Search className="w-4 h-4 text-muted-foreground" />
