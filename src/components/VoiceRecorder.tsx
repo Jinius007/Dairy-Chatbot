@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { Mic, Square } from "lucide-react";
-import { unlockAudioPlayback } from "@/lib/speech";
+import { stopSpeech, unlockAudioPlayback } from "@/lib/speech";
 
 interface Props {
   onRecorded: (audioBase64: string, mimeType: string, durationMs: number) => void;
   disabled?: boolean;
+  large?: boolean;
 }
 
 function arrayBufferToBase64(buffer: ArrayBuffer): string {
@@ -21,7 +22,7 @@ function getSupportedMimeType(): string | undefined {
   return ["audio/webm;codecs=opus", "audio/webm", "audio/mp4"].find((type) => MediaRecorder.isTypeSupported(type));
 }
 
-export function VoiceRecorder({ onRecorded, disabled }: Props) {
+export function VoiceRecorder({ onRecorded, disabled, large }: Props) {
   const [recording, setRecording] = useState(false);
   const [seconds, setSeconds] = useState(0);
   const mediaRef = useRef<MediaRecorder | null>(null);
@@ -35,9 +36,11 @@ export function VoiceRecorder({ onRecorded, disabled }: Props) {
   }, []);
 
   const start = async () => {
+    if (disabled) return;
+    stopSpeech();
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       await unlockAudioPlayback();
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const mimeType = getSupportedMimeType();
       const rec = mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream);
       const blobType = mimeType || rec.mimeType || "audio/webm";
@@ -82,12 +85,15 @@ export function VoiceRecorder({ onRecorded, disabled }: Props) {
 
   return (
     <button
+      type="button"
       onClick={start}
       disabled={disabled}
-      className="p-2.5 rounded-full bg-primary text-primary-foreground hover:bg-primary-dark transition disabled:opacity-50"
+      className={`rounded-full bg-primary text-primary-foreground hover:bg-primary-dark transition disabled:opacity-50 shadow-lg ${
+        large ? "p-5 ring-4 ring-primary/20" : "p-2.5"
+      }`}
       aria-label="Record voice note"
     >
-      <Mic className="w-5 h-5" />
+      <Mic className={large ? "w-8 h-8" : "w-5 h-5"} />
     </button>
   );
 }

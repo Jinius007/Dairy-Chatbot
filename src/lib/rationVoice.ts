@@ -8,8 +8,15 @@ const ENGLISH_LANG: Record<string, string> = {
   assamese: "as", urdu: "ur", english: "en",
 };
 
+const DEVANAGARI_DIGITS = "०१२३४५६७८९";
+
+function normalizeDigits(text: string): string {
+  return text.replace(/[०-९]/g, (ch) => String(DEVANAGARI_DIGITS.indexOf(ch)));
+}
+
 export function extractFirstNumber(text: string): number | null {
-  const m = text.replace(/,/g, "").match(/(\d+\.?\d*)/);
+  const normalized = normalizeDigits(text);
+  const m = normalized.replace(/,/g, "").match(/(\d+\.?\d*)/);
   return m ? parseFloat(m[1]) : null;
 }
 
@@ -60,13 +67,35 @@ export function matchLangCode(text: string): string | null {
 }
 
 export function detectSpecies(text: string): Species | null {
-  const s = text.toLowerCase();
-  const buffalo = /\b(buffalo|bhains|bhais|bhains|mahish|mahis|mhas|gedhe|erumai|mehs|भैंस|म्हैस)\b/i.test(s);
-  const cow = /\b(cow|cows|gay|gai|gaay|gaye|pasu|pashu|hasu|பசு|गाय|गाय)\b/i.test(s);
+  const s = normalizeDigits(text).toLowerCase();
+  const buffalo = /\b(buffalo|bhains|bhais|bhens|mahish|mahis|mhas|gedhe|erumai|mehs|भैंस|भेंस|म्हैस|ભેંસ)\b/i.test(s)
+    || /भैंस|भेंस|म्हैस/.test(text);
+  const cow = /\b(cow|cows|gay|gai|gaay|gaye|pasu|pashu|hasu|பசு)\b/i.test(s)
+    || /गाय|गैय|गो|पशु/.test(text);
   if (buffalo && !cow) return "buffalo";
   if (cow && !buffalo) return "cattle";
   if (buffalo) return "buffalo";
   if (cow) return "cattle";
+  return null;
+}
+
+/** Parse calving count from spoken answer (Hindi/English numbers and words). */
+export function parseCalvingsFromVoice(text: string): number | null {
+  const t = normalizeDigits(text);
+  if (isNotCalved(t)) return 0;
+  if (/pehli|first|1st|pahli|पहली|pratham|બીજ|ek\s|एक|\bone\b/i.test(t)) return 1;
+  if (/doosri|second|2nd|dusri|दूसरी|do\s|दो|\btwo\b/i.test(t)) return 2;
+  if (/teesri|third|3rd|तीसरी|teen|तीन|\bthree\b/i.test(t)) return 3;
+  const n = extractFirstNumber(t);
+  if (n !== null && n >= 0 && n <= 20) return Math.round(n);
+  return null;
+}
+
+/** Parse pregnancy month from voice. */
+export function parsePregMonthFromVoice(text: string): number | null {
+  const t = normalizeDigits(text);
+  const n = extractFirstNumber(t);
+  if (n !== null && n >= 1 && n <= 9) return Math.round(n);
   return null;
 }
 

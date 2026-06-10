@@ -3,19 +3,21 @@ import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Wheat } from "lucide-react";
 import { VoiceRecorder } from "@/components/VoiceRecorder";
 import { LANG_NAMES } from "@/lib/languages";
-import { speakText, stopSpeech } from "@/lib/speech";
+import { speakText, stopSpeech, waitForSpeechIdle } from "@/lib/speech";
 import { t } from "@/lib/rationI18n";
 import {
   detectSpecies,
+  extractFirstNumber,
   isDry,
   isDoneAddingFeeds,
   isInMilk,
   isNo,
-  isNotCalved,
   isSkip,
   isYes,
   matchFeedFromText,
   matchLangCode,
+  parseCalvingsFromVoice,
+  parsePregMonthFromVoice,
 } from "@/lib/rationVoice";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -105,18 +107,20 @@ const RationAdvisor = () => {
   const [lang, setLang] = useState<string>("en");
   const [step, setStep] = useState<Step>("language");
   const [messages, setMessages] = useState<Msg[]>([]);
-  const [input, setInput] = useState("");
   const [place, setPlace] = useState<{ district: string; state: string; label: string } | null>(null);
   const [answers, setAnswers] = useState<Partial<Answers>>({});
   const [feeds, setFeeds] = useState<FarmerFeed[]>([]);
   const [busy, setBusy] = useState(false);
   const [transcribing, setTranscribing] = useState(false);
+  const [speaking, setSpeaking] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const stepRef = useRef(step);
   const langRef = useRef(lang);
   const answersRef = useRef(answers);
   const placeRef = useRef(place);
   const feedsRef = useRef(feeds);
+  const speechPendingRef = useRef(0);
+  const startedRef = useRef(false);
 
   useEffect(() => { stepRef.current = step; }, [step]);
   useEffect(() => { langRef.current = lang; }, [lang]);
@@ -130,12 +134,22 @@ const RationAdvisor = () => {
 
   useEffect(() => () => stopSpeech(), []);
 
+  useEffect(() => {
+    if (startedRef.current) return;
+    startedRef.current = true;
+    bot(t("chooseLanguage", "en"), undefined, "en");
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   const bot = useCallback((text: string, extra?: Partial<Msg>, speakIn?: string) => {
     const speakLang = speakIn ?? langRef.current;
     setMessages((m) => [...m, { id: uid(), role: "bot", text, ...extra }]);
-    if (text?.trim()) {
-      void speakText(text, { lang: speakLang });
-    }
+    if (!text?.trim()) return;
+    speechPendingRef.current += 1;
+    setSpeaking(true);
+    void speakText(text, { lang: speakLang, forceLang: true }).finally(() => {
+      speechPendingRef.current = Math.max(0, speechPendingRef.current - 1);
+      if (speechPendingRef.current === 0) setSpeaking(false);
+    });
   }, []);
 
   const userMsg = useCallback((text: string, extra?: Partial<Msg>, isVoice = false) => {
@@ -203,7 +217,7 @@ const RationAdvisor = () => {
   };
 
   const submitNumber = (raw: string, isVoice = false) => {
-    const v = parseFloat(raw.replace(/[^\d.]/g, ""));
+    const v = extractFirstNumber(raw) ?? parseFloat(raw.replace(/[^\d.]/g, ""));
     const currentStep = stepRef.current;
     const L = langRef.current;
     const sp = answersRef.current.species;
@@ -245,22 +259,7 @@ const RationAdvisor = () => {
         askPregnant();
         break;
       }
-      case "calvings": {
-        if (isNotCalved(raw)) {
-          chooseCalvings(0, isVoice);
-          break;
-        }
-        if (!valid(v, 0, 20, "2", L)) return;
-        chooseCalvings(Math.round(v), isVoice);
-        break;
-      }
-      case "pregMonth": {
-        if (!valid(v, 1, 9, "7", L)) return;
-        choosePregMonth(Math.round(v), isVoice);
-        break;
-      }
     }
-    setInput("");
   };
 
   const valid = (v: number, min: number, max: number, example: string, L = langRef.current): boolean => {
@@ -379,6 +378,7 @@ const RationAdvisor = () => {
   const submitFeedName = (text: string, isVoice = false) => {
     const feed = matchFeedFromText(text);
     if (!feed) {
+      userMsg(text, undefined, isVoice);
       bot(t("feedNotFound", lang));
       return;
     }
@@ -476,22 +476,33 @@ const RationAdvisor = () => {
     }, 80);
   };
 
+  const reprompt = (spoken: string, isVoice: boolean) => {
+    userMsg(spoken, undefined, isVoice);
+    bot(t("repeatAnswer", langRef.current));
+  };
+
   const handleUserAnswer = useCallback((raw: string, isVoice = false) => {
     const text = raw.trim();
     if (!text) return;
     stopSpeech();
+    speechPendingRef.current = 0;
+    setSpeaking(false);
     const s = stepRef.current;
 
     switch (s) {
       case "language": {
         const code = matchLangCode(text);
         if (code) chooseLanguage(code, isVoice);
-        else bot(t("chooseLanguage", "en"), undefined, "en");
+        else {
+          userMsg(text, undefined, isVoice);
+          bot(t("chooseLanguage", "en"), undefined, "en");
+        }
         return;
       }
       case "locationConfirm":
         if (isYes(text)) confirmLocation(true, isVoice);
         else if (isNo(text)) confirmLocation(false, isVoice);
+        else reprompt(text, isVoice);
         return;
       case "locationManual":
         submitManualLocation(text, isVoice);
@@ -499,16 +510,34 @@ const RationAdvisor = () => {
       case "species": {
         const sp = detectSpecies(text);
         if (sp) chooseSpecies(sp, isVoice);
+        else {
+          userMsg(text, undefined, isVoice);
+          bot(t("repeatSpecies", langRef.current));
+        }
+        return;
+      }
+      case "calvings": {
+        const n = parseCalvingsFromVoice(text);
+        if (n !== null) chooseCalvings(n, isVoice);
+        else reprompt(text, isVoice);
         return;
       }
       case "milking":
         if (isInMilk(text)) chooseMilking(true, isVoice);
         else if (isDry(text) || isNo(text)) chooseMilking(false, isVoice);
+        else reprompt(text, isVoice);
         return;
       case "pregnant":
         if (isYes(text)) choosePregnant(true, isVoice);
         else if (isNo(text)) choosePregnant(false, isVoice);
+        else reprompt(text, isVoice);
         return;
+      case "pregMonth": {
+        const m = parsePregMonthFromVoice(text);
+        if (m !== null) choosePregMonth(m, isVoice);
+        else reprompt(text, isVoice);
+        return;
+      }
       case "snf":
         if (isSkip(text)) skipSnf(isVoice);
         else submitNumber(text, isVoice);
@@ -521,8 +550,6 @@ const RationAdvisor = () => {
       case "yield":
       case "fat":
       case "price":
-      case "calvings":
-      case "pregMonth":
         submitNumber(text, isVoice);
         return;
       default:
@@ -535,7 +562,9 @@ const RationAdvisor = () => {
       toast.error("Voice needs Supabase configured on this deployment.");
       return;
     }
-    if (busy || transcribing || stepRef.current === "locating" || stepRef.current === "optimizing") return;
+    if (busy || transcribing || speaking || stepRef.current === "locating" || stepRef.current === "optimizing") return;
+    stopSpeech();
+    await waitForSpeechIdle();
     setTranscribing(true);
     try {
       const { data, error } = await supabase.functions.invoke("transcribe", {
@@ -558,6 +587,8 @@ const RationAdvisor = () => {
 
   const restart = () => {
     stopSpeech();
+    speechPendingRef.current = 0;
+    setSpeaking(false);
     setMessages([]);
     setAnswers({});
     setFeeds([]);
@@ -567,35 +598,8 @@ const RationAdvisor = () => {
     bot(t("chooseLanguage", "en"), undefined, "en");
   };
 
-  const Chip = ({ label, onClick }: { label: string; onClick: () => void }) => (
-    <button
-      onClick={onClick}
-      disabled={busy}
-      className="px-4 py-2 rounded-full border border-primary/40 bg-card text-sm font-medium text-primary hover:bg-primary hover:text-primary-foreground transition shadow-sm"
-    >
-      {label}
-    </button>
-  );
-
-  const renderChips = () => {
-    switch (step) {
-      case "language":
-        return Object.entries(LANG_NAMES).map(([code, name]) => (
-          <Chip key={code} label={name} onClick={() => chooseLanguage(code)} />
-        ));
-      case "locationConfirm":
-        return (
-          <>
-            <Chip label={t("yes", lang)} onClick={() => confirmLocation(true)} />
-            <Chip label={t("no", lang)} onClick={() => confirmLocation(false)} />
-          </>
-        );
-      case "done":
-        return <Chip label={t("restartBtn", lang)} onClick={restart} />;
-      default:
-        return null;
-    }
-  };
+  const micDisabled = busy || transcribing || speaking || ["locating", "optimizing", "done"].includes(step);
+  const showVoiceBar = !["locating", "done"].includes(step);
 
   const fmt = (n: number, d = 0) =>
     n.toLocaleString("en-IN", { minimumFractionDigits: d, maximumFractionDigits: d });
@@ -679,9 +683,6 @@ const RationAdvisor = () => {
     );
   };
 
-  const showInputBar = !["locating", "done"].includes(step);
-  const numericStep = ["months", "yield", "fat", "snf", "price", "calvings", "pregMonth"].includes(step);
-
   return (
     <div className="h-full w-full flex flex-col bg-muted overflow-hidden">
       <div className="bg-header text-header-foreground px-3 py-2.5 flex items-center gap-3 shrink-0">
@@ -738,36 +739,29 @@ const RationAdvisor = () => {
       </div>
 
       <div className="shrink-0">
-        <div className="flex flex-wrap gap-2 px-3 pb-2 justify-center">{renderChips()}</div>
-
-        {showInputBar && (
-          <div className="px-3 pb-3">
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                if (!input.trim() || busy || transcribing) return;
-                handleUserAnswer(input.trim(), false);
-                setInput("");
-              }}
-              className="flex items-center gap-2 bg-card rounded-full px-2 py-1.5 shadow-sm"
+        {showVoiceBar && (
+          <div className="px-3 pb-6 pt-2 flex flex-col items-center gap-3">
+            {speaking && !transcribing && (
+              <p className="text-xs text-muted-foreground text-center">{t("speakingQuestion", lang)}</p>
+            )}
+            {!speaking && !transcribing && !micDisabled && (
+              <p className="text-sm text-primary font-medium text-center">{t("orSpeak", lang)}</p>
+            )}
+            {transcribing && (
+              <p className="text-sm text-primary text-center">{t("transcribing", lang)}</p>
+            )}
+            <VoiceRecorder onRecorded={handleVoice} disabled={micDisabled} large />
+          </div>
+        )}
+        {step === "done" && (
+          <div className="px-3 pb-6 flex justify-center">
+            <button
+              type="button"
+              onClick={restart}
+              className="px-5 py-2.5 rounded-full bg-primary text-primary-foreground text-sm font-medium shadow-sm"
             >
-              <input
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                inputMode={numericStep ? "decimal" : "text"}
-                placeholder={t("orSpeak", lang)}
-                disabled={busy || transcribing}
-                className="flex-1 bg-transparent outline-none text-sm min-w-0 px-2 disabled:opacity-50"
-              />
-              <VoiceRecorder onRecorded={handleVoice} disabled={busy || transcribing} />
-              <button
-                type="submit"
-                disabled={!input.trim() || busy || transcribing}
-                className="px-3 py-1.5 text-primary font-semibold text-sm shrink-0 disabled:opacity-40"
-              >
-                ➤
-              </button>
-            </form>
+              {t("restartBtn", lang)}
+            </button>
           </div>
         )}
       </div>

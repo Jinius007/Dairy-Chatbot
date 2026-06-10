@@ -200,10 +200,21 @@ export function speakText(text: string, options: SpeakOptions = {}): Promise<voi
     runSpeech(text, options.lang ?? null, token, options.forceLang ?? false);
 
   if (options.priority) {
-    return run();
+    const task = run();
+    speechChain = task.catch(() => undefined);
+    return task;
   }
 
   const task = speechChain.catch(() => undefined).then(run);
   speechChain = task.catch(() => undefined);
   return task;
+}
+
+/** Resolves when all queued TTS has finished (or been cancelled). */
+export function waitForSpeechIdle(): Promise<void> {
+  return speechChain.catch(() => undefined);
+}
+
+export function isSpeechPlaying(): boolean {
+  return !!audio && !audio.paused;
 }
