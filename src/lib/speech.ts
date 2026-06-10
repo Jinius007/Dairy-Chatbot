@@ -1,4 +1,4 @@
-import { prepareTextForSpeech, resolveTtsLanguage, splitForTts } from "@/lib/languages";
+import { prepareTextForSpeech, resolveTtsLanguage, splitForTts, TTS_LANG } from "@/lib/languages";
 import { filterAbusiveLanguage } from "@/lib/content-safety";
 
 let activeToken = 0;
@@ -140,6 +140,32 @@ async function speakViaBhashini(
   return true;
 }
 
+async function speakViaBrowserSynth(
+  text: string,
+  lang: string | null,
+  token: number,
+  forceLang = false,
+): Promise<boolean> {
+  if (typeof window === "undefined" || !("speechSynthesis" in window) || token !== activeToken) {
+    return false;
+  }
+  const spoken = prepareTextForSpeech(filterAbusiveLanguage(text));
+  if (!spoken) return false;
+
+  const code = forceLang && lang ? lang : resolveTtsLanguage(spoken, lang);
+  const locale = TTS_LANG[code] || "hi-IN";
+
+  return new Promise((resolve) => {
+    const utter = new SpeechSynthesisUtterance(spoken);
+    utter.lang = locale;
+    utter.rate = 0.92;
+    utter.onend = () => resolve(token === activeToken);
+    utter.onerror = () => resolve(false);
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(utter);
+  });
+}
+
 async function runSpeech(
   text: string,
   lang: string | null,
@@ -150,8 +176,7 @@ async function runSpeech(
   if (!cleaned.trim() || token !== activeToken) return;
   if (await speakViaBhashini(cleaned, lang, token, forceLang)) return;
   if (token !== activeToken) return;
-  await delay(300);
-  await speakViaBhashini(cleaned, lang, token, forceLang);
+  if (await speakViaBrowserSynth(cleaned, lang, token, forceLang)) return;
 }
 
 export function isSpeechSupported(): boolean {
@@ -165,6 +190,9 @@ export function preloadSpeechVoices(): Promise<void> {
 export function stopSpeech(): void {
   activeToken += 1;
   cleanupAudio();
+  if (typeof window !== "undefined" && "speechSynthesis" in window) {
+    window.speechSynthesis.cancel();
+  }
   speechChain = Promise.resolve();
 }
 

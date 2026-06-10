@@ -623,9 +623,19 @@ const RationAdvisor = () => {
     }
   }, [lang, place, answers, feeds]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  const handleTranscript = useCallback((txt: string) => {
+    stopSpeech();
+    speechPendingRef.current = 0;
+    setSpeaking(false);
+    const text = txt.trim();
+    if (text) handleUserAnswer(text, true);
+    else toast.error("Could not understand. Please try again.");
+  }, [handleUserAnswer]);
+
   const handleVoice = async (b64: string, mime: string) => {
+    // Fallback when browser speech recognition is unavailable (e.g. Firefox)
     if (!supabase) {
-      toast.error("Voice needs Supabase configured on this deployment.");
+      toast.error("Voice needs Chrome or Edge, or Supabase configured.");
       return;
     }
     if (busy || transcribing || speaking || stepRef.current === "locating" || stepRef.current === "optimizing") return;
@@ -821,7 +831,13 @@ const RationAdvisor = () => {
             {transcribing && (
               <p className="text-sm text-primary text-center">{t("transcribing", lang)}</p>
             )}
-            <VoiceRecorder onRecorded={handleVoice} disabled={micDisabled} large />
+            <VoiceRecorder
+              speechLang={lang}
+              onTranscript={handleTranscript}
+              onRecorded={handleVoice}
+              disabled={micDisabled}
+              large
+            />
           </div>
         )}
         {step === "done" && (

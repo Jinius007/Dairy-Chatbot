@@ -3,7 +3,7 @@ import {
   containsAbusiveLanguage,
   filterAbusiveLanguage,
 } from "../_shared/content-safety.ts";
-import { bhashiniLanguage, parseBhashiniAsrText } from "../_shared/bhashini.ts";
+import { bhashiniLanguage } from "../_shared/bhashini.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -27,43 +27,6 @@ const STEP_HINTS: Record<string, string> = {
   feedName: "The farmer is naming a feed they give (e.g. bhusa, berseem, chokar).",
   feedMore: "The farmer is naming another feed or saying done/bas when finished.",
 };
-
-async function transcribeWithBhashini(
-  audioBase64: string,
-  mimeType: string,
-  languageCode?: string,
-): Promise<string | null> {
-  const apiKey = Deno.env.get("BHASHINI_API_KEY");
-  if (!apiKey) return null;
-
-  const bytes = Uint8Array.from(atob(audioBase64), (c) => c.charCodeAt(0));
-  const ext = (mimeType || "audio/webm").includes("mp4") ? "mp4" : "webm";
-  const blob = new Blob([bytes], { type: mimeType || "audio/webm" });
-
-  const form = new FormData();
-  form.append("file", blob, `audio.${ext}`);
-  form.append("language", bhashiniLanguage(languageCode));
-
-  const resp = await fetch("https://tts.bhashini.ai/v2/asr", {
-    method: "POST",
-    headers: { "X-API-KEY": apiKey },
-    body: form,
-  });
-
-  if (!resp.ok) {
-    const detail = await resp.text();
-    console.error("Bhashini ASR error:", resp.status, detail);
-    return null;
-  }
-
-  const ct = resp.headers.get("content-type") || "";
-  if (ct.includes("application/json")) {
-    const data = await resp.json();
-    return parseBhashiniAsrText(data) || null;
-  }
-  const text = (await resp.text()).trim();
-  return text || null;
-}
 
 async function transcribeWithGemini(
   audioBase64: string,
@@ -133,18 +96,14 @@ Deno.serve(async (req) => {
     const { audioBase64, mimeType, language, step } = await req.json();
     if (!audioBase64) throw new Error("audioBase64 required");
 
-    let transcript = await transcribeWithBhashini(audioBase64, mimeType, language);
-    if (!transcript) {
-      transcript = await transcribeWithGemini(audioBase64, mimeType, language, step);
-    }
+    const transcript = await transcribeWithGemini(audioBase64, mimeType, language, step);
 
     if (transcript === "[BLOCKED]" || containsAbusiveLanguage(transcript)) {
       return new Response(JSON.stringify({ transcript: "", blocked: true }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
-    transcript = filterAbusiveLanguage(transcript);
-    return new Response(JSON.stringify({ transcript }), {
+    return new Response(JSON.stringify({ transcript: filterAbusiveLanguage(transcript) }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {

@@ -1,9 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { Mic, Square } from "lucide-react";
+import { isBrowserSttSupported, startBrowserSttListen } from "@/lib/browserStt";
 import { stopSpeech, unlockAudioPlayback } from "@/lib/speech";
 
 interface Props {
-  onRecorded: (audioBase64: string, mimeType: string, durationMs: number) => void;
+  onRecorded?: (audioBase64: string, mimeType: string, durationMs: number) => void;
+  /** When set, uses free browser speech recognition (no API keys). */
+  onTranscript?: (text: string) => void;
+  speechLang?: string;
   disabled?: boolean;
   large?: boolean;
 }
@@ -22,21 +26,50 @@ function getSupportedMimeType(): string | undefined {
   return ["audio/webm;codecs=opus", "audio/webm", "audio/mp4"].find((type) => MediaRecorder.isTypeSupported(type));
 }
 
-export function VoiceRecorder({ onRecorded, disabled, large }: Props) {
+export function VoiceRecorder({ onRecorded, onTranscript, speechLang, disabled, large }: Props) {
   const [recording, setRecording] = useState(false);
   const [seconds, setSeconds] = useState(0);
   const mediaRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const startTimeRef = useRef(0);
   const timerRef = useRef<number | null>(null);
+  const browserSessionRef = useRef<ReturnType<typeof startBrowserSttListen> | null>(null);
+  const useBrowser = !!(speechLang && onTranscript && isBrowserSttSupported());
 
   useEffect(() => () => {
     if (timerRef.current) window.clearInterval(timerRef.current);
     mediaRef.current?.stream.getTracks().forEach((t) => t.stop());
   }, []);
 
-  const start = async () => {
-    if (disabled) return;
+  const startBrowserListen = async () => {
+    if (!speechLang || !onTranscript) return;
+    stopSpeech();
+    await unlockAudioPlayback();
+    setSeconds(0);
+    setRecording(true);
+    startTimeRef.current = Date.now();
+    timerRef.current = window.setInterval(() => setSeconds((s) => s + 1), 1000) as unknown as number;
+    const session = startBrowserSttListen(speechLang);
+    browserSessionRef.current = session;
+    try {
+      const text = await session.promise;
+      onTranscript(text);
+    } catch {
+      onTranscript("");
+    } finally {
+      browserSessionRef.current = null;
+      if (timerRef.current) window.clearInterval(timerRef.current);
+      setRecording(false);
+    }
+  };
+
+  const stopBrowserListen = () => {
+    browserSessionRef.current?.stop();
+    setRecording(false);
+  };
+
+  const startRecord = async () => {
+    if (!onRecorded) return;
     stopSpeech();
     try {
       await unlockAudioPlayback();
@@ -65,10 +98,21 @@ export function VoiceRecorder({ onRecorded, disabled, large }: Props) {
     }
   };
 
-  const stop = () => {
+  const stopRecord = () => {
     mediaRef.current?.stop();
     if (timerRef.current) window.clearInterval(timerRef.current);
     setRecording(false);
+  };
+
+  const start = () => {
+    if (disabled) return;
+    if (useBrowser) void startBrowserListen();
+    else void startRecord();
+  };
+
+  const stop = () => {
+    if (useBrowser) stopBrowserListen();
+    else stopRecord();
   };
 
   if (recording) {
