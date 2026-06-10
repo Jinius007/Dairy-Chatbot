@@ -1,9 +1,23 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Camera, Plus, Search, Trash2, Volume2, Wheat, X } from "lucide-react";
+import { ArrowLeft, Camera, Plus, Search, Trash2, Wheat, X } from "lucide-react";
+import { VoiceRecorder } from "@/components/VoiceRecorder";
 import { LANG_NAMES } from "@/lib/languages";
 import { speakText, stopSpeech } from "@/lib/speech";
 import { t } from "@/lib/rationI18n";
+import {
+  detectSpecies,
+  extractFirstNumber,
+  isDry,
+  isInMilk,
+  isNo,
+  isNotCalved,
+  isSkip,
+  isYes,
+  matchLangCode,
+} from "@/lib/rationVoice";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import { FEED_BY_ID, FeedItem, searchFeeds } from "@/lib/feedLibrary";
 import {
   AnimalProfile,
@@ -107,19 +121,38 @@ const RationAdvisor = () => {
   const [pendingQty, setPendingQty] = useState("");
   const [pendingPrice, setPendingPrice] = useState("");
   const [busy, setBusy] = useState(false);
+  const [transcribing, setTranscribing] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+  const stepRef = useRef(step);
+  const langRef = useRef(lang);
+  const answersRef = useRef(answers);
+  const placeRef = useRef(place);
+
+  useEffect(() => { stepRef.current = step; }, [step]);
+  useEffect(() => { langRef.current = lang; }, [lang]);
+  useEffect(() => { answersRef.current = answers; }, [answers]);
+  useEffect(() => { placeRef.current = place; }, [place]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, step, feeds, pendingFeed]);
+  }, [messages, step, feeds, pendingFeed, transcribing]);
 
   useEffect(() => () => stopSpeech(), []);
 
-  const bot = (text: string, extra?: Partial<Msg>) =>
+  const bot = useCallback((text: string, extra?: Partial<Msg>, speakIn?: string) => {
+    const speakLang = speakIn ?? langRef.current;
     setMessages((m) => [...m, { id: uid(), role: "bot", text, ...extra }]);
-  const user = (text: string, extra?: Partial<Msg>) =>
-    setMessages((m) => [...m, { id: uid(), role: "user", text, ...extra }]);
+    if (text?.trim()) {
+      void speakText(text, { lang: speakLang });
+    }
+  }, []);
+
+  const userMsg = useCallback((text: string, extra?: Partial<Msg>, isVoice = false) => {
+    stopSpeech();
+    const display = isVoice ? `🎤 ${text}` : text;
+    setMessages((m) => [...m, { id: uid(), role: "user", text: display, ...extra }]);
+  }, []);
 
   // ------------------------------------------------------------------
   // Flow
@@ -127,27 +160,27 @@ const RationAdvisor = () => {
 
   const startLocation = async (chosenLang: string) => {
     setStep("locating");
-    bot(t("intro", chosenLang));
-    bot(t("detectingLocation", chosenLang));
+    bot(t("intro", chosenLang), undefined, chosenLang);
+    bot(t("detectingLocation", chosenLang), undefined, chosenLang);
     const loc = await detectLocation();
     if (loc) {
       setPlace(loc);
-      bot(t("locationConfirm", chosenLang, { place: loc.label }));
+      bot(t("locationConfirm", chosenLang, { place: loc.label }), undefined, chosenLang);
       setStep("locationConfirm");
     } else {
-      bot(t("locationManual", chosenLang));
+      bot(t("locationManual", chosenLang), undefined, chosenLang);
       setStep("locationManual");
     }
   };
 
-  const chooseLanguage = (code: string) => {
+  const chooseLanguage = (code: string, isVoice = false) => {
     setLang(code);
-    user(LANG_NAMES[code]);
+    userMsg(LANG_NAMES[code], undefined, isVoice);
     void startLocation(code);
   };
 
-  const confirmLocation = (ok: boolean) => {
-    user(ok ? t("yes", lang) : t("no", lang));
+  const confirmLocation = (ok: boolean, isVoice = false) => {
+    userMsg(ok ? t("yes", lang) : t("no", lang), undefined, isVoice);
     if (ok && place) {
       bot(t("locationSet", lang, { place: place.label }));
       askSpecies();
@@ -158,8 +191,8 @@ const RationAdvisor = () => {
     }
   };
 
-  const submitManualLocation = (text: string) => {
-    user(text);
+  const submitManualLocation = (text: string, isVoice = false) => {
+    userMsg(text, undefined, isVoice);
     const parts = text.split(/[,،]/).map((p) => p.trim()).filter(Boolean);
     const loc = {
       district: parts[parts.length - 1] || text,
@@ -176,20 +209,23 @@ const RationAdvisor = () => {
     setStep("species");
   };
 
-  const chooseSpecies = (s: Species) => {
+  const chooseSpecies = (s: Species, isVoice = false) => {
     setAnswers((a) => ({ ...a, species: s }));
-    user(s === "cattle" ? t("cow", lang) : t("buffalo", lang));
+    userMsg(s === "cattle" ? t("cow", lang) : t("buffalo", lang), undefined, isVoice);
     bot(t("askHerd", lang));
     setStep("herd");
   };
 
-  const submitNumber = (raw: string) => {
+  const submitNumber = (raw: string, isVoice = false) => {
     const v = parseFloat(raw.replace(/[^\d.]/g, ""));
-    switch (step) {
+    const currentStep = stepRef.current;
+    const L = langRef.current;
+    const sp = answersRef.current.species;
+    switch (currentStep) {
       case "herd": {
         if (!valid(v, 1, 500, "3")) return;
         setAnswers((a) => ({ ...a, herd: v }));
-        user(String(v));
+        userMsg(String(v), undefined, isVoice);
         if (v > 1) bot(t("herdNote", lang));
         bot(t("askWeight", lang));
         bot(t("weightHint", lang));
@@ -199,7 +235,7 @@ const RationAdvisor = () => {
       case "weight": {
         if (!valid(v, 50, 1000, "400")) return;
         setAnswers((a) => ({ ...a, weight: v }));
-        user(`${v} kg`);
+        userMsg(`${v} kg`, undefined, isVoice);
         bot(t("askCalvings", lang));
         setStep("calvings");
         break;
@@ -207,7 +243,7 @@ const RationAdvisor = () => {
       case "months": {
         if (!valid(v, 0, 24, "8")) return;
         setAnswers((a) => ({ ...a, months: v }));
-        user(String(v));
+        userMsg(String(v), undefined, isVoice);
         bot(t("askYield", lang));
         setStep("yield");
         break;
@@ -215,45 +251,59 @@ const RationAdvisor = () => {
       case "yield": {
         if (!valid(v, 0.5, 60, "10")) return;
         setAnswers((a) => ({ ...a, yield: v }));
-        user(`${v} L`);
+        userMsg(`${v} L`, undefined, isVoice);
         bot(t("askFat", lang));
         setStep("fat");
         break;
       }
       case "fat": {
-        const min = answers.species === "buffalo" ? 5 : 3;
-        const max = answers.species === "buffalo" ? 14 : 6;
-        if (!valid(v, min, max, answers.species === "buffalo" ? "7" : "4")) return;
-        setFat(v);
+        const min = sp === "buffalo" ? 5 : 3;
+        const max = sp === "buffalo" ? 14 : 6;
+        if (!valid(v, min, max, sp === "buffalo" ? "7" : "4", L)) return;
+        setFat(v, isVoice);
         break;
       }
       case "snf": {
-        if (!valid(v, 6, 12, "8.5")) return;
+        if (!valid(v, 6, 12, "8.5", L)) return;
         setAnswers((a) => ({ ...a, snf: v }));
-        user(`${v} %`);
+        userMsg(`${v} %`, undefined, isVoice);
         askPrice();
         break;
       }
       case "price": {
-        if (!valid(v, 10, 150, "34")) return;
+        if (!valid(v, 10, 150, "34", L)) return;
         setAnswers((a) => ({ ...a, price: v }));
-        user(`₹${v}`);
+        userMsg(`₹${v}`, undefined, isVoice);
         askPregnant();
+        break;
+      }
+      case "calvings": {
+        if (isNotCalved(raw)) {
+          chooseCalvings(0, isVoice);
+          break;
+        }
+        if (!valid(v, 0, 20, "2", L)) return;
+        chooseCalvings(Math.round(v), isVoice);
+        break;
+      }
+      case "pregMonth": {
+        if (!valid(v, 1, 9, "7", L)) return;
+        choosePregMonth(Math.round(v), isVoice);
         break;
       }
     }
     setInput("");
   };
 
-  const valid = (v: number, min: number, max: number, example: string): boolean => {
+  const valid = (v: number, min: number, max: number, example: string, L = langRef.current): boolean => {
     if (Number.isFinite(v) && v >= min && v <= max) return true;
-    bot(t("invalidNumber", lang, { x: example }));
+    bot(t("invalidNumber", L, { x: example }));
     return false;
   };
 
-  const chooseCalvings = (n: number) => {
+  const chooseCalvings = (n: number, isVoice = false) => {
     setAnswers((a) => ({ ...a, calvings: n }));
-    user(n === 0 ? t("notCalved", lang) : String(n));
+    userMsg(n === 0 ? t("notCalved", lang) : String(n), undefined, isVoice);
     if (n === 0) {
       // Heifer — no milk questions
       setAnswers((a) => ({ ...a, calvings: 0, inMilk: false, months: 0, yield: 0, fat: 0, price: 30 }));
@@ -264,8 +314,8 @@ const RationAdvisor = () => {
     }
   };
 
-  const chooseMilking = (milking: boolean) => {
-    user(milking ? t("inMilk", lang) : t("dryAnimal", lang));
+  const chooseMilking = (milking: boolean, isVoice = false) => {
+    userMsg(milking ? t("inMilk", lang) : t("dryAnimal", lang), undefined, isVoice);
     if (milking) {
       setAnswers((a) => ({ ...a, inMilk: true }));
       bot(t("askMonths", lang));
@@ -276,15 +326,15 @@ const RationAdvisor = () => {
     }
   };
 
-  const setFat = (v: number) => {
+  const setFat = (v: number, isVoice = false) => {
     setAnswers((a) => ({ ...a, fat: v }));
-    user(`${v} %`);
+    userMsg(`${v} %`, undefined, isVoice);
     bot(t("askSnf", lang));
     setStep("snf");
   };
 
-  const skipSnf = () => {
-    user(t("skip", lang));
+  const skipSnf = (isVoice = false) => {
+    userMsg(t("skip", lang), undefined, isVoice);
     setAnswers((a) => ({ ...a, snf: null }));
     askPrice();
   };
@@ -299,9 +349,9 @@ const RationAdvisor = () => {
     setStep("pregnant");
   };
 
-  const choosePregnant = (preg: boolean) => {
+  const choosePregnant = (preg: boolean, isVoice = false) => {
     setAnswers((a) => ({ ...a, pregnant: preg }));
-    user(preg ? t("yes", lang) : t("no", lang));
+    userMsg(preg ? t("yes", lang) : t("no", lang), undefined, isVoice);
     if (preg) {
       bot(t("askPregMonth", lang));
       setStep("pregMonth");
@@ -311,9 +361,9 @@ const RationAdvisor = () => {
     }
   };
 
-  const choosePregMonth = (m: number) => {
+  const choosePregMonth = (m: number, isVoice = false) => {
     setAnswers((a) => ({ ...a, pregMonth: m }));
-    user(String(m));
+    userMsg(String(m), undefined, isVoice);
     askPhoto();
   };
 
@@ -326,14 +376,14 @@ const RationAdvisor = () => {
     if (!file) return;
     const reader = new FileReader();
     reader.onload = () => {
-      user("📷", { image: String(reader.result) });
+      userMsg("📷", { image: String(reader.result) });
       showRequirement();
     };
     reader.readAsDataURL(file);
   };
 
-  const skipPhoto = () => {
-    user(t("skip", lang));
+  const skipPhoto = (isVoice = false) => {
+    userMsg(t("skip", lang), undefined, isVoice);
     showRequirement();
   };
 
@@ -357,6 +407,87 @@ const RationAdvisor = () => {
     bot(t("nutrientNote", lang));
     bot(t("askFeeds", lang));
     setStep("feeds");
+  };
+
+  const handleUserAnswer = useCallback((raw: string, isVoice = false) => {
+    const text = raw.trim();
+    if (!text) return;
+    stopSpeech();
+    const s = stepRef.current;
+
+    switch (s) {
+      case "language": {
+        const code = matchLangCode(text);
+        if (code) chooseLanguage(code, isVoice);
+        else bot(t("chooseLanguage", "en"), undefined, "en");
+        return;
+      }
+      case "locationConfirm":
+        if (isYes(text)) confirmLocation(true, isVoice);
+        else if (isNo(text)) confirmLocation(false, isVoice);
+        return;
+      case "locationManual":
+        submitManualLocation(text, isVoice);
+        return;
+      case "species": {
+        const sp = detectSpecies(text);
+        if (sp) chooseSpecies(sp, isVoice);
+        return;
+      }
+      case "milking":
+        if (isInMilk(text)) chooseMilking(true, isVoice);
+        else if (isDry(text) || isNo(text)) chooseMilking(false, isVoice);
+        return;
+      case "pregnant":
+        if (isYes(text)) choosePregnant(true, isVoice);
+        else if (isNo(text)) choosePregnant(false, isVoice);
+        return;
+      case "snf":
+        if (isSkip(text)) skipSnf(isVoice);
+        else submitNumber(text, isVoice);
+        return;
+      case "photo":
+        if (isSkip(text)) skipPhoto(isVoice);
+        return;
+      case "herd":
+      case "weight":
+      case "months":
+      case "yield":
+      case "fat":
+      case "price":
+      case "calvings":
+      case "pregMonth":
+        submitNumber(text, isVoice);
+        return;
+      default:
+        break;
+    }
+  }, [lang, place, answers]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const handleVoice = async (b64: string, mime: string) => {
+    if (!supabase) {
+      toast.error("Voice needs Supabase configured on this deployment.");
+      return;
+    }
+    if (busy || transcribing) return;
+    setTranscribing(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("transcribe", {
+        body: { audioBase64: b64, mimeType: mime },
+      });
+      if (error) throw error;
+      if ((data as { blocked?: boolean })?.blocked) {
+        toast.message("Please use respectful language.");
+        return;
+      }
+      const txt = ((data as { transcript?: string })?.transcript || "").trim();
+      if (txt) handleUserAnswer(txt, true);
+      else toast.error("Could not understand. Please try again.");
+    } catch (e: unknown) {
+      toast.error(e instanceof Error ? e.message : "Transcription failed");
+    } finally {
+      setTranscribing(false);
+    }
   };
 
   // ------------------------------------------------------------------
@@ -385,8 +516,8 @@ const RationAdvisor = () => {
       return;
     }
     setBusy(true);
-    user(t("makePlan", lang));
-    user(
+    userMsg(t("makePlan", lang));
+    userMsg(
       feeds.map((f) => `${f.feed.name}: ${f.qty} kg @ ₹${f.price}`).join("\n")
     );
     bot(t("optimizing", lang));
@@ -784,9 +915,7 @@ const RationAdvisor = () => {
     </div>
   );
 
-  const showTextInput =
-    ["herd", "weight", "months", "yield", "fat", "snf", "price"].includes(step) ||
-    step === "locationManual";
+  const showInputBar = !["locating", "feeds", "done"].includes(step);
 
   return (
     <div className="h-full w-full flex flex-col bg-muted overflow-hidden">
@@ -824,18 +953,16 @@ const RationAdvisor = () => {
               {m.text}
               {m.requirement && <RequirementTable req={m.requirement} />}
               {m.plan && <PlanCard plan={m.plan} />}
-              {m.role === "bot" && m.text && (
-                <button
-                  onClick={() => void speakText(m.text || "", { lang })}
-                  className="ml-2 inline-flex align-middle text-muted-foreground hover:text-primary"
-                  title="Listen"
-                >
-                  <Volume2 className="w-3.5 h-3.5" />
-                </button>
-              )}
             </div>
           </div>
         ))}
+        {transcribing && (
+          <div className="flex justify-end">
+            <div className="bg-primary/15 text-primary text-xs px-3 py-1.5 rounded-full">
+              {t("transcribing", lang)}
+            </div>
+          </div>
+        )}
         {busy && (
           <div className="flex justify-start">
             <div className="bg-card rounded-2xl rounded-bl-md px-4 py-3 shadow-sm flex gap-1">
@@ -854,29 +981,31 @@ const RationAdvisor = () => {
 
         {step === "feeds" && renderFeedPicker()}
 
-        {showTextInput && (
+        {showInputBar && (
           <div className="px-3 pb-3">
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-                if (!input.trim()) return;
-                if (step === "locationManual") {
-                  submitManualLocation(input.trim());
-                  setInput("");
-                } else {
-                  submitNumber(input.trim());
-                }
+                if (!input.trim() || busy || transcribing) return;
+                handleUserAnswer(input.trim(), false);
+                setInput("");
               }}
-              className="flex items-center gap-2 bg-card rounded-full px-4 py-2 shadow-sm"
+              className="flex items-center gap-2 bg-card rounded-full px-2 py-1.5 shadow-sm"
             >
               <input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                inputMode={step === "locationManual" ? "text" : "decimal"}
-                placeholder={t("typeAnswer", lang)}
-                className="flex-1 bg-transparent outline-none text-sm min-w-0"
+                inputMode={["herd", "weight", "months", "yield", "fat", "snf", "price", "calvings", "pregMonth"].includes(step) ? "decimal" : "text"}
+                placeholder={t("orSpeak", lang)}
+                disabled={busy || transcribing}
+                className="flex-1 bg-transparent outline-none text-sm min-w-0 px-2 disabled:opacity-50"
               />
-              <button type="submit" className="text-primary font-semibold text-sm shrink-0">
+              <VoiceRecorder onRecorded={handleVoice} disabled={busy || transcribing} />
+              <button
+                type="submit"
+                disabled={!input.trim() || busy || transcribing}
+                className="px-3 py-1.5 text-primary font-semibold text-sm shrink-0 disabled:opacity-40"
+              >
                 ➤
               </button>
             </form>
