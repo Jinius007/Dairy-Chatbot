@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { computeRequirement, dmRangePercent, maxConcentratePercent, AnimalProfile } from "../nutrientRequirements";
 import { FEED_BY_ID } from "../feedLibrary";
 import { optimizeRation, RationFeedInput } from "../rationOptimizer";
+import { parseMilkingFromVoice } from "../rationVoice";
 
 // Reference case from INAPH RBP: adult pregnant cattle 400 kg, 10 kg milk/day
 // at 4% fat -> Maintenance TDN 4150, CP 890, Ca 26, P 16;
@@ -103,5 +104,24 @@ describe("least-cost ration LP", () => {
     const result = optimizeRation(market, animal, req);
     expect(result.feasible).toBe(true);
     expect(result.totalCost).toBeLessThanOrEqual(own.totalCost + 0.01);
+  });
+});
+
+describe("voice parsing — milking status", () => {
+  it("recognises Hinglish milking phrases", () => {
+    expect(parseMilkingFromVoice("veh aajkal doodh de rhi hai")).toBe(true);
+    expect(parseMilkingFromVoice("voh aajkal dudh de rahi hai")).toBe(true);
+    expect(parseMilkingFromVoice("haan doodh deti hai")).toBe(true);
+  });
+
+  it("recognises Devanagari milking phrases", () => {
+    expect(parseMilkingFromVoice("वह आजकल दूध दे रही है")).toBe(true);
+    expect(parseMilkingFromVoice("हाँ दूध देती है")).toBe(true);
+    expect(parseMilkingFromVoice("दूध नहीं देती")).toBe(false);
+  });
+
+  it("recognises short yes/no at milking step", () => {
+    expect(parseMilkingFromVoice("haan")).toBe(true);
+    expect(parseMilkingFromVoice("nahi")).toBe(false);
   });
 });

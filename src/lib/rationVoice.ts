@@ -39,18 +39,65 @@ export function isSkip(text: string): boolean {
 
 export function isNotCalved(text: string): boolean {
   const s = text.toLowerCase();
-  return /\b(not calved|no calving|zero|0|nahi biyai|abhi nahi|pehli bar|first time|heifer|bachiya|nahi byai)\b/i.test(s) || s === "0";
+  return /\b(not calved|no calving|zero|0|nahi biyai|abhi nahi|pehli bar|first time|heifer|bachiya|nahi byai)\b/i.test(s)
+    || /अभी\s*नहीं?\s*ब्याई|नहीं?\s*ब्याई|ब्याई\s*नहीं|पहली\s*बार/i.test(text);
+}
+
+const DRY_MILK_PATTERNS = [
+  /\b(dry|sukhi|sookhi|sukha|sookha|no milk|not milk|band|bandh)\b/i,
+  /doodh\s*nahi|dudh\s*nahi|doodh\s*nahin|milk\s*nahi|nahi\s*de(?:ti|r|ta)?/i,
+  /दूध\s*नहीं?|नहीं?\s*दे(?:ती|र)?|सूख|शुष्क|दूध\s*बंद/i,
+  /doodh\s*bandh?|dudh\s*bandh?/i,
+];
+
+const IN_MILK_PATTERNS = [
+  /doodh\s*de(?:ti|r|ta)?(?:\s*rahi|\s*rhi|\s*rahe|\s*rah)?(?:\s*hai|\s*he)?/i,
+  /dudh\s*de(?:ti|r|ta)?(?:\s*rahi|\s*rhi|\s*rahe)?(?:\s*hai|\s*he)?/i,
+  /milk\s*de(?:ti|r|ta)?(?:\s*rahi|\s*rhi)?(?:\s*hai)?/i,
+  /दूध\s*दे(?:ती|ता|र)?(?:\s*रही|\s*रह)?(?:\s*है)?/,
+  /दूध\s*दे\s*रही/,
+  /दूध\s*देती/,
+  /(?:aaj|aj)\s*kal\s*(?:doodh|dudh|se\s*doodh)/i,
+  /आज\s*कल\s*दूध/,
+  /\b(in milk|milking|giving milk|lactating|dairy)\b/i,
+  /(\d+(?:\.\d+)?)\s*(?:litre|liter|ltr|l|kg|लीटर|लिटर)\s*(?:doodh|dudh|milk|दूध)/i,
+  /(?:doodh|dudh|milk|दूध)[^\d]{0,30}(\d+(?:\.\d+)?)\s*(?:litre|liter|ltr|l|kg|लीटर|लिटर)?/i,
+];
+
+/**
+ * Parse whether the animal is currently giving milk.
+ * Returns true (in milk), false (dry), or null (unclear).
+ */
+export function parseMilkingFromVoice(text: string): boolean | null {
+  const t = normalizeDigits(text).trim();
+  if (!t) return null;
+
+  if (DRY_MILK_PATTERNS.some((p) => p.test(t))) return false;
+  if (IN_MILK_PATTERNS.some((p) => p.test(t))) return true;
+
+  // Colloquial Hindi/Hinglish: "doodh" + giving verb
+  if (/doodh|dudh|milk|दूध|पाल/i.test(t) && /de(?:ti|r|ta)?|deti|de rahi|de rhi|de raha|दे(?:ती|र)?|देती|दे रही/i.test(t)) {
+    return true;
+  }
+
+  // Affirmative + milk mention: "haan doodh deti hai"
+  if (/haan|haa|ha\b|ji|yes|हाँ|हां|जी|bilkul|theek|thik/i.test(t) && /doodh|dudh|milk|दूध/i.test(t)) {
+    return true;
+  }
+
+  // Short yes/no answers to "is she giving milk?"
+  if (/^(haan|haa|ha|ji|yes|y|ho|bilkul|theek|thik|हाँ|हां|जी|जी हाँ|हाँ जी)$/i.test(t)) return true;
+  if (/^(nahi|na|no|nahin|nai|नहीं|नही|न|^n)$/i.test(t)) return false;
+
+  return null;
 }
 
 export function isInMilk(text: string): boolean {
-  const s = text.toLowerCase();
-  if (/\b(dry|sukhi|sookhi|sukha|no milk|not milk|band|bandh)\b/i.test(s)) return false;
-  return /\b(milk|doodh|dudh|duDh|dud|dairy|doodh deti|doodh de)\b/i.test(s);
+  return parseMilkingFromVoice(text) === true;
 }
 
 export function isDry(text: string): boolean {
-  const s = text.toLowerCase();
-  return /\b(dry|sukhi|sookhi|sukha|no milk|not milk|band|bandh|nahi deti)\b/i.test(s);
+  return parseMilkingFromVoice(text) === false;
 }
 
 export function matchLangCode(text: string): string | null {

@@ -8,15 +8,14 @@ import { t } from "@/lib/rationI18n";
 import {
   detectSpecies,
   extractFirstNumber,
-  isDry,
   isDoneAddingFeeds,
-  isInMilk,
   isNo,
   isSkip,
   isYes,
   matchFeedFromText,
   matchLangCode,
   parseCalvingsFromVoice,
+  parseMilkingFromVoice,
   parsePregMonthFromVoice,
 } from "@/lib/rationVoice";
 import { supabase } from "@/integrations/supabase/client";
@@ -518,15 +517,28 @@ const RationAdvisor = () => {
       }
       case "calvings": {
         const n = parseCalvingsFromVoice(text);
-        if (n !== null) chooseCalvings(n, isVoice);
+        if (n !== null) {
+          chooseCalvings(n, isVoice);
+          return;
+        }
+        // Farmer answered about milk instead of calving count — treat as calved
+        const milkingHint = parseMilkingFromVoice(text);
+        if (milkingHint !== null) {
+          setAnswers((a) => ({ ...a, calvings: 1 }));
+          userMsg(text, undefined, isVoice);
+          chooseMilking(milkingHint, isVoice);
+          return;
+        }
+        reprompt(text, isVoice);
+        return;
+      }
+      case "milking": {
+        const milking = parseMilkingFromVoice(text);
+        if (milking === true) chooseMilking(true, isVoice);
+        else if (milking === false) chooseMilking(false, isVoice);
         else reprompt(text, isVoice);
         return;
       }
-      case "milking":
-        if (isInMilk(text)) chooseMilking(true, isVoice);
-        else if (isDry(text) || isNo(text)) chooseMilking(false, isVoice);
-        else reprompt(text, isVoice);
-        return;
       case "pregnant":
         if (isYes(text)) choosePregnant(true, isVoice);
         else if (isNo(text)) choosePregnant(false, isVoice);
