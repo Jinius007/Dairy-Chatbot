@@ -625,7 +625,12 @@ const RationAdvisor = () => {
     setTranscribing(true);
     try {
       const { data, error } = await supabase.functions.invoke("transcribe", {
-        body: { audioBase64: b64, mimeType: mime },
+        body: {
+          audioBase64: b64,
+          mimeType: mime,
+          language: langRef.current,
+          step: stepRef.current,
+        },
       });
       if (error) throw error;
       if ((data as { blocked?: boolean })?.blocked) {

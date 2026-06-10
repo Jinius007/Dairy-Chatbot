@@ -1,6 +1,7 @@
 import { detectLanguageCode, LANG_NAMES } from "@/lib/languages";
 import type { Species } from "@/lib/nutrientRequirements";
 import { FEED_LIBRARY, FeedItem, searchFeeds } from "@/lib/feedLibrary";
+import { RATION_STRINGS } from "@/lib/rationI18n";
 
 const ENGLISH_LANG: Record<string, string> = {
   hindi: "hi", bengali: "bn", tamil: "ta", telugu: "te", marathi: "mr",
@@ -272,17 +273,114 @@ export function matchLangCode(text: string): string | null {
   return null;
 }
 
+function speciesLabelsFromI18n(key: "cow" | "buffalo"): string[] {
+  const entry = RATION_STRINGS[key];
+  if (!entry) return [];
+  return Object.values(entry)
+    .map((s) => s.replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, "").trim())
+    .filter(Boolean);
+}
+
+/** Roman / Hinglish aliases farmers and ASR commonly produce (all 13 languages). */
+const COW_ROMAN = [
+  "cow", "cows", "gaay", "gai", "gay", "gae", "gaye", "gayein", "gayee", "gaai", "gaayi", "gayi", "gaii", "gao",
+  "goru", "guru", "gaw", "goroo",
+  "pasu", "pasi", "pashu",
+  "aavu", "avu", "avulu", "avulu",
+  "hasu", "haasu", "hassu",
+  "gaan", "gaav", "gaa", "gav",
+  "gaai", "gaii",
+  "gaye", "gaey",
+];
+
+const BUFFALO_ROMAN = [
+  "buffalo", "buffaloes", "bhains", "bhainsh", "bhais", "bhens", "bhaisa", "bhainsa", "bhensh",
+  "mahish", "mahis", "mhas", "mhish", "mehs", "mahes", "mhais", "mhashi", "mhishi", "maishi",
+  "mohish", "mohis", "moh",
+  "gedde", "gedhe", "gedda",
+  "erumai", "erumai", "eruma",
+  "emme", "emm", "emme",
+  "majh", "mjh", "majha",
+  "bhens", "bhaens",
+];
+
+/** “X is / has” suffixes in all supported languages — for disambiguating question echoes. */
+const SPECIES_ANSWER_SUFFIX =
+  /(?:hai|hain|he|ho|hoi|hoy|hoyeche|ache|achhe|ahe|ahe|ase|asi|achi|undu|unde|unnu|undi|ide|ive|irukku|irukkangal|undhi|unnayi|aahe|ahe|haiji|ji)\b/iu;
+
 export function detectSpecies(text: string): Species | null {
-  const s = normalizeDigits(text).toLowerCase();
-  const buffalo = /\b(buffalo|bhains|bhais|bhens|mahish|mahis|mhas|gedhe|erumai|mehs|भैंस|भेंस|म्हैस|ભેંસ)\b/i.test(s)
-    || /भैंस|भेंस|म्हैस/.test(text);
-  const cow = /\b(cow|cows|gay|gai|gaay|gaye|pasu|pashu|hasu|பசு)\b/i.test(s)
-    || /गाय|गैय|गो|पशु/.test(text);
-  if (buffalo && !cow) return "buffalo";
-  if (cow && !buffalo) return "cattle";
-  if (buffalo) return "buffalo";
-  if (cow) return "cattle";
+  const raw = normalizeDigits(text);
+  const t = normalizeVoiceAnswer(raw);
+  if (!t) return null;
+
+  const cowWords = [...new Set([...speciesLabelsFromI18n("cow"), ...COW_ROMAN])];
+  const buffaloWords = [...new Set([...speciesLabelsFromI18n("buffalo"), ...BUFFALO_ROMAN])];
+
+  const hasBuffalo = hasSpeciesToken(t, raw, buffaloWords);
+  const hasCow = hasSpeciesToken(t, raw, cowWords);
+
+  if (hasBuffalo && !hasCow) return "buffalo";
+  if (hasCow && !hasBuffalo) return "cattle";
+
+  if (hasBuffalo && hasCow) {
+    const answerBuffalo = speciesAnswerPhrase(t, raw, buffaloWords);
+    const answerCow = speciesAnswerPhrase(t, raw, cowWords);
+    if (answerCow && !answerBuffalo) return "cattle";
+    if (answerBuffalo && !answerCow) return "buffalo";
+    const bIdx = firstSpeciesIndex(t, raw, buffaloWords);
+    const cIdx = firstSpeciesIndex(t, raw, cowWords);
+    if (bIdx >= 0 && cIdx >= 0) return cIdx < bIdx ? "cattle" : "buffalo";
+  }
+
   return null;
+}
+
+function speciesAnswerPhrase(normalized: string, raw: string, words: string[]): boolean {
+  for (const w of words) {
+    if (/^[a-z]/i.test(w)) {
+      const wordRe = new RegExp(`(?:^|[\\s])${escapeRe(w.toLowerCase())}(?:[\\s]|$)`, "iu");
+      const m = normalized.toLowerCase().match(wordRe);
+      if (m && m.index !== undefined) {
+        const after = normalized.slice(m.index + m[0].length, m.index + m[0].length + 30);
+        if (SPECIES_ANSWER_SUFFIX.test(after)) return true;
+      }
+    } else if (raw.includes(w)) {
+      const idx = raw.indexOf(w);
+      const tail = raw.slice(idx + w.length, idx + w.length + 24);
+      if (SPECIES_ANSWER_SUFFIX.test(tail)) return true;
+    }
+  }
+  return false;
+}
+
+function hasSpeciesToken(normalized: string, raw: string, words: string[]): boolean {
+  const lower = normalized.toLowerCase();
+  for (const w of words) {
+    if (/^[a-z]/i.test(w)) {
+      if (containsWord(lower, w.toLowerCase())) return true;
+    } else if (raw.includes(w) || normalized.includes(w)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function firstSpeciesIndex(normalized: string, raw: string, words: string[]): number {
+  let best = -1;
+  const lower = normalized.toLowerCase();
+  for (const w of words) {
+    let idx = -1;
+    if (/^[a-z]/i.test(w)) {
+      const re = new RegExp(`(?:^|[\\s])${escapeRe(w.toLowerCase())}(?:[\\s]|$)`, "iu");
+      const m = lower.match(re);
+      idx = m?.index ?? -1;
+    } else {
+      idx = raw.indexOf(w);
+      if (idx < 0) idx = normalized.indexOf(w);
+    }
+    if (idx >= 0 && (best < 0 || idx < best)) best = idx;
+  }
+  return best;
 }
 
 /** Parse calving count from spoken answer (Hindi/English numbers and words). */

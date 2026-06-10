@@ -2,7 +2,8 @@ import { describe, expect, it } from "vitest";
 import { computeRequirement, dmRangePercent, maxConcentratePercent, AnimalProfile } from "../nutrientRequirements";
 import { FEED_BY_ID } from "../feedLibrary";
 import { optimizeRation, RationFeedInput } from "../rationOptimizer";
-import { parseCalvingsFromVoice, parseMilkingFromVoice, parseNumericAnswer, parsePregnantFromVoice, parseSpokenNumber } from "../rationVoice";
+import { parseCalvingsFromVoice, detectSpecies, parseMilkingFromVoice, parseNumericAnswer, parsePregnantFromVoice, parseSpokenNumber } from "../rationVoice";
+import { RATION_STRINGS, type RationLang } from "../rationI18n";
 
 // Reference case from INAPH RBP: adult pregnant cattle 400 kg, 10 kg milk/day
 // at 4% fat -> Maintenance TDN 4150, CP 890, Ca 26, P 16;
@@ -132,6 +133,51 @@ describe("voice parsing — milking status", () => {
   it("recognises short yes/no at milking step", () => {
     expect(parseMilkingFromVoice("haan")).toBe(true);
     expect(parseMilkingFromVoice("nahi")).toBe(false);
+  });
+});
+
+const RATION_LANGS: RationLang[] = [
+  "en", "hi", "bn", "ta", "te", "mr", "gu", "kn", "ml", "pa", "or", "as", "ur",
+];
+
+function stripEmoji(s: string): string {
+  return s.replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, "").trim();
+}
+
+describe("voice parsing — species", () => {
+  it("recognises cow and buffalo in Hindi/Hinglish", () => {
+    expect(detectSpecies("gaay")).toBe("cattle");
+    expect(detectSpecies("gay")).toBe("cattle");
+    expect(detectSpecies("gai hai")).toBe("cattle");
+    expect(detectSpecies("bhains")).toBe("buffalo");
+    expect(detectSpecies("bhais hai")).toBe("buffalo");
+    expect(detectSpecies("meri gaay hai")).toBe("cattle");
+    expect(detectSpecies("yeh bhains hai")).toBe("buffalo");
+  });
+
+  it.each(RATION_LANGS)("recognises native cow label (%s)", (lang) => {
+    const label = stripEmoji(RATION_STRINGS.cow[lang] || RATION_STRINGS.cow.en);
+    expect(detectSpecies(label)).toBe("cattle");
+  });
+
+  it.each(RATION_LANGS)("recognises native buffalo label (%s)", (lang) => {
+    const label = stripEmoji(RATION_STRINGS.buffalo[lang] || RATION_STRINGS.buffalo.en);
+    expect(detectSpecies(label)).toBe("buffalo");
+  });
+
+  it("recognises common romanizations per language", () => {
+    expect(detectSpecies("pasu")).toBe("cattle"); // Tamil
+    expect(detectSpecies("aavu")).toBe("cattle"); // Telugu
+    expect(detectSpecies("hasu")).toBe("cattle"); // Kannada
+    expect(detectSpecies("pashu")).toBe("cattle"); // Malayalam
+    expect(detectSpecies("gaav")).toBe("cattle"); // Punjabi
+    expect(detectSpecies("gedde")).toBe("buffalo"); // Telugu
+    expect(detectSpecies("erumai")).toBe("buffalo"); // Tamil
+    expect(detectSpecies("emme")).toBe("buffalo"); // Kannada
+    expect(detectSpecies("majh")).toBe("buffalo"); // Punjabi
+    expect(detectSpecies("mhais")).toBe("buffalo"); // Marathi
+    expect(detectSpecies("goru")).toBe("cattle"); // Bengali/Assamese
+    expect(detectSpecies("mohish")).toBe("buffalo"); // Bengali
   });
 });
 
