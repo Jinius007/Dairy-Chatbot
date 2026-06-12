@@ -137,8 +137,8 @@ export function VoiceRecorder({ onRecorded, onTranscript, speechLang, disabled, 
       type="button"
       onClick={start}
       disabled={disabled}
-      className={`rounded-full bg-primary text-primary-foreground hover:bg-primary-dark transition disabled:opacity-50 shadow-lg ${
-        large ? "p-5 ring-4 ring-primary/20" : "p-2.5"
+      className={`rounded-xl bg-primary text-primary-foreground hover:bg-primary-dark transition disabled:opacity-50 shadow-md ${
+        large ? "p-5 ring-4 ring-primary/15" : "p-2.5"
       }`}
       aria-label="Record voice note"
     >

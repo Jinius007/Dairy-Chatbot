@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { ChatView } from "@/components/ChatView";
-import { Search, Plus, MessageCircle, Trash2 } from "lucide-react";
+import { BrandAvatar } from "@/components/BrandAvatar";
+import { MessageSquarePlus, MessagesSquare, Search, Trash2 } from "lucide-react";
 
 interface Conversation {
   id: string; title: string; last_message: string | null; language: string | null; updated_at: string;
@@ -62,32 +63,44 @@ const Index = () => {
   return (
     <div className="h-full w-full flex bg-background overflow-hidden">
       <aside className={`${activeId ? "hidden md:flex" : "flex"} md:w-[380px] w-full flex-col border-r bg-sidebar min-h-0 shrink-0`}>
-        <div className="bg-header text-header-foreground p-3 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-9 h-9 rounded-full bg-primary-light flex items-center justify-center">🐄</div>
-            <div className="font-medium">PashuMitra</div>
+        <div className="bg-header text-header-foreground p-3 flex items-center justify-between border-b border-black/10">
+          <div className="flex items-center gap-2.5">
+            <BrandAvatar size="sm" variant="header" />
+            <div>
+              <div className="font-semibold tracking-tight">PashuMitra</div>
+              <div className="text-[11px] opacity-85 font-medium">Dairy & livestock assistant</div>
+            </div>
           </div>
           <div className="flex gap-1">
-            <button onClick={newChat} className="p-2 hover:bg-white/10 rounded-full" title="New chat"><Plus className="w-5 h-5" /></button>
+            <button type="button" onClick={newChat} className="p-2 hover:bg-white/10 rounded-lg" title="New chat">
+              <MessageSquarePlus className="w-5 h-5" strokeWidth={1.75} />
+            </button>
           </div>
         </div>
-        <div className="p-2 bg-muted/50">
-          <div className="flex items-center gap-2 bg-card rounded-full px-3 py-1.5">
-            <Search className="w-4 h-4 text-muted-foreground" />
-            <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search chats" className="flex-1 bg-transparent outline-none text-sm" />
+        <div className="p-2 bg-muted/60 border-b border-border/60">
+          <div className="flex items-center gap-2 bg-card rounded-xl px-3 py-2 border border-border/70 shadow-sm">
+            <Search className="w-4 h-4 text-muted-foreground" strokeWidth={1.75} />
+            <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search chats" className="flex-1 bg-transparent outline-none text-sm font-medium placeholder:font-normal" />
           </div>
         </div>
         <div className="flex-1 overflow-y-auto">
           {filtered.length === 0 && (
             <div className="text-center text-sm text-muted-foreground py-12 px-4">
-              <MessageCircle className="w-12 h-12 mx-auto mb-3 opacity-30" />
-              <p>No chats yet</p>
-              <button onClick={newChat} className="mt-3 text-primary font-medium">Start your first chat</button>
+              <MessagesSquare className="w-12 h-12 mx-auto mb-3 opacity-35 text-primary" strokeWidth={1.5} />
+              <p className="font-medium">No chats yet</p>
+              <button type="button" onClick={newChat} className="mt-3 text-primary font-semibold hover:underline">Start your first chat</button>
             </div>
           )}
           {filtered.map((c) => (
-            <button key={c.id} onClick={() => setActiveId(c.id)} className={`group w-full text-left px-3 py-3 flex gap-3 border-b hover:bg-sidebar-hover transition ${activeId === c.id ? "bg-sidebar-hover" : ""}`}>
-              <div className="w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xl shrink-0">🐄</div>
+            <button
+              key={c.id}
+              type="button"
+              onClick={() => setActiveId(c.id)}
+              className={`group w-full text-left px-3 py-3 flex gap-3 border-b border-border/50 hover:bg-sidebar-hover transition ${
+                activeId === c.id ? "bg-sidebar-hover border-l-[3px] border-l-primary pl-[calc(0.75rem-3px)]" : ""
+              }`}
+            >
+              <BrandAvatar size="lg" variant={activeId === c.id ? "primary" : "surface"} />
               <div className="flex-1 min-w-0">
                 <div className="flex justify-between items-baseline">
                   <span className="font-medium truncate">{c.title || "New chat"}</span>
@@ -108,12 +121,14 @@ const Index = () => {
           <ChatView conversationId={activeId} onBack={() => setActiveId(null)} onConversationUpdated={refresh} />
         ) : (
           <div className="flex-1 flex flex-col items-center justify-center bg-muted text-center p-8">
-            <div className="w-32 h-32 rounded-full bg-primary/10 flex items-center justify-center mb-6">
-              <MessageCircle className="w-16 h-16 text-primary" />
+            <div className="w-32 h-32 rounded-2xl bg-accent flex items-center justify-center mb-6 border border-primary/15 shadow-sm">
+              <MessagesSquare className="w-16 h-16 text-primary" strokeWidth={1.25} />
             </div>
-            <h2 className="text-2xl font-light mb-2">PashuMitra Web</h2>
-            <p className="text-muted-foreground max-w-md">Your AI companion for livestock care, dairy farming, and government schemes — in 7 Indian languages with text and voice.</p>
-            <button onClick={newChat} className="mt-6 px-6 py-2.5 bg-primary text-primary-foreground rounded-full hover:bg-primary-dark">Start a new chat</button>
+            <h2 className="text-2xl font-semibold mb-2 tracking-tight text-foreground">PashuMitra</h2>
+            <p className="text-muted-foreground max-w-md font-medium leading-relaxed">Your AI companion for livestock care, dairy farming, and government schemes — in Indian languages with text and voice.</p>
+            <button type="button" onClick={newChat} className="mt-6 px-6 py-2.5 bg-primary text-primary-foreground rounded-xl hover:bg-primary-dark font-semibold shadow-sm">
+              Start a new chat
+            </button>
           </div>
         )}
       </main>

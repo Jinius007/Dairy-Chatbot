@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Phone, PhoneOff, Mic, Loader2 } from "lucide-react";
+import { PhoneOff, Mic, Loader2, PhoneCall, Milk } from "lucide-react";
 import { toast } from "sonner";
 import { supabase, isSupabaseConfigured } from "@/integrations/supabase/client";
 import { LANG_NAMES, detectLanguageCode, resolveTtsLanguage } from "@/lib/languages";
@@ -387,7 +387,7 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
     "Connecting…";
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col h-[100dvh] max-h-[100dvh] overflow-hidden bg-gradient-to-b from-emerald-900 via-emerald-800 to-emerald-950 text-white">
+    <div className="fixed inset-0 z-50 flex flex-col h-[100dvh] max-h-[100dvh] overflow-hidden bg-gradient-to-b from-[hsl(352,72%,22%)] via-[hsl(352,67%,28%)] to-[hsl(352,75%,16%)] text-white">
       {/* Header */}
       <div className="shrink-0 px-4 pt-[max(0.75rem,env(safe-area-inset-top))] pb-2 text-center">
         <div className="text-xs opacity-80">PashuMitra • Live Call</div>
@@ -400,12 +400,12 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
 
       {/* Status + avatar */}
       <div className="shrink-0 flex flex-col items-center px-4 py-2">
-        <div className={`w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-white/10 flex items-center justify-center text-3xl sm:text-4xl transition ${
-          phase === "listening" ? "ring-4 ring-emerald-300 animate-pulse" :
-          phase === "speaking" ? "ring-4 ring-blue-300" :
-          phase === "thinking" ? "ring-4 ring-yellow-300" : ""
+        <div className={`w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-white/12 border border-white/20 flex items-center justify-center transition ${
+          phase === "listening" ? "ring-4 ring-secondary/80 animate-pulse" :
+          phase === "speaking" ? "ring-4 ring-white/40" :
+          phase === "thinking" ? "ring-4 ring-secondary/50" : ""
         }`}>
-          {phase === "thinking" ? <Loader2 className="w-8 h-8 animate-spin" /> : "🐄"}
+          {phase === "thinking" ? <Loader2 className="w-8 h-8 animate-spin" /> : <Milk className="w-9 h-9 sm:w-10 sm:h-10" strokeWidth={1.75} />}
         </div>
         <div className="text-center text-xs sm:text-sm opacity-90 mt-2 px-2">{statusText}</div>
       </div>
@@ -423,7 +423,7 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
           return (
             <div key={item.id} className={`flex ${out ? "justify-end" : "justify-start"}`}>
               <div className={`max-w-[88%] px-3 py-2 rounded-2xl text-sm leading-relaxed ${
-                out ? "bg-emerald-600/80 rounded-tr-sm" : "bg-white/15 rounded-tl-sm"
+                out ? "bg-white/20 border border-white/15 rounded-br-md" : "bg-white/12 border border-white/10 rounded-bl-md"
               }`}>
                 {!out && item.language && (
                   <div className="text-[10px] uppercase tracking-wide opacity-60 mb-0.5">
@@ -471,8 +471,19 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
 
 export function CallButton({ onClick }: { onClick: () => void }) {
   return (
-    <button onClick={onClick} className="p-2 hover:bg-white/10 rounded-full transition" title="Call PashuMitra">
-      <Phone className="w-5 h-5" />
+    <button
+      type="button"
+      onClick={onClick}
+      className="relative p-2.5 rounded-xl border border-white/30 bg-gradient-to-b from-white/40 via-white/20 to-white/5 shadow-[0_4px_0_rgba(0,0,0,0.18),0_6px_14px_rgba(0,0,0,0.22),inset_0_1px_0_rgba(255,255,255,0.55)] transition hover:from-white/50 hover:to-white/10 active:translate-y-0.5 active:shadow-[0_2px_0_rgba(0,0,0,0.18),0_3px_8px_rgba(0,0,0,0.18)]"
+      title="Start live voice call"
+      aria-label="Start live voice call"
+    >
+      <PhoneCall
+        className="w-5 h-5 text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.35)]"
+        strokeWidth={2.25}
+        fill="currentColor"
+        fillOpacity={0.22}
+      />
     </button>
   );
 }

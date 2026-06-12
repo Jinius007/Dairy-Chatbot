@@ -2,8 +2,17 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { supabase, isSupabaseConfigured } from "@/integrations/supabase/client";
 import { VoiceRecorder } from "@/components/VoiceRecorder";
 import { Tick } from "@/components/Tick";
+import { BrandAvatar } from "@/components/BrandAvatar";
 import { CallView, CallButton, type CallTurn } from "@/components/CallView";
-import { ArrowLeft, Send, Smile, Paperclip, MoreVertical, Volume2, Pause, Play, Square } from "lucide-react";
+import {
+  ArrowLeft,
+  CircleArrowUp,
+  Languages,
+  Pause,
+  Play,
+  Square,
+  Volume2,
+} from "lucide-react";
 import { toast } from "sonner";
 import { LANG_NAMES } from "@/lib/languages";
 import { speakText, stopSpeech, unlockAudioPlayback } from "@/lib/speech";
@@ -343,15 +352,18 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
           history={messages.filter((m) => m.content && !m.content.startsWith("📞")).map((m) => ({ role: m.role, content: m.content }))}
         />
       )}
-      <div className="bg-header text-header-foreground px-3 py-2.5 flex items-center gap-3 shadow shrink-0">
-        {onBack && <button onClick={onBack} className="md:hidden p-1"><ArrowLeft className="w-5 h-5" /></button>}
-        <div className="w-10 h-10 rounded-full bg-primary-light flex items-center justify-center text-lg">🐄</div>
+      <div className="bg-header text-header-foreground px-3 py-2.5 flex items-center gap-3 shadow-md shrink-0 border-b border-black/10">
+        {onBack && (
+          <button type="button" onClick={onBack} className="md:hidden p-1.5 rounded-lg hover:bg-white/10">
+            <ArrowLeft className="w-5 h-5" />
+          </button>
+        )}
+        <BrandAvatar size="md" variant="header" />
         <div className="flex-1 min-w-0">
-          <div className="font-medium truncate">PashuMitra</div>
-          <div className="text-xs opacity-80">Online · Tap 📞 to talk live</div>
+          <div className="font-semibold truncate tracking-tight">PashuMitra</div>
+          <div className="text-xs opacity-85 font-medium">Online · Live voice available</div>
         </div>
         <CallButton onClick={openCall} />
-        <button className="p-1 opacity-80 hover:opacity-100"><MoreVertical className="w-5 h-5" /></button>
       </div>
 
       <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto chat-bg px-3 py-4">
@@ -365,9 +377,11 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
           const out = m.role === "user";
           const time = new Date(m.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
           return (
-            <div key={m.id} className={`flex ${out ? "justify-end" : "justify-start"} mb-2`}>
-              <div className={`relative max-w-[78%] md:max-w-[65%] px-3 py-2 rounded-lg shadow-sm ${
-                out ? "bg-bubble-out text-bubble-out-foreground rounded-tr-none bubble-tail-out" : "bg-bubble-in text-bubble-in-foreground rounded-tl-none bubble-tail-in"
+            <div key={m.id} className={`flex ${out ? "justify-end" : "justify-start"} mb-2.5`}>
+              <div className={`relative max-w-[78%] md:max-w-[65%] px-3.5 py-2.5 shadow-sm ${
+                out
+                  ? "bg-bubble-out text-bubble-out-foreground rounded-2xl rounded-br-md border border-primary/10"
+                  : "bg-bubble-in text-bubble-in-foreground rounded-2xl rounded-bl-md border border-border/60"
               }`}>
                 {!out && m.language && <div className="text-[10px] uppercase tracking-wide text-primary mb-0.5">{LANG_NAMES[m.language] || m.language}</div>}
                 <div className="whitespace-pre-wrap break-words text-sm leading-relaxed">
@@ -405,22 +419,29 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
         })}
       </div>
 
-      <div className="bg-muted px-2 py-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] flex items-end gap-2 shrink-0">
-        <button className="p-2 text-muted-foreground hover:text-foreground"><Smile className="w-6 h-6" /></button>
-        <button className="p-2 text-muted-foreground hover:text-foreground hidden sm:block"><Paperclip className="w-6 h-6" /></button>
-        <div className="flex-1 bg-card rounded-full px-4 py-2">
+      <div className="bg-muted px-2 py-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] flex items-end gap-2 shrink-0 border-t border-border/80">
+        <button type="button" className="p-2 text-muted-foreground hover:text-primary rounded-lg hover:bg-accent/80" aria-label="Language">
+          <Languages className="w-6 h-6" strokeWidth={1.75} />
+        </button>
+        <div className="flex-1 bg-card rounded-2xl px-4 py-2 border border-border/80 shadow-sm">
           <input
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(input); } }}
-            placeholder={transcribing ? "Transcribing voice…" : "Type a message"}
+            placeholder={transcribing ? "Transcribing voice…" : "Type your message"}
             disabled={sending || transcribing}
-            className="w-full bg-transparent outline-none text-sm"
+            className="w-full bg-transparent outline-none text-sm font-medium placeholder:font-normal placeholder:text-muted-foreground"
           />
         </div>
         {input.trim() ? (
-          <button onClick={() => send(input)} disabled={sending} className="p-2.5 rounded-full bg-primary text-primary-foreground hover:bg-primary-dark disabled:opacity-50">
-            <Send className="w-5 h-5" />
+          <button
+            type="button"
+            onClick={() => send(input)}
+            disabled={sending}
+            className="p-2.5 rounded-xl bg-primary text-primary-foreground hover:bg-primary-dark disabled:opacity-50 shadow-sm"
+            aria-label="Send message"
+          >
+            <CircleArrowUp className="w-5 h-5" strokeWidth={2.25} />
           </button>
         ) : (
           <VoiceRecorder onRecorded={handleVoice} disabled={sending || transcribing} />

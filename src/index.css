@@ -2,91 +2,91 @@
 @tailwind components;
 @tailwind utilities;
 
-/* WhatsApp-inspired design system. All colors HSL. */
+/* NDDB-inspired maroon & cream design system. All colors HSL. */
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 11%;
+    --background: 35 33% 98%;
+    --foreground: 350 25% 14%;
 
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 11%;
+    --card-foreground: 350 25% 14%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 11%;
+    --popover-foreground: 350 25% 14%;
 
-    /* WhatsApp green */
-    --primary: 142 70% 33%;
+    /* NDDB maroon */
+    --primary: 352 67% 31%;
     --primary-foreground: 0 0% 100%;
-    --primary-dark: 174 100% 19%;
-    --primary-light: 142 70% 49%;
+    --primary-dark: 352 72% 22%;
+    --primary-light: 352 48% 42%;
 
-    --secondary: 195 100% 41%;
-    --secondary-foreground: 0 0% 100%;
+    --secondary: 38 58% 48%;
+    --secondary-foreground: 350 30% 12%;
 
-    --muted: 200 18% 96%;
-    --muted-foreground: 0 0% 45%;
+    --muted: 35 22% 94%;
+    --muted-foreground: 350 8% 42%;
 
-    --accent: 142 76% 95%;
-    --accent-foreground: 142 70% 25%;
+    --accent: 350 45% 95%;
+    --accent-foreground: 352 67% 28%;
 
-    --destructive: 0 84% 60%;
+    --destructive: 0 72% 48%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 142 70% 33%;
+    --border: 350 18% 88%;
+    --input: 350 18% 88%;
+    --ring: 352 67% 31%;
 
-    --radius: 0.625rem;
+    --radius: 0.75rem;
 
     /* Chat-specific */
-    --chat-bg: 47 23% 91%;
-    --chat-bg-pattern: 45 30% 88%;
-    --bubble-out: 142 64% 88%;
-    --bubble-out-foreground: 0 0% 11%;
+    --chat-bg: 35 30% 96%;
+    --chat-bg-pattern: 352 25% 90%;
+    --bubble-out: 350 42% 93%;
+    --bubble-out-foreground: 350 25% 14%;
     --bubble-in: 0 0% 100%;
-    --bubble-in-foreground: 0 0% 11%;
-    --tick-read: 199 89% 48%;
-    --tick-sent: 0 0% 60%;
-    --header: 174 100% 19%;
+    --bubble-in-foreground: 350 25% 14%;
+    --tick-read: 352 67% 31%;
+    --tick-sent: 350 8% 58%;
+    --header: 352 72% 24%;
     --header-foreground: 0 0% 100%;
-    --sidebar-bg: 0 0% 100%;
-    --sidebar-hover: 0 0% 96%;
-    --unread-badge: 142 70% 49%;
+    --sidebar-bg: 35 28% 98%;
+    --sidebar-hover: 350 35% 95%;
+    --unread-badge: 38 58% 48%;
   }
 
   .dark {
-    --background: 200 7% 8%;
-    --foreground: 0 0% 95%;
-    --card: 200 7% 8%;
-    --card-foreground: 0 0% 95%;
-    --popover: 200 7% 12%;
-    --popover-foreground: 0 0% 95%;
-    --primary: 174 60% 41%;
+    --background: 350 20% 8%;
+    --foreground: 35 20% 95%;
+    --card: 350 18% 11%;
+    --card-foreground: 35 20% 95%;
+    --popover: 350 18% 11%;
+    --popover-foreground: 35 20% 95%;
+    --primary: 352 55% 48%;
     --primary-foreground: 0 0% 100%;
-    --primary-dark: 174 100% 13%;
-    --primary-light: 174 60% 51%;
-    --secondary: 200 8% 17%;
-    --secondary-foreground: 0 0% 95%;
-    --muted: 200 8% 14%;
-    --muted-foreground: 200 5% 60%;
-    --accent: 174 50% 22%;
-    --accent-foreground: 0 0% 100%;
-    --border: 200 8% 17%;
-    --input: 200 8% 17%;
-    --ring: 174 60% 41%;
-    --chat-bg: 200 7% 6%;
-    --chat-bg-pattern: 200 7% 9%;
-    --bubble-out: 168 80% 21%;
-    --bubble-out-foreground: 0 0% 95%;
-    --bubble-in: 200 8% 14%;
-    --bubble-in-foreground: 0 0% 95%;
-    --tick-read: 199 89% 60%;
-    --tick-sent: 0 0% 50%;
-    --header: 200 8% 14%;
-    --header-foreground: 0 0% 95%;
-    --sidebar-bg: 200 7% 10%;
-    --sidebar-hover: 200 7% 14%;
-    --unread-badge: 174 60% 41%;
+    --primary-dark: 352 65% 38%;
+    --primary-light: 352 45% 55%;
+    --secondary: 38 45% 42%;
+    --secondary-foreground: 35 20% 95%;
+    --muted: 350 15% 16%;
+    --muted-foreground: 350 8% 62%;
+    --accent: 352 35% 18%;
+    --accent-foreground: 35 20% 95%;
+    --border: 350 15% 20%;
+    --input: 350 15% 20%;
+    --ring: 352 55% 48%;
+    --chat-bg: 350 18% 9%;
+    --chat-bg-pattern: 352 20% 14%;
+    --bubble-out: 352 40% 22%;
+    --bubble-out-foreground: 35 20% 95%;
+    --bubble-in: 350 15% 15%;
+    --bubble-in-foreground: 35 20% 95%;
+    --tick-read: 352 55% 58%;
+    --tick-sent: 350 8% 50%;
+    --header: 352 65% 18%;
+    --header-foreground: 35 20% 95%;
+    --sidebar-bg: 350 18% 10%;
+    --sidebar-hover: 352 25% 16%;
+    --unread-badge: 38 50% 50%;
   }
 }
 
@@ -96,39 +96,32 @@
     height: 100%;
     overflow: hidden;
   }
-  body { @apply bg-background text-foreground antialiased; font-family: 'Segoe UI', 'Helvetica Neue', system-ui, -apple-system, 'Noto Sans', 'Noto Sans Devanagari', 'Noto Sans Tamil', 'Noto Sans Telugu', 'Noto Sans Gujarati', 'Noto Sans Bengali', 'Noto Sans Kannada', sans-serif; }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: "Source Sans 3", "Noto Sans", "Noto Sans Devanagari", "Noto Sans Tamil",
+      "Noto Sans Telugu", "Noto Sans Gujarati", "Noto Sans Bengali", "Noto Sans Kannada",
+      "Noto Sans Malayalam", system-ui, sans-serif;
+    font-feature-settings: "kern" 1, "liga" 1;
+  }
 }
 
-/* WhatsApp doodle background */
+/* Warm cream chat canvas — subtle diagonal weave, not a dotted chat-app pattern */
 .chat-bg {
   background-color: hsl(var(--chat-bg));
   background-image:
-    radial-gradient(hsl(var(--chat-bg-pattern)) 1px, transparent 1px),
-    radial-gradient(hsl(var(--chat-bg-pattern)) 1px, transparent 1px);
-  background-size: 28px 28px;
-  background-position: 0 0, 14px 14px;
-}
-
-/* Bubble tail */
-.bubble-tail-out::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  right: -7px;
-  width: 0; height: 0;
-  border: 8px solid transparent;
-  border-top-color: hsl(var(--bubble-out));
-  border-right: 0;
-}
-.bubble-tail-in::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -7px;
-  width: 0; height: 0;
-  border: 8px solid transparent;
-  border-top-color: hsl(var(--bubble-in));
-  border-left: 0;
+    linear-gradient(
+      135deg,
+      hsl(var(--chat-bg-pattern) / 0.35) 0%,
+      transparent 50%,
+      hsl(var(--chat-bg-pattern) / 0.2) 100%
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 24px,
+      hsl(var(--chat-bg-pattern) / 0.12) 24px,
+      hsl(var(--chat-bg-pattern) / 0.12) 25px
+    );
 }
 
 /* Voice waveform pulse */
