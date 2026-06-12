@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Mic, Square } from "lucide-react";
-import { isBrowserSttSupported, listenWithSttFallbacks } from "@/lib/browserStt";
+import { isBrowserSttSupported, startBrowserSttListen, startBrowserSttWithFallbacks, type BrowserSttSession } from "@/lib/browserStt";
 import { stopSpeech, unlockAudioPlayback } from "@/lib/speech";
 
 interface Props {
@@ -33,11 +33,11 @@ export function VoiceRecorder({ onRecorded, onTranscript, speechLang, disabled, 
   const chunksRef = useRef<Blob[]>([]);
   const startTimeRef = useRef(0);
   const timerRef = useRef<number | null>(null);
-  const abortListenRef = useRef(false);
+  const browserSessionRef = useRef<BrowserSttSession | null>(null);
   const useBrowser = !!(speechLang && onTranscript && isBrowserSttSupported());
 
   useEffect(() => () => {
-    abortListenRef.current = true;
+    browserSessionRef.current?.stop();
     if (timerRef.current) window.clearInterval(timerRef.current);
     mediaRef.current?.stream.getTracks().forEach((t) => t.stop());
   }, []);
@@ -46,25 +46,31 @@ export function VoiceRecorder({ onRecorded, onTranscript, speechLang, disabled, 
     if (!speechLang || !onTranscript) return;
     stopSpeech();
     await unlockAudioPlayback();
-    abortListenRef.current = false;
     setSeconds(0);
     setRecording(true);
     startTimeRef.current = Date.now();
     timerRef.current = window.setInterval(() => setSeconds((s) => s + 1), 1000) as unknown as number;
+
+    const session =
+      speechLang === "en"
+        ? startBrowserSttListen("en")
+        : startBrowserSttWithFallbacks(speechLang);
+    browserSessionRef.current = session;
+
     try {
-      const text = await listenWithSttFallbacks(speechLang);
-      if (!abortListenRef.current) onTranscript(text);
+      const text = await session.promise;
+      onTranscript(text);
     } catch {
-      if (!abortListenRef.current) onTranscript("");
+      onTranscript("");
     } finally {
+      browserSessionRef.current = null;
       if (timerRef.current) window.clearInterval(timerRef.current);
       setRecording(false);
     }
   };
 
   const stopBrowserListen = () => {
-    abortListenRef.current = true;
-    setRecording(false);
+    browserSessionRef.current?.stop();
   };
 
   const startRecord = async () => {
@@ -104,7 +110,7 @@ export function VoiceRecorder({ onRecorded, onTranscript, speechLang, disabled, 
   };
 
   const start = () => {
-    if (disabled) return;
+    if (disabled || recording) return;
     if (useBrowser) void startBrowserListen();
     else void startRecord();
   };
@@ -119,7 +125,7 @@ export function VoiceRecorder({ onRecorded, onTranscript, speechLang, disabled, 
       <div className="flex items-center gap-2 px-3 py-2 bg-destructive/10 rounded-full">
         <span className="w-2 h-2 rounded-full bg-destructive animate-pulse" />
         <span className="text-sm font-mono">{Math.floor(seconds / 60).toString().padStart(2, "0")}:{(seconds % 60).toString().padStart(2, "0")}</span>
-        <button onClick={stop} className="p-2 rounded-full bg-destructive text-destructive-foreground hover:opacity-90">
+        <button type="button" onClick={stop} className="p-2 rounded-full bg-destructive text-destructive-foreground hover:opacity-90">
           <Square className="w-4 h-4 fill-current" />
         </button>
       </div>

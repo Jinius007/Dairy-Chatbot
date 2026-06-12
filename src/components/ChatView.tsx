@@ -3,7 +3,6 @@ import { supabase, isSupabaseConfigured } from "@/integrations/supabase/client";
 import { VoiceRecorder } from "@/components/VoiceRecorder";
 import { Tick } from "@/components/Tick";
 import { CallView, CallButton, type CallTurn } from "@/components/CallView";
-import { RationAdvisoryView, RationAdvisoryButton } from "@/components/RationAdvisoryView";
 import { ArrowLeft, Send, Smile, Paperclip, MoreVertical, Volume2, Pause, Play, Square } from "lucide-react";
 import { toast } from "sonner";
 import { LANG_NAMES } from "@/lib/languages";
@@ -74,7 +73,6 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
   const [sending, setSending] = useState(false);
   const [transcribing, setTranscribing] = useState(false);
   const [callOpen, setCallOpen] = useState(false);
-  const [rationAdvisoryOpen, setRationAdvisoryOpen] = useState(false);
   const [speakingId, setSpeakingId] = useState<string | null>(null);
   const [paused, setPaused] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -337,9 +335,6 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
 
   return (
     <div className="flex flex-col h-full min-h-0 overflow-hidden">
-      {rationAdvisoryOpen && (
-        <RationAdvisoryView open={rationAdvisoryOpen} onClose={() => setRationAdvisoryOpen(false)} />
-      )}
       {callOpen && (
         <CallView
           open={callOpen}
@@ -356,7 +351,6 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
           <div className="text-xs opacity-80">Online · Tap 📞 to talk live</div>
         </div>
         <CallButton onClick={openCall} />
-        <RationAdvisoryButton onClick={() => setRationAdvisoryOpen(true)} />
         <button className="p-1 opacity-80 hover:opacity-100"><MoreVertical className="w-5 h-5" /></button>
       </div>
 

@@ -6,7 +6,6 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { isSupabaseConfigured } from "@/integrations/supabase/client";
 import Index from "./pages/Index.tsx";
 import NotFound from "./pages/NotFound.tsx";
-import RationAdvisor from "./pages/RationAdvisor.tsx";
 
 const queryClient = new QueryClient();
 
@@ -26,7 +25,6 @@ const App = () => (
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Index />} />
-              <Route path="/ration" element={<RationAdvisor />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>

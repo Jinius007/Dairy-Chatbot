@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { ChatView } from "@/components/ChatView";
-import { Search, Plus, MessageCircle, Trash2, Wheat, ChevronRight } from "lucide-react";
+import { Search, Plus, MessageCircle, Trash2 } from "lucide-react";
 
 interface Conversation {
   id: string; title: string; last_message: string | null; language: string | null; updated_at: string;
@@ -23,7 +22,6 @@ const createConversation = (): Conversation => ({
 });
 
 const Index = () => {
-  const navigate = useNavigate();
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [search, setSearch] = useState("");
@@ -74,19 +72,6 @@ const Index = () => {
           </div>
         </div>
         <div className="p-2 bg-muted/50">
-          <button
-            onClick={() => navigate("/ration")}
-            className="w-full mb-2 flex items-center gap-3 rounded-xl border border-primary/30 bg-primary/5 px-3 py-3 text-left hover:bg-primary/10 transition"
-          >
-            <div className="w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center shrink-0">
-              <Wheat className="w-5 h-5" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="font-medium text-sm">Ration Advisor · राशन सलाहकार</div>
-              <div className="text-xs text-muted-foreground truncate">Low-cost balanced feed plan for your animal</div>
-            </div>
-            <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
-          </button>
           <div className="flex items-center gap-2 bg-card rounded-full px-3 py-1.5">
             <Search className="w-4 h-4 text-muted-foreground" />
             <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search chats" className="flex-1 bg-transparent outline-none text-sm" />

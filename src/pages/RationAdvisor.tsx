@@ -228,14 +228,16 @@ const RationAdvisor = () => {
   };
 
   const askSpecies = () => {
-    bot(t("askSpecies", lang));
+    const L = langRef.current;
+    bot(t("askSpecies", L), undefined, L);
     setStep("species");
   };
 
   const chooseSpecies = (s: Species, isVoice = false) => {
+    const L = langRef.current;
     setAnswers((a) => ({ ...a, species: s, weight: DEFAULT_WEIGHT[s] }));
-    userMsg(s === "cattle" ? t("cow", lang) : t("buffalo", lang), undefined, isVoice);
-    bot(t("askCalvings", lang));
+    userMsg(s === "cattle" ? t("cow", L) : t("buffalo", L), undefined, isVoice);
+    bot(t("askCalvings", L), undefined, L);
     setStep("calvings");
   };
 
@@ -632,6 +634,7 @@ const RationAdvisor = () => {
         submitNumber(text, isVoice, "price");
         return;
       default:
+        if (s === "locating" || s === "optimizing") return;
         break;
     }
   }, [lang, place, answers, feeds]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -705,7 +708,7 @@ const RationAdvisor = () => {
     setStep("language");
   };
 
-  const micDisabled = busy || transcribing || speaking || ["language", "locating", "optimizing", "done"].includes(step);
+  const micDisabled = busy || transcribing || speaking || ["locating", "optimizing", "done"].includes(step);
   const showVoiceBar = !["language", "locating", "done"].includes(step);
 
   const fmt = (n: number, d = 0) =>
@@ -823,6 +826,24 @@ const RationAdvisor = () => {
                 </button>
               ))}
             </div>
+          </div>
+        )}
+        {step === "species" && (
+          <div className="flex gap-2 justify-center py-2 max-w-lg mx-auto">
+            <button
+              type="button"
+              onClick={() => chooseSpecies("cattle")}
+              className="flex-1 px-4 py-3 rounded-xl bg-card border border-border shadow-sm hover:bg-primary/10 hover:border-primary text-sm font-medium"
+            >
+              🐄 {t("cow", lang)}
+            </button>
+            <button
+              type="button"
+              onClick={() => chooseSpecies("buffalo")}
+              className="flex-1 px-4 py-3 rounded-xl bg-card border border-border shadow-sm hover:bg-primary/10 hover:border-primary text-sm font-medium"
+            >
+              🐃 {t("buffalo", lang)}
+            </button>
           </div>
         )}
         {messages.map((m) => (

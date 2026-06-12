@@ -154,19 +154,41 @@ export function startBrowserSttListen(langCode: string, maxMs = 20000): BrowserS
  * Try primary locale then fallbacks (e.g. hi-IN → hi) so Hindi speech is not captured as English.
  */
 export async function listenWithSttFallbacks(langCode: string, maxMs = 20000): Promise<string> {
+  const session = startBrowserSttWithFallbacks(langCode, maxMs);
+  return session.promise;
+}
+
+/**
+ * Like listenWithSttFallbacks but exposes stop() so the mic button can finish and return speech.
+ */
+export function startBrowserSttWithFallbacks(langCode: string, maxMs = 20000): BrowserSttSession {
   const locales = sttLocalesForLang(langCode);
-  let lastError: Error | null = null;
+  let current: BrowserSttSession | null = null;
+  let stopped = false;
 
-  for (const locale of locales) {
-    const session = startBrowserSttListenForLocale(locale, maxMs);
-    try {
-      const text = await session.promise;
-      if (text.trim()) return text;
-    } catch (e) {
-      lastError = e instanceof Error ? e : new Error(String(e));
-      if (lastError.message !== "no-speech") break;
+  const promise = (async () => {
+    let lastError: Error | null = null;
+    for (const locale of locales) {
+      if (stopped) throw new Error("aborted");
+      current = startBrowserSttListenForLocale(locale, maxMs);
+      try {
+        const text = await current.promise;
+        if (text.trim()) return text;
+      } catch (e) {
+        lastError = e instanceof Error ? e : new Error(String(e));
+        if (stopped || lastError.message !== "no-speech") break;
+      } finally {
+        current = null;
+      }
     }
-  }
+    throw lastError || new Error("no-speech");
+  })();
 
-  throw lastError || new Error("no-speech");
+  return {
+    promise,
+    stop: () => {
+      stopped = true;
+      current?.stop();
+    },
+  };
 }
