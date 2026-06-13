@@ -137,6 +137,13 @@
 }
 .typing-dot { animation: typing-dot 1.2s infinite; }
 
+/* ElevenLabs voice widget — hide default bubble; opened via header call button */
+elevenlabs-convai.pashu-elevenlabs-widget {
+  display: none;
+  --elevenlabs-convai-widget-width: min(100vw - 1.5rem, 380px);
+  --elevenlabs-convai-widget-height: min(70vh, 560px);
+}
+
 /* Hide scrollbar utility */
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
