@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { ChatView } from "@/components/ChatView";
 import { BrandAvatar } from "@/components/BrandAvatar";
+import { ElevenLabsWidget } from "@/components/ElevenLabsWidget";
 import { MessageSquarePlus, MessagesSquare, Search, Trash2 } from "lucide-react";
 
 interface Conversation {
@@ -61,7 +62,8 @@ const Index = () => {
   );
 
   return (
-    <div className="h-full w-full flex bg-background overflow-hidden">
+    <div className="h-full w-full flex bg-background overflow-hidden relative">
+      <ElevenLabsWidget />
       <aside className={`${activeId ? "hidden md:flex" : "flex"} md:w-[380px] w-full flex-col border-r bg-sidebar min-h-0 shrink-0`}>
         <div className="bg-header text-header-foreground p-3 flex items-center justify-between border-b border-black/10">
           <div className="flex items-center gap-2.5">

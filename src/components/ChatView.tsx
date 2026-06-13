@@ -3,7 +3,6 @@ import { supabase, isSupabaseConfigured } from "@/integrations/supabase/client";
 import { VoiceRecorder } from "@/components/VoiceRecorder";
 import { Tick } from "@/components/Tick";
 import { BrandAvatar } from "@/components/BrandAvatar";
-import { ElevenLabsWidget } from "@/components/ElevenLabsWidget";
 import {
   ArrowLeft,
   CircleArrowUp,
@@ -326,7 +325,6 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
           <div className="font-semibold truncate tracking-tight">PashuMitra</div>
           <div className="text-xs opacity-85 font-medium">Online · Live voice available</div>
         </div>
-        <ElevenLabsWidget />
       </div>
 
       <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto chat-bg px-3 py-4">

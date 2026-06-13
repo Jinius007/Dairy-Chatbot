@@ -6,14 +6,14 @@ import {
   ensureElevenLabsWidgetScript,
 } from "@/lib/elevenlabs";
 
-/** ElevenLabs voice launcher in the chat header. */
+/** ElevenLabs voice launcher fixed to the top-right of the app. */
 export function ElevenLabsWidget() {
   useEffect(() => {
     void ensureElevenLabsWidgetScript();
   }, []);
 
   return (
-    <div className="pashu-elevenlabs-header-slot shrink-0">
+    <div className="pashu-elevenlabs-corner-slot">
       <elevenlabs-convai
         id={ELEVENLABS_WIDGET_ID}
         agent-id={ELEVENLABS_AGENT_ID}

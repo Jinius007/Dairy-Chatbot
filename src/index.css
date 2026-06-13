@@ -137,11 +137,20 @@
 }
 .typing-dot { animation: typing-dot 1.2s infinite; }
 
-/* ElevenLabs voice widget — inline in chat header (replaces call button) */
-.pashu-elevenlabs-header-slot {
+/* ElevenLabs voice widget — fixed top-right corner of the interface */
+.pashu-elevenlabs-corner-slot {
+  position: fixed;
+  top: max(0.75rem, env(safe-area-inset-top, 0px));
+  right: max(0.75rem, env(safe-area-inset-right, 0px));
+  z-index: 70;
   display: flex;
   align-items: center;
   justify-content: center;
+  pointer-events: none;
+}
+
+.pashu-elevenlabs-corner-slot > elevenlabs-convai {
+  pointer-events: auto;
 }
 
 elevenlabs-convai.pashu-elevenlabs-widget {
