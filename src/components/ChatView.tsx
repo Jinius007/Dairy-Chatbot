@@ -3,7 +3,7 @@ import { supabase, isSupabaseConfigured } from "@/integrations/supabase/client";
 import { VoiceRecorder } from "@/components/VoiceRecorder";
 import { Tick } from "@/components/Tick";
 import { BrandAvatar } from "@/components/BrandAvatar";
-import { CallView, CallButton, type CallTurn } from "@/components/CallView";
+import { CallButton } from "@/components/CallView";
 import {
   ArrowLeft,
   CircleArrowUp,
@@ -81,7 +81,6 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
   const [transcribing, setTranscribing] = useState(false);
-  const [callOpen, setCallOpen] = useState(false);
   const [speakingId, setSpeakingId] = useState<string | null>(null);
   const [paused, setPaused] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -113,11 +112,6 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
     if (synth.paused) { synth.resume(); setPaused(false); }
     else if (synth.speaking) { synth.pause(); setPaused(true); }
   }, []);
-
-  const openCall = useCallback(() => {
-    stopSpeak();
-    setCallOpen(true);
-  }, [stopSpeak]);
 
   const persist = useCallback((msgs: Message[]) => {
     localStorage.setItem(msgKey(conversationId), JSON.stringify(msgs));
@@ -319,39 +313,8 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
     }
   };
 
-  const handleCallEnd = (turns: CallTurn[]) => {
-    setCallOpen(false);
-    if (turns.length === 0) return;
-    const newMsgs: Message[] = turns.map((t) => ({
-      id: t.id, role: t.role, content: t.content, language: t.language ?? null,
-      is_voice: true, created_at: t.created_at,
-    }));
-    const sepUser: Message = {
-      id: crypto.randomUUID(), role: "user",
-      content: "📞 Call started", created_at: turns[0].created_at, is_voice: false,
-    };
-    const sepEnd: Message = {
-      id: crypto.randomUUID(), role: "assistant",
-      content: `📞 Call ended (${turns.length} turn${turns.length > 1 ? "s" : ""})`,
-      created_at: new Date().toISOString(), is_voice: false,
-    };
-    const updated = [...messagesRef.current, sepUser, ...newMsgs, sepEnd];
-    messagesRef.current = updated;
-    setMessages(updated);
-    persist(updated);
-    toast.success(`Call saved — ${turns.length} turns transcribed.`);
-  };
-
   return (
     <div className="flex flex-col h-full min-h-0 overflow-hidden">
-      {callOpen && (
-        <CallView
-          open={callOpen}
-          onClose={handleCallEnd}
-          conversationId={conversationId}
-          history={messages.filter((m) => m.content && !m.content.startsWith("📞")).map((m) => ({ role: m.role, content: m.content }))}
-        />
-      )}
       <div className="bg-header text-header-foreground px-3 py-2.5 flex items-center gap-3 shadow-md shrink-0 border-b border-black/10">
         {onBack && (
           <button type="button" onClick={onBack} className="md:hidden p-1.5 rounded-lg hover:bg-white/10">
@@ -363,7 +326,7 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
           <div className="font-semibold truncate tracking-tight">PashuMitra</div>
           <div className="text-xs opacity-85 font-medium">Online · Live voice available</div>
         </div>
-        <CallButton onClick={openCall} />
+        <CallButton />
       </div>
 
       <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto chat-bg px-3 py-4">
