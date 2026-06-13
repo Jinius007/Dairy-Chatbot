@@ -3,7 +3,6 @@ import { supabase, isSupabaseConfigured } from "@/integrations/supabase/client";
 import { VoiceRecorder } from "@/components/VoiceRecorder";
 import { Tick } from "@/components/Tick";
 import { BrandAvatar } from "@/components/BrandAvatar";
-import { CallButton } from "@/components/CallView";
 import { ElevenLabsWidget } from "@/components/ElevenLabsWidget";
 import {
   ArrowLeft,
@@ -316,7 +315,6 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
 
   return (
     <div className="flex flex-col h-full min-h-0 overflow-hidden">
-      <ElevenLabsWidget />
       <div className="bg-header text-header-foreground px-3 py-2.5 flex items-center gap-3 shadow-md shrink-0 border-b border-black/10">
         {onBack && (
           <button type="button" onClick={onBack} className="md:hidden p-1.5 rounded-lg hover:bg-white/10">
@@ -328,7 +326,7 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
           <div className="font-semibold truncate tracking-tight">PashuMitra</div>
           <div className="text-xs opacity-85 font-medium">Online · Live voice available</div>
         </div>
-        <CallButton />
+        <ElevenLabsWidget />
       </div>
 
       <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto chat-bg px-3 py-4">

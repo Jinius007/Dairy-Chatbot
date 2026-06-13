@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { PhoneOff, Mic, Loader2, PhoneCall, Milk } from "lucide-react";
-import { startElevenLabsCall } from "@/lib/elevenlabs";
+import { PhoneOff, Mic, Loader2, Milk } from "lucide-react";
 import { toast } from "sonner";
 import { supabase, isSupabaseConfigured } from "@/integrations/supabase/client";
 import { LANG_NAMES, detectLanguageCode, resolveTtsLanguage } from "@/lib/languages";
@@ -467,33 +466,5 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
         </button>
       </div>
     </div>
-  );
-}
-
-export function CallButton() {
-  const onStartCall = async () => {
-    try {
-      const started = await startElevenLabsCall();
-      if (!started) toast.error("Voice call could not start. Please try again.");
-    } catch {
-      toast.error("Voice call is unavailable right now.");
-    }
-  };
-
-  return (
-    <button
-      type="button"
-      onClick={() => void onStartCall()}
-      className="relative p-2.5 rounded-xl border border-white/30 bg-gradient-to-b from-white/40 via-white/20 to-white/5 shadow-[0_4px_0_rgba(0,0,0,0.18),0_6px_14px_rgba(0,0,0,0.22),inset_0_1px_0_rgba(255,255,255,0.55)] transition hover:from-white/50 hover:to-white/10 active:translate-y-0.5 active:shadow-[0_2px_0_rgba(0,0,0,0.18),0_3px_8px_rgba(0,0,0,0.18)]"
-      title="Start live voice call"
-      aria-label="Start live voice call"
-    >
-      <PhoneCall
-        className="w-5 h-5 text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.35)]"
-        strokeWidth={2.25}
-        fill="currentColor"
-        fillOpacity={0.22}
-      />
-    </button>
   );
 }

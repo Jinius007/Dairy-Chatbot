@@ -137,9 +137,16 @@
 }
 .typing-dot { animation: typing-dot 1.2s infinite; }
 
-/* ElevenLabs voice widget — hide default bubble; opened via header call button */
+/* ElevenLabs voice widget — inline in chat header (replaces call button) */
+.pashu-elevenlabs-header-slot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 elevenlabs-convai.pashu-elevenlabs-widget {
-  display: none;
+  position: static;
+  inset: auto;
   --elevenlabs-convai-widget-width: min(100vw - 1.5rem, 380px);
   --elevenlabs-convai-widget-height: min(70vh, 560px);
 }
