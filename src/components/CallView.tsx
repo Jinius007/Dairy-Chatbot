@@ -472,12 +472,14 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
 
 export function CallButton() {
   const [callOpen, setCallOpen] = useState(false);
+  const openCall = useCallback(() => setCallOpen(true), []);
+  const closeCall = useCallback(() => setCallOpen(false), []);
 
   return (
     <>
       <button
         type="button"
-        onClick={() => setCallOpen(true)}
+        onClick={openCall}
         className="relative p-2.5 rounded-xl border border-white/30 bg-gradient-to-b from-white/40 via-white/20 to-white/5 shadow-[0_4px_0_rgba(0,0,0,0.18),0_6px_14px_rgba(0,0,0,0.22),inset_0_1px_0_rgba(255,255,255,0.55)] transition hover:from-white/50 hover:to-white/10 active:translate-y-0.5 active:shadow-[0_2px_0_rgba(0,0,0,0.18),0_3px_8px_rgba(0,0,0,0.18)]"
         title="Start live voice call"
         aria-label="Start live voice call"
@@ -489,7 +491,7 @@ export function CallButton() {
           fillOpacity={0.22}
         />
       </button>
-      <ElevenLabsCallPanel open={callOpen} onClose={() => setCallOpen(false)} />
+      <ElevenLabsCallPanel open={callOpen} onClose={closeCall} />
     </>
   );
 }
