@@ -140,11 +140,22 @@ async function speakViaBhashini(
   return true;
 }
 
+function pickFemaleVoice(locale: string): SpeechSynthesisVoice | null {
+  const voices = window.speechSynthesis.getVoices();
+  const prefix = locale.split("-")[0].toLowerCase();
+  const matching = voices.filter(
+    (v) => v.lang.toLowerCase().startsWith(prefix) || v.lang.toLowerCase().startsWith(locale.toLowerCase()),
+  );
+  const femaleHint = /female|woman|zira|heera|lekha|swara|neural.*f/i;
+  return matching.find((v) => femaleHint.test(v.name)) || matching[0] || null;
+}
+
 async function speakViaBrowserSynth(
   text: string,
   lang: string | null,
   token: number,
   forceLang = false,
+  preferFemale = false,
 ): Promise<boolean> {
   if (typeof window === "undefined" || !("speechSynthesis" in window) || token !== activeToken) {
     return false;
@@ -159,6 +170,10 @@ async function speakViaBrowserSynth(
     const utter = new SpeechSynthesisUtterance(spoken);
     utter.lang = locale;
     utter.rate = 0.92;
+    if (preferFemale) {
+      const voice = pickFemaleVoice(locale);
+      if (voice) utter.voice = voice;
+    }
     utter.onend = () => resolve(token === activeToken);
     utter.onerror = () => resolve(false);
     window.speechSynthesis.cancel();
@@ -171,12 +186,13 @@ async function runSpeech(
   lang: string | null,
   token: number,
   forceLang = false,
+  preferFemale = false,
 ): Promise<void> {
   const cleaned = filterAbusiveLanguage(text);
   if (!cleaned.trim() || token !== activeToken) return;
   if (await speakViaBhashini(cleaned, lang, token, forceLang)) return;
   if (token !== activeToken) return;
-  if (await speakViaBrowserSynth(cleaned, lang, token, forceLang)) return;
+  if (await speakViaBrowserSynth(cleaned, lang, token, forceLang, preferFemale)) return;
 }
 
 export function isSpeechSupported(): boolean {
@@ -218,6 +234,8 @@ export type SpeakOptions = {
   priority?: boolean;
   /** Use lang exactly (e.g. ration advisory welcome after language pick) */
   forceLang?: boolean;
+  /** Prefer a female voice for browser TTS fallback */
+  preferFemale?: boolean;
 };
 
 export function speakText(text: string, options: SpeakOptions = {}): Promise<void> {
@@ -225,7 +243,7 @@ export function speakText(text: string, options: SpeakOptions = {}): Promise<voi
 
   const token = ++activeToken;
   const run = () =>
-    runSpeech(text, options.lang ?? null, token, options.forceLang ?? false);
+    runSpeech(text, options.lang ?? null, token, options.forceLang ?? false, options.preferFemale ?? false);
 
   if (options.priority) {
     const task = run();

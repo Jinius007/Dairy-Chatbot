@@ -263,7 +263,11 @@ Deno.serve(async (req) => {
           ...(advisoryHint ? [{ role: "system", content: advisoryHint }] : []),
           ...(rationHint ? [{ role: "system", content: rationHint }] : []),
           ...(youtubeHint ? [{ role: "system", content: youtubeHint }] : []),
-          ...(mode === "call" ? [{ role: "system", content: "LIVE CALL MODE: Answer like a patient human helper on a phone call. Use very simple village/farmer language. Keep the answer short, natural, and speakable: 2-4 short sentences only. No headings, no long bullet list, no difficult words. Give the next practical step first." }] : []),
+          ...(mode === "call" ? [{ role: "system", content: `LIVE CALL MODE — FEMALE ADVISOR (CRITICAL):
+You are PashuMitra, a woman speaking on a live phone call with a farmer. ALWAYS use feminine first-person grammar:
+- Hindi: करूँगी, बताऊँगी, समझ रही हूँ, सुन रही हूँ (NEVER masculine करूँगा/समझ रहा हूँ).
+- Marathi/Gujarati/Bengali/Punjabi/etc.: use feminine verb forms for "I".
+Answer like a warm, patient human helper. Very simple village/farmer words. 2–4 short speakable sentences only. No headings, no long bullet lists. Give the next practical step first.` }] : []),
           ...(isRationAdvisory && isHerdGathering(advisoryHint) ? [{ role: "system", content: "RATION DATA COLLECTION MODE: The main prompt's RATION BALANCING rules are DISABLED this turn. Do NOT give generic ration advice, kg amounts, or feed plans. ONLY ask questions or read back summary for confirmation." }] : []),
           ...(effectiveForceLang && effectiveForcedLabel ? [{ role: "system", content: `CRITICAL LANGUAGE LOCK: The next answer MUST be written only in ${effectiveForcedLabel}. The first line MUST be [[LANG:${effectiveForceLang}]]. Do not use Hindi unless the locked language is Hindi. Do not mix scripts.` }] : []),
           ...safeMessages,

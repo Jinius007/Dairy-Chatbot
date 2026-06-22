@@ -37,7 +37,7 @@ export function waitTrafficMessage(lang?: Lang | null): string {
 export function waitTranscribingMessage(lang?: Lang | null): string {
   return pick(
     {
-      hi: "🎤 आपकी आवाज़ समझ रहा हूँ, कृपया प्रतीक्षा करें…",
+      hi: "🎤 आपकी आवाज़ समझ रही हूँ, कृपया प्रतीक्षा करें…",
       bn: "🎤 আপনার কথা বুঝছি, অনুগ্রহ করে অপেক্ষা করুন…",
       ta: "🎤 உங்கள் குரலைப் புரிந்து கொள்கிறேன், தயவுசெய்து காத்திருங்கள்…",
       te: "🎤 మీ మాట అర్థం చేసుకుంటున్నాను, దయచేసి వేచి ఉండండి…",
@@ -59,7 +59,7 @@ export function waitTranscribingMessage(lang?: Lang | null): string {
 export function callConnectingMessage(lang?: Lang | null): string {
   return pick(
     {
-      hi: "कॉल जोड़ रहे हैं…",
+      hi: "कॉल जोड़ रही हूँ…",
       bn: "কল সংযোগ হচ্ছে…",
       ta: "அழைப்பு இணைக்கப்படுகிறது…",
       te: "కాల్ కనెక్ట్ అవుతోంది…",
@@ -86,7 +86,7 @@ export function callProcessingMessage(lang?: Lang | null): string {
 export function callInterruptedMessage(lang?: Lang | null): string {
   return pick(
     {
-      hi: "सुन रहा हूँ… आपकी नई बात समझ रहा हूँ",
+      hi: "सुन रही हूँ… आपकी नई बात समझ रही हूँ",
       bn: "শুনছি… আপনার নতুন কথা বুঝছি",
       ta: "கேட்கிறேன்… உங்கள் புதிய கேள்வியைப் புரிந்து கொள்கிறேன்",
       te: "వింటున్నాను… మీ కొత్త ప్రశ్న అర్థం చేసుకుంటున్నాను",
@@ -107,7 +107,7 @@ export function callInterruptedMessage(lang?: Lang | null): string {
 export function callListeningMessage(lang?: Lang | null): string {
   return pick(
     {
-      hi: "आपकी बात सुन रहा हूँ…",
+      hi: "आपकी बात सुन रही हूँ — बोलिए…",
       bn: "আপনার কথা শুনছি…",
       ta: "உங்கள் பேச்சைக் கேட்கிறேன்…",
       te: "మీ మాట వింటున్నాను…",
@@ -128,7 +128,7 @@ export function callListeningMessage(lang?: Lang | null): string {
 export function callSpeakingMessage(lang?: Lang | null): string {
   return pick(
     {
-      hi: "सलाहकार बोल रहा है…",
+      hi: "PashuMitra बोल रही है — बीच में बोलकर रोक सकते हैं",
       bn: "পরামর্শদাতা বলছেন…",
       ta: "ஆலோசகர் பேசுகிறார்…",
       te: "సలహాదారు మాట్లాడుతున్నారు…",

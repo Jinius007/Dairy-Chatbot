@@ -12,6 +12,7 @@ import {
 } from "@/lib/content-safety";
 import {
   callConnectingMessage,
+  callInterruptedMessage,
   callListeningMessage,
   callProcessingMessage,
   callSpeakingMessage,
@@ -21,7 +22,7 @@ import {
 export const ADVISOR_AVATAR_PATH = "/pashu-advisor-avatar.jpeg";
 
 const GREETING_HI =
-  "नमस्ते! मैं PashuMitra हूँ — आपका पशु और डेयरी सलाहकार। अपनी भाषा में बोलिए, मैं उसी में जवाब दूँगा।";
+  "नमस्ते! मैं PashuMitra हूँ — आपकी पशु और डेयरी सलाहकार। अपनी भाषा में बोलिए, मैं उसी में जवाब दूँगी।";
 
 export interface CallTurn {
   id: string;
@@ -92,6 +93,7 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
   const [transcript, setTranscript] = useState<TranscriptItem[]>([]);
   const [speakLevel, setSpeakLevel] = useState(0);
   const [userLang, setUserLang] = useState("hi");
+  const [interrupted, setInterrupted] = useState(false);
 
   const turnsRef = useRef<CallTurn[]>([]);
   const historyRef = useRef<{ role: "user" | "assistant"; content: string }[]>([...history]);
@@ -108,6 +110,8 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
   const analyserFrameRef = useRef<number | null>(null);
   const transcriptScrollRef = useRef<HTMLDivElement>(null);
   const greetedRef = useRef(false);
+  const bargeInFrameRef = useRef<number | null>(null);
+  const bargeInCtxRef = useRef<AudioContext | null>(null);
 
   const setPhaseBoth = (p: Phase) => {
     phaseRef.current = p;
@@ -147,29 +151,113 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
     audioContextRef.current = null;
   };
 
+  const clearBargeInMonitor = () => {
+    if (bargeInFrameRef.current) cancelAnimationFrame(bargeInFrameRef.current);
+    bargeInFrameRef.current = null;
+    bargeInCtxRef.current?.close().catch(() => undefined);
+    bargeInCtxRef.current = null;
+  };
+
   const speak = useCallback(
-    (text: string, lang: string | null) => speakText(text, { lang, priority: true }),
+    (text: string, lang: string | null) => speakText(text, { lang, priority: true, preferFemale: true }),
     [],
   );
 
-  const scheduleListening = useCallback((delay = 250) => {
+  const resumeListening = useCallback((delay = 300) => {
     if (closedRef.current) return;
-    if (phaseRef.current === "speaking") return;
     if (restartTimerRef.current) window.clearTimeout(restartTimerRef.current);
+    setPhaseBoth("idle");
     restartTimerRef.current = window.setTimeout(() => {
       restartTimerRef.current = null;
-      startListening();
+      if (!closedRef.current && !processingRef.current) startListening();
     }, delay);
   }, []);
+
+  const interruptAndListen = useCallback(() => {
+    if (closedRef.current || processingRef.current) return;
+    stopSpeech();
+    clearBargeInMonitor();
+    setInterrupted(true);
+    processingRef.current = false;
+    setPhaseBoth("idle");
+    window.setTimeout(() => {
+      if (!closedRef.current) startListening();
+    }, 120);
+  }, []);
+
+  const startBargeInMonitor = useCallback(() => {
+    clearBargeInMonitor();
+    const stream = streamRef.current;
+    if (!stream?.active) return;
+
+    try {
+      const AudioCtx = window.AudioContext || (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+      if (!AudioCtx) return;
+      const audioCtx = new AudioCtx();
+      bargeInCtxRef.current = audioCtx;
+      const source = audioCtx.createMediaStreamSource(stream);
+      const analyser = audioCtx.createAnalyser();
+      analyser.fftSize = 1024;
+      source.connect(analyser);
+      const data = new Uint8Array(analyser.fftSize);
+      let loudSince = 0;
+
+      const monitor = () => {
+        if (closedRef.current || phaseRef.current !== "speaking") {
+          clearBargeInMonitor();
+          return;
+        }
+        analyser.getByteTimeDomainData(data);
+        let sum = 0;
+        for (const value of data) {
+          const n = (value - 128) / 128;
+          sum += n * n;
+        }
+        const volume = Math.sqrt(sum / data.length);
+        const now = Date.now();
+        if (volume > 0.06) {
+          loudSince ||= now;
+          if (now - loudSince > 500) {
+            interruptAndListen();
+            return;
+          }
+        } else {
+          loudSince = 0;
+        }
+        bargeInFrameRef.current = requestAnimationFrame(monitor);
+      };
+      bargeInFrameRef.current = requestAnimationFrame(monitor);
+    } catch {
+      clearBargeInMonitor();
+    }
+  }, [interruptAndListen]);
+
+  const playAdvisorSpeech = useCallback(
+    async (text: string, lang: string | null) => {
+      setInterrupted(false);
+      setPhaseBoth("speaking");
+      startBargeInMonitor();
+      try {
+        await speak(text, lang);
+      } finally {
+        clearBargeInMonitor();
+      }
+      if (!closedRef.current && phaseRef.current === "speaking") {
+        resumeListening(280);
+      }
+    },
+    [resumeListening, speak, startBargeInMonitor],
+  );
 
   const processBlob = async (blob: Blob, mime: string) => {
     if (!supabase || !isSupabaseConfigured) {
       toast.error("Supabase is not configured on this deployment.");
-      scheduleListening(500);
+      resumeListening(500);
       return;
     }
     if (closedRef.current || processingRef.current) return;
     processingRef.current = true;
+    setInterrupted(false);
     setPhaseBoth("thinking");
     const startedAt = Date.now();
     try {
@@ -181,7 +269,7 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
       if (tErr) throw tErr;
       if ((tData as { blocked?: boolean })?.blocked) {
         toast.message("Please use respectful language.");
-        scheduleListening(500);
+        resumeListening(500);
         return;
       }
       const userText = filterAbusiveLanguage(
@@ -191,7 +279,7 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
       );
       if (!userText || containsAbusiveLanguage(userText)) {
         toast.message("Didn't catch that — please speak again.");
-        scheduleListening(500);
+        resumeListening(500);
         return;
       }
       const detectedLang = detectLanguageCode(userText);
@@ -266,16 +354,11 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
       mediaRef.current = null;
 
       await unlockAudioPlayback();
-      setPhaseBoth("speaking");
-      await speak(answer, lang);
-      if (!closedRef.current) {
-        setPhaseBoth("idle");
-        scheduleListening(450);
-      }
+      await playAdvisorSpeech(answer, lang);
     } catch (e: unknown) {
       console.error(e);
       toast.error(e instanceof Error ? e.message : "Something went wrong");
-      if (!closedRef.current) scheduleListening(800);
+      if (!closedRef.current) resumeListening(800);
     } finally {
       processingRef.current = false;
     }
@@ -287,6 +370,7 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
     const stream = streamRef.current;
     if (!stream || !stream.active) return;
     if (mediaRef.current?.state === "recording") return;
+    setInterrupted(false);
     stopSilenceMonitor();
     const mimeType = getSupportedMimeType();
     const rec = mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream);
@@ -298,13 +382,13 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
       if (maxRecordTimerRef.current) window.clearTimeout(maxRecordTimerRef.current);
       maxRecordTimerRef.current = null;
       const recorded = new Blob(chunksRef.current, { type: blobType });
-      if (recorded.size < 1200) {
-        if (!closedRef.current) scheduleListening(500);
+      if (recorded.size < 800) {
+        if (!closedRef.current) resumeListening(400);
         return;
       }
       void processBlob(recorded, blobType);
     };
-    rec.start();
+    rec.start(250);
     mediaRef.current = rec;
     try {
       const AudioCtx = window.AudioContext || (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
@@ -329,7 +413,7 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
         }
         const volume = Math.sqrt(sum / data.length);
         const now = Date.now();
-        if (volume > 0.035) {
+        if (volume > 0.03) {
           speechStarted = true;
           silenceStartedAt = 0;
         } else if (speechStarted) {
@@ -355,8 +439,7 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
     if (phaseRef.current === "listening" && mediaRef.current?.state === "recording") {
       mediaRef.current.stop();
     } else if (phaseRef.current === "speaking") {
-      stopSpeech();
-      scheduleListening(100);
+      interruptAndListen();
     }
   };
 
@@ -380,7 +463,9 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
 
     (async () => {
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const stream = await navigator.mediaDevices.getUserMedia({
+          audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
+        });
         streamRef.current = stream;
         await unlockAudioPlayback();
 
@@ -388,11 +473,10 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
           greetedRef.current = true;
           appendTranscript({ id: "greeting", role: "assistant", content: GREETING_HI, language: "hi" });
           historyRef.current.push({ role: "assistant", content: GREETING_HI });
-          setPhaseBoth("speaking");
-          await speak(GREETING_HI, "hi");
+          await playAdvisorSpeech(GREETING_HI, "hi");
+        } else if (!closedRef.current) {
+          startListening();
         }
-
-        if (!closedRef.current) startListening();
       } catch (e) {
         console.error(e);
         toast.error("Please allow microphone access to start the call.");
@@ -406,6 +490,7 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
       if (maxRecordTimerRef.current) window.clearTimeout(maxRecordTimerRef.current);
       stopSpeech();
       stopSilenceMonitor();
+      clearBargeInMonitor();
       try {
         if (mediaRef.current?.state === "recording") mediaRef.current.stop();
       } catch {
@@ -424,6 +509,7 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
     if (maxRecordTimerRef.current) window.clearTimeout(maxRecordTimerRef.current);
     stopSpeech();
     stopSilenceMonitor();
+    clearBargeInMonitor();
     try {
       if (mediaRef.current?.state === "recording") mediaRef.current.stop();
     } catch {
@@ -445,6 +531,7 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
   const compactAvatar = transcript.length > 1;
 
   const statusText = (() => {
+    if (interrupted && phase === "listening") return callInterruptedMessage(userLang);
     if (phase === "idle") return callConnectingMessage(userLang);
     if (phase === "thinking") return waitTranscribingMessage(userLang);
     if (phase === "speaking") return callSpeakingMessage(userLang);
@@ -558,8 +645,8 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
             onClick={handleMicTap}
             disabled={phase === "thinking" || phase === "idle"}
             className="w-12 h-12 rounded-full bg-muted hover:bg-muted/80 flex items-center justify-center shadow-md disabled:opacity-40 transition"
-            aria-label="Send or interrupt"
-            title="Tap to send now, or to interrupt"
+            aria-label="Send now (optional)"
+            title="Mic listens automatically — tap only to send early or interrupt"
           >
             <Mic className="w-5 h-5 text-foreground" />
           </button>
