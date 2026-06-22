@@ -112,6 +112,8 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
   const greetedRef = useRef(false);
   const bargeInFrameRef = useRef<number | null>(null);
   const bargeInCtxRef = useRef<AudioContext | null>(null);
+  const bargeStreamRef = useRef<MediaStream | null>(null);
+  const bargeTriggeredRef = useRef(false);
   const speechGenRef = useRef(0);
   const chatAbortRef = useRef<AbortController | null>(null);
 
@@ -158,7 +160,94 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
     bargeInFrameRef.current = null;
     bargeInCtxRef.current?.close().catch(() => undefined);
     bargeInCtxRef.current = null;
+    bargeStreamRef.current?.getTracks().forEach((t) => t.stop());
+    bargeStreamRef.current = null;
+    bargeTriggeredRef.current = false;
   };
+
+  const interruptAndListen = useCallback(() => {
+    if (closedRef.current || bargeTriggeredRef.current) return;
+    bargeTriggeredRef.current = true;
+    speechGenRef.current += 1;
+    chatAbortRef.current?.abort();
+    chatAbortRef.current = null;
+    stopSpeech();
+    clearBargeInMonitor();
+    processingRef.current = false;
+    setInterrupted(true);
+    setPhaseBoth("listening");
+    window.setTimeout(() => {
+      if (!closedRef.current) startListening();
+    }, 50);
+  }, []);
+
+  const startBargeInMonitor = useCallback(async () => {
+    clearBargeInMonitor();
+    if (closedRef.current || phaseRef.current !== "speaking") return;
+
+    try {
+      const bargeStream = await navigator.mediaDevices.getUserMedia({
+        audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: true },
+      });
+      if (closedRef.current || phaseRef.current !== "speaking") {
+        bargeStream.getTracks().forEach((t) => t.stop());
+        return;
+      }
+      bargeStreamRef.current = bargeStream;
+
+      const AudioCtx = window.AudioContext || (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+      if (!AudioCtx) return;
+      const audioCtx = new AudioCtx();
+      await audioCtx.resume();
+      bargeInCtxRef.current = audioCtx;
+      const source = audioCtx.createMediaStreamSource(bargeStream);
+      const analyser = audioCtx.createAnalyser();
+      analyser.fftSize = 1024;
+      source.connect(analyser);
+      const data = new Uint8Array(analyser.fftSize);
+
+      let baseline = 0.012;
+      let spikeSince = 0;
+      const calibrateUntil = Date.now() + 700;
+
+      const monitor = () => {
+        if (closedRef.current || phaseRef.current !== "speaking" || bargeTriggeredRef.current) {
+          clearBargeInMonitor();
+          return;
+        }
+        analyser.getByteTimeDomainData(data);
+        let sum = 0;
+        for (const value of data) {
+          const n = (value - 128) / 128;
+          sum += n * n;
+        }
+        const volume = Math.sqrt(sum / data.length);
+        const now = Date.now();
+
+        if (now < calibrateUntil) {
+          baseline = Math.max(baseline, volume * 0.35 + baseline * 0.65);
+        } else {
+          baseline = baseline * 0.992 + volume * 0.008;
+        }
+
+        const spike = volume - baseline;
+        if (spike > 0.022 && volume > 0.045) {
+          spikeSince ||= now;
+          if (now - spikeSince > 220) {
+            interruptAndListen();
+            return;
+          }
+        } else {
+          spikeSince = 0;
+        }
+        bargeInFrameRef.current = requestAnimationFrame(monitor);
+      };
+      bargeInFrameRef.current = requestAnimationFrame(monitor);
+    } catch (err) {
+      console.warn("Barge-in mic unavailable:", err);
+      clearBargeInMonitor();
+    }
+  }, [interruptAndListen]);
 
   const speak = useCallback(
     (text: string, lang: string | null) => speakText(text, { lang, priority: true, preferFemale: true }),
@@ -175,74 +264,13 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
     }, delay);
   }, []);
 
-  const interruptAndListen = useCallback(() => {
-    if (closedRef.current) return;
-    speechGenRef.current += 1;
-    chatAbortRef.current?.abort();
-    chatAbortRef.current = null;
-    stopSpeech();
-    clearBargeInMonitor();
-    processingRef.current = false;
-    setInterrupted(true);
-    setPhaseBoth("idle");
-    window.setTimeout(() => {
-      if (!closedRef.current) startListening();
-    }, 80);
-  }, []);
-
-  const startBargeInMonitor = useCallback(() => {
-    clearBargeInMonitor();
-    const stream = streamRef.current;
-    if (!stream?.active) return;
-
-    try {
-      const AudioCtx = window.AudioContext || (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
-      if (!AudioCtx) return;
-      const audioCtx = new AudioCtx();
-      bargeInCtxRef.current = audioCtx;
-      const source = audioCtx.createMediaStreamSource(stream);
-      const analyser = audioCtx.createAnalyser();
-      analyser.fftSize = 1024;
-      source.connect(analyser);
-      const data = new Uint8Array(analyser.fftSize);
-      let loudSince = 0;
-
-      const monitor = () => {
-        if (closedRef.current || phaseRef.current !== "speaking") {
-          clearBargeInMonitor();
-          return;
-        }
-        analyser.getByteTimeDomainData(data);
-        let sum = 0;
-        for (const value of data) {
-          const n = (value - 128) / 128;
-          sum += n * n;
-        }
-        const volume = Math.sqrt(sum / data.length);
-        const now = Date.now();
-        if (volume > 0.045) {
-          loudSince ||= now;
-          if (now - loudSince > 350) {
-            interruptAndListen();
-            return;
-          }
-        } else {
-          loudSince = 0;
-        }
-        bargeInFrameRef.current = requestAnimationFrame(monitor);
-      };
-      bargeInFrameRef.current = requestAnimationFrame(monitor);
-    } catch {
-      clearBargeInMonitor();
-    }
-  }, [interruptAndListen]);
-
   const playAdvisorSpeech = useCallback(
     async (text: string, lang: string | null) => {
       const gen = ++speechGenRef.current;
+      bargeTriggeredRef.current = false;
       setInterrupted(false);
       setPhaseBoth("speaking");
-      startBargeInMonitor();
+      void startBargeInMonitor();
       try {
         await speak(text, lang);
       } finally {
@@ -381,11 +409,13 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
 
   function startListening() {
     if (closedRef.current) return;
-    if (processingRef.current || phaseRef.current === "thinking" || phaseRef.current === "speaking") return;
+    if (processingRef.current || phaseRef.current === "thinking") return;
+    if (phaseRef.current === "speaking" && !bargeTriggeredRef.current) return;
     const stream = streamRef.current;
     if (!stream || !stream.active) return;
     if (mediaRef.current?.state === "recording") return;
     setInterrupted(false);
+    bargeTriggeredRef.current = false;
     stopSilenceMonitor();
     const mimeType = getSupportedMimeType();
     const rec = mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream);

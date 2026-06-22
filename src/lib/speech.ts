@@ -8,8 +8,8 @@ let objectUrl: string | null = null;
 let unlocked = false;
 let pendingPlayResolve: ((ok: boolean) => void) | null = null;
 let ttsAbort: AbortController | null = null;
+let playWatchTimer: ReturnType<typeof setInterval> | null = null;
 
-// Tiny silent WAV to unlock mobile/desktop audio during live call
 const SILENT_WAV =
   "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==";
 
@@ -22,19 +22,33 @@ function finishPendingPlay(ok: boolean) {
   resolve(ok);
 }
 
+function clearPlayWatch() {
+  if (playWatchTimer) {
+    clearInterval(playWatchTimer);
+    playWatchTimer = null;
+  }
+}
+
+function killAudioElement(el: HTMLAudioElement | null) {
+  if (!el) return;
+  el.onended = null;
+  el.onerror = null;
+  try {
+    el.volume = 0;
+    el.pause();
+    el.currentTime = 0;
+  } catch {
+    /* ignore */
+  }
+  el.removeAttribute("src");
+  el.load();
+}
+
 function cleanupAudio() {
+  clearPlayWatch();
   finishPendingPlay(false);
   if (audio) {
-    audio.onended = null;
-    audio.onerror = null;
-    try {
-      audio.pause();
-      audio.currentTime = 0;
-    } catch {
-      /* ignore */
-    }
-    audio.removeAttribute("src");
-    audio.load();
+    killAudioElement(audio);
     audio = null;
   }
   if (objectUrl) {
@@ -48,7 +62,6 @@ function ttsEndpoint(): string {
   return `${window.location.origin}/api/tts`;
 }
 
-/** Call once after mic permission — needed for TTS during live call. */
 export async function unlockAudioPlayback(): Promise<void> {
   if (unlocked) return;
   try {
@@ -57,7 +70,7 @@ export async function unlockAudioPlayback(): Promise<void> {
     await el.play();
     unlocked = true;
   } catch {
-    // ignore — will retry before speak
+    /* ignore */
   }
 }
 
@@ -73,20 +86,21 @@ function playBlob(blob: Blob, token: number): Promise<boolean> {
       const el = new Audio(url);
       el.setAttribute("playsinline", "true");
       audio = el;
+
       const finish = async (ok: boolean) => {
         if (pendingPlayResolve !== resolve) return;
         pendingPlayResolve = null;
+        clearPlayWatch();
         if (!ok && retry && token === activeToken) {
-          await unlockAudioPlayback();
+          if (audio === el) {
+            killAudioElement(el);
+            audio = null;
+          }
           resolve(await attempt(false));
           return;
         }
         if (audio === el) {
-          audio.onended = null;
-          audio.onerror = null;
-          audio.pause();
-          audio.removeAttribute("src");
-          audio.load();
+          killAudioElement(el);
           audio = null;
         }
         if (objectUrl === url) {
@@ -95,9 +109,14 @@ function playBlob(blob: Blob, token: number): Promise<boolean> {
         }
         resolve(ok && token === activeToken);
       };
-      el.onended = () => finish(true);
-      el.onerror = () => finish(false);
-      el.play().then(() => undefined).catch(() => finish(false));
+
+      playWatchTimer = setInterval(() => {
+        if (token !== activeToken) void finish(false);
+      }, 40);
+
+      el.onended = () => void finish(true);
+      el.onerror = () => void finish(false);
+      el.play().then(() => undefined).catch(() => void finish(false));
     });
 
   return attempt(true);
@@ -149,7 +168,7 @@ async function speakViaBhashini(
     const played = await playBlob(blob, token);
     if (!played || token !== activeToken) return false;
     if (i < chunks.length - 1) {
-      await delay(120);
+      await delay(80);
       if (token !== activeToken) return false;
     }
   }
@@ -191,8 +210,21 @@ async function speakViaBrowserSynth(
       const voice = pickFemaleVoice(locale);
       if (voice) utter.voice = voice;
     }
-    utter.onend = () => resolve(token === activeToken);
-    utter.onerror = () => resolve(false);
+    const tick = setInterval(() => {
+      if (token !== activeToken) {
+        clearInterval(tick);
+        window.speechSynthesis.cancel();
+        resolve(false);
+      }
+    }, 40);
+    utter.onend = () => {
+      clearInterval(tick);
+      resolve(token === activeToken);
+    };
+    utter.onerror = () => {
+      clearInterval(tick);
+      resolve(false);
+    };
     window.speechSynthesis.cancel();
     window.speechSynthesis.speak(utter);
   });
@@ -231,11 +263,6 @@ export function stopSpeech(): void {
   speechChain = Promise.resolve();
 }
 
-/** Hard-stop playback for live-call barge-in. */
-export function interruptSpeech(): void {
-  stopSpeech();
-}
-
 export function pauseSpeech(): boolean {
   if (!audio || audio.paused) return false;
   audio.pause();
@@ -249,16 +276,13 @@ export function resumeSpeech(): boolean {
 }
 
 export function isSpeechPaused(): boolean {
-  return !!audio && audio.paused;
+  return !!audio && !audio.paused;
 }
 
 export type SpeakOptions = {
   lang?: string | null;
-  /** Skip queue — use for live call replies */
   priority?: boolean;
-  /** Use lang exactly (e.g. ration advisory welcome after language pick) */
   forceLang?: boolean;
-  /** Prefer a female voice for browser TTS fallback */
   preferFemale?: boolean;
 };
 
@@ -280,7 +304,6 @@ export function speakText(text: string, options: SpeakOptions = {}): Promise<voi
   return task;
 }
 
-/** Resolves when all queued TTS has finished (or been cancelled). */
 export function waitForSpeechIdle(): Promise<void> {
   return speechChain.catch(() => undefined);
 }
