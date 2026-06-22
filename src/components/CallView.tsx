@@ -216,15 +216,20 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
       bargeTriggeredRef.current = false;
       setInterrupted(false);
 
+      setPhaseBoth("speaking");
+
       const stream = streamRef.current;
       if (stream?.active) {
         clearBargeWatch();
-        bargeWatchRef.current = startCallBargeInWithStream(userLangRef.current, stream, () => {
-          interruptAndListen();
-        });
+        bargeWatchRef.current = startCallBargeInWithStream(
+          userLangRef.current,
+          stream,
+          text,
+          () => interruptAndListen(),
+          () => phaseRef.current === "speaking" && !bargeTriggeredRef.current,
+        );
       }
 
-      setPhaseBoth("speaking");
       try {
         await speak(text, lang);
       } finally {
@@ -458,7 +463,7 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
           audio: {
-            echoCancellation: true,
+            echoCancellation: false,
             noiseSuppression: true,
             autoGainControl: true,
           },

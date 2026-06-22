@@ -486,7 +486,7 @@ function analyserRms(analyser: AnalyserNode): number {
 
 /** RMS of advisor TTS output — reference for echo subtraction (ElevenLabs-style). */
 export function getCallReferenceLevel(): number {
-  if (!callRefAnalyser || !isCallPlaybackActive()) return 0;
+  if (!callRefAnalyser) return 0;
   return analyserRms(callRefAnalyser);
 }
 

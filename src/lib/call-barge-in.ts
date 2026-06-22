@@ -1,43 +1,139 @@
 /**
  * ElevenLabs-style barge-in without ElevenLabs:
- * - Mic stays open while the advisor speaks (detection only — no recording)
- * - TTS reference level is subtracted from mic level so agent voice does not trigger interrupt
- * - On interrupt: client flushes TTS immediately (speech.ts flushCallPlayback)
- *
- * We do NOT use SpeechRecognition during TTS — it transcribes the advisor's own voice
- * from the speaker ("नमस्ते…") and causes false interrupts.
+ * 1. Flush TTS immediately on interrupt (speech.ts)
+ * 2. Do NOT record during advisor speech — record only after flush
+ * 3. Detect farmer speech via STT + energy VAD in parallel
+ * 4. Filter STT so advisor TTS echo ("नमस्ते…") does not false-trigger
  */
-import {
-  attachCallMicAnalyser,
-  getCallReferenceLevel,
-  isCallPlaybackActive,
-} from "@/lib/speech";
+import { browserSttLocale } from "@/lib/browserStt";
+import { attachCallMicAnalyser, getCallReferenceLevel } from "@/lib/speech";
 
 export type CallBargeInHandle = {
   stop: () => void;
 };
 
-export type EchoAwareBargeInOptions = {
+type SpeechRecognitionCtor = new () => SpeechRecognition;
+
+function getSpeechRecognition(): SpeechRecognitionCtor | null {
+  if (typeof window === "undefined") return null;
+  const w = window as Window & {
+    SpeechRecognition?: SpeechRecognitionCtor;
+    webkitSpeechRecognition?: SpeechRecognitionCtor;
+  };
+  return w.SpeechRecognition || w.webkitSpeechRecognition || null;
+}
+
+function normalizeSpeech(s: string): string {
+  return s
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}\s]/gu, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+/** True when STT likely picked up the advisor's own TTS from the speaker. */
+export function isAdvisorEchoTranscript(transcript: string, advisorText: string): boolean {
+  const t = normalizeSpeech(transcript);
+  const a = normalizeSpeech(advisorText);
+  if (t.length < 2) return true;
+  if (a.includes(t)) return true;
+  const words = t.split(" ").filter((w) => w.length > 1);
+  if (words.length === 0) return true;
+  const overlap = words.filter((w) => a.includes(w)).length;
+  if (overlap / words.length >= 0.65) return true;
+  return false;
+}
+
+export type CallBargeInOptions = {
   stream: MediaStream;
+  langCode: string;
+  advisorText: string;
   onInterrupt: () => void;
-  /** Ignore spikes until TTS has started (ms). */
-  armDelayMs?: number;
+  /** True while call UI is in speaking phase (covers gaps between TTS chunks). */
+  isSpeaking: () => boolean;
 };
 
-/**
- * Echo-aware voice-activity barge-in.
- * Fires when mic energy exceeds advisor TTS reference + margin (farmer is speaking).
- */
-export function startEchoAwareBargeIn(options: EchoAwareBargeInOptions): CallBargeInHandle {
-  const { stream, onInterrupt, armDelayMs = 450 } = options;
+function chainStop(...handles: CallBargeInHandle[]): CallBargeInHandle {
+  return {
+    stop: () => handles.forEach((h) => h.stop()),
+  };
+}
+
+function startSttBargeIn(options: CallBargeInOptions, fireOnce: () => void): CallBargeInHandle {
+  const SR = getSpeechRecognition();
+  if (!SR) return { stop: () => undefined };
+
+  const { langCode, advisorText, isSpeaking } = options;
+  let rec: SpeechRecognition | null = null;
+  let stopped = false;
+  const sttArmedAt = Date.now() + 750;
+
+  try {
+    rec = new SR();
+    rec.lang = browserSttLocale(langCode);
+    rec.continuous = true;
+    rec.interimResults = true;
+    rec.maxAlternatives = 1;
+
+    rec.onresult = (event: SpeechRecognitionEvent) => {
+      if (stopped || Date.now() < sttArmedAt || !isSpeaking()) return;
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const result = event.results[i];
+        const text = result[0]?.transcript?.trim() || "";
+        if (text.length < 3) continue;
+        if (isAdvisorEchoTranscript(text, advisorText)) continue;
+        if (result.isFinal || text.length >= 4) {
+          fireOnce();
+          return;
+        }
+      }
+    };
+
+    rec.onerror = (event: SpeechRecognitionErrorEvent) => {
+      if (event.error === "aborted" || event.error === "no-speech") return;
+    };
+
+    rec.onend = () => {
+      if (!stopped && isSpeaking()) {
+        try {
+          rec?.start();
+        } catch {
+          /* ignore */
+        }
+      }
+    };
+
+    rec.start();
+  } catch {
+    return { stop: () => undefined };
+  }
+
+  return {
+    stop: () => {
+      stopped = true;
+      try {
+        rec?.abort();
+      } catch {
+        try {
+          rec?.stop();
+        } catch {
+          /* ignore */
+        }
+      }
+      rec = null;
+    },
+  };
+}
+
+function startEnergyBargeIn(options: CallBargeInOptions, fireOnce: () => void): CallBargeInHandle {
+  const { stream, isSpeaking } = options;
   let frame = 0;
   let stopped = false;
-  let fired = false;
   let detachMic: (() => void) | null = null;
   let micAnalyser: AnalyserNode | null = null;
-  const armedAt = Date.now() + armDelayMs;
   let spikeSince = 0;
-  let echoGain = 0.88;
+  let baseline = 0.015;
+  const calibrateUntil = Date.now() + 500;
 
   const micRms = (): number => {
     if (!micAnalyser) return 0;
@@ -52,33 +148,33 @@ export function startEchoAwareBargeIn(options: EchoAwareBargeInOptions): CallBar
   };
 
   const tick = () => {
-    if (stopped || fired) return;
-    const now = Date.now();
-    if (now < armedAt) {
-      frame = requestAnimationFrame(tick);
-      return;
-    }
-    if (!isCallPlaybackActive()) {
+    if (stopped) return;
+    if (!isSpeaking()) {
       frame = requestAnimationFrame(tick);
       return;
     }
 
     const micLevel = micRms();
     const refLevel = getCallReferenceLevel();
+    const now = Date.now();
 
-    if (refLevel > 0.012) {
-      echoGain = echoGain * 0.992 + 0.92 * 0.008;
-      const echoFloor = refLevel * echoGain + 0.018;
-      const userExcess = micLevel - echoFloor;
-      if (userExcess > 0.042 && micLevel > 0.055) {
-        spikeSince ||= now;
-        if (now - spikeSince > 320) {
-          fired = true;
-          onInterrupt();
-          return;
-        }
-      } else {
-        spikeSince = 0;
+    if (now < calibrateUntil) {
+      baseline = Math.max(baseline, micLevel * 0.35 + baseline * 0.65);
+    } else {
+      baseline = baseline * 0.985 + micLevel * 0.015;
+    }
+
+    const spike = micLevel - baseline;
+    const loudUser = micLevel > 0.065;
+    const clearSpike = spike > 0.028 && micLevel > 0.042;
+    const overEcho =
+      refLevel > 0.01 && micLevel > refLevel * 1.35 + 0.022 && micLevel > 0.048;
+
+    if (loudUser || clearSpike || overEcho) {
+      spikeSince ||= now;
+      if (now - spikeSince > 180) {
+        fireOnce();
+        return;
       }
     } else {
       spikeSince = 0;
@@ -108,11 +204,27 @@ export function startEchoAwareBargeIn(options: EchoAwareBargeInOptions): CallBar
   };
 }
 
-/** @deprecated Use startEchoAwareBargeIn — STT during TTS causes false interrupts. */
 export function startCallBargeInWithStream(
-  _langCode: string,
+  langCode: string,
   stream: MediaStream,
+  advisorText: string,
   onInterrupt: () => void,
+  isSpeaking: () => boolean,
 ): CallBargeInHandle {
-  return startEchoAwareBargeIn({ stream, onInterrupt });
+  let fired = false;
+  const fireOnce = () => {
+    if (fired) return;
+    fired = true;
+    onInterrupt();
+  };
+
+  const opts: CallBargeInOptions = {
+    stream,
+    langCode,
+    advisorText,
+    onInterrupt,
+    isSpeaking,
+  };
+
+  return chainStop(startSttBargeIn(opts, fireOnce), startEnergyBargeIn(opts, fireOnce));
 }
