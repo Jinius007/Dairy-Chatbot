@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { PhoneOff, Mic, Loader2, PhoneCall, Milk } from "lucide-react";
+import { PhoneOff, Mic, Loader2, PhoneCall, Volume2, X } from "lucide-react";
 import { toast } from "sonner";
-import { ElevenLabsCallPanel } from "@/components/ElevenLabsCallPanel";
 import { supabase, isSupabaseConfigured } from "@/integrations/supabase/client";
 import { LANG_NAMES, detectLanguageCode, resolveTtsLanguage } from "@/lib/languages";
 import { speakText, stopSpeech, unlockAudioPlayback } from "@/lib/speech";
@@ -11,6 +10,18 @@ import {
   containsAbusiveLanguage,
   filterAbusiveLanguage,
 } from "@/lib/content-safety";
+import {
+  callConnectingMessage,
+  callListeningMessage,
+  callProcessingMessage,
+  callSpeakingMessage,
+  waitTranscribingMessage,
+} from "@/lib/wait-messages";
+
+export const ADVISOR_AVATAR_PATH = "/pashu-advisor-avatar.jpeg";
+
+const GREETING_HI =
+  "नमस्ते! मैं PashuMitra हूँ — आपका पशु और डेयरी सलाहकार। अपनी भाषा में बोलिए, मैं उसी में जवाब दूँगा।";
 
 export interface CallTurn {
   id: string;
@@ -40,7 +51,6 @@ type TranscriptItem = {
 function splitLangHeader(text: unknown): { lang: string | null; body: string } {
   let source = typeof text === "string" ? text : "";
   let lang: string | null = null;
-  // Match [[LANG:xx]], [LANG:xx], or bare LANG:xx — anywhere, case-insensitive.
   const re = /\[?\[?\s*LANG\s*:\s*([a-zA-Z]{2})\s*\]?\]?/i;
   const m = source.match(re);
   if (m) {
@@ -64,10 +74,11 @@ function arrayBufferToBase64(buffer: ArrayBuffer): string {
 function readTextPayload(data: unknown): string {
   if (typeof data === "string") return data;
   if (!data || typeof data !== "object") return "";
-  const payload = data as Record<string, any>;
+  const payload = data as Record<string, unknown>;
   if (typeof payload.text === "string") return payload.text;
   if (typeof payload.message === "string") return payload.message;
-  const choiceText = payload.choices?.[0]?.message?.content;
+  const choices = payload.choices as { message?: { content?: string } }[] | undefined;
+  const choiceText = choices?.[0]?.message?.content;
   return typeof choiceText === "string" ? choiceText : "";
 }
 
@@ -79,6 +90,8 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
   const [seconds, setSeconds] = useState(0);
   const [phase, setPhase] = useState<Phase>("idle");
   const [transcript, setTranscript] = useState<TranscriptItem[]>([]);
+  const [speakLevel, setSpeakLevel] = useState(0);
+  const [userLang, setUserLang] = useState("hi");
 
   const turnsRef = useRef<CallTurn[]>([]);
   const historyRef = useRef<{ role: "user" | "assistant"; content: string }[]>([...history]);
@@ -94,8 +107,12 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyserFrameRef = useRef<number | null>(null);
   const transcriptScrollRef = useRef<HTMLDivElement>(null);
+  const greetedRef = useRef(false);
 
-  const setPhaseBoth = (p: Phase) => { phaseRef.current = p; setPhase(p); };
+  const setPhaseBoth = (p: Phase) => {
+    phaseRef.current = p;
+    setPhase(p);
+  };
 
   const appendTranscript = (item: TranscriptItem) => {
     setTranscript((prev) => [...prev, item]);
@@ -107,6 +124,21 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
       behavior: "smooth",
     });
   }, [transcript, phase]);
+
+  useEffect(() => {
+    if (phase !== "speaking") {
+      setSpeakLevel(0);
+      return;
+    }
+    let frame = 0;
+    const tick = () => {
+      const t = Date.now() / 1000;
+      setSpeakLevel(0.25 + 0.55 * Math.abs(Math.sin(t * 7.5)));
+      frame = requestAnimationFrame(tick);
+    };
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, [phase]);
 
   const stopSilenceMonitor = () => {
     if (analyserFrameRef.current) cancelAnimationFrame(analyserFrameRef.current);
@@ -122,9 +154,7 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
 
   const scheduleListening = useCallback((delay = 250) => {
     if (closedRef.current) return;
-    if (phaseRef.current === "speaking") {
-      return;
-    }
+    if (phaseRef.current === "speaking") return;
     if (restartTimerRef.current) window.clearTimeout(restartTimerRef.current);
     restartTimerRef.current = window.setTimeout(() => {
       restartTimerRef.current = null;
@@ -132,7 +162,6 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
     }, delay);
   }, []);
 
-  // Process one recorded turn: transcribe -> chat -> speak -> start next
   const processBlob = async (blob: Blob, mime: string) => {
     if (!supabase || !isSupabaseConfigured) {
       toast.error("Supabase is not configured on this deployment.");
@@ -150,27 +179,34 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
         body: { audioBase64: b64, mimeType: mime },
       });
       if (tErr) throw tErr;
-      if ((tData as any)?.blocked) {
+      if ((tData as { blocked?: boolean })?.blocked) {
         toast.message("Please use respectful language.");
         scheduleListening(500);
         return;
       }
-      const transcript = filterAbusiveLanguage(
-        typeof (tData as any)?.transcript === "string" ? (tData as any).transcript.trim() : "",
+      const userText = filterAbusiveLanguage(
+        typeof (tData as { transcript?: string })?.transcript === "string"
+          ? (tData as { transcript: string }).transcript.trim()
+          : "",
       );
-      if (!transcript || containsAbusiveLanguage(transcript)) {
+      if (!userText || containsAbusiveLanguage(userText)) {
         toast.message("Didn't catch that — please speak again.");
         scheduleListening(500);
         return;
       }
-      const detectedLang = detectLanguageCode(transcript);
+      const detectedLang = detectLanguageCode(userText);
+      setUserLang(detectedLang);
       const userTurn: CallTurn = {
-        id: crypto.randomUUID(), role: "user", content: transcript,
-        language: detectedLang, is_voice: true, created_at: new Date().toISOString(),
+        id: crypto.randomUUID(),
+        role: "user",
+        content: userText,
+        language: detectedLang,
+        is_voice: true,
+        created_at: new Date().toISOString(),
       };
       turnsRef.current.push(userTurn);
-      appendTranscript({ id: userTurn.id, role: "user", content: transcript, language: detectedLang });
-      historyRef.current.push({ role: "user", content: transcript });
+      appendTranscript({ id: userTurn.id, role: "user", content: userText, language: detectedLang });
+      historyRef.current.push({ role: "user", content: userText });
 
       const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
       const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
@@ -189,7 +225,7 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
         }),
       });
       const payload = await chatRes.json().catch(() => ({}));
-      if (!chatRes.ok) throw new Error(payload?.error || `Chat failed (${chatRes.status})`);
+      if (!chatRes.ok) throw new Error((payload as { error?: string })?.error || `Chat failed (${chatRes.status})`);
       const raw = readTextPayload(payload);
       const parsed = splitLangHeader(raw);
       const body = filterAbusiveLanguage(parsed.body);
@@ -197,8 +233,12 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
       const answer = body.trim();
       if (!answer) throw new Error("No answer was generated. Please try again.");
       const assistantTurn: CallTurn = {
-        id: crypto.randomUUID(), role: "assistant", content: answer,
-        language: lang, is_voice: true, created_at: new Date().toISOString(),
+        id: crypto.randomUUID(),
+        role: "assistant",
+        content: answer,
+        language: lang,
+        is_voice: true,
+        created_at: new Date().toISOString(),
       };
       historyRef.current.push({ role: "assistant", content: answer });
       turnsRef.current.push(assistantTurn);
@@ -207,7 +247,7 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
       void logConversationTurn({
         session_id: getSessionId(),
         conversation_id: conversationId ?? null,
-        question: transcript,
+        question: userText,
         answer,
         duration_ms: Date.now() - startedAt,
         language: lang,
@@ -217,11 +257,12 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
 
       if (closedRef.current) return;
 
-      // Stop mic capture so TTS can play through speakers (Chrome blocks otherwise)
       stopSilenceMonitor();
       try {
         if (mediaRef.current?.state === "recording") mediaRef.current.stop();
-      } catch {}
+      } catch {
+        /* ignore */
+      }
       mediaRef.current = null;
 
       await unlockAudioPlayback();
@@ -231,9 +272,9 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
         setPhaseBoth("idle");
         scheduleListening(450);
       }
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error(e);
-      toast.error(e?.message || "Something went wrong");
+      toast.error(e instanceof Error ? e.message : "Something went wrong");
       if (!closedRef.current) scheduleListening(800);
     } finally {
       processingRef.current = false;
@@ -256,17 +297,18 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
       stopSilenceMonitor();
       if (maxRecordTimerRef.current) window.clearTimeout(maxRecordTimerRef.current);
       maxRecordTimerRef.current = null;
-      const blob = new Blob(chunksRef.current, { type: blobType });
-      if (blob.size < 1200) {
+      const recorded = new Blob(chunksRef.current, { type: blobType });
+      if (recorded.size < 1200) {
         if (!closedRef.current) scheduleListening(500);
         return;
       }
-      processBlob(blob, blobType);
+      void processBlob(recorded, blobType);
     };
     rec.start();
     mediaRef.current = rec;
     try {
-      const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+      const AudioCtx = window.AudioContext || (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+      if (!AudioCtx) throw new Error("AudioContext unavailable");
       const audioCtx = new AudioCtx();
       audioContextRef.current = audioCtx;
       const source = audioCtx.createMediaStreamSource(stream);
@@ -310,11 +352,9 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
   }
 
   const handleMicTap = () => {
-    // Tap to stop recording and submit current turn
     if (phaseRef.current === "listening" && mediaRef.current?.state === "recording") {
       mediaRef.current.stop();
     } else if (phaseRef.current === "speaking") {
-      // Interrupt the assistant and start listening
       stopSpeech();
       scheduleListening(100);
     }
@@ -323,6 +363,7 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
   useEffect(() => {
     if (!open) return;
     closedRef.current = false;
+    greetedRef.current = false;
     turnsRef.current = [];
     historyRef.current = [...history];
     setTranscript(
@@ -334,6 +375,7 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
     );
     setSeconds(0);
     setPhaseBoth("idle");
+    setUserLang("hi");
     timerRef.current = window.setInterval(() => setSeconds((s) => s + 1), 1000) as unknown as number;
 
     (async () => {
@@ -341,8 +383,17 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         streamRef.current = stream;
         await unlockAudioPlayback();
-        startListening();
-      } catch (e: any) {
+
+        if (!greetedRef.current && history.length === 0) {
+          greetedRef.current = true;
+          appendTranscript({ id: "greeting", role: "assistant", content: GREETING_HI, language: "hi" });
+          historyRef.current.push({ role: "assistant", content: GREETING_HI });
+          setPhaseBoth("speaking");
+          await speak(GREETING_HI, "hi");
+        }
+
+        if (!closedRef.current) startListening();
+      } catch (e) {
         console.error(e);
         toast.error("Please allow microphone access to start the call.");
       }
@@ -355,7 +406,11 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
       if (maxRecordTimerRef.current) window.clearTimeout(maxRecordTimerRef.current);
       stopSpeech();
       stopSilenceMonitor();
-      try { mediaRef.current?.state === "recording" && mediaRef.current.stop(); } catch {}
+      try {
+        if (mediaRef.current?.state === "recording") mediaRef.current.stop();
+      } catch {
+        /* ignore */
+      }
       streamRef.current?.getTracks().forEach((t) => t.stop());
       streamRef.current = null;
       stopSpeech();
@@ -369,7 +424,11 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
     if (maxRecordTimerRef.current) window.clearTimeout(maxRecordTimerRef.current);
     stopSpeech();
     stopSilenceMonitor();
-    try { mediaRef.current?.state === "recording" && mediaRef.current.stop(); } catch {}
+    try {
+      if (mediaRef.current?.state === "recording") mediaRef.current.stop();
+    } catch {
+      /* ignore */
+    }
     streamRef.current?.getTracks().forEach((t) => t.stop());
     streamRef.current = null;
     if (timerRef.current) window.clearInterval(timerRef.current);
@@ -380,91 +439,139 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
 
   const mm = String(Math.floor(seconds / 60)).padStart(2, "0");
   const ss = String(seconds % 60).padStart(2, "0");
+  const active = phase === "speaking" || speakLevel > 0.06;
+  const mouthScale = 1 + Math.min(speakLevel * 0.55, 0.28);
+  const glowStrength = Math.min(0.2 + speakLevel * 0.8, 1);
+  const compactAvatar = transcript.length > 1;
 
-  const statusText =
-    phase === "listening" ? "🎙️ Listening… speak now" :
-    phase === "thinking" ? "Thinking…" :
-    phase === "speaking" ? "Speaking… (tap mic to interrupt)" :
-    "Connecting…";
+  const statusText = (() => {
+    if (phase === "idle") return callConnectingMessage(userLang);
+    if (phase === "thinking") return waitTranscribingMessage(userLang);
+    if (phase === "speaking") return callSpeakingMessage(userLang);
+    if (phase === "listening") return callListeningMessage(userLang);
+    return callProcessingMessage(userLang);
+  })();
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col h-[100dvh] max-h-[100dvh] overflow-hidden bg-gradient-to-b from-[hsl(352,72%,22%)] via-[hsl(352,67%,28%)] to-[hsl(352,75%,16%)] text-white">
-      {/* Header */}
-      <div className="shrink-0 px-4 pt-[max(0.75rem,env(safe-area-inset-top))] pb-2 text-center">
-        <div className="text-xs opacity-80">PashuMitra • Live Call</div>
-        <div className="flex items-center justify-center gap-2 mt-1">
-          <span className="text-lg">🐄</span>
-          <span className="text-base font-semibold">PashuMitra AI</span>
-          <span className="text-xs opacity-70 font-mono">{mm}:{ss}</span>
-        </div>
-      </div>
+    <div className="pashu-call-overlay" role="dialog" aria-modal="true" aria-label="Live voice call">
+      <div className="pashu-call-overlay-backdrop" aria-hidden="true" />
 
-      {/* Status + avatar */}
-      <div className="shrink-0 flex flex-col items-center px-4 py-2">
-        <div className={`w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-white/12 border border-white/20 flex items-center justify-center transition ${
-          phase === "listening" ? "ring-4 ring-secondary/80 animate-pulse" :
-          phase === "speaking" ? "ring-4 ring-white/40" :
-          phase === "thinking" ? "ring-4 ring-secondary/50" : ""
-        }`}>
-          {phase === "thinking" ? <Loader2 className="w-8 h-8 animate-spin" /> : <Milk className="w-9 h-9 sm:w-10 sm:h-10" strokeWidth={1.75} />}
-        </div>
-        <div className="text-center text-xs sm:text-sm opacity-90 mt-2 px-2">{statusText}</div>
-      </div>
+      <div className="pashu-call-overlay-panel pashu-call-overlay-panel--live pashu-call-overlay-panel--with-transcript">
+        <button
+          type="button"
+          onClick={hangUp}
+          className="absolute top-3 right-3 z-20 p-2 rounded-full bg-black/10 text-foreground hover:bg-black/15 transition"
+          aria-label="Close call"
+        >
+          <X className="w-5 h-5" />
+        </button>
 
-      {/* Full transcript */}
-      <div
-        ref={transcriptScrollRef}
-        className="flex-1 min-h-0 overflow-y-auto px-3 py-2 space-y-2 no-scrollbar"
-      >
-        {transcript.length === 0 && phase === "listening" && (
-          <p className="text-center text-xs opacity-60 py-4">Your conversation will appear here as you talk…</p>
-        )}
-        {transcript.map((item) => {
-          const out = item.role === "user";
-          return (
-            <div key={item.id} className={`flex ${out ? "justify-end" : "justify-start"}`}>
-              <div className={`max-w-[88%] px-3 py-2 rounded-2xl text-sm leading-relaxed ${
-                out ? "bg-white/20 border border-white/15 rounded-br-md" : "bg-white/12 border border-white/10 rounded-bl-md"
-              }`}>
-                {!out && item.language && (
-                  <div className="text-[10px] uppercase tracking-wide opacity-60 mb-0.5">
-                    {LANG_NAMES[item.language] || item.language}
-                  </div>
-                )}
-                <div className="whitespace-pre-wrap break-words">{item.content}</div>
-              </div>
-            </div>
-          );
-        })}
-        {phase === "thinking" && (
-          <div className="flex justify-start">
-            <div className="bg-white/15 rounded-2xl rounded-tl-sm px-3 py-2 inline-flex gap-1">
-              <span className="w-1.5 h-1.5 bg-white/70 rounded-full typing-dot" style={{ animationDelay: "0ms" }} />
-              <span className="w-1.5 h-1.5 bg-white/70 rounded-full typing-dot" style={{ animationDelay: "150ms" }} />
-              <span className="w-1.5 h-1.5 bg-white/70 rounded-full typing-dot" style={{ animationDelay: "300ms" }} />
+        <p className="pashu-call-title">
+          PashuMitra live advisor
+          <span className="ml-2 font-mono text-xs opacity-70">{mm}:{ss}</span>
+        </p>
+
+        <div
+          className={`pashu-call-body${compactAvatar ? " pashu-call-body--compact" : ""}`}
+        >
+          <div
+            className={`pashu-advisor-stage${active ? " pashu-advisor-stage--speaking" : " pashu-advisor-stage--idle"}`}
+            style={{
+              ["--speak-level" as string]: String(glowStrength),
+              ["--mouth-scale" as string]: String(mouthScale),
+            }}
+          >
+            <div className="pashu-advisor-glow" aria-hidden="true" />
+            <div className="pashu-advisor-ring" aria-hidden="true" />
+            <div className="pashu-advisor-ring pashu-advisor-ring--outer" aria-hidden="true" />
+            <img src={ADVISOR_AVATAR_PATH} alt="PashuMitra advisor" className="pashu-advisor-image" />
+            <div className="pashu-advisor-mouth-sync" aria-hidden="true">
+              <span className="pashu-advisor-mouth-sync-inner" />
             </div>
           </div>
-        )}
-      </div>
+        </div>
 
-      {/* Controls */}
-      <div className="shrink-0 flex items-center justify-center gap-6 px-4 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))]">
-        <button
-          onClick={handleMicTap}
-          disabled={phase === "thinking" || phase === "idle"}
-          className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-white/15 hover:bg-white/25 flex items-center justify-center shadow-lg disabled:opacity-40"
-          aria-label="Send / interrupt"
-          title="Tap to send now, or to interrupt"
-        >
-          <Mic className="w-6 h-6 sm:w-7 sm:h-7" />
-        </button>
-        <button
-          onClick={hangUp}
-          className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-red-600 hover:bg-red-700 flex items-center justify-center shadow-lg"
-          aria-label="End call"
-        >
-          <PhoneOff className="w-6 h-6 sm:w-7 sm:h-7" />
-        </button>
+        <div className="pashu-call-status">
+          {phase === "thinking" || phase === "idle" ? (
+            <Loader2 className="w-4 h-4 animate-spin text-primary" />
+          ) : phase === "speaking" ? (
+            <Volume2 className="w-4 h-4 text-primary animate-pulse" />
+          ) : (
+            <Mic className={`w-4 h-4 text-primary${phase === "listening" ? " animate-pulse" : ""}`} />
+          )}
+          <span>{statusText}</span>
+        </div>
+
+        {phase === "speaking" && (
+          <div className="pashu-call-wave-bars" aria-hidden="true">
+            {[0, 1, 2, 3, 4, 5, 6].map((i) => (
+              <span
+                key={i}
+                className="pashu-call-wave-bar"
+                style={{ animationDelay: `${i * 0.1}s`, opacity: 0.5 + speakLevel * 0.5 }}
+              />
+            ))}
+          </div>
+        )}
+
+        <div ref={transcriptScrollRef} className="pashu-call-transcript no-scrollbar">
+          {transcript.length === 0 && phase === "listening" && (
+            <p className="text-center text-xs text-muted-foreground py-3">
+              Your conversation will appear here as you talk…
+            </p>
+          )}
+          {transcript.map((item) => {
+            const out = item.role === "user";
+            return (
+              <div key={item.id} className={`flex ${out ? "justify-end" : "justify-start"}`}>
+                <div
+                  className={`max-w-[92%] px-3 py-2 rounded-2xl text-sm leading-relaxed ${
+                    out
+                      ? "bg-primary/15 border border-primary/20 rounded-br-md text-foreground"
+                      : "bg-muted/80 border border-border rounded-bl-md text-foreground"
+                  }`}
+                >
+                  {!out && item.language && (
+                    <div className="text-[10px] uppercase tracking-wide text-muted-foreground mb-0.5">
+                      {LANG_NAMES[item.language] || item.language}
+                    </div>
+                  )}
+                  <div className="whitespace-pre-wrap break-words">{item.content}</div>
+                </div>
+              </div>
+            );
+          })}
+          {phase === "thinking" && (
+            <div className="flex justify-start">
+              <div className="bg-muted/80 rounded-2xl rounded-tl-sm px-3 py-2 inline-flex gap-1">
+                <span className="w-1.5 h-1.5 bg-muted-foreground/70 rounded-full typing-dot" style={{ animationDelay: "0ms" }} />
+                <span className="w-1.5 h-1.5 bg-muted-foreground/70 rounded-full typing-dot" style={{ animationDelay: "150ms" }} />
+                <span className="w-1.5 h-1.5 bg-muted-foreground/70 rounded-full typing-dot" style={{ animationDelay: "300ms" }} />
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="flex items-center justify-center gap-4 w-full">
+          <button
+            type="button"
+            onClick={handleMicTap}
+            disabled={phase === "thinking" || phase === "idle"}
+            className="w-12 h-12 rounded-full bg-muted hover:bg-muted/80 flex items-center justify-center shadow-md disabled:opacity-40 transition"
+            aria-label="Send or interrupt"
+            title="Tap to send now, or to interrupt"
+          >
+            <Mic className="w-5 h-5 text-foreground" />
+          </button>
+          <button
+            type="button"
+            onClick={hangUp}
+            className="pashu-call-end-btn flex items-center gap-2 px-5 py-2.5 rounded-full bg-destructive text-destructive-foreground font-semibold shadow-md hover:opacity-90 transition"
+          >
+            <PhoneOff className="w-4 h-4" />
+            End call
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -495,7 +602,7 @@ export function CallButton() {
           fillOpacity={0.22}
         />
       </button>
-      <ElevenLabsCallPanel key={callSession} open={callOpen} onClose={closeCall} />
+      <CallView key={callSession} open={callOpen} onClose={closeCall} />
     </>
   );
 }

@@ -14,13 +14,11 @@
     "cap:sync": "npm run build && npx cap sync android",
     "cap:open": "npx cap open android",
     "android:apk": "cd android && .\\gradlew.bat assembleDebug",
-    "android:apk:release": "cd android && .\\gradlew.bat assembleRelease",
-    "configure:elevenlabs": "node --env-file=.env scripts/configure-elevenlabs-agent.mjs"
+    "android:apk:release": "cd android && .\\gradlew.bat assembleRelease"
   },
   "dependencies": {
     "@capacitor/android": "7.6.5",
     "@capacitor/core": "7.6.5",
-    "@elevenlabs/react": "^1.6.8",
     "@hookform/resolvers": "^3.10.0",
     "@lovable.dev/cloud-auth-js": "^1.1.2",
     "@radix-ui/react-accordion": "^1.2.11",
