@@ -1,22 +1,31 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ConversationProvider, useConversation } from "@elevenlabs/react";
 import { Loader2, Mic, PhoneOff, Volume2, X } from "lucide-react";
-import { ADVISOR_AVATAR_PATH, ELEVENLABS_AGENT_ID } from "@/lib/elevenlabs";
+import {
+  ADVISOR_AVATAR_PATH,
+  ELEVENLABS_AGENT_ID,
+  buildBargeInUpdate,
+  buildElevenLabsStartOverrides,
+  buildLanguageLockUpdate,
+  ELEVENLABS_LANGUAGE_RULES,
+  isElevenLabsInterruption,
+  isFinalElevenLabsTranscript,
+  parseElevenLabsUserTranscript,
+} from "@/lib/elevenlabs";
+import {
+  SLOW_RESPONSE_MS,
+  callConnectingMessage,
+  callInterruptedMessage,
+  callListeningMessage,
+  callProcessingMessage,
+  callSpeakingMessage,
+} from "@/lib/wait-messages";
 import { toast } from "sonner";
 
 type Props = {
   open: boolean;
   onClose: () => void;
 };
-
-function statusLabel(status: string, isSpeaking: boolean, isListening: boolean, message?: string): string {
-  if (status === "connecting") return "Connecting to advisor…";
-  if (status === "error") return message?.trim() || "Connection failed — please try again";
-  if (status !== "connected") return "Starting call…";
-  if (isSpeaking) return "Advisor is speaking…";
-  if (isListening) return "Listening to you…";
-  return "Live call";
-}
 
 function audioChunkLevel(base64Audio: string): number {
   try {
@@ -43,7 +52,25 @@ function AdvisorCallSession({ onClose }: { onClose: () => void }) {
   onCloseRef.current = onClose;
 
   const audioLevelRef = useRef(0);
+  const languageLockedRef = useRef<string | null>(null);
+  const userLangRef = useRef("hi");
+  const processingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const wasListeningRef = useRef(false);
+  const interruptedRef = useRef(false);
+
+  const [userLang, setUserLang] = useState("hi");
+  const [processingSlow, setProcessingSlow] = useState(false);
+  const [interrupted, setInterrupted] = useState(false);
+  const [speakLevel, setSpeakLevel] = useState(0);
+  const endedRef = useRef(false);
+
+  const sendContextualUpdateRef = useRef<(text: string) => void>(() => {});
+
   const conversation = useConversation({
+    overrides: buildElevenLabsStartOverrides(),
+    onConnect: () => {
+      sendContextualUpdateRef.current(ELEVENLABS_LANGUAGE_RULES);
+    },
     onError: (err) => {
       console.error("ElevenLabs call error:", err);
       toast.error(typeof err === "string" ? err : "Voice call error. Please try again.");
@@ -52,21 +79,65 @@ function AdvisorCallSession({ onClose }: { onClose: () => void }) {
     onAudio: (base64Audio) => {
       audioLevelRef.current = audioChunkLevel(base64Audio);
     },
+    onMessage: (msg) => {
+      if (isElevenLabsInterruption(msg)) {
+        interruptedRef.current = true;
+        setInterrupted(true);
+        setProcessingSlow(false);
+        if (processingTimerRef.current) {
+          clearTimeout(processingTimerRef.current);
+          processingTimerRef.current = null;
+        }
+        return;
+      }
+
+      const transcript = parseElevenLabsUserTranscript(msg);
+      if (!transcript) return;
+
+      const lock = buildLanguageLockUpdate(transcript);
+      if (lock) {
+        if (languageLockedRef.current !== lock.code) {
+          languageLockedRef.current = lock.code;
+          userLangRef.current = lock.code;
+          setUserLang(lock.code);
+          sendContextualUpdateRef.current(lock.text);
+        }
+      }
+
+      if (!isFinalElevenLabsTranscript(msg)) return;
+
+      if (interruptedRef.current) {
+        interruptedRef.current = false;
+        setInterrupted(false);
+        sendContextualUpdateRef.current(buildBargeInUpdate(transcript));
+        return;
+      }
+
+      if (!lock) return;
+    },
   });
 
-  const { status, message, isSpeaking, isListening, startSession, endSession } = conversation;
-  const [speakLevel, setSpeakLevel] = useState(0);
-  const endedRef = useRef(false);
+  const { status, message, isSpeaking, isListening, startSession, endSession, sendContextualUpdate } = conversation;
+  sendContextualUpdateRef.current = sendContextualUpdate ?? (() => {});
 
   useEffect(() => {
     let active = true;
     endedRef.current = false;
+    languageLockedRef.current = null;
+    interruptedRef.current = false;
+    userLangRef.current = "hi";
+    setUserLang("hi");
+    setProcessingSlow(false);
+    setInterrupted(false);
 
     void (async () => {
       try {
         await navigator.mediaDevices.getUserMedia({ audio: true });
         if (!active) return;
-        startSession({ agentId: ELEVENLABS_AGENT_ID });
+        startSession({
+          agentId: ELEVENLABS_AGENT_ID,
+          overrides: buildElevenLabsStartOverrides(),
+        });
       } catch {
         if (!active) return;
         toast.error("Microphone access is required for the voice call.");
@@ -76,6 +147,7 @@ function AdvisorCallSession({ onClose }: { onClose: () => void }) {
 
     return () => {
       active = false;
+      if (processingTimerRef.current) clearTimeout(processingTimerRef.current);
       if (!endedRef.current) {
         endedRef.current = true;
         endSession();
@@ -88,6 +160,39 @@ function AdvisorCallSession({ onClose }: { onClose: () => void }) {
       toast.error(message?.trim() || "Voice call could not start. Please try again.");
     }
   }, [message, status]);
+
+  // Show localized wait when farmer finished speaking but advisor hasn't started yet.
+  useEffect(() => {
+    if (status !== "connected") {
+      setProcessingSlow(false);
+      wasListeningRef.current = false;
+      if (processingTimerRef.current) {
+        clearTimeout(processingTimerRef.current);
+        processingTimerRef.current = null;
+      }
+      return;
+    }
+
+    if (isListening) wasListeningRef.current = true;
+
+    if (isSpeaking) {
+      setProcessingSlow(false);
+      if (processingTimerRef.current) {
+        clearTimeout(processingTimerRef.current);
+        processingTimerRef.current = null;
+      }
+      return;
+    }
+
+    if (wasListeningRef.current && !isListening && !isSpeaking) {
+      if (!processingTimerRef.current) {
+        processingTimerRef.current = setTimeout(() => {
+          setProcessingSlow(true);
+          processingTimerRef.current = null;
+        }, SLOW_RESPONSE_MS);
+      }
+    }
+  }, [isListening, isSpeaking, status]);
 
   useEffect(() => {
     if (status !== "connected") {
@@ -120,6 +225,18 @@ function AdvisorCallSession({ onClose }: { onClose: () => void }) {
   const mouthScale = 1 + Math.min(speakLevel * 0.55, 0.28);
   const glowStrength = Math.min(0.2 + speakLevel * 0.8, 1);
 
+  const statusText = (() => {
+    if (status === "connecting" || (status !== "connected" && status !== "error")) {
+      return callConnectingMessage(userLang);
+    }
+    if (status === "error") return message?.trim() || "Connection failed — please try again";
+    if (interrupted) return callInterruptedMessage(userLang);
+    if (processingSlow && !isSpeaking) return callProcessingMessage(userLang);
+    if (isSpeaking) return callSpeakingMessage(userLang);
+    if (isListening) return callListeningMessage(userLang);
+    return callListeningMessage(userLang);
+  })();
+
   return (
     <>
       <div className="pashu-call-body">
@@ -148,7 +265,7 @@ function AdvisorCallSession({ onClose }: { onClose: () => void }) {
         ) : (
           <Mic className={`w-4 h-4 text-primary${isListening ? " animate-pulse" : ""}`} />
         )}
-        <span>{statusLabel(status, isSpeaking, isListening, message)}</span>
+        <span>{statusText}</span>
       </div>
 
       {status === "connected" && (
@@ -201,7 +318,7 @@ export function ElevenLabsCallPanel({ open, onClose }: Props) {
 
         <p className="pashu-call-title">PashuMitra live advisor</p>
 
-        <ConversationProvider agentId={ELEVENLABS_AGENT_ID}>
+        <ConversationProvider agentId={ELEVENLABS_AGENT_ID} overrides={buildElevenLabsStartOverrides()}>
           <AdvisorCallSession onClose={stableClose} />
         </ConversationProvider>
       </div>

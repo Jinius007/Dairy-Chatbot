@@ -32,6 +32,13 @@ import {
   isYoutubeRequest,
   stripUnverifiedYoutubeUrls,
 } from "@/lib/youtube";
+import { detectLanguageFromMessages } from "@/lib/languages";
+import {
+  SLOW_RESPONSE_MS,
+  resolveUserLang,
+  waitTrafficMessage,
+  waitTranscribingMessage,
+} from "@/lib/wait-messages";
 
 interface Message {
   id: string;
@@ -83,6 +90,8 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
   const [transcribing, setTranscribing] = useState(false);
   const [speakingId, setSpeakingId] = useState<string | null>(null);
   const [paused, setPaused] = useState(false);
+  const [slowWaitByMsg, setSlowWaitByMsg] = useState<Record<string, string>>({});
+  const [activeUserLang, setActiveUserLang] = useState("hi");
   const scrollRef = useRef<HTMLDivElement>(null);
   const abortRef = useRef<AbortController | null>(null);
   const messagesRef = useRef<Message[]>([]);
@@ -151,7 +160,14 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
 
   useEffect(() => () => { abortRef.current?.abort(); }, []);
 
-  const streamReply = async (history: Message[], assistantId: string, latestUserText: string, isVoice = false, startedAt?: number) => {
+  const streamReply = async (
+    history: Message[],
+    assistantId: string,
+    latestUserText: string,
+    isVoice = false,
+    startedAt?: number,
+    userLang = "hi",
+  ) => {
     if (!isSupabaseConfigured) throw new Error("Supabase is not configured on this deployment.");
     abortRef.current?.abort();
     const ctrl = new AbortController();
@@ -161,6 +177,20 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
     const recentUser = history.filter((m) => m.role === "user").slice(-4).map((m) => m.content).join(" ");
     const videoLang = detectLangFromText(latestUserText + recentUser);
 
+    let slowTimer: ReturnType<typeof setTimeout> | null = setTimeout(() => {
+      setSlowWaitByMsg((prev) => ({
+        ...prev,
+        [assistantId]: waitTrafficMessage(userLang),
+      }));
+    }, SLOW_RESPONSE_MS);
+
+    const clearSlowTimer = () => {
+      if (slowTimer) {
+        clearTimeout(slowTimer);
+        slowTimer = null;
+      }
+    };
+
     const resp = await fetch(CHAT_URL, {
       method: "POST",
       headers: {
@@ -169,6 +199,7 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
       },
       body: JSON.stringify({
         messages: history.map((m) => ({ role: m.role, content: m.content })),
+        forceLanguage: userLang,
       }),
       signal: ctrl.signal,
     });
@@ -183,6 +214,7 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
     let full = "";
     let done = false;
     let allowedVideoIds = new Set<string>();
+    let gotFirstToken = false;
 
     while (!done) {
       const { done: rd, value } = await reader.read();
@@ -200,6 +232,15 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
           const parsed = JSON.parse(json);
           const delta = parsed.choices?.[0]?.delta?.content as string | undefined;
           if (delta) {
+            if (!gotFirstToken) {
+              gotFirstToken = true;
+              clearSlowTimer();
+              setSlowWaitByMsg((prev) => {
+                const next = { ...prev };
+                delete next[assistantId];
+                return next;
+              });
+            }
             full += delta;
             let { lang, body } = splitLangHeader(full);
             if (wantsVideo && allowedVideoIds.size > 0) {
@@ -219,6 +260,13 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
         }
       }
     }
+
+    clearSlowTimer();
+    setSlowWaitByMsg((prev) => {
+      const next = { ...prev };
+      delete next[assistantId];
+      return next;
+    });
 
     let { lang, body } = splitLangHeader(full);
     body = filterAbusiveLanguage(body);
@@ -268,6 +316,8 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
     setSending(true);
     setInput("");
     const startedAt = voiceStartedAt ?? Date.now();
+    const userLang = resolveUserLang(text, detectLanguageFromMessages(messages) || "hi");
+    setActiveUserLang(userLang);
     const userMsg: Message = { id: crypto.randomUUID(), role: "user", content: text, is_voice: isVoice, created_at: new Date().toISOString() };
     const assistantMsg: Message = { id: crypto.randomUUID(), role: "assistant", content: "", created_at: new Date().toISOString() };
     const nextHistory = [...messages, userMsg];
@@ -276,11 +326,16 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
     setMessages(visibleMessages);
 
     try {
-      const { text: reply, lang } = await streamReply(nextHistory, assistantMsg.id, text, isVoice, startedAt);
+      const { text: reply, lang } = await streamReply(nextHistory, assistantMsg.id, text, isVoice, startedAt, userLang);
       if (isVoice && reply) void speak(reply, lang, assistantMsg.id);
     } catch (e: any) {
       console.error(e);
       toast.error(e?.message || "Failed to get reply");
+      setSlowWaitByMsg((prev) => {
+        const next = { ...prev };
+        delete next[assistantMsg.id];
+        return next;
+      });
       setMessages((m) => m.filter((x) => x.id !== assistantMsg.id));
     } finally {
       setSending(false);
@@ -294,6 +349,8 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
     }
     setTranscribing(true);
     const startedAt = Date.now();
+    const transcribeLang = detectLanguageFromMessages(messages) || activeUserLang || "hi";
+    setActiveUserLang(transcribeLang);
     try {
       const { data, error } = await supabase.functions.invoke("transcribe", {
         body: { audioBase64: b64, mimeType: mime },
@@ -348,7 +405,9 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
               }`}>
                 {!out && m.language && <div className="text-[10px] uppercase tracking-wide text-primary mb-0.5">{LANG_NAMES[m.language] || m.language}</div>}
                 <div className="whitespace-pre-wrap break-words text-sm leading-relaxed">
-                  {m.content ? linkifyText(m.content) : (
+                  {m.content ? linkifyText(m.content) : slowWaitByMsg[m.id] ? (
+                    <span className="text-muted-foreground italic">{slowWaitByMsg[m.id]}</span>
+                  ) : (
                   <span className="inline-flex gap-1">
                     <span className="w-1.5 h-1.5 bg-muted-foreground rounded-full typing-dot" style={{ animationDelay: "0ms" }} />
                     <span className="w-1.5 h-1.5 bg-muted-foreground rounded-full typing-dot" style={{ animationDelay: "150ms" }} />
@@ -391,7 +450,7 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(input); } }}
-            placeholder={transcribing ? "Transcribing voice…" : "Type your message"}
+            placeholder={transcribing ? waitTranscribingMessage(activeUserLang) : "Type your message"}
             disabled={sending || transcribing}
             className="w-full bg-transparent outline-none text-sm font-medium placeholder:font-normal placeholder:text-muted-foreground"
           />
