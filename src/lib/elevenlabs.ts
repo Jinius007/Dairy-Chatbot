@@ -66,14 +66,17 @@ export type ElevenLabsOverrides = {
   };
 };
 
+/** Stable override object — do not recreate per render (causes session churn). */
+export const ELEVENLABS_START_OVERRIDES: ElevenLabsOverrides = {
+  agent: {
+    firstMessage: ELEVENLABS_FIRST_MESSAGE_HI,
+    language: "hi",
+  },
+};
+
 /** Session start: Hindi first message only. Language rules sent via contextual update on connect. */
 export function buildElevenLabsStartOverrides(): ElevenLabsOverrides {
-  return {
-    agent: {
-      firstMessage: ELEVENLABS_FIRST_MESSAGE_HI,
-      language: "hi",
-    },
-  };
+  return ELEVENLABS_START_OVERRIDES;
 }
 
 export function isElevenLabsInterruption(msg: unknown): boolean {
@@ -88,10 +91,11 @@ export function parseElevenLabsUserTranscript(msg: unknown): string | null {
   const o = msg as Record<string, unknown>;
 
   const type = String(o.type ?? "").toLowerCase();
-  const source = String(o.source ?? o.role ?? type ?? "").toLowerCase();
+  if (type === "agent_response" || type === "agent_response_correction") return null;
+
+  const source = String(o.source ?? o.role ?? "").toLowerCase();
   const isUser =
     source === "user" ||
-    source.includes("user") ||
     type === "user_transcript" ||
     type === "user_transcription" ||
     type === "tentative_user_transcript";
@@ -108,15 +112,19 @@ export function parseElevenLabsUserTranscript(msg: unknown): string | null {
   return text.trim() || null;
 }
 
-export function isFinalElevenLabsTranscript(msg: unknown): boolean {
+export function isFinalElevenLabsUserTranscript(msg: unknown): boolean {
   if (!msg || typeof msg !== "object") return true;
   const o = msg as Record<string, unknown>;
-  if (o.is_final === false || o.isFinal === false) return false;
   const type = String(o.type ?? "").toLowerCase();
+  if (type === "agent_response" || type === "agent_response_correction") return false;
+  if (o.is_final === false || o.isFinal === false) return false;
   if (type === "tentative_user_transcript") return false;
   if (type.includes("tentative") || type.includes("partial")) return false;
   return true;
 }
+
+/** @deprecated use isFinalElevenLabsUserTranscript */
+export const isFinalElevenLabsTranscript = isFinalElevenLabsUserTranscript;
 
 export function buildBargeInUpdate(transcript: string): string {
   const lock = buildLanguageLockUpdate(transcript);

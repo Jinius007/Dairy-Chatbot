@@ -472,7 +472,11 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
 
 export function CallButton() {
   const [callOpen, setCallOpen] = useState(false);
-  const openCall = useCallback(() => setCallOpen(true), []);
+  const [callSession, setCallSession] = useState(0);
+  const openCall = useCallback(() => {
+    setCallSession((s) => s + 1);
+    setCallOpen(true);
+  }, []);
   const closeCall = useCallback(() => setCallOpen(false), []);
 
   return (
@@ -491,7 +495,7 @@ export function CallButton() {
           fillOpacity={0.22}
         />
       </button>
-      <ElevenLabsCallPanel open={callOpen} onClose={closeCall} />
+      <ElevenLabsCallPanel key={callSession} open={callOpen} onClose={closeCall} />
     </>
   );
 }
