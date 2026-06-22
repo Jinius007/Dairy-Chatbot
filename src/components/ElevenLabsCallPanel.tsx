@@ -4,11 +4,9 @@ import { Loader2, Mic, PhoneOff, Volume2, X } from "lucide-react";
 import {
   ADVISOR_AVATAR_PATH,
   ELEVENLABS_AGENT_ID,
-  ELEVENLABS_START_OVERRIDES,
   buildBargeInUpdate,
   buildLanguageLockUpdate,
   ELEVENLABS_LANGUAGE_RULES,
-  isElevenLabsInterruption,
   isFinalElevenLabsUserTranscript,
   parseElevenLabsUserTranscript,
 } from "@/lib/elevenlabs";
@@ -25,6 +23,10 @@ import { toast } from "sonner";
 type Props = {
   open: boolean;
   onClose: () => void;
+};
+
+type DisconnectDetails = {
+  reason?: "agent" | "user" | "error";
 };
 
 function audioChunkLevel(base64Audio: string): number {
@@ -47,17 +49,6 @@ function audioChunkLevel(base64Audio: string): number {
   }
 }
 
-async function startAdvisorSession(
-  startSession: (opts: { agentId: string; overrides?: typeof ELEVENLABS_START_OVERRIDES }) => Promise<string | void>,
-): Promise<void> {
-  try {
-    await startSession({ agentId: ELEVENLABS_AGENT_ID, overrides: ELEVENLABS_START_OVERRIDES });
-  } catch (err) {
-    console.warn("ElevenLabs session with overrides failed, retrying without overrides:", err);
-    await startSession({ agentId: ELEVENLABS_AGENT_ID });
-  }
-}
-
 function AdvisorCallSession({ onClose }: { onClose: () => void }) {
   const onCloseRef = useRef(onClose);
   onCloseRef.current = onClose;
@@ -69,51 +60,82 @@ function AdvisorCallSession({ onClose }: { onClose: () => void }) {
   const interruptedRef = useRef(false);
   const endedRef = useRef(false);
   const rulesSentRef = useRef(false);
+  const reconnectAttemptsRef = useRef(0);
+  const sessionStartedRef = useRef(false);
 
   const [userLang, setUserLang] = useState("hi");
   const [processingSlow, setProcessingSlow] = useState(false);
   const [interrupted, setInterrupted] = useState(false);
   const [speakLevel, setSpeakLevel] = useState(0);
   const [linkLost, setLinkLost] = useState(false);
+  const [reconnecting, setReconnecting] = useState(false);
 
   const sendContextualUpdateRef = useRef<(text: string) => void>(() => {});
-  const startSessionRef = useRef<(opts: { agentId: string; overrides?: typeof ELEVENLABS_START_OVERRIDES }) => Promise<string | void>>(
-    async () => {},
-  );
-  const endSessionRef = useRef<() => Promise<void>>(async () => {});
+  const startSessionRef = useRef<(opts: { agentId: string }) => void>(() => {});
+  const endSessionRef = useRef<() => void>(() => {});
+
+  const sendLanguageRules = useCallback(() => {
+    if (rulesSentRef.current) return;
+    try {
+      sendContextualUpdateRef.current(ELEVENLABS_LANGUAGE_RULES);
+      rulesSentRef.current = true;
+    } catch (err) {
+      console.warn("Could not send language rules yet:", err);
+    }
+  }, []);
 
   const conversation = useConversation({
     onError: (err) => {
       console.error("ElevenLabs call error:", err);
-      toast.error(typeof err === "string" ? err : "Voice call error. Please try again.");
+      const msg = typeof err === "string" ? err : "Voice call error. Please try again.";
+      if (!endedRef.current) toast.error(msg);
     },
-    onDisconnect: () => {
+    onDisconnect: (details?: DisconnectDetails) => {
       if (endedRef.current) return;
+
+      console.warn("ElevenLabs disconnected:", details);
+
+      // Agent hung up too early (common with end_call tool) — auto-reconnect once.
+      if (details?.reason === "agent" && reconnectAttemptsRef.current < 2) {
+        reconnectAttemptsRef.current += 1;
+        setReconnecting(true);
+        setLinkLost(false);
+        window.setTimeout(() => {
+          if (endedRef.current) return;
+          try {
+            startSessionRef.current({ agentId: ELEVENLABS_AGENT_ID });
+          } catch (err) {
+            console.error("Auto-reconnect failed:", err);
+            setReconnecting(false);
+            setLinkLost(true);
+          }
+        }, 600);
+        return;
+      }
+
+      if (details?.reason === "user") return;
+      setReconnecting(false);
       setLinkLost(true);
-      setProcessingSlow(false);
     },
     onConnect: () => {
       setLinkLost(false);
-      if (!rulesSentRef.current) {
-        rulesSentRef.current = true;
-        sendContextualUpdateRef.current(ELEVENLABS_LANGUAGE_RULES);
+      setReconnecting(false);
+      reconnectAttemptsRef.current = 0;
+      window.setTimeout(sendLanguageRules, 1200);
+    },
+    onInterruption: () => {
+      interruptedRef.current = true;
+      setInterrupted(true);
+      setProcessingSlow(false);
+      if (processingTimerRef.current) {
+        clearTimeout(processingTimerRef.current);
+        processingTimerRef.current = null;
       }
     },
     onAudio: (base64Audio) => {
       audioLevelRef.current = audioChunkLevel(base64Audio);
     },
     onMessage: (msg) => {
-      if (isElevenLabsInterruption(msg)) {
-        interruptedRef.current = true;
-        setInterrupted(true);
-        setProcessingSlow(false);
-        if (processingTimerRef.current) {
-          clearTimeout(processingTimerRef.current);
-          processingTimerRef.current = null;
-        }
-        return;
-      }
-
       const transcript = parseElevenLabsUserTranscript(msg);
       if (!transcript) return;
 
@@ -121,7 +143,11 @@ function AdvisorCallSession({ onClose }: { onClose: () => void }) {
       if (lock && languageLockedRef.current !== lock.code) {
         languageLockedRef.current = lock.code;
         setUserLang(lock.code);
-        sendContextualUpdateRef.current(lock.text);
+        try {
+          sendContextualUpdateRef.current(lock.text);
+        } catch {
+          /* session may still be warming up */
+        }
       }
 
       if (!isFinalElevenLabsUserTranscript(msg)) return;
@@ -129,7 +155,11 @@ function AdvisorCallSession({ onClose }: { onClose: () => void }) {
       if (interruptedRef.current) {
         interruptedRef.current = false;
         setInterrupted(false);
-        sendContextualUpdateRef.current(buildBargeInUpdate(transcript));
+        try {
+          sendContextualUpdateRef.current(buildBargeInUpdate(transcript));
+        } catch {
+          /* ignore */
+        }
       }
     },
   });
@@ -139,43 +169,37 @@ function AdvisorCallSession({ onClose }: { onClose: () => void }) {
   startSessionRef.current = startSession;
   endSessionRef.current = endSession;
 
-  const beginSession = useCallback(async () => {
-    setLinkLost(false);
-    setProcessingSlow(false);
-    setInterrupted(false);
-    interruptedRef.current = false;
-    wasListeningRef.current = false;
-    rulesSentRef.current = false;
-
-    try {
-      await navigator.mediaDevices.getUserMedia({ audio: true });
-      await startAdvisorSession((opts) => startSessionRef.current(opts));
-    } catch (err) {
-      console.error("Failed to start voice call:", err);
-      toast.error("Microphone access is required for the voice call.");
-      onCloseRef.current();
-    }
-  }, []);
-
-  // Start once on mount; do NOT depend on startSession/endSession (they change when status updates).
+  // Start once — never depend on startSession/endSession identity (changes when status updates).
   useEffect(() => {
+    if (sessionStartedRef.current) return;
+    sessionStartedRef.current = true;
     endedRef.current = false;
     languageLockedRef.current = null;
-    void beginSession();
+    rulesSentRef.current = false;
+    reconnectAttemptsRef.current = 0;
+
+    startSession({ agentId: ELEVENLABS_AGENT_ID });
 
     return () => {
+      sessionStartedRef.current = false;
       if (processingTimerRef.current) clearTimeout(processingTimerRef.current);
       if (!endedRef.current) {
         endedRef.current = true;
-        void endSessionRef.current();
+        endSession();
       }
     };
-  }, [beginSession]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (status === "error") {
       toast.error(message?.trim() || "Voice call could not start. Please try again.");
+      setReconnecting(false);
       setLinkLost(true);
+    }
+    if (status === "connected") {
+      setReconnecting(false);
+      setLinkLost(false);
     }
   }, [message, status]);
 
@@ -233,24 +257,33 @@ function AdvisorCallSession({ onClose }: { onClose: () => void }) {
   const handleClose = useCallback(() => {
     if (!endedRef.current) {
       endedRef.current = true;
-      void endSessionRef.current();
+      endSession();
     }
     onCloseRef.current();
-  }, []);
+  }, [endSession]);
 
   const handleReconnect = useCallback(() => {
-    if (!endedRef.current) {
-      void endSessionRef.current();
-    }
     endedRef.current = false;
-    void beginSession();
-  }, [beginSession]);
+    sessionStartedRef.current = false;
+    reconnectAttemptsRef.current = 0;
+    setLinkLost(false);
+    setReconnecting(true);
+    endSession();
+    window.setTimeout(() => {
+      sessionStartedRef.current = true;
+      startSession({ agentId: ELEVENLABS_AGENT_ID });
+      setReconnecting(false);
+    }, 400);
+  }, [endSession, startSession]);
 
   const active = isSpeaking || speakLevel > 0.06;
   const mouthScale = 1 + Math.min(speakLevel * 0.55, 0.28);
   const glowStrength = Math.min(0.2 + speakLevel * 0.8, 1);
 
   const statusText = (() => {
+    if (reconnecting) {
+      return userLang === "hi" ? "फिर से जोड़ रहे हैं…" : "Reconnecting…";
+    }
     if (linkLost || status === "error") {
       return userLang === "hi"
         ? "कॉल रुक गई — फिर से जोड़ने के लिए नीचे दबाएँ"
@@ -287,7 +320,7 @@ function AdvisorCallSession({ onClose }: { onClose: () => void }) {
       </div>
 
       <div className="pashu-call-status">
-        {status === "connecting" || (status !== "connected" && status !== "error" && !linkLost) ? (
+        {status === "connecting" || reconnecting || (status !== "connected" && status !== "error" && !linkLost) ? (
           <Loader2 className="w-4 h-4 animate-spin text-primary" />
         ) : isSpeaking ? (
           <Volume2 className="w-4 h-4 text-primary animate-pulse" />
@@ -314,7 +347,7 @@ function AdvisorCallSession({ onClose }: { onClose: () => void }) {
       )}
 
       <div className="flex flex-col items-center gap-2">
-        {linkLost && (
+        {linkLost && !reconnecting && (
           <button
             type="button"
             onClick={handleReconnect}
@@ -358,10 +391,7 @@ export function ElevenLabsCallPanel({ open, onClose }: Props) {
 
         <p className="pashu-call-title">PashuMitra live advisor</p>
 
-        <ConversationProvider
-          agentId={ELEVENLABS_AGENT_ID}
-          overrides={ELEVENLABS_START_OVERRIDES}
-        >
+        <ConversationProvider agentId={ELEVENLABS_AGENT_ID}>
           <AdvisorCallSession onClose={stableClose} />
         </ConversationProvider>
       </div>

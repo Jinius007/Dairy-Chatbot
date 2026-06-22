@@ -15,7 +15,7 @@
     "cap:open": "npx cap open android",
     "android:apk": "cd android && .\\gradlew.bat assembleDebug",
     "android:apk:release": "cd android && .\\gradlew.bat assembleRelease",
-    "configure:elevenlabs": "node scripts/configure-elevenlabs-agent.mjs"
+    "configure:elevenlabs": "node --env-file=.env scripts/configure-elevenlabs-agent.mjs"
   },
   "dependencies": {
     "@capacitor/android": "7.6.5",
