@@ -10,6 +10,12 @@ let pendingPlayResolve: ((ok: boolean) => void) | null = null;
 let ttsAbort: AbortController | null = null;
 let playWatchTimer: ReturnType<typeof setInterval> | null = null;
 
+/** Call-mode Web Audio playback — flush stops all buffers instantly (ElevenLabs-style). */
+let callAudioCtx: AudioContext | null = null;
+let callGain: GainNode | null = null;
+let callSources: AudioBufferSourceNode[] = [];
+let callPlaying = false;
+
 const SILENT_WAV =
   "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==";
 
@@ -55,6 +61,100 @@ function cleanupAudio() {
     URL.revokeObjectURL(objectUrl);
     objectUrl = null;
   }
+}
+
+function flushCallPlayback() {
+  if (callGain && callAudioCtx) {
+    try {
+      callGain.gain.cancelScheduledValues(callAudioCtx.currentTime);
+      callGain.gain.setValueAtTime(0, callAudioCtx.currentTime);
+    } catch {
+      /* ignore */
+    }
+  }
+  for (const src of callSources) {
+    try {
+      src.onended = null;
+      src.stop();
+      src.disconnect();
+    } catch {
+      /* ignore */
+    }
+  }
+  callSources = [];
+  callPlaying = false;
+  if (callGain && callAudioCtx) {
+    try {
+      callGain.gain.setValueAtTime(1, callAudioCtx.currentTime);
+    } catch {
+      /* ignore */
+    }
+  }
+}
+
+async function ensureCallAudio(): Promise<AudioContext | null> {
+  if (typeof window === "undefined") return null;
+  const AudioCtx =
+    window.AudioContext ||
+    (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+  if (!AudioCtx) return null;
+  if (!callAudioCtx) {
+    callAudioCtx = new AudioCtx();
+    callGain = callAudioCtx.createGain();
+    callGain.connect(callAudioCtx.destination);
+  }
+  await callAudioCtx.resume();
+  return callAudioCtx;
+}
+
+function playCallBuffer(audioBuffer: AudioBuffer, token: number): Promise<boolean> {
+  return new Promise((resolve) => {
+    if (token !== activeToken) {
+      resolve(false);
+      return;
+    }
+    void ensureCallAudio().then((ctx) => {
+      if (!ctx || !callGain || token !== activeToken) {
+        resolve(false);
+        return;
+      }
+      const src = ctx.createBufferSource();
+      src.buffer = audioBuffer;
+      src.connect(callGain);
+      callSources.push(src);
+      callPlaying = true;
+
+      const finish = (ok: boolean) => {
+        const idx = callSources.indexOf(src);
+        if (idx >= 0) callSources.splice(idx, 1);
+        if (callSources.length === 0) callPlaying = false;
+        resolve(ok && token === activeToken);
+      };
+
+      const watch = setInterval(() => {
+        if (token !== activeToken) {
+          clearInterval(watch);
+          try {
+            src.stop();
+          } catch {
+            /* ignore */
+          }
+          finish(false);
+        }
+      }, 40);
+
+      src.onended = () => {
+        clearInterval(watch);
+        finish(true);
+      };
+      try {
+        src.start(0);
+      } catch {
+        clearInterval(watch);
+        finish(false);
+      }
+    });
+  });
 }
 
 function ttsEndpoint(): string {
@@ -176,6 +276,48 @@ async function speakViaBhashini(
   return token === activeToken;
 }
 
+async function speakViaBhashiniCall(
+  text: string,
+  lang: string | null,
+  token: number,
+  forceLang = false,
+): Promise<boolean> {
+  const spoken = prepareTextForSpeech(text);
+  if (!spoken || token !== activeToken) return false;
+
+  const code = forceLang && lang ? lang : resolveTtsLanguage(spoken, lang);
+  const chunks = splitForTts(spoken);
+  if (chunks.length === 0) return false;
+
+  await unlockAudioPlayback();
+  await ensureCallAudio();
+
+  for (let i = 0; i < chunks.length; i++) {
+    if (token !== activeToken) return false;
+    const blob = await fetchTtsBlob(chunks[i], code, token);
+    if (!blob || token !== activeToken) return false;
+    const arrayBuf = await blob.arrayBuffer();
+    if (token !== activeToken) return false;
+    const ctx = await ensureCallAudio();
+    if (!ctx || token !== activeToken) return false;
+    let audioBuf: AudioBuffer;
+    try {
+      audioBuf = await ctx.decodeAudioData(arrayBuf.slice(0));
+    } catch {
+      return false;
+    }
+    if (token !== activeToken) return false;
+    const played = await playCallBuffer(audioBuf, token);
+    if (!played || token !== activeToken) return false;
+    if (i < chunks.length - 1) {
+      await delay(80);
+      if (token !== activeToken) return false;
+    }
+  }
+
+  return token === activeToken;
+}
+
 function pickFemaleVoice(locale: string): SpeechSynthesisVoice | null {
   const voices = window.speechSynthesis.getVoices();
   const prefix = locale.split("-")[0].toLowerCase();
@@ -236,10 +378,15 @@ async function runSpeech(
   token: number,
   forceLang = false,
   preferFemale = false,
+  isCall = false,
 ): Promise<void> {
   const cleaned = filterAbusiveLanguage(text);
   if (!cleaned.trim() || token !== activeToken) return;
-  if (await speakViaBhashini(cleaned, lang, token, forceLang)) return;
+  if (isCall) {
+    if (await speakViaBhashiniCall(cleaned, lang, token, forceLang)) return;
+  } else if (await speakViaBhashini(cleaned, lang, token, forceLang)) {
+    return;
+  }
   if (token !== activeToken) return;
   await speakViaBrowserSynth(cleaned, lang, token, forceLang, preferFemale);
 }
@@ -256,6 +403,7 @@ export function stopSpeech(): void {
   activeToken += 1;
   ttsAbort?.abort();
   ttsAbort = null;
+  flushCallPlayback();
   cleanupAudio();
   if (typeof window !== "undefined" && "speechSynthesis" in window) {
     window.speechSynthesis.cancel();
@@ -284,6 +432,8 @@ export type SpeakOptions = {
   priority?: boolean;
   forceLang?: boolean;
   preferFemale?: boolean;
+  /** Live call — Web Audio playback with instant buffer flush on interrupt. */
+  callMode?: boolean;
 };
 
 export function speakText(text: string, options: SpeakOptions = {}): Promise<void> {
@@ -291,7 +441,14 @@ export function speakText(text: string, options: SpeakOptions = {}): Promise<voi
 
   const token = ++activeToken;
   const run = () =>
-    runSpeech(text, options.lang ?? null, token, options.forceLang ?? false, options.preferFemale ?? false);
+    runSpeech(
+      text,
+      options.lang ?? null,
+      token,
+      options.forceLang ?? false,
+      options.preferFemale ?? false,
+      options.callMode ?? false,
+    );
 
   if (options.priority) {
     const task = run();
@@ -309,5 +466,5 @@ export function waitForSpeechIdle(): Promise<void> {
 }
 
 export function isSpeechPlaying(): boolean {
-  return !!audio && !audio.paused;
+  return callPlaying || callSources.length > 0 || (!!audio && !audio.paused);
 }
