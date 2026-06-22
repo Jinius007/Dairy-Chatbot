@@ -13,6 +13,7 @@ let playWatchTimer: ReturnType<typeof setInterval> | null = null;
 /** Call-mode Web Audio playback — flush stops all buffers instantly (ElevenLabs-style). */
 let callAudioCtx: AudioContext | null = null;
 let callGain: GainNode | null = null;
+let callRefAnalyser: AnalyserNode | null = null;
 let callSources: AudioBufferSourceNode[] = [];
 let callPlaying = false;
 
@@ -101,7 +102,10 @@ async function ensureCallAudio(): Promise<AudioContext | null> {
   if (!callAudioCtx) {
     callAudioCtx = new AudioCtx();
     callGain = callAudioCtx.createGain();
-    callGain.connect(callAudioCtx.destination);
+    callRefAnalyser = callAudioCtx.createAnalyser();
+    callRefAnalyser.fftSize = 2048;
+    callGain.connect(callRefAnalyser);
+    callRefAnalyser.connect(callAudioCtx.destination);
   }
   await callAudioCtx.resume();
   return callAudioCtx;
@@ -463,6 +467,67 @@ export function speakText(text: string, options: SpeakOptions = {}): Promise<voi
 
 export function waitForSpeechIdle(): Promise<void> {
   return speechChain.catch(() => undefined);
+}
+
+export function isCallPlaybackActive(): boolean {
+  return callPlaying || callSources.length > 0;
+}
+
+function analyserRms(analyser: AnalyserNode): number {
+  const data = new Uint8Array(analyser.fftSize);
+  analyser.getByteTimeDomainData(data);
+  let sum = 0;
+  for (const v of data) {
+    const n = (v - 128) / 128;
+    sum += n * n;
+  }
+  return Math.sqrt(sum / data.length);
+}
+
+/** RMS of advisor TTS output — reference for echo subtraction (ElevenLabs-style). */
+export function getCallReferenceLevel(): number {
+  if (!callRefAnalyser || !isCallPlaybackActive()) return 0;
+  return analyserRms(callRefAnalyser);
+}
+
+export function waitForCallPlaybackIdle(timeoutMs = 700): Promise<void> {
+  return new Promise((resolve) => {
+    const started = Date.now();
+    const tick = () => {
+      if (!isCallPlaybackActive()) {
+        resolve();
+        return;
+      }
+      if (Date.now() - started >= timeoutMs) {
+        resolve();
+        return;
+      }
+      requestAnimationFrame(tick);
+    };
+    tick();
+  });
+}
+
+/** Mic analyser on the same AudioContext as call TTS — improves echo comparison. */
+export async function attachCallMicAnalyser(
+  stream: MediaStream,
+): Promise<{ analyser: AnalyserNode; detach: () => void } | null> {
+  const ctx = await ensureCallAudio();
+  if (!ctx || !stream.active) return null;
+  const source = ctx.createMediaStreamSource(stream);
+  const analyser = ctx.createAnalyser();
+  analyser.fftSize = 2048;
+  source.connect(analyser);
+  return {
+    analyser,
+    detach: () => {
+      try {
+        source.disconnect();
+      } catch {
+        /* ignore */
+      }
+    },
+  };
 }
 
 export function isSpeechPlaying(): boolean {

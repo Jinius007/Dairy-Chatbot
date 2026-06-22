@@ -3,7 +3,7 @@ import { PhoneOff, Mic, Loader2, PhoneCall, Volume2, X } from "lucide-react";
 import { toast } from "sonner";
 import { supabase, isSupabaseConfigured } from "@/integrations/supabase/client";
 import { LANG_NAMES, detectLanguageCode, resolveTtsLanguage } from "@/lib/languages";
-import { speakText, stopSpeech, unlockAudioPlayback } from "@/lib/speech";
+import { speakText, stopSpeech, unlockAudioPlayback, waitForCallPlaybackIdle } from "@/lib/speech";
 import { startCallBargeInWithStream, type CallBargeInHandle } from "@/lib/call-barge-in";
 import { getSessionId } from "@/lib/session";
 import { logConversationTurn } from "@/lib/log-turn";
@@ -180,12 +180,18 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
     setInterrupted(true);
     setPhaseBoth("listening");
 
-    // Fresh recording only after TTS stops — avoids capturing advisor audio in user transcript.
+    // Wait until TTS buffers are flushed and speaker echo fades before recording farmer speech.
     clearInterruptListenTimer();
-    interruptListenTimerRef.current = window.setTimeout(() => {
-      interruptListenTimerRef.current = null;
-      if (!closedRef.current) startListening();
-    }, 220);
+    void (async () => {
+      await waitForCallPlaybackIdle(800);
+      await new Promise<void>((r) => {
+        interruptListenTimerRef.current = window.setTimeout(() => {
+          interruptListenTimerRef.current = null;
+          r();
+        }, 180);
+      });
+      if (!closedRef.current && bargeTriggeredRef.current) startListening();
+    })();
   }, []);
 
   const speak = useCallback(
