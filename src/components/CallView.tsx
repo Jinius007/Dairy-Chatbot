@@ -112,12 +112,11 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
   const transcriptScrollRef = useRef<HTMLDivElement>(null);
   const greetedRef = useRef(false);
   const bargeWatchRef = useRef<CallBargeInHandle | null>(null);
-  const bargeRecRef = useRef<MediaRecorder | null>(null);
-  const bargeChunksRef = useRef<Blob[]>([]);
   const bargeTriggeredRef = useRef(false);
   const speechGenRef = useRef(0);
   const chatAbortRef = useRef<AbortController | null>(null);
   const userLangRef = useRef("hi");
+  const interruptListenTimerRef = useRef<number | null>(null);
 
   const setPhaseBoth = (p: Phase) => {
     phaseRef.current = p;
@@ -162,111 +161,11 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
     bargeWatchRef.current = null;
   };
 
-  const stopBargeRecording = (discard: boolean) => {
-    const rec = bargeRecRef.current;
-    if (!rec) return;
-    bargeRecRef.current = null;
-    rec.ondataavailable = null;
-    rec.onstop = null;
-    try {
-      if (rec.state === "recording") rec.stop();
-    } catch {
-      /* ignore */
+  const clearInterruptListenTimer = () => {
+    if (interruptListenTimerRef.current) {
+      window.clearTimeout(interruptListenTimerRef.current);
+      interruptListenTimerRef.current = null;
     }
-    if (discard) bargeChunksRef.current = [];
-  };
-
-  const startBargeRecording = () => {
-    const stream = streamRef.current;
-    if (!stream?.active) return;
-    stopBargeRecording(true);
-    const mimeType = getSupportedMimeType();
-    const rec = mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream);
-    const blobType = mimeType || rec.mimeType || "audio/webm";
-    bargeChunksRef.current = [];
-    rec.ondataavailable = (e) => {
-      if (e.data.size > 0) bargeChunksRef.current.push(e.data);
-    };
-    bargeRecRef.current = rec;
-    rec.start(250);
-    return blobType;
-  };
-
-  const attachSilenceStop = (rec: MediaRecorder, blobType: string) => {
-    stopSilenceMonitor();
-    mediaRef.current = rec;
-    try {
-      const stream = streamRef.current;
-      if (!stream) throw new Error("no stream");
-      const AudioCtx =
-        window.AudioContext ||
-        (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
-      if (!AudioCtx) throw new Error("AudioContext unavailable");
-      const audioCtx = new AudioCtx();
-      audioContextRef.current = audioCtx;
-      const source = audioCtx.createMediaStreamSource(stream);
-      const analyser = audioCtx.createAnalyser();
-      analyser.fftSize = 1024;
-      source.connect(analyser);
-      const data = new Uint8Array(analyser.fftSize);
-      let speechStarted = bargeTriggeredRef.current;
-      let silenceStartedAt = 0;
-      const startedAt = Date.now();
-
-      rec.onstop = () => {
-        stopSilenceMonitor();
-        if (maxRecordTimerRef.current) window.clearTimeout(maxRecordTimerRef.current);
-        maxRecordTimerRef.current = null;
-        const recorded = new Blob(bargeChunksRef.current.length ? bargeChunksRef.current : chunksRef.current, {
-          type: blobType,
-        });
-        bargeChunksRef.current = [];
-        chunksRef.current = [];
-        if (recorded.size < 800) {
-          if (!closedRef.current) resumeListening(400);
-          return;
-        }
-        void processBlob(recorded, blobType);
-      };
-
-      const monitor = () => {
-        if (closedRef.current || mediaRef.current !== rec || rec.state !== "recording") return;
-        analyser.getByteTimeDomainData(data);
-        let sum = 0;
-        for (const value of data) {
-          const normalized = (value - 128) / 128;
-          sum += normalized * normalized;
-        }
-        const volume = Math.sqrt(sum / data.length);
-        const now = Date.now();
-        if (volume > 0.03) {
-          speechStarted = true;
-          silenceStartedAt = 0;
-        } else if (speechStarted) {
-          silenceStartedAt ||= now;
-          if (now - silenceStartedAt > 1400 && now - startedAt > 1200) {
-            rec.stop();
-            return;
-          }
-        }
-        analyserFrameRef.current = requestAnimationFrame(monitor);
-      };
-      analyserFrameRef.current = requestAnimationFrame(monitor);
-    } catch {
-      stopSilenceMonitor();
-      rec.onstop = () => {
-        const recorded = new Blob(bargeChunksRef.current, { type: blobType });
-        bargeChunksRef.current = [];
-        if (recorded.size >= 800) void processBlob(recorded, blobType);
-        else if (!closedRef.current) resumeListening(400);
-      };
-      window.setTimeout(() => {
-        if (rec.state === "recording") rec.stop();
-      }, 8000);
-    }
-    maxRecordTimerRef.current = window.setTimeout(() => {
-      if (mediaRef.current === rec && rec.state === "recording") rec.stop();
-    }, 20000);
   };
 
   const interruptAndListen = useCallback(() => {
@@ -281,16 +180,12 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
     setInterrupted(true);
     setPhaseBoth("listening");
 
-    const bargeRec = bargeRecRef.current;
-    if (bargeRec?.state === "recording") {
-      bargeRecRef.current = null;
-      const blobType = bargeRec.mimeType || "audio/webm";
-      attachSilenceStop(bargeRec, blobType);
-      return;
-    }
-    window.setTimeout(() => {
+    // Fresh recording only after TTS stops — avoids capturing advisor audio in user transcript.
+    clearInterruptListenTimer();
+    interruptListenTimerRef.current = window.setTimeout(() => {
+      interruptListenTimerRef.current = null;
       if (!closedRef.current) startListening();
-    }, 50);
+    }, 220);
   }, []);
 
   const speak = useCallback(
@@ -315,7 +210,6 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
       bargeTriggeredRef.current = false;
       setInterrupted(false);
 
-      startBargeRecording();
       const stream = streamRef.current;
       if (stream?.active) {
         clearBargeWatch();
@@ -329,9 +223,6 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
         await speak(text, lang);
       } finally {
         clearBargeWatch();
-        if (!bargeTriggeredRef.current) {
-          stopBargeRecording(true);
-        }
       }
       if (
         !closedRef.current &&
@@ -561,7 +452,7 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
           audio: {
-            echoCancellation: false,
+            echoCancellation: true,
             noiseSuppression: true,
             autoGainControl: true,
           },
@@ -591,7 +482,7 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
       stopSpeech();
       stopSilenceMonitor();
       clearBargeWatch();
-      stopBargeRecording(true);
+      clearInterruptListenTimer();
       try {
         if (mediaRef.current?.state === "recording") mediaRef.current.stop();
       } catch {
@@ -613,7 +504,7 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
     stopSpeech();
     stopSilenceMonitor();
     clearBargeWatch();
-    stopBargeRecording(true);
+    clearInterruptListenTimer();
     try {
       if (mediaRef.current?.state === "recording") mediaRef.current.stop();
     } catch {
