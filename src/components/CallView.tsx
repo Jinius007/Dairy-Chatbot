@@ -22,7 +22,7 @@ import {
 export const ADVISOR_AVATAR_PATH = "/pashu-advisor-avatar.jpeg";
 
 const GREETING_HI =
-  "नमस्ते! मैं PashuMitra हूँ — आपकी पशु और डेयरी सलाहकार। अपनी भाषा में बोलिए, मैं उसी में जवाब दूँगी।";
+  "नमस्ते! मैं AI पशु सलाहकार हूँ। अपनी भाषा में बोलिए, मैं उसी में जवाब दूँगी।";
 
 export interface CallTurn {
   id: string;
@@ -112,6 +112,8 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
   const greetedRef = useRef(false);
   const bargeInFrameRef = useRef<number | null>(null);
   const bargeInCtxRef = useRef<AudioContext | null>(null);
+  const speechGenRef = useRef(0);
+  const chatAbortRef = useRef<AbortController | null>(null);
 
   const setPhaseBoth = (p: Phase) => {
     phaseRef.current = p;
@@ -174,15 +176,18 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
   }, []);
 
   const interruptAndListen = useCallback(() => {
-    if (closedRef.current || processingRef.current) return;
+    if (closedRef.current) return;
+    speechGenRef.current += 1;
+    chatAbortRef.current?.abort();
+    chatAbortRef.current = null;
     stopSpeech();
     clearBargeInMonitor();
-    setInterrupted(true);
     processingRef.current = false;
+    setInterrupted(true);
     setPhaseBoth("idle");
     window.setTimeout(() => {
       if (!closedRef.current) startListening();
-    }, 120);
+    }, 80);
   }, []);
 
   const startBargeInMonitor = useCallback(() => {
@@ -215,9 +220,9 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
         }
         const volume = Math.sqrt(sum / data.length);
         const now = Date.now();
-        if (volume > 0.06) {
+        if (volume > 0.045) {
           loudSince ||= now;
-          if (now - loudSince > 500) {
+          if (now - loudSince > 350) {
             interruptAndListen();
             return;
           }
@@ -234,6 +239,7 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
 
   const playAdvisorSpeech = useCallback(
     async (text: string, lang: string | null) => {
+      const gen = ++speechGenRef.current;
       setInterrupted(false);
       setPhaseBoth("speaking");
       startBargeInMonitor();
@@ -242,7 +248,11 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
       } finally {
         clearBargeInMonitor();
       }
-      if (!closedRef.current && phaseRef.current === "speaking") {
+      if (
+        !closedRef.current &&
+        speechGenRef.current === gen &&
+        phaseRef.current === "speaking"
+      ) {
         resumeListening(280);
       }
     },
@@ -298,6 +308,8 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
 
       const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
       const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+      const chatCtrl = new AbortController();
+      chatAbortRef.current = chatCtrl;
       const chatRes = await fetch(`${SUPABASE_URL}/functions/v1/chat`, {
         method: "POST",
         headers: {
@@ -311,7 +323,10 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
           mode: "call",
           forceLanguage: detectedLang,
         }),
+        signal: chatCtrl.signal,
       });
+      if (chatAbortRef.current === chatCtrl) chatAbortRef.current = null;
+      if (chatCtrl.signal.aborted || closedRef.current) return;
       const payload = await chatRes.json().catch(() => ({}));
       if (!chatRes.ok) throw new Error((payload as { error?: string })?.error || `Chat failed (${chatRes.status})`);
       const raw = readTextPayload(payload);
@@ -435,14 +450,6 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
     setPhaseBoth("listening");
   }
 
-  const handleMicTap = () => {
-    if (phaseRef.current === "listening" && mediaRef.current?.state === "recording") {
-      mediaRef.current.stop();
-    } else if (phaseRef.current === "speaking") {
-      interruptAndListen();
-    }
-  };
-
   useEffect(() => {
     if (!open) return;
     closedRef.current = false;
@@ -507,6 +514,8 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
     closedRef.current = true;
     if (restartTimerRef.current) window.clearTimeout(restartTimerRef.current);
     if (maxRecordTimerRef.current) window.clearTimeout(maxRecordTimerRef.current);
+    chatAbortRef.current?.abort();
+    chatAbortRef.current = null;
     stopSpeech();
     stopSilenceMonitor();
     clearBargeInMonitor();
@@ -639,17 +648,7 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
           )}
         </div>
 
-        <div className="flex items-center justify-center gap-4 w-full">
-          <button
-            type="button"
-            onClick={handleMicTap}
-            disabled={phase === "thinking" || phase === "idle"}
-            className="w-12 h-12 rounded-full bg-muted hover:bg-muted/80 flex items-center justify-center shadow-md disabled:opacity-40 transition"
-            aria-label="Send now (optional)"
-            title="Mic listens automatically — tap only to send early or interrupt"
-          >
-            <Mic className="w-5 h-5 text-foreground" />
-          </button>
+        <div className="flex items-center justify-center w-full">
           <button
             type="button"
             onClick={hangUp}

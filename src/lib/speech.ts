@@ -7,6 +7,7 @@ let audio: HTMLAudioElement | null = null;
 let objectUrl: string | null = null;
 let unlocked = false;
 let pendingPlayResolve: ((ok: boolean) => void) | null = null;
+let ttsAbort: AbortController | null = null;
 
 // Tiny silent WAV to unlock mobile/desktop audio during live call
 const SILENT_WAV =
@@ -26,7 +27,12 @@ function cleanupAudio() {
   if (audio) {
     audio.onended = null;
     audio.onerror = null;
-    audio.pause();
+    try {
+      audio.pause();
+      audio.currentTime = 0;
+    } catch {
+      /* ignore */
+    }
     audio.removeAttribute("src");
     audio.load();
     audio = null;
@@ -98,18 +104,26 @@ function playBlob(blob: Blob, token: number): Promise<boolean> {
 }
 
 async function fetchTtsBlob(text: string, lang: string, token: number): Promise<Blob | null> {
+  if (token !== activeToken) return null;
+  ttsAbort?.abort();
+  const ctrl = new AbortController();
+  ttsAbort = ctrl;
   try {
     const resp = await fetch(ttsEndpoint(), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ text, lang }),
+      signal: ctrl.signal,
     });
     if (!resp.ok || token !== activeToken) return null;
     const blob = await resp.blob();
     if (!blob.size || blob.type.includes("json")) return null;
     return blob;
-  } catch {
+  } catch (err) {
+    if ((err as Error).name === "AbortError") return null;
     return null;
+  } finally {
+    if (ttsAbort === ctrl) ttsAbort = null;
   }
 }
 
@@ -134,10 +148,13 @@ async function speakViaBhashini(
     if (!blob || token !== activeToken) return false;
     const played = await playBlob(blob, token);
     if (!played || token !== activeToken) return false;
-    if (i < chunks.length - 1) await delay(120);
+    if (i < chunks.length - 1) {
+      await delay(120);
+      if (token !== activeToken) return false;
+    }
   }
 
-  return true;
+  return token === activeToken;
 }
 
 function pickFemaleVoice(locale: string): SpeechSynthesisVoice | null {
@@ -192,7 +209,7 @@ async function runSpeech(
   if (!cleaned.trim() || token !== activeToken) return;
   if (await speakViaBhashini(cleaned, lang, token, forceLang)) return;
   if (token !== activeToken) return;
-  if (await speakViaBrowserSynth(cleaned, lang, token, forceLang, preferFemale)) return;
+  await speakViaBrowserSynth(cleaned, lang, token, forceLang, preferFemale);
 }
 
 export function isSpeechSupported(): boolean {
@@ -205,11 +222,18 @@ export function preloadSpeechVoices(): Promise<void> {
 
 export function stopSpeech(): void {
   activeToken += 1;
+  ttsAbort?.abort();
+  ttsAbort = null;
   cleanupAudio();
   if (typeof window !== "undefined" && "speechSynthesis" in window) {
     window.speechSynthesis.cancel();
   }
   speechChain = Promise.resolve();
+}
+
+/** Hard-stop playback for live-call barge-in. */
+export function interruptSpeech(): void {
+  stopSpeech();
 }
 
 export function pauseSpeech(): boolean {

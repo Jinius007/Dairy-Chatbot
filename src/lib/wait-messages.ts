@@ -128,7 +128,7 @@ export function callListeningMessage(lang?: Lang | null): string {
 export function callSpeakingMessage(lang?: Lang | null): string {
   return pick(
     {
-      hi: "PashuMitra बोल रही है — बीच में बोलकर रोक सकते हैं",
+      hi: "AI पशु सलाहकार बोल रही है — बीच में बोलकर रोक सकते हैं",
       bn: "পরামর্শদাতা বলছেন…",
       ta: "ஆலோசகர் பேசுகிறார்…",
       te: "సలహాదారు మాట్లాడుతున్నారు…",
