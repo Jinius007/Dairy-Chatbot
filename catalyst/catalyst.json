@@ -1,0 +1,14 @@
+{
+  "functions": {
+    "source": "functions",
+    "targets": [
+      "pashumitra_api"
+    ],
+    "ignore": [
+      ".env",
+      ".env.*",
+      "src",
+      "*.map"
+    ]
+  }
+}

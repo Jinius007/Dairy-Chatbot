@@ -1,4 +1,5 @@
-/** Log Q&A turns to Supabase via Vercel (server-side service role). */
+/** Log Q&A turns to Catalyst Data Store via /log-turn. */
+import { getLogTurnUrl } from "@/lib/backend-config";
 export type LogMode = "chat" | "voice" | "call";
 
 export interface LogTurnPayload {
@@ -18,7 +19,7 @@ export async function logConversationTurn(payload: LogTurnPayload): Promise<void
   if (!question || !answer || !payload.session_id) return;
 
   try {
-    const res = await fetch("/api/log-turn", {
+    const res = await fetch(getLogTurnUrl(), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

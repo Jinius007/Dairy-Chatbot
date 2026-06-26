@@ -1,3 +1,5 @@
+import { getYoutubeSearchUrl } from "@/lib/backend-config";
+
 export type VerifiedVideo = {
   id: string;
   title: string;
@@ -42,7 +44,7 @@ export function buildVideoQuery(userText: string, recentContext = "", assistantC
 
 export async function fetchVerifiedVideos(query: string, lang: string): Promise<VerifiedVideo[]> {
   try {
-    const resp = await fetch(`${window.location.origin}/api/youtube-search`, {
+    const resp = await fetch(getYoutubeSearchUrl(), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ query, lang, max: 3 }),

@@ -1,0 +1,14 @@
+{
+  "table_name": "conversation_turns",
+  "description": "Chat/call Q&A logging — Catalyst Data Store",
+  "columns": [
+    { "column_name": "session_id", "data_type": "text", "mandatory": true },
+    { "column_name": "conversation_id", "data_type": "text", "mandatory": false },
+    { "column_name": "question", "data_type": "text", "mandatory": true },
+    { "column_name": "answer", "data_type": "text", "mandatory": true },
+    { "column_name": "duration_ms", "data_type": "int", "mandatory": false },
+    { "column_name": "language", "data_type": "text", "mandatory": false },
+    { "column_name": "is_voice", "data_type": "boolean", "mandatory": false },
+    { "column_name": "mode", "data_type": "text", "mandatory": false }
+  ]
+}

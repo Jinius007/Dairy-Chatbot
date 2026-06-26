@@ -1,5 +1,6 @@
 import { prepareTextForSpeech, resolveTtsLanguage, splitForTts, TTS_LANG } from "@/lib/languages";
 import { filterAbusiveLanguage } from "@/lib/content-safety";
+import { getTtsUrl } from "@/lib/backend-config";
 
 let activeToken = 0;
 let speechChain: Promise<void> = Promise.resolve();
@@ -10,7 +11,7 @@ let pendingPlayResolve: ((ok: boolean) => void) | null = null;
 let ttsAbort: AbortController | null = null;
 let playWatchTimer: ReturnType<typeof setInterval> | null = null;
 
-/** Call-mode Web Audio playback — flush stops all buffers instantly (ElevenLabs-style). */
+/** Call-mode Web Audio playback — flush stops all buffers instantly. */
 let callAudioCtx: AudioContext | null = null;
 let callGain: GainNode | null = null;
 let callRefAnalyser: AnalyserNode | null = null;
@@ -162,8 +163,7 @@ function playCallBuffer(audioBuffer: AudioBuffer, token: number): Promise<boolea
 }
 
 function ttsEndpoint(): string {
-  if (typeof window === "undefined") return "/api/tts";
-  return `${window.location.origin}/api/tts`;
+  return getTtsUrl();
 }
 
 export async function unlockAudioPlayback(): Promise<void> {
@@ -484,7 +484,7 @@ function analyserRms(analyser: AnalyserNode): number {
   return Math.sqrt(sum / data.length);
 }
 
-/** RMS of advisor TTS output — reference for echo subtraction (ElevenLabs-style). */
+/** RMS of advisor TTS output — reference for echo subtraction. */
 export function getCallReferenceLevel(): number {
   if (!callRefAnalyser) return 0;
   return analyserRms(callRefAnalyser);

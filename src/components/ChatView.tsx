@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { supabase, isSupabaseConfigured } from "@/integrations/supabase/client";
+import { isBackendConfigured } from "@/lib/backend-config";
 import { VoiceRecorder } from "@/components/VoiceRecorder";
 import { Tick } from "@/components/Tick";
 import { BrandAvatar } from "@/components/BrandAvatar";
@@ -34,6 +34,7 @@ import {
 } from "@/lib/youtube";
 import { detectLanguageFromMessages } from "@/lib/languages";
 import { getChatCompletionsUrl, getChatRequestHeaders } from "@/lib/chat-api";
+import { transcribeAudio } from "@/lib/transcribe-api";
 import {
   SLOW_RESPONSE_MS,
   resolveUserLang,
@@ -167,7 +168,7 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
     startedAt?: number,
     userLang = "hi",
   ) => {
-    if (!isSupabaseConfigured) throw new Error("Supabase is not configured on this deployment.");
+    if (!isBackendConfigured()) throw new Error("Backend is not configured on this deployment.");
     abortRef.current?.abort();
     const ctrl = new AbortController();
     abortRef.current = ctrl;
@@ -339,8 +340,8 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
   };
 
   const handleVoice = async (b64: string, mime: string) => {
-    if (!supabase) {
-      toast.error("Supabase is not configured on this deployment.");
+    if (!isBackendConfigured()) {
+      toast.error("Backend is not configured on this deployment.");
       return;
     }
     setTranscribing(true);
@@ -348,15 +349,12 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
     const transcribeLang = detectLanguageFromMessages(messages) || activeUserLang || "hi";
     setActiveUserLang(transcribeLang);
     try {
-      const { data, error } = await supabase.functions.invoke("transcribe", {
-        body: { audioBase64: b64, mimeType: mime },
-      });
-      if (error) throw error;
-      if ((data as any)?.blocked) {
+      const data = await transcribeAudio(b64, mime, transcribeLang);
+      if (data.blocked) {
         toast.message("Please use respectful language.");
         return;
       }
-      const txt = filterAbusiveLanguage((data as any)?.transcript || "");
+      const txt = filterAbusiveLanguage(data.transcript || "");
       if (txt) await send(txt, true, startedAt);
       else toast.error("Could not transcribe audio");
     } catch (e: any) {

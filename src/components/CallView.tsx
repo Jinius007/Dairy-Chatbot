@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { PhoneOff, Mic, Loader2, PhoneCall, Volume2, X } from "lucide-react";
 import { toast } from "sonner";
-import { supabase, isSupabaseConfigured } from "@/integrations/supabase/client";
+import { isBackendConfigured } from "@/lib/backend-config";
+import { transcribeAudio } from "@/lib/transcribe-api";
 import { LANG_NAMES, detectLanguageCode, resolveTtsLanguage } from "@/lib/languages";
 import { getChatCompletionsUrl, getChatRequestHeaders } from "@/lib/chat-api";
 import { speakText, stopSpeech, unlockAudioPlayback, waitForCallPlaybackIdle } from "@/lib/speech";
@@ -249,8 +250,8 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
   );
 
   const processBlob = async (blob: Blob, mime: string) => {
-    if (!supabase || !isSupabaseConfigured) {
-      toast.error("Supabase is not configured on this deployment.");
+    if (!isBackendConfigured()) {
+      toast.error("Backend is not configured on this deployment.");
       resumeListening(500);
       return;
     }
@@ -262,20 +263,13 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
     try {
       const buf = await blob.arrayBuffer();
       const b64 = arrayBufferToBase64(buf);
-      const { data: tData, error: tErr } = await supabase.functions.invoke("transcribe", {
-        body: { audioBase64: b64, mimeType: mime },
-      });
-      if (tErr) throw tErr;
-      if ((tData as { blocked?: boolean })?.blocked) {
+      const tData = await transcribeAudio(b64, mime);
+      if (tData.blocked) {
         toast.message("Please use respectful language.");
         resumeListening(500);
         return;
       }
-      const userText = filterAbusiveLanguage(
-        typeof (tData as { transcript?: string })?.transcript === "string"
-          ? (tData as { transcript: string }).transcript.trim()
-          : "",
-      );
+      const userText = filterAbusiveLanguage(tData.transcript?.trim() || "");
       if (!userText || containsAbusiveLanguage(userText)) {
         toast.message("Didn't catch that — please speak again.");
         resumeListening(500);

@@ -1,0 +1,3 @@
+# Catalyst Slate environment
+
+VITE_CATALYST_API_URL=https://YOUR-PROJECT.development.catalystserverless.com/server/pashumitra_api

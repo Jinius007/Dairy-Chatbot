@@ -1,4 +1,4 @@
-// NDDB least-cost ration calculator (ICAR 2013 standards) — shared with Supabase edge functions.
+// NDDB least-cost ration calculator (ICAR 2013 standards).
 
 export type FeedType = "green" | "dry" | "conc" | "mineral";
 

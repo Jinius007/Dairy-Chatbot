@@ -1,5 +1,5 @@
 /**
- * ElevenLabs-style barge-in without ElevenLabs:
+ * Instant barge-in during voice call: stop TTS playback when user speaks.
  * 1. Flush TTS immediately on interrupt (speech.ts)
  * 2. Do NOT record during advisor speech — record only after flush
  * 3. Detect farmer speech via STT + energy VAD in parallel

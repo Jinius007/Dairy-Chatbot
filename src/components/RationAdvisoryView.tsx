@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { isBackendConfigured } from "@/lib/backend-config";
+import { transcribeAudio } from "@/lib/transcribe-api";
 import { VoiceRecorder } from "@/components/VoiceRecorder";
 import { HerdAnimalBlock } from "@/components/HerdAnimalBlock";
 import { ArrowLeft, Volume2, Pause, Play, Square, Wheat, ChevronRight, Check } from "lucide-react";
@@ -123,14 +124,11 @@ export function RationAdvisoryView({ open, onClose }: Props) {
   };
 
   const handleCountVoice = async (b64: string, mime: string) => {
-    if (!supabase) return;
+    if (!isBackendConfigured()) return;
     setTranscribingCount(true);
     try {
-      const { data, error } = await supabase.functions.invoke("transcribe", {
-        body: { audioBase64: b64, mimeType: mime },
-      });
-      if (error) throw error;
-      const txt = filterAbusiveLanguage((data as { transcript?: string })?.transcript || "");
+      const data = await transcribeAudio(b64, mime);
+      const txt = filterAbusiveLanguage(data.transcript || "");
       const n = parseHerdCount(txt);
       if (n) {
         setHerdCountInput(String(n));
@@ -156,17 +154,14 @@ export function RationAdvisoryView({ open, onClose }: Props) {
   };
 
   const handleBlockVoice = async (index: number, b64: string, mime: string) => {
-    if (!supabase) {
-      toast.error("Supabase is not configured.");
+    if (!isBackendConfigured()) {
+      toast.error("Backend is not configured.");
       return;
     }
     setTranscribingBlock(index);
     try {
-      const { data, error } = await supabase.functions.invoke("transcribe", {
-        body: { audioBase64: b64, mimeType: mime },
-      });
-      if (error) throw error;
-      const txt = filterAbusiveLanguage((data as { transcript?: string })?.transcript || "");
+      const data = await transcribeAudio(b64, mime);
+      const txt = filterAbusiveLanguage(data.transcript || "");
       if (!txt) {
         toast.error("Could not transcribe — try again");
         return;

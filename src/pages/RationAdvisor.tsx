@@ -23,7 +23,8 @@ import {
   parseYesNoFromVoice,
   type NumericContext,
 } from "@/lib/rationVoice";
-import { supabase } from "@/integrations/supabase/client";
+import { isBackendConfigured } from "@/lib/backend-config";
+import { transcribeAudio } from "@/lib/transcribe-api";
 import { toast } from "sonner";
 import { FEED_BY_ID, FeedItem } from "@/lib/feedLibrary";
 import {
@@ -662,8 +663,8 @@ const RationAdvisor = () => {
 
   const handleVoice = async (b64: string, mime: string) => {
     // Fallback when browser speech recognition is unavailable (e.g. Firefox)
-    if (!supabase) {
-      toast.error("Voice needs Chrome or Edge, or Supabase configured.");
+    if (!isBackendConfigured()) {
+      toast.error("Voice needs Chrome or Edge, or backend API configured.");
       return;
     }
     if (busy || transcribing || speaking || stepRef.current === "locating" || stepRef.current === "optimizing") return;
@@ -671,20 +672,12 @@ const RationAdvisor = () => {
     await waitForSpeechIdle();
     setTranscribing(true);
     try {
-      const { data, error } = await supabase.functions.invoke("transcribe", {
-        body: {
-          audioBase64: b64,
-          mimeType: mime,
-          language: langRef.current,
-          step: stepRef.current,
-        },
-      });
-      if (error) throw error;
-      if ((data as { blocked?: boolean })?.blocked) {
+      const data = await transcribeAudio(b64, mime, langRef.current, stepRef.current);
+      if (data.blocked) {
         toast.message("Please use respectful language.");
         return;
       }
-      const txt = ((data as { transcript?: string })?.transcript || "").trim();
+      const txt = (data.transcript || "").trim();
       if (txt) handleUserAnswer(txt, true);
       else toast.error("Could not understand. Please try again.");
     } catch (e: unknown) {
