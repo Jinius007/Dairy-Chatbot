@@ -33,6 +33,7 @@ import {
   stripUnverifiedYoutubeUrls,
 } from "@/lib/youtube";
 import { detectLanguageFromMessages } from "@/lib/languages";
+import { getChatCompletionsUrl, getChatRequestHeaders } from "@/lib/chat-api";
 import {
   SLOW_RESPONSE_MS,
   resolveUserLang,
@@ -57,8 +58,6 @@ interface Props {
 
 const msgKey = (id: string) => `pashumitra_msgs_${id}`;
 const CONV_KEY = "pashumitra_convs_v1";
-
-const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
 
 // Extract optional [[LANG:xx]] header from streamed text
 function splitLangHeader(text: string): { lang: string | null; body: string } {
@@ -191,12 +190,9 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
       }
     };
 
-    const resp = await fetch(CHAT_URL, {
+    const resp = await fetch(getChatCompletionsUrl(), {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-      },
+      headers: getChatRequestHeaders(),
       body: JSON.stringify({
         messages: history.map((m) => ({ role: m.role, content: m.content })),
         forceLanguage: userLang,

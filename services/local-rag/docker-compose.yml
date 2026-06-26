@@ -1,0 +1,50 @@
+# Self-hosted LLM + RAG — all inference and embeddings stay on YOUR GPU(s).
+# Swap GPU later by changing OLLAMA_BASE_URL only.
+
+services:
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    # Uncomment for NVIDIA GPU on Linux:
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
+
+  chroma:
+    image: chromadb/chroma:latest
+    ports:
+      - "8000:8000"
+    volumes:
+      - chroma_data:/chroma/chroma
+    environment:
+      IS_PERSISTENT: "TRUE"
+      ANONYMIZED_TELEMETRY: "FALSE"
+
+  rag-api:
+    build: .
+    ports:
+      - "8090:8090"
+    environment:
+      OLLAMA_BASE_URL: http://ollama:11434
+      CHROMA_HOST: chroma
+      CHROMA_PORT: "8000"
+      LLM_MODEL: ${LLM_MODEL:-gemma2:9b}
+      EMBED_MODEL: ${EMBED_MODEL:-nomic-embed-text}
+      RAG_API_TOKEN: ${RAG_API_TOKEN:-}
+    depends_on:
+      - ollama
+      - chroma
+    volumes:
+      # Mount NDDB extension material read-only for ingest
+      - ${RAG_MATERIAL_PATH:-./data/material}:/data/material:ro
+
+volumes:
+  ollama_data:
+  chroma_data:

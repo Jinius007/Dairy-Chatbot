@@ -3,6 +3,7 @@ import { PhoneOff, Mic, Loader2, PhoneCall, Volume2, X } from "lucide-react";
 import { toast } from "sonner";
 import { supabase, isSupabaseConfigured } from "@/integrations/supabase/client";
 import { LANG_NAMES, detectLanguageCode, resolveTtsLanguage } from "@/lib/languages";
+import { getChatCompletionsUrl, getChatRequestHeaders } from "@/lib/chat-api";
 import { speakText, stopSpeech, unlockAudioPlayback, waitForCallPlaybackIdle } from "@/lib/speech";
 import { startCallBargeInWithStream, type CallBargeInHandle } from "@/lib/call-barge-in";
 import { getSessionId } from "@/lib/session";
@@ -295,17 +296,11 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
       appendTranscript({ id: userTurn.id, role: "user", content: userText, language: detectedLang });
       historyRef.current.push({ role: "user", content: userText });
 
-      const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-      const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
       const chatCtrl = new AbortController();
       chatAbortRef.current = chatCtrl;
-      const chatRes = await fetch(`${SUPABASE_URL}/functions/v1/chat`, {
+      const chatRes = await fetch(getChatCompletionsUrl(), {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          apikey: SUPABASE_KEY,
-          Authorization: `Bearer ${SUPABASE_KEY}`,
-        },
+        headers: getChatRequestHeaders(),
         body: JSON.stringify({
           messages: historyRef.current,
           stream: false,
