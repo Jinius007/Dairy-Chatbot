@@ -80,7 +80,22 @@ npm run deploy:catalyst
 npm run verify:catalyst-api
 ```
 
-### If verify still returns 404
+### If verify returns 404 "The domain is not found" (deploy succeeded)
+
+This almost always means **API Gateway is enabled**. When APIG is on, direct `/server/function_name` URLs stop working until you create API rules.
+
+**Fix (pick one):**
+
+```powershell
+cd catalyst
+catalyst apig:disable
+cd ..
+npm run verify:catalyst-api
+```
+
+Or in Console: **Cloud Scale → API Gateway → Disable** (type DISABLE to confirm).
+
+### If verify still returns 404 after disabling APIG
 
 | Cause | Fix |
 |-------|-----|

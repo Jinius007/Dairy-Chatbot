@@ -20,6 +20,12 @@ Write-Host ($preflight -split "`n" | Select-Object -First 20)
 
 if ($root -match '"ok"\s*:\s*true') {
   Write-Host "`nOK: Function is deployed." -ForegroundColor Green
+} elseif ($root -match "The domain is not found|Invalid API URL") {
+  Write-Host "`nFAIL: Function URL blocked (404 - domain not found)." -ForegroundColor Red
+  Write-Host "Most likely API Gateway is ENABLED on this project." -ForegroundColor Yellow
+  Write-Host "Fix: cd catalyst && catalyst apig:disable" -ForegroundColor Yellow
+  Write-Host "Or: Console -> Cloud Scale -> API Gateway -> Disable" -ForegroundColor Yellow
+  Write-Host "Then run: npm run verify:catalyst-api" -ForegroundColor Yellow
 } else {
   Write-Host "`nFAIL: Function not deployed (expected JSON with ok:true, got 404 or error)." -ForegroundColor Red
   Write-Host "Run: npm run build:catalyst-api && cd catalyst && catalyst deploy --only functions" -ForegroundColor Yellow

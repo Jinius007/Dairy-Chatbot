@@ -58,6 +58,21 @@ if ($LASTEXITCODE -ne 0) {
   exit $LASTEXITCODE
 }
 
+# 4b. If URL returns "The domain is not found", API Gateway is likely blocking direct function URLs
+Write-Host ""
+Write-Host "Checking API Gateway status..." -ForegroundColor Cyan
+$apigStatus = catalyst apig:status 2>&1 | Out-String
+if ($apigStatus -match "enabled.*true|Enabled|ENABLED") {
+  Write-Host "API Gateway is ENABLED - disabling so /server/pashumitra_api URLs work..." -ForegroundColor Yellow
+  catalyst apig:disable
+  if ($LASTEXITCODE -eq 0) {
+    Write-Host "API Gateway disabled. Waiting 5s for propagation..." -ForegroundColor Green
+    Start-Sleep -Seconds 5
+  } else {
+    Write-Host "Could not disable via CLI. In Console: Cloud Scale -> API Gateway -> Disable" -ForegroundColor Yellow
+  }
+}
+
 # 5. Verify
 Write-Host ""
 Write-Host "[5/5] Verifying API..." -ForegroundColor Cyan
