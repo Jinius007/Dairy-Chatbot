@@ -8,22 +8,10 @@ import { handleYoutubeSearch } from "./routes/youtube-search.mts";
 
 const app = express();
 
-function applyCors(req: Request, res: Response): void {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader(
-    "Access-Control-Allow-Headers",
-    "authorization, content-type, apikey, x-client-info, x-requested-with",
-  );
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-  res.setHeader("Access-Control-Max-Age", "86400");
-  if (req.headers.origin) {
-    res.setHeader("Vary", "Origin");
-  }
-}
+// CORS is handled by Catalyst gateway for whitelisted Slate domains — do not set
+// Access-Control-* here or handlers (duplicate values break the browser).
 
-// Handle preflight before body parsing — Catalyst gateway also requires domain whitelisting (see docs/CATALYST_DEPLOY.md).
 app.use((req, res, next) => {
-  applyCors(req, res);
   if (req.method === "OPTIONS") {
     res.status(204).end();
     return;
@@ -50,7 +38,8 @@ async function relayWebHandler(
   const webRes = await handler(new Request(url, init));
   res.status(webRes.status);
   webRes.headers.forEach((value, key) => {
-    if (key.toLowerCase() === "transfer-encoding") return;
+    const lower = key.toLowerCase();
+    if (lower === "transfer-encoding" || lower.startsWith("access-control-")) return;
     res.setHeader(key, value);
   });
 

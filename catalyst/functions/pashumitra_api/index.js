@@ -26260,10 +26260,8 @@ async function sarvamTranscribe(audioBytes, mimeType, languageCode) {
 }
 
 // catalyst/functions/pashumitra_api/src/handlers/chat.ts
-var corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type"
-};
+var jsonHeaders = { "Content-Type": "application/json" };
+var sseHeaders = { "Content-Type": "text/event-stream" };
 var SYSTEM_PROMPT = `You are PashuMitra, a friendly WhatsApp-style assistant for Indian livestock farmers and dairy entrepreneurs.
 
 OUTPUT FORMAT (STRICT \u2014 NON-NEGOTIABLE):
@@ -26433,11 +26431,11 @@ function streamStaticText(text) {
   return new Response(`${chunk}data: [DONE]
 
 `, {
-    headers: { ...corsHeaders, "Content-Type": "text/event-stream" }
+    headers: sseHeaders
   });
 }
 async function handleChat(req) {
-  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+  if (req.method === "OPTIONS") return new Response(null, { status: 204 });
   try {
     const { messages, stream = true, mode = "chat", forceLanguage = null } = await req.json();
     const lastUser = [...messages].reverse().find((m) => m.role === "user");
@@ -26445,7 +26443,7 @@ async function handleChat(req) {
       const refusal = abuseRefusalMessage(detectLangForRefusal(lastUser.content));
       if (stream) return streamStaticText(refusal);
       return new Response(JSON.stringify({ text: refusal }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" }
+        headers: jsonHeaders
       });
     }
     const safeMessages = messages.map(
@@ -26465,7 +26463,7 @@ async function handleChat(req) {
       if (directReply) {
         if (stream) return streamStaticText(directReply);
         return new Response(JSON.stringify({ text: directReply }), {
-          headers: { ...corsHeaders, "Content-Type": "application/json" }
+          headers: jsonHeaders
         });
       }
     }
@@ -26499,13 +26497,13 @@ Answer like a warm, patient human helper. Very simple village/farmer words. 2\u2
     if (response.status === 429) {
       return new Response(JSON.stringify({ error: "Too many requests, please wait." }), {
         status: 429,
-        headers: { ...corsHeaders, "Content-Type": "application/json" }
+        headers: jsonHeaders
       });
     }
     if (response.status === 401 || response.status === 403) {
       return new Response(JSON.stringify({ error: "Sarvam API key invalid or missing." }), {
         status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" }
+        headers: jsonHeaders
       });
     }
     if (!response.ok) {
@@ -26513,33 +26511,30 @@ Answer like a warm, patient human helper. Very simple village/farmer words. 2\u2
       console.error("Sarvam chat error:", response.status, t);
       return new Response(JSON.stringify({ error: "AI service error" }), {
         status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" }
+        headers: jsonHeaders
       });
     }
     if (stream) {
       return new Response(response.body, {
-        headers: { ...corsHeaders, "Content-Type": "text/event-stream" }
+        headers: sseHeaders
       });
     }
     const data = await response.json();
     const text = filterAbusiveLanguage(data.choices?.[0]?.message?.content || "");
     return new Response(JSON.stringify({ text }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" }
+      headers: jsonHeaders
     });
   } catch (e) {
     console.error("chat error:", e);
     return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }), {
       status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" }
+      headers: jsonHeaders
     });
   }
 }
 
 // catalyst/functions/pashumitra_api/src/handlers/transcribe.ts
-var corsHeaders2 = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type"
-};
+var jsonHeaders2 = { "Content-Type": "application/json" };
 function decodeBase64Audio(audioBase64) {
   const binary = atob(audioBase64);
   const bytes = new Uint8Array(binary.length);
@@ -26547,7 +26542,7 @@ function decodeBase64Audio(audioBase64) {
   return bytes;
 }
 async function handleTranscribe(req) {
-  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders2 });
+  if (req.method === "OPTIONS") return new Response(null, { status: 204 });
   try {
     const { audioBase64, mimeType, language } = await req.json();
     if (!audioBase64) throw new Error("audioBase64 required");
@@ -26555,17 +26550,17 @@ async function handleTranscribe(req) {
     const transcript = await sarvamTranscribe(audioBytes, mimeType, language);
     if (transcript === "[BLOCKED]" || containsAbusiveLanguage(transcript)) {
       return new Response(JSON.stringify({ transcript: "", blocked: true }), {
-        headers: { ...corsHeaders2, "Content-Type": "application/json" }
+        headers: jsonHeaders2
       });
     }
     return new Response(JSON.stringify({ transcript: filterAbusiveLanguage(transcript) }), {
-      headers: { ...corsHeaders2, "Content-Type": "application/json" }
+      headers: jsonHeaders2
     });
   } catch (e) {
     console.error(e);
     return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Unknown" }), {
       status: 500,
-      headers: { ...corsHeaders2, "Content-Type": "application/json" }
+      headers: jsonHeaders2
     });
   }
 }
@@ -26777,20 +26772,7 @@ async function handleYoutubeSearch(req, res) {
 
 // catalyst/functions/pashumitra_api/src/server.mts
 var app = (0, import_express.default)();
-function applyCors(req, res) {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader(
-    "Access-Control-Allow-Headers",
-    "authorization, content-type, apikey, x-client-info, x-requested-with"
-  );
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-  res.setHeader("Access-Control-Max-Age", "86400");
-  if (req.headers.origin) {
-    res.setHeader("Vary", "Origin");
-  }
-}
 app.use((req, res, next) => {
-  applyCors(req, res);
   if (req.method === "OPTIONS") {
     res.status(204).end();
     return;
@@ -26810,7 +26792,8 @@ async function relayWebHandler(handler, req, res) {
   const webRes = await handler(new Request(url, init));
   res.status(webRes.status);
   webRes.headers.forEach((value, key) => {
-    if (key.toLowerCase() === "transfer-encoding") return;
+    const lower = key.toLowerCase();
+    if (lower === "transfer-encoding" || lower.startsWith("access-control-")) return;
     res.setHeader(key, value);
   });
   if (!webRes.body) {

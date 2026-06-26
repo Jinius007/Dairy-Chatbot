@@ -25,10 +25,8 @@ import { tryYoutubeVideoHint } from "../../lib/youtube-search.ts";
 import { retrieveRagContext } from "../../lib/rag-retrieval.ts";
 import { getSarvamChatModel, sarvamChatCompletion } from "../../lib/sarvam.ts";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+const jsonHeaders = { "Content-Type": "application/json" };
+const sseHeaders = { "Content-Type": "text/event-stream" };
 
 const SYSTEM_PROMPT = `You are PashuMitra, a friendly WhatsApp-style assistant for Indian livestock farmers and dairy entrepreneurs.
 
@@ -198,12 +196,12 @@ function tryComputeRationHint(messages: { role: string; content: string }[]): st
 function streamStaticText(text: string): Response {
   const chunk = `data: ${JSON.stringify({ choices: [{ delta: { content: text } }] })}\n\n`;
   return new Response(`${chunk}data: [DONE]\n\n`, {
-    headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
+    headers: sseHeaders,
   });
 }
 
 export async function handleChat(req: Request): Promise<Response> {
-  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+  if (req.method === "OPTIONS") return new Response(null, { status: 204 });
 
   try {
     const { messages, stream = true, mode = "chat", forceLanguage = null } = await req.json();
@@ -212,7 +210,7 @@ export async function handleChat(req: Request): Promise<Response> {
       const refusal = abuseRefusalMessage(detectLangForRefusal(lastUser.content));
       if (stream) return streamStaticText(refusal);
       return new Response(JSON.stringify({ text: refusal }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: jsonHeaders,
       });
     }
 
@@ -237,7 +235,7 @@ export async function handleChat(req: Request): Promise<Response> {
       if (directReply) {
         if (stream) return streamStaticText(directReply);
         return new Response(JSON.stringify({ text: directReply }), {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          headers: jsonHeaders,
         });
       }
     }
@@ -271,37 +269,37 @@ Answer like a warm, patient human helper. Very simple village/farmer words. 2–
 
     if (response.status === 429) {
       return new Response(JSON.stringify({ error: "Too many requests, please wait." }), {
-        status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 429, headers: jsonHeaders,
       });
     }
     if (response.status === 401 || response.status === 403) {
       return new Response(JSON.stringify({ error: "Sarvam API key invalid or missing." }), {
-        status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 500, headers: jsonHeaders,
       });
     }
     if (!response.ok) {
       const t = await response.text();
       console.error("Sarvam chat error:", response.status, t);
       return new Response(JSON.stringify({ error: "AI service error" }), {
-        status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 500, headers: jsonHeaders,
       });
     }
 
     if (stream) {
       return new Response(response.body, {
-        headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
+        headers: sseHeaders,
       });
     }
 
     const data = await response.json();
     const text = filterAbusiveLanguage(data.choices?.[0]?.message?.content || "");
     return new Response(JSON.stringify({ text }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: jsonHeaders,
     });
   } catch (e) {
     console.error("chat error:", e);
     return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }), {
-      status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      status: 500, headers: jsonHeaders,
     });
   }
 }

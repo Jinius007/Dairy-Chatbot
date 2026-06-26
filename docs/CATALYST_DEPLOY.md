@@ -166,6 +166,7 @@ Do **not** paste `VITE_CATALYST_API_URL=https://...` as the value (that breaks f
 
 | Symptom | Cause | Fix |
 |---------|-------|-----|
+| **CORS blocked: multiple `Access-Control-Allow-Origin` values** | Catalyst gateway + function both set CORS | Redeploy `pashumitra_api` (function must not send `Access-Control-*`; gateway handles it) |
 | Network tab URL starts with `VITE_CATALYST_API_URL=` | Whole env line pasted as Slate **value** | Value field = URL only; name field = `VITE_CATALYST_API_URL` |
 | Network tab shows `…onslate.in/catalyst-api/transcribe` → **405** | Slate built with local dev URL | Set full `https://…catalystserverless.in/server/pashumitra_api` in Slate env, rebuild |
 | Network tab shows `…catalystserverless.in/…/transcribe` → **404** | Wrong TLD (`.com` vs `.in`) | Copy exact URL from `catalyst deploy` output |

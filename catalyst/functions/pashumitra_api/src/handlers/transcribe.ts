@@ -4,10 +4,7 @@ import {
 } from "../../lib/content-safety.ts";
 import { sarvamTranscribe } from "../../lib/sarvam.ts";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+const jsonHeaders = { "Content-Type": "application/json" };
 
 function decodeBase64Audio(audioBase64: string): Uint8Array {
   const binary = atob(audioBase64);
@@ -17,7 +14,7 @@ function decodeBase64Audio(audioBase64: string): Uint8Array {
 }
 
 export async function handleTranscribe(req: Request): Promise<Response> {
-  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+  if (req.method === "OPTIONS") return new Response(null, { status: 204 });
 
   try {
     const { audioBase64, mimeType, language } = await req.json();
@@ -28,16 +25,16 @@ export async function handleTranscribe(req: Request): Promise<Response> {
 
     if (transcript === "[BLOCKED]" || containsAbusiveLanguage(transcript)) {
       return new Response(JSON.stringify({ transcript: "", blocked: true }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: jsonHeaders,
       });
     }
     return new Response(JSON.stringify({ transcript: filterAbusiveLanguage(transcript) }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: jsonHeaders,
     });
   } catch (e) {
     console.error(e);
     return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Unknown" }), {
-      status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      status: 500, headers: jsonHeaders,
     });
   }
 }

@@ -33,6 +33,9 @@ if ($root -match '"ok"\s*:\s*true') {
 
 if ($preflight -match "Access-Control-Allow-Origin") {
   Write-Host "OK: CORS header present on preflight." -ForegroundColor Green
+  if ($preflight -match "Access-Control-Allow-Origin:[^\r\n]*,\s*\*") {
+    Write-Host "WARN: Duplicate Access-Control-Allow-Origin (gateway + function). Redeploy function after CORS fix." -ForegroundColor Yellow
+  }
 } else {
   Write-Host "FAIL: No Access-Control-Allow-Origin on preflight." -ForegroundColor Red
   Write-Host "Catalyst Console -> Cloud Scale -> Authentication -> Whitelisting -> Add Domain:" -ForegroundColor Yellow
