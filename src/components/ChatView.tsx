@@ -203,7 +203,7 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
 
     if (resp.status === 429) throw new Error("Too many requests, please wait a moment.");
     if (resp.status === 402) throw new Error("AI credits exhausted. Add credits in workspace settings.");
-    if (!resp.ok || !resp.body) throw new Error("Failed to get reply.");
+    if (!resp.ok || !resp.body) throw new Error(`Failed to get reply (${resp.status})`);
 
     const reader = resp.body.getReader();
     const decoder = new TextDecoder();

@@ -3,11 +3,32 @@
  * Set VITE_CATALYST_API_URL in Slate / .env.local.
  */
 
+/** Slate users often paste the whole `.env` line — strip that. */
+function normalizeCatalystApiUrl(raw: string): string {
+  let base = raw.trim();
+  if (!base) return base;
+
+  // "VITE_CATALYST_API_URL=https://..." pasted into the value field
+  base = base.replace(/^VITE_CATALYST_API_URL\s*=\s*/i, "");
+  base = base.replace(/^["']|["']$/g, "").trim();
+  return base.replace(/\/$/, "");
+}
+
+function readCatalystApiUrl(): string {
+  return normalizeCatalystApiUrl(import.meta.env.VITE_CATALYST_API_URL ?? "");
+}
+
 /** Misconfiguration hint for Slate banner (null = OK). */
 export function getBackendConfigIssue(): string | null {
-  const base = import.meta.env.VITE_CATALYST_API_URL?.trim();
+  const raw = import.meta.env.VITE_CATALYST_API_URL?.trim() ?? "";
+  const base = readCatalystApiUrl();
+
   if (!base) {
     return "VITE_CATALYST_API_URL is not set.";
+  }
+
+  if (/^VITE_CATALYST_API_URL\s*=/i.test(raw)) {
+    return "Slate value includes the variable name — use URL only in the value field, then rebuild. (Using normalized URL for now.)";
   }
 
   if (import.meta.env.PROD) {
@@ -25,15 +46,21 @@ export function getBackendConfigIssue(): string | null {
   return null;
 }
 
+/** True when API calls may proceed (normalized URL looks usable). */
 export function isBackendConfigured(): boolean {
-  return getBackendConfigIssue() === null;
+  const base = readCatalystApiUrl();
+  if (!base) return false;
+  if (import.meta.env.PROD) {
+    return base.startsWith("https://") && base.includes("catalystserverless");
+  }
+  return true;
 }
 
 function catalystBase(): string {
-  const issue = getBackendConfigIssue();
-  if (issue) throw new Error(issue);
-  const base = import.meta.env.VITE_CATALYST_API_URL!.trim();
-  return base.replace(/\/$/, "");
+  if (!isBackendConfigured()) {
+    throw new Error(getBackendConfigIssue() ?? "VITE_CATALYST_API_URL is not configured");
+  }
+  return readCatalystApiUrl();
 }
 
 /** Chat + call LLM completions (SSE). */

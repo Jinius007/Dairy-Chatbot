@@ -13,14 +13,9 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <div className="h-[100dvh] flex flex-col overflow-hidden">
-        {!isBackendConfigured() && (
+        {getBackendConfigIssue() && (
           <div className="shrink-0 bg-amber-500 text-amber-950 px-4 py-2 text-center text-sm">
-            {getBackendConfigIssue() ?? (
-              <>
-                Set <code className="font-mono">VITE_CATALYST_API_URL</code> to your Catalyst function URL, then rebuild
-                Slate (see <code className="font-mono">docs/CATALYST_DEPLOY.md</code>).
-              </>
-            )}
+            {getBackendConfigIssue()}
           </div>
         )}
         <div className="flex-1 min-h-0 overflow-hidden">

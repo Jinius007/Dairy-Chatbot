@@ -1,2 +1,3 @@
 # Catalyst Slate environment (India DC uses .catalystserverless.in not .com)
-VITE_CATALYST_API_URL=https://project-rainfall-60075686570.development.catalystserverless.in/server/pashumitra_api
+# In Slate Console: variable NAME = VITE_CATALYST_API_URL, VALUE = line below only:
+https://project-rainfall-60075686570.development.catalystserverless.in/server/pashumitra_api

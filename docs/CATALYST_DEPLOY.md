@@ -150,11 +150,13 @@ If missing, `/log-turn` returns 503 (chat still works).
 
 1. Catalyst console → **Slate** → React / Vite app
 2. Build: `npm run build`, output: `dist`
-3. Env:
+3. Env — **name** and **value** are separate fields in Slate; paste only the URL into **value**:
 
-```
-VITE_CATALYST_API_URL=https://project-rainfall-60075686570.development.catalystserverless.in/server/pashumitra_api
-```
+| Name | Value |
+|------|-------|
+| `VITE_CATALYST_API_URL` | `https://project-rainfall-60075686570.development.catalystserverless.in/server/pashumitra_api` |
+
+Do **not** paste `VITE_CATALYST_API_URL=https://...` as the value (that breaks fetch URLs).
 
 4. Rebuild Slate after env changes (Build / Sync).
 
@@ -164,6 +166,7 @@ VITE_CATALYST_API_URL=https://project-rainfall-60075686570.development.catalysts
 
 | Symptom | Cause | Fix |
 |---------|-------|-----|
+| Network tab URL starts with `VITE_CATALYST_API_URL=` | Whole env line pasted as Slate **value** | Value field = URL only; name field = `VITE_CATALYST_API_URL` |
 | Network tab shows `…onslate.in/catalyst-api/transcribe` → **405** | Slate built with local dev URL | Set full `https://…catalystserverless.in/server/pashumitra_api` in Slate env, rebuild |
 | Network tab shows `…catalystserverless.in/…/transcribe` → **404** | Wrong TLD (`.com` vs `.in`) | Copy exact URL from `catalyst deploy` output |
 | **500** on transcribe | Missing `SARVAM_API_KEY` on function | Catalyst Console → Functions → pashumitra_api → Environment |
