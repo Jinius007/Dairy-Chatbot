@@ -1,3 +1,2 @@
-# Catalyst Slate environment
-
-VITE_CATALYST_API_URL=https://YOUR-PROJECT.development.catalystserverless.com/server/pashumitra_api
+# Catalyst Slate environment (India DC uses .catalystserverless.in not .com)
+VITE_CATALYST_API_URL=https://project-rainfall-60075686570.development.catalystserverless.in/server/pashumitra_api

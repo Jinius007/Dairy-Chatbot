@@ -10,5 +10,8 @@
       "src",
       "*.map"
     ]
+  },
+  "apig": {
+    "enabled": false
   }
 }

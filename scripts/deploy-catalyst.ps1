@@ -88,6 +88,8 @@ Write-Host ""
 Write-Host "If verify shows no CORS header:" -ForegroundColor Green
 Write-Host "  Cloud Scale -> Authentication -> Whitelisting -> Add Domain with CORS ON:" -ForegroundColor Green
 Write-Host "    dairy-mitr-znhzndph.onslate.in" -ForegroundColor Green
-Write-Host "    project-rainfall-60075686570.development.catalystserverless.com" -ForegroundColor Green
+Write-Host ""
+Write-Host "Update Slate VITE_CATALYST_API_URL (India DC uses .in not .com):" -ForegroundColor Green
+Write-Host "  https://project-rainfall-60075686570.development.catalystserverless.in/server/pashumitra_api" -ForegroundColor Green
 Write-Host ""
 Write-Host "Then set SARVAM_API_KEY on the function and VITE_CATALYST_API_URL on Slate." -ForegroundColor Green

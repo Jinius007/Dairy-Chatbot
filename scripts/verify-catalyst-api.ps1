@@ -1,6 +1,6 @@
 # Verify Catalyst pashumitra_api is deployed and returns CORS headers.
 param(
-  [string]$BaseUrl = "https://project-rainfall-60075686570.development.catalystserverless.com/server/pashumitra_api",
+  [string]$BaseUrl = "https://project-rainfall-60075686570.development.catalystserverless.in/server/pashumitra_api",
   [string]$Origin = "https://dairy-mitr-znhzndph.onslate.in"
 )
 
@@ -22,8 +22,8 @@ if ($root -match '"ok"\s*:\s*true') {
   Write-Host "`nOK: Function is deployed." -ForegroundColor Green
 } elseif ($root -match "The domain is not found|Invalid API URL") {
   Write-Host "`nFAIL: Function URL blocked (404 - domain not found)." -ForegroundColor Red
-  Write-Host "Most likely API Gateway is ENABLED on this project." -ForegroundColor Yellow
-  Write-Host "Fix: cd catalyst && catalyst apig:disable" -ForegroundColor Yellow
+  Write-Host "Check the URL TLD from 'catalyst deploy' output (India DC uses .catalystserverless.in, not .com)." -ForegroundColor Yellow
+  Write-Host "If API Gateway is enabled: cd catalyst && catalyst apig:disable" -ForegroundColor Yellow
   Write-Host "Or: Console -> Cloud Scale -> API Gateway -> Disable" -ForegroundColor Yellow
   Write-Host "Then run: npm run verify:catalyst-api" -ForegroundColor Yellow
 } else {
@@ -37,6 +37,5 @@ if ($preflight -match "Access-Control-Allow-Origin") {
   Write-Host "FAIL: No Access-Control-Allow-Origin on preflight." -ForegroundColor Red
   Write-Host "Catalyst Console -> Cloud Scale -> Authentication -> Whitelisting -> Add Domain:" -ForegroundColor Yellow
   Write-Host "  dairy-mitr-znhzndph.onslate.in  (enable CORS)" -ForegroundColor Yellow
-  Write-Host "Also add (same project, cross-domain):" -ForegroundColor Yellow
-  Write-Host "  project-rainfall-60075686570.development.catalystserverless.com  (enable CORS)" -ForegroundColor Yellow
+  Write-Host "Do NOT add catalystserverless.in/.com - only your Slate origin domain." -ForegroundColor Yellow
 }

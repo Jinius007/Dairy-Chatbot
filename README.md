@@ -29,7 +29,7 @@ Deploy: see [docs/CATALYST_DEPLOY.md](docs/CATALYST_DEPLOY.md).
 **Frontend (Slate / `.env.local`):**
 
 ```
-VITE_CATALYST_API_URL=https://YOUR-PROJECT.catalystserverless.com/server/pashumitra_api
+VITE_CATALYST_API_URL=https://project-rainfall-60075686570.development.catalystserverless.in/server/pashumitra_api
 ```
 
 **Catalyst function secrets:** `SARVAM_API_KEY` (required), optional `BHASHINI_API_KEY`, `YOUTUBE_API_KEY`.

@@ -39,7 +39,8 @@ Slate (`https://dairy-mitr-znhzndph.onslate.in`) and your Catalyst function URL 
 3. **Authorized Domains** → **Add Domain**
 4. Domain: `dairy-mitr-znhzndph.onslate.in` (hostname only, no `https://`)
 5. Enable **CORS** → **Configure**
-6. Add a second domain (same steps): `project-rainfall-60075686570.development.catalystserverless.com` with **CORS** on (Catalyst cross-domain docs require both frontend and backend domains).
+
+Only add your **Slate origin** domain — do **not** add `catalystserverless.in` or `.com` (Console rejects those).
 
 Verify from your PC:
 
@@ -47,10 +48,10 @@ Verify from your PC:
 npm run verify:catalyst-api
 ```
 
-Or manually:
+Or manually (note **`.in`** for India data center):
 
 ```bash
-curl -i https://project-rainfall-60075686570.development.catalystserverless.com/server/pashumitra_api/
+curl -i https://project-rainfall-60075686570.development.catalystserverless.in/server/pashumitra_api/
 ```
 
 Expected: `200` with JSON `{"ok":true,"service":"pashumitra_api",...}` — not `404 The domain is not found`.
@@ -134,8 +135,10 @@ Function environment variables:
 | `BHASHINI_API_KEY` | Optional TTS quality |
 | `YOUTUBE_API_KEY` | Optional verified video search |
 
-Function URL example:  
-`https://YOUR-PROJECT.development.catalystserverless.com/server/pashumitra_api`
+Function URL (India DC — use **`.in`**, not `.com`):
+`https://project-rainfall-60075686570.development.catalystserverless.in/server/pashumitra_api`
+
+Copy the exact URL from your `catalyst deploy` output — TLD varies by data center (`.in`, `.com`, `.eu`, etc.).
 
 ## 3. Data Store (conversation logging)
 
@@ -150,7 +153,7 @@ If missing, `/log-turn` returns 503 (chat still works).
 3. Env:
 
 ```
-VITE_CATALYST_API_URL=https://YOUR-PROJECT.catalystserverless.com/server/pashumitra_api
+VITE_CATALYST_API_URL=https://project-rainfall-60075686570.development.catalystserverless.in/server/pashumitra_api
 ```
 
 4. Rebuild Slate after env changes (Build / Sync).
