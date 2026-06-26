@@ -22,6 +22,10 @@ if (-not (Test-Path ".catalystrc")) {
 Write-Host "`nDeploying pashumitra_api..." -ForegroundColor Cyan
 catalyst deploy --only functions
 
+Write-Host "`nVerifying API..." -ForegroundColor Cyan
+Set-Location $Root
+npm run verify:catalyst-api
+
 Write-Host @"
 
 NEXT STEPS:

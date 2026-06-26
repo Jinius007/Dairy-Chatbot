@@ -1,0 +1,12 @@
+{
+  "advancedio": {
+    "pashumitra_api": [
+      {
+        ".*": {
+          "methods": ["GET", "POST", "PUT", "DELETE", "PATCH"],
+          "authentication": "optional"
+        }
+      }
+    ]
+  }
+}

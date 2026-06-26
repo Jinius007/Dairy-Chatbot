@@ -24,7 +24,7 @@ await esbuild.build({
   target: "node20",
   sourcemap: true,
   banner: { js: denoShim },
-  external: ["zcatalyst-sdk-node", "express"],
+  external: ["zcatalyst-sdk-node"],
   loader: { ".ts": "ts" },
 });
 

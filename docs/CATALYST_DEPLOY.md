@@ -29,18 +29,31 @@ The React app requires **`VITE_CATALYST_API_URL`** — all API traffic goes to C
 
 ## 0. Enable CORS for Slate (required)
 
-Slate (`https://dairy-mitr-znhzndph.onslate.in`) and your Catalyst function URL are **different origins**. Catalyst blocks browser requests until you whitelist the Slate domain.
+Slate (`https://dairy-mitr-znhzndph.onslate.in`) and your Catalyst function URL are **different origins**. The browser blocks requests until Catalyst whitelists your Slate domain.
 
-1. [Catalyst Console](https://console.catalyst.zoho.com) → your project (**Project-Rainfall**)
+**Also check the function is deployed** — if `GET /server/pashumitra_api/` returns `The domain is not found`, deploy first (step 2 below). A missing function shows the same CORS error in the browser.
+
+1. [Catalyst Console](https://console.catalyst.zoho.com) → **Project-Rainfall**
 2. **Cloud Scale** → **Authentication** → **Whitelisting**
-   - If Whitelisting is locked, enable any auth type first (e.g. Hosted Authentication) — you do not need to use it in the app.
+   - If Whitelisting is locked, enable **Hosted Authentication** first (you do not need to use login in the app).
 3. **Authorized Domains** → **Add Domain**
 4. Domain: `dairy-mitr-znhzndph.onslate.in` (hostname only, no `https://`)
 5. Enable **CORS** → **Configure**
+6. Add a second domain (same steps): `project-rainfall-60075686570.development.catalystserverless.com` with **CORS** on (Catalyst cross-domain docs require both frontend and backend domains).
 
-For local Vite dev against the **cloud** API (not the proxy), also add `localhost`.
+Verify from your PC:
 
-Without this step, the browser shows: *No 'Access-Control-Allow-Origin' header* on `/transcribe`, `/tts`, etc.
+```powershell
+npm run verify:catalyst-api
+```
+
+Or manually:
+
+```bash
+curl -i https://project-rainfall-60075686570.development.catalystserverless.com/server/pashumitra_api/
+```
+
+Expected: `200` with JSON `{"ok":true,"service":"pashumitra_api",...}` — not `404 The domain is not found`.
 
 ## 1. Build the API bundle
 
