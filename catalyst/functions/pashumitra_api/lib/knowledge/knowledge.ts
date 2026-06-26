@@ -4,6 +4,8 @@
 import { BALANCED_RATION_GUIDE } from "./balanced-ration-guide.ts";
 import { RATION_KNOWLEDGE } from "./ration-knowledge.ts";
 import { COOPERATIVE_MILK_POLICY } from "./cooperative-policy.ts";
+import { DAHD_SCHEMES } from "./dahd-schemes.ts";
+import { EXTENSION_MATERIAL } from "./extension-material.generated.ts";
 
 export const KNOWLEDGE_BASE = `
 # DAIRY FARMING & ANIMAL HUSBANDRY KNOWLEDGE BASE
@@ -102,23 +104,9 @@ Heat stress: panting, drooling, reduced intake, reduced milk. Provide shade, fan
 Rumen of adult bovine holds 100-150 L. ~500 L blood circulates through udder per 1 L milk.
 Gestation: cattle 280-290 days, buffalo 305-318 days.
 
-## 8. INDIAN GOVERNMENT SCHEMES (DAHD, GoI)
-**AHIDF — Animal Husbandry Infrastructure Development Fund** (₹29,610.25 cr through 2025-26). 3% interest subvention/yr for 8 years (2 yr moratorium). Loan up to 90% of project cost from Scheduled Banks/NABARD/NCDC/NDDB. 25% credit guarantee for MSMEs & dairy cooperatives. For dairy processing, meat processing, animal feed, breed multiplication. Eligible: individuals, companies, FPOs, MSMEs, Sec-8 cos, cooperatives.
-**Rashtriya Gokul Mission (RGM)** — indigenous bovine breed improvement. Subsidy up to 50% on sex-sorted semen. ₹5,000/IVF assured pregnancy. Up to 50% capital subsidy (max ₹2 cr) for Breed Multiplication Farms. NAIP nationwide AI; MAITRI doorstep AI technicians.
-**National Programme for Dairy Development (NPDD)** — strengthen cooperative procurement, milk testing, primary chilling at village level. Component B (DTC) JICA-aided in UP/Bihar.
-**SDCFPO — Supporting Dairy Cooperatives & FPOs**: 2% interest subvention on working capital; +2% for prompt repayment.
-**KCC for Animal Husbandry**: short-term working capital up to ₹3 lakh (₹5 lakh in some cases) at 7% interest (extra 3% subvention for prompt repayment).
-**National Livestock Mission (NLM)**: entrepreneurship support for sheep/goat/pig/poultry/fodder; silage/haylage units; fodder seed.
-**Livestock Insurance Scheme**: subsidized premiums for high-yield animals; covers death by disease, accident, calamity.
-**State schemes (typical)**:
-- Hi-Tech Dairy Units (Haryana, UP, Gujarat — Nand Baba Doodh Mission): credit-linked subsidy for 10/20/50 milch animals.
-- Small-scale (Kerala, Maharashtra, Karnataka): 25-50% subsidy for 2-5 animals + sheds, often for SHGs/JLGs/BPL.
-- Indigenous breed promotion (Gujarat, Rajasthan): subsidies for Gir, Sahiwal etc.
-- Cattle sheds (Kerala — Ksheera Theeram, UP): 50-75% subsidy on scientific elevated sheds.
-- Equipment: 50-100% grant on Bulk Milk Coolers, milking machines, AMCUs (TN, Puducherry, Punjab).
-- SC/ST/Women: 60-75% subsidy in Maharashtra, Bihar, Assam.
-- Milk price incentives: per-litre premium in Karnataka, Maharashtra cooperatives.
-**How to apply**: Central — through NDDB/NCDC/SLDB or AHIDF portal. State — District Animal Husbandry Office / District Dairy Development Officer; many states have online portals.
+## 8. INDIAN GOVERNMENT SCHEMES (see dedicated DAHD section below)
+
+${DAHD_SCHEMES}
 
 ## 9. MILK QUALITY
 Pre-milking: wash udder, dry with individual towel, fore-milk strip, gentle massage.
@@ -132,4 +120,6 @@ ${RATION_KNOWLEDGE}
 ${BALANCED_RATION_GUIDE}
 
 ${COOPERATIVE_MILK_POLICY}
+
+${EXTENSION_MATERIAL}
 `;

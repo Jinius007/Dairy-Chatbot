@@ -86,8 +86,11 @@ export function retrieveRagContext(query: string, topK = 7): string {
   if (/milk|sell|pour|cooperative|dcs|union|marketing|dudh|dugh|buyer/i.test(query)) {
     selected = mergeUnique(selected, pickByTitle(chunks, /COOPERATIVE|MILK MARKETING|ECONOMICS/i, 2));
   }
-  if (/scheme|subsidy|loan|kcc|ahidf|rgm|npdd|nlm|government|yojana/i.test(query)) {
-    selected = mergeUnique(selected, pickByTitle(chunks, /GOVERNMENT|SCHEME/i, 2));
+  if (/scheme|subsidy|loan|kcc|ahidf|rgm|npdd|nlm|government|yojana|dahd|gokul|livestock mission/i.test(query)) {
+    selected = mergeUnique(selected, pickByTitle(chunks, /GOVERNMENT|SCHEME|DAHD|AHIDF|GOKUL|NPDD|NLM/i, 3));
+  }
+  if (/extension|pamphlet|booklet|poster|nddb|dairy knowledge|youtube|trifold|pashupalan|nirdeshika/i.test(query)) {
+    selected = mergeUnique(selected, pickByTitle(chunks, /EXTENSION|NDDB|Pamphlet|Booklet|Poster|YouTube|Dairy Knowledge/i, 3));
   }
   if (/mastitis|fever|disease|vaccin|evm|ethno|breed|heat|calv|pregnan/i.test(query)) {
     selected = mergeUnique(selected, pickByTitle(chunks, /HEALTH|EVM|BREEDING|BOVINE/i, 3));

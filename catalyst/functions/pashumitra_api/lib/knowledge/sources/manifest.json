@@ -1,0 +1,392 @@
+{
+  "generatedAt": "2026-06-26T16:44:44.010Z",
+  "materialDir": "C:\\Users\\sinjini\\Downloads\\Material for AI Chatbot",
+  "sectionCount": 55,
+  "sections": [
+    {
+      "id": "pdf-basic-guide-to-good-animal-husbandry-practices-hindi",
+      "title": "Basic Guide to Good Animal Husbandry Practices_Hindi",
+      "category": "Booklet",
+      "source": "Booklets/Basic Guide to Good Animal Husbandry Practices_Hindi.pdf",
+      "charCount": 328
+    },
+    {
+      "id": "pdf-booklet-understanding-your-bovine-guj",
+      "title": "Booklet - Understanding your bovine_Guj",
+      "category": "Booklet",
+      "source": "Booklets/Booklet - Understanding your bovine_Guj.pdf",
+      "charCount": 302
+    },
+    {
+      "id": "pdf-booklet-understanding-your-bovine-hindi",
+      "title": "Booklet - Understanding your bovine_Hindi",
+      "category": "Booklet",
+      "source": "Booklets/Booklet - Understanding your bovine_Hindi.pdf",
+      "charCount": 306
+    },
+    {
+      "id": "pdf-brief-fodder-crop-production-activities-hindi",
+      "title": "Brief fodder crop production activities_Hindi",
+      "category": "Booklet",
+      "source": "Booklets/Brief fodder crop production activities_Hindi.pdf",
+      "charCount": 308
+    },
+    {
+      "id": "pdf-handbook-of-good-dairy-husbandry-practices-gujarati",
+      "title": "Handbook of Good Dairy Husbandry Practices_Gujarati",
+      "category": "Booklet",
+      "source": "Booklets/Handbook of Good Dairy Husbandry Practices_Gujarati.pdf",
+      "charCount": 326
+    },
+    {
+      "id": "pdf-handbook-of-good-dairy-husbandry-practices-hindi",
+      "title": "Handbook of Good Dairy Husbandry Practices_Hindi",
+      "category": "Booklet",
+      "source": "Booklets/Handbook of Good Dairy Husbandry Practices_Hindi.pdf",
+      "charCount": 320
+    },
+    {
+      "id": "pdf-bypass-fat-supplement-hindi",
+      "title": "Bypass Fat Supplement (Hindi)",
+      "category": "Pamphlet",
+      "source": "Pamphlets/Bypass Fat Supplement (Hindi).pdf",
+      "charCount": 282
+    },
+    {
+      "id": "pdf-calf-nutrition-hindi",
+      "title": "CALF Nutrition (Hindi)",
+      "category": "Pamphlet",
+      "source": "Pamphlets/CALF Nutrition (Hindi).pdf",
+      "charCount": 293
+    },
+    {
+      "id": "pdf-calf-rearing-programme-crp-2024-hindi",
+      "title": "Calf Rearing Programme (CRP)_2024_Hindi",
+      "category": "Pamphlet",
+      "source": "Pamphlets/Calf Rearing Programme (CRP)_2024_Hindi.pdf",
+      "charCount": 297
+    },
+    {
+      "id": "pdf-chaf-cutter-hindi",
+      "title": "Chaf Cutter (Hindi)",
+      "category": "Pamphlet",
+      "source": "Pamphlets/Chaf Cutter (Hindi).pdf",
+      "charCount": 262
+    },
+    {
+      "id": "pdf-compound-cattle-feed-hindi-2024",
+      "title": "Compound Cattle Feed (Hindi) 2024",
+      "category": "Pamphlet",
+      "source": "Pamphlets/Compound Cattle Feed (Hindi) 2024.pdf",
+      "charCount": 288
+    },
+    {
+      "id": "pdf-crop-residue-management-by-using-various-modern-agricultural-implements-hindi-20",
+      "title": "Crop residue management by using various modern agricultural implements_Hindi 2024",
+      "category": "Pamphlet",
+      "source": "Pamphlets/Crop residue management by using various modern agricultural implements_Hindi 2024.pdf",
+      "charCount": 383
+    },
+    {
+      "id": "pdf-enrichment-and-densification-of-crop-residues-hindi",
+      "title": "Enrichment and Densification of Crop Residues (Hindi)",
+      "category": "Pamphlet",
+      "source": "Pamphlets/Enrichment and Densification of Crop Residues (Hindi).pdf",
+      "charCount": 325
+    },
+    {
+      "id": "pdf-feeding-of-dairy-animals-in-different-stage-of-lactation-hindi-2024",
+      "title": "Feeding of Dairy Animals in Different Stage of Lactation_Hindi_2024",
+      "category": "Pamphlet",
+      "source": "Pamphlets/Feeding of Dairy Animals in Different Stage of Lactation_Hindi_2024.pdf",
+      "charCount": 351
+    },
+    {
+      "id": "pdf-improved-green-fodder-production-eng",
+      "title": "Improved Green Fodder Production (Eng)",
+      "category": "Pamphlet",
+      "source": "Pamphlets/Improved Green Fodder Production (Eng).pdf",
+      "charCount": 7551
+    },
+    {
+      "id": "pdf-improved-green-fodder-production-hindi-2024",
+      "title": "Improved Green Fodder Production (Hindi)_2024",
+      "category": "Pamphlet",
+      "source": "Pamphlets/Improved Green Fodder Production (Hindi)_2024.pdf",
+      "charCount": 310
+    },
+    {
+      "id": "pdf-integrated-pest-management-hindi",
+      "title": "Integrated Pest Management (Hindi)",
+      "category": "Pamphlet",
+      "source": "Pamphlets/Integrated Pest Management (Hindi).pdf",
+      "charCount": 283
+    },
+    {
+      "id": "pdf-maize-hindi-2025",
+      "title": "Maize (Hindi) 2025",
+      "category": "Pamphlet",
+      "source": "Pamphlets/Maize (Hindi) 2025.pdf",
+      "charCount": 256
+    },
+    {
+      "id": "pdf-methane-emission-21-7",
+      "title": "Methane Emission 21.7.16(Eng)",
+      "category": "Pamphlet",
+      "source": "Pamphlets/Methane Emission 21.7.16(Eng).pdf",
+      "charCount": 4383
+    },
+    {
+      "id": "pdf-methane-emission-hindi",
+      "title": "Methane Emission-(Hindi)",
+      "category": "Pamphlet",
+      "source": "Pamphlets/Methane Emission-(Hindi).pdf",
+      "charCount": 262
+    },
+    {
+      "id": "pdf-mineral-mixture-hindi-2024",
+      "title": "Mineral Mixture (Hindi) 2024",
+      "category": "Pamphlet",
+      "source": "Pamphlets/Mineral Mixture (Hindi) 2024.pdf",
+      "charCount": 266
+    },
+    {
+      "id": "pdf-moringa-oleifera-hindi",
+      "title": "Moringa oleifera (Hindi)",
+      "category": "Pamphlet",
+      "source": "Pamphlets/Moringa oleifera (Hindi).pdf",
+      "charCount": 251
+    },
+    {
+      "id": "pdf-moringa-seed-production-pamphlet-hindi-2025",
+      "title": "Moringa Seed Production pamphlet_ Hindi_2025",
+      "category": "Pamphlet",
+      "source": "Pamphlets/Moringa Seed Production pamphlet_ Hindi_2025.pdf",
+      "charCount": 291
+    },
+    {
+      "id": "pdf-quality-fodder-seed-production-hindi",
+      "title": "Quality Fodder Seed Production (Hindi)",
+      "category": "Pamphlet",
+      "source": "Pamphlets/Quality Fodder Seed Production (Hindi).pdf",
+      "charCount": 296
+    },
+    {
+      "id": "pdf-ration-balancing-updated-hindi-2025",
+      "title": "Ration Balancing-updated (Hindi) 2025",
+      "category": "Pamphlet",
+      "source": "Pamphlets/Ration Balancing-updated (Hindi) 2025.pdf",
+      "charCount": 306
+    },
+    {
+      "id": "pdf-ration-balancing-updated-21-7",
+      "title": "Ration Balancing-updated 21.7.16 (Eng)",
+      "category": "Pamphlet",
+      "source": "Pamphlets/Ration Balancing-updated 21.7.16 (Eng).pdf",
+      "charCount": 6903
+    },
+    {
+      "id": "pdf-silage-making-hindi-2025",
+      "title": "Silage Making (Hindi) 2025",
+      "category": "Pamphlet",
+      "source": "Pamphlets/Silage Making (Hindi) 2025.pdf",
+      "charCount": 275
+    },
+    {
+      "id": "pdf-silage-pamphlet-hindi-2024",
+      "title": "Silage pamphlet_ Hindi_2024",
+      "category": "Pamphlet",
+      "source": "Pamphlets/Silage pamphlet_ Hindi_2024.pdf",
+      "charCount": 277
+    },
+    {
+      "id": "pdf-thorn-less-cactus-hindi",
+      "title": "Thorn less Cactus (Hindi)",
+      "category": "Pamphlet",
+      "source": "Pamphlets/Thorn less Cactus (Hindi).pdf",
+      "charCount": 274
+    },
+    {
+      "id": "pdf-trifold-evm-eng-low",
+      "title": "Trifold_EVM_Eng_low",
+      "category": "Pamphlet",
+      "source": "Pamphlets/Trifold_EVM_Eng_low.pdf",
+      "charCount": 274
+    },
+    {
+      "id": "pdf-advisory-for-management-of-dairy-animals-during-rainy-season-poster-guj",
+      "title": "Advisory for management of dairy animals during rainy season_poster_Guj",
+      "category": "Poster",
+      "source": "Poster/Advisory for management of dairy animals during rainy season_poster_Guj.pdf",
+      "charCount": 349
+    },
+    {
+      "id": "pdf-advisory-for-management-of-dairy-animals-during-rainy-season-poster-hindi",
+      "title": "Advisory for management of dairy animals during rainy season_poster_Hindi",
+      "category": "Poster",
+      "source": "Poster/Advisory for management of dairy animals during rainy season_poster_Hindi.pdf",
+      "charCount": 353
+    },
+    {
+      "id": "pdf-calf-rearing-hindi",
+      "title": "Calf Rearing_Hindi",
+      "category": "Poster",
+      "source": "Poster/Calf Rearing_Hindi.pdf",
+      "charCount": 250
+    },
+    {
+      "id": "pdf-cmp-hindi",
+      "title": "CMP_Hindi",
+      "category": "Poster",
+      "source": "Poster/CMP_Hindi.pdf",
+      "charCount": 237
+    },
+    {
+      "id": "pdf-evm-poster-gujarati",
+      "title": "EVM Poster_Gujarati",
+      "category": "Poster",
+      "source": "Poster/EVM Poster_Gujarati.pdf",
+      "charCount": 269
+    },
+    {
+      "id": "pdf-evm-poster-hindi",
+      "title": "EVM Poster_Hindi",
+      "category": "Poster",
+      "source": "Poster/EVM Poster_Hindi.pdf",
+      "charCount": 263
+    },
+    {
+      "id": "pdf-green-fodder-hindi",
+      "title": "Green Fodder_Hindi",
+      "category": "Poster",
+      "source": "Poster/Green Fodder_Hindi.pdf",
+      "charCount": 251
+    },
+    {
+      "id": "pdf-lumpy-skin-disease-poster-gujarati-high",
+      "title": "Lumpy Skin Disease - Poster (Gujarati) High",
+      "category": "Poster",
+      "source": "Poster/Lumpy Skin Disease - Poster (Gujarati) High.pdf",
+      "charCount": 293
+    },
+    {
+      "id": "pdf-lumpy-skin-disease-poster-hindi-high",
+      "title": "Lumpy Skin Disease - Poster (Hindi) High",
+      "category": "Poster",
+      "source": "Poster/Lumpy Skin Disease - Poster (Hindi) High.pdf",
+      "charCount": 287
+    },
+    {
+      "id": "pdf-mastitis-control-poster-gujarati",
+      "title": "Mastitis control Poster_Gujarati",
+      "category": "Poster",
+      "source": "Poster/Mastitis control Poster_Gujarati.pdf",
+      "charCount": 278
+    },
+    {
+      "id": "pdf-mastitis-control-poster-hindi",
+      "title": "Mastitis control Poster_Hindi",
+      "category": "Poster",
+      "source": "Poster/Mastitis control Poster_Hindi.pdf",
+      "charCount": 272
+    },
+    {
+      "id": "pdf-napier-hybrid-fodder-poster-gujarati",
+      "title": "Napier Hybrid Fodder-Poster_Gujarati",
+      "category": "Poster",
+      "source": "Poster/Napier Hybrid Fodder-Poster_Gujarati.pdf",
+      "charCount": 287
+    },
+    {
+      "id": "pdf-napier-hybrid-fodder-poster-hindi",
+      "title": "Napier Hybrid Fodder-Poster_Hindi",
+      "category": "Poster",
+      "source": "Poster/Napier Hybrid Fodder-Poster_Hindi.pdf",
+      "charCount": 281
+    },
+    {
+      "id": "pdf-evm-pamplet-trifold-gujarati",
+      "title": "EVM Pamplet_Trifold_Gujarati",
+      "category": "Trifold",
+      "source": "Trifold/EVM Pamplet_Trifold_Gujarati.pdf",
+      "charCount": 289
+    },
+    {
+      "id": "pdf-evm-pamplet-trifold-hindi",
+      "title": "EVM Pamplet_Trifold_Hindi",
+      "category": "Trifold",
+      "source": "Trifold/EVM Pamplet_Trifold_Hindi.pdf",
+      "charCount": 283
+    },
+    {
+      "id": "pdf-trifold-bee-keeping-guj",
+      "title": "Trifold_Bee-keeping_Guj",
+      "category": "Trifold",
+      "source": "Trifold/Trifold_Bee-keeping_Guj.pdf",
+      "charCount": 250
+    },
+    {
+      "id": "pdf-trifold-bee-keeping-hindi",
+      "title": "Trifold_Bee-keeping_Hindi",
+      "category": "Trifold",
+      "source": "Trifold/Trifold_Bee-keeping_Hindi.pdf",
+      "charCount": 254
+    },
+    {
+      "id": "nddb-youtube-playlists",
+      "title": "NDDB Verified YouTube Playlists and Films",
+      "category": "Extension Video",
+      "source": "List of Extension Material & Youtube.xlsx",
+      "charCount": 599
+    },
+    {
+      "id": "xlsx-extension-youtube-index",
+      "title": "NDDB Extension Material and YouTube Index",
+      "category": "Extension Index",
+      "source": "List of Extension Material & Youtube.xlsx",
+      "charCount": 9696
+    },
+    {
+      "id": "dahd-dahd-schemes-and-programmes",
+      "title": "DAHD Schemes and Programmes",
+      "category": "Government Scheme",
+      "source": "https://dahd.gov.in/en/schemes-programmes",
+      "charCount": 635
+    },
+    {
+      "id": "dkp-booklets-and-pamphlets",
+      "title": "Dairy Knowledge Portal — Booklets and Pamphlets",
+      "category": "Extension Index",
+      "source": "https://www.dairyknowledge.in/dkp/section/booklets-pamphlets",
+      "charCount": 6531
+    },
+    {
+      "id": "dkp-posters",
+      "title": "Dairy Knowledge Portal — Posters",
+      "category": "Extension Index",
+      "source": "https://www.dairyknowledge.in/dkp/section/posters",
+      "charCount": 6520
+    },
+    {
+      "id": "dkp-guidelines",
+      "title": "Dairy Knowledge Portal — Guidelines",
+      "category": "Extension Index",
+      "source": "https://www.dairyknowledge.in/dkp/section/guidelines",
+      "charCount": 6523
+    },
+    {
+      "id": "dkp-manuals",
+      "title": "Dairy Knowledge Portal — Manuals",
+      "category": "Extension Index",
+      "source": "https://www.dairyknowledge.in/dkp/section/manuals",
+      "charCount": 6520
+    },
+    {
+      "id": "dkp-medicinal-plants-evm",
+      "title": "Dairy Knowledge Portal — Medicinal Plants EVM",
+      "category": "Extension Index",
+      "source": "https://www.dairyknowledge.in/dkp/section/medicinalplants",
+      "charCount": 6528
+    }
+  ]
+}

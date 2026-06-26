@@ -25051,7 +25051,12 @@ async function isOfficialVideo(videoId, oembed, apiKey, allowedChannelIds) {
 // catalyst/functions/pashumitra_api/lib/youtube-search.ts
 var CURATED_VIDEOS = [
   { id: "4TCt7b1q5aQ", title: "Ration Balancing Programme", topics: ["ration", "feed", "balanced", "poshan", "aahar", "lcf", "tdn"] },
-  { id: "LZnqdJjCJiE", title: "NDDB Samvad \u2014 Clean milk at DCS", topics: ["clean milk", "cooperative", "dcs", "procurement", "quality"] }
+  { id: "LZnqdJjCJiE", title: "NDDB Samvad \u2014 Clean milk at DCS", topics: ["clean milk", "cooperative", "dcs", "procurement", "quality"] },
+  { id: "TiyrcCcjuVA", title: "Lumpy Skin Disease awareness (Hindi)", topics: ["lumpy", "lsd", "skin disease", "vaccination"] },
+  { id: "SFQT1w5q5wM", title: "Awareness film on bovine mastitis (Hindi)", topics: ["mastitis", "udder", "milk", "health"] },
+  { id: "uziQPBVq0yc", title: "Film on green fodder (Hindi)", topics: ["green fodder", "fodder", "chara", "napier"] },
+  { id: "BmHI6wiTXZA", title: "Moringa plantation for green fodder (Hindi)", topics: ["moringa", "fodder", "green"] },
+  { id: "Hrz7kar1a-Y", title: "Manure management at Zakariyapura Anand (Hindi)", topics: ["manure", "biogas", "waste", "dung"] }
 ];
 var YOUTUBE_REQUEST = /youtube|youtu\.be|video link|वीडियो|youtube link|watch video|कोई वीडियो|ভিডিও|வீடியோ|వీడియో|व्हिडिओ|યુટ્યુબ|youtube का|लिंक दे|link de/i;
 function videoUrl(id) {
@@ -25979,6 +25984,1325 @@ When farmer asks where to sell milk, how to market milk, milk price, pouring mil
 - "Pour milk only at your cooperative collection centre for fair price and support services"
 `;
 
+// catalyst/functions/pashumitra_api/lib/knowledge/dahd-schemes.ts
+var DAHD_SCHEMES = `
+## GOVERNMENT SCHEMES \u2014 DAHD (Department of Animal Husbandry & Dairying)
+
+Source: https://dahd.gov.in/en/schemes-programmes
+
+### Rashtriya Gokul Mission (RGM)
+Indigenous bovine breed conservation and genetic improvement.
+- Sex-sorted semen subsidy up to 50% for producing female calves.
+- \u20B95,000 per assured pregnancy under IVF/ET programme.
+- Up to 50% capital subsidy (max \u20B92 crore) for Breed Multiplication Farms (BMF).
+- Nationwide AI (NAIP); MAITRI \u2014 doorstep AI technicians.
+- Gir, Sahiwal, Red Sindhi, Rathi, Hariana, Murrah buffalo breed development.
+Apply: State Animal Husbandry Department / NDDB breed programmes / veterinary university KVK.
+
+### National Livestock Mission (NLM)
+Entrepreneurship in sheep, goat, pig, poultry; fodder development.
+- Subsidy for silage/haylage/bale units, fodder seed hubs, fodder block units.
+- Poultry, piggery, small ruminant units for educated unemployed / FPOs.
+Apply: State AH Department, NLM portal, district veterinary officer.
+
+### Animal Husbandry Infrastructure Development Fund (AHIDF)
+\u20B929,610.25 crore umbrella (extended through 2025-26).
+- 3% interest subvention per year for 8 years (2-year moratorium).
+- Loan up to 90% of project cost from Scheduled Banks / NABARD / NCDC / NDDB.
+- 25% credit guarantee for MSMEs and dairy cooperatives.
+Eligible: dairy processing plants, milk chilling, animal feed plants, breed multiplication, meat processing, veterinary hospitals, waste management.
+Portal: https://ahidf.udyamimitra.in/
+
+### National Programme for Dairy Development (NPDD)
+Strengthen cooperative milk procurement at village level.
+- Village DCS infrastructure, AMCU, milk testing, chilling, bulk coolers.
+- Component B (DTC) \u2014 JICA-aided in UP, Bihar for dairy traceability.
+Apply: District Cooperative Milk Union / State Dairy Federation / NDDB.
+
+### Supporting Dairy Cooperatives & Farmer Producer Organisations (SDCFPO)
+- 2% interest subvention on working capital loans to dairy cooperatives & FPOs.
+- Additional 2% for prompt repayment (total 4% relief).
+Purpose: timely payment to farmers, feed/fodder procurement, operational liquidity.
+
+### Livestock Health & Disease Control Programme (LHDCP)
+- FMD, PPR, Brucellosis, Classical Swine Fever control.
+- Free / subsidized vaccination camps; disease surveillance.
+- Lumpy Skin Disease (LSD) awareness and vaccination support.
+Contact: Block Veterinary Officer / district AH office.
+
+### Livestock Insurance
+Subsidized premium for high-yield milch animals.
+Covers death from disease, accident, natural calamity (terms vary by state).
+Apply: district AH office / approved insurance tie-up with cooperatives.
+
+### KCC \u2014 Animal Husbandry component
+Kisan Credit Card includes animal husbandry & fisheries.
+- Short-term working capital up to \u20B93 lakh (\u20B95 lakh in some cases).
+- Interest ~7%; extra 3% subvention on prompt repayment.
+Use: feed, fodder, veterinary care, minor shed equipment.
+Apply: cooperative bank / commercial bank branch; DCS secretary can guide.
+
+### National Gopal Ratna Award (NGRA)
+Recognition for best dairy farmers, AI technicians, cooperative societies.
+
+### Scheme for Special Assistance to States for Capital Investment (SASCI)
+Central assistance to states for livestock sector capital reforms (check current year DAHD operational guidelines).
+
+### How farmers should apply (general)
+1. Central schemes (AHIDF, RGM components): online portals + bank / NCDC / NDDB.
+2. State schemes: District Animal Husbandry Office, Block Veterinary Officer, DCS Secretary.
+3. Dairy cooperatives: pour milk at village DCS \u2014 union helps with feed, AI, vet, schemes.
+4. Documents usually needed: Aadhaar, land / shed proof, bank passbook, cooperative membership, animal tag details.
+`;
+
+// catalyst/functions/pashumitra_api/lib/knowledge/extension-material.generated.ts
+var EXTENSION_MATERIAL = `
+# NDDB EXTENSION MATERIAL & OFFICIAL SCHEMES (RAG)
+
+## Basic Guide to Good Animal Husbandry Practices_Hindi
+Source: Booklets/Basic Guide to Good Animal Husbandry Practices_Hindi.pdf | Category: Booklet
+
+Official NDDB extension Booklet: Basic Guide to Good Animal Husbandry Practices_Hindi.
+Topics: dairy husbandry; cow comfort; milking.
+Local source: Booklets/Basic Guide to Good Animal Husbandry Practices_Hindi.pdf
+Note: Hindi/Gujarati PDF uses custom fonts \u2014 full text on Dairy Knowledge Portal; chat uses topic summary for RAG.
+
+## Booklet - Understanding your bovine_Guj
+Source: Booklets/Booklet - Understanding your bovine_Guj.pdf | Category: Booklet
+
+Official NDDB extension Booklet: Booklet - Understanding your bovine_Guj.
+Topics: dairy husbandry; cow comfort; milking.
+Local source: Booklets/Booklet - Understanding your bovine_Guj.pdf
+Note: Hindi/Gujarati PDF uses custom fonts \u2014 full text on Dairy Knowledge Portal; chat uses topic summary for RAG.
+
+## Booklet - Understanding your bovine_Hindi
+Source: Booklets/Booklet - Understanding your bovine_Hindi.pdf | Category: Booklet
+
+Official NDDB extension Booklet: Booklet - Understanding your bovine_Hindi.
+Topics: dairy husbandry; cow comfort; milking.
+Local source: Booklets/Booklet - Understanding your bovine_Hindi.pdf
+Note: Hindi/Gujarati PDF uses custom fonts \u2014 full text on Dairy Knowledge Portal; chat uses topic summary for RAG.
+
+## Brief fodder crop production activities_Hindi
+Source: Booklets/Brief fodder crop production activities_Hindi.pdf | Category: Booklet
+
+Official NDDB extension Booklet: Brief fodder crop production activities_Hindi.
+Topics: green fodder; fodder production.
+Local source: Booklets/Brief fodder crop production activities_Hindi.pdf
+Note: Hindi/Gujarati PDF uses custom fonts \u2014 full text on Dairy Knowledge Portal; chat uses topic summary for RAG.
+
+## Handbook of Good Dairy Husbandry Practices_Gujarati
+Source: Booklets/Handbook of Good Dairy Husbandry Practices_Gujarati.pdf | Category: Booklet
+
+Official NDDB extension Booklet: Handbook of Good Dairy Husbandry Practices_Gujarati.
+Topics: dairy husbandry; cow comfort; milking.
+Local source: Booklets/Handbook of Good Dairy Husbandry Practices_Gujarati.pdf
+Note: Hindi/Gujarati PDF uses custom fonts \u2014 full text on Dairy Knowledge Portal; chat uses topic summary for RAG.
+
+## Handbook of Good Dairy Husbandry Practices_Hindi
+Source: Booklets/Handbook of Good Dairy Husbandry Practices_Hindi.pdf | Category: Booklet
+
+Official NDDB extension Booklet: Handbook of Good Dairy Husbandry Practices_Hindi.
+Topics: dairy husbandry; cow comfort; milking.
+Local source: Booklets/Handbook of Good Dairy Husbandry Practices_Hindi.pdf
+Note: Hindi/Gujarati PDF uses custom fonts \u2014 full text on Dairy Knowledge Portal; chat uses topic summary for RAG.
+
+## Bypass Fat Supplement (Hindi)
+Source: Pamphlets/Bypass Fat Supplement (Hindi).pdf | Category: Pamphlet
+
+Official NDDB extension Pamphlet: Bypass Fat Supplement (Hindi).
+Topics: dairy extension; livestock advisory.
+Local source: Pamphlets/Bypass Fat Supplement (Hindi).pdf
+Note: Hindi/Gujarati PDF uses custom fonts \u2014 full text on Dairy Knowledge Portal; chat uses topic summary for RAG.
+
+## CALF Nutrition (Hindi)
+Source: Pamphlets/CALF Nutrition (Hindi).pdf | Category: Pamphlet
+
+Official NDDB extension Pamphlet: CALF Nutrition (Hindi).
+Topics: calf rearing; heifer nutrition; lactation feeding; nutrition.
+Local source: Pamphlets/CALF Nutrition (Hindi).pdf
+Note: Hindi/Gujarati PDF uses custom fonts \u2014 full text on Dairy Knowledge Portal; chat uses topic summary for RAG.
+
+## Calf Rearing Programme (CRP)_2024_Hindi
+Source: Pamphlets/Calf Rearing Programme (CRP)_2024_Hindi.pdf | Category: Pamphlet
+
+Official NDDB extension Pamphlet: Calf Rearing Programme (CRP)_2024_Hindi.
+Topics: calf rearing; heifer nutrition.
+Local source: Pamphlets/Calf Rearing Programme (CRP)_2024_Hindi.pdf
+Note: Hindi/Gujarati PDF uses custom fonts \u2014 full text on Dairy Knowledge Portal; chat uses topic summary for RAG.
+
+## Chaf Cutter (Hindi)
+Source: Pamphlets/Chaf Cutter (Hindi).pdf | Category: Pamphlet
+
+Official NDDB extension Pamphlet: Chaf Cutter (Hindi).
+Topics: dairy extension; livestock advisory.
+Local source: Pamphlets/Chaf Cutter (Hindi).pdf
+Note: Hindi/Gujarati PDF uses custom fonts \u2014 full text on Dairy Knowledge Portal; chat uses topic summary for RAG.
+
+## Compound Cattle Feed (Hindi) 2024
+Source: Pamphlets/Compound Cattle Feed (Hindi) 2024.pdf | Category: Pamphlet
+
+Official NDDB extension Pamphlet: Compound Cattle Feed (Hindi) 2024.
+Topics: compound cattle feed; concentrate.
+Local source: Pamphlets/Compound Cattle Feed (Hindi) 2024.pdf
+Note: Hindi/Gujarati PDF uses custom fonts \u2014 full text on Dairy Knowledge Portal; chat uses topic summary for RAG.
+
+## Crop residue management by using various modern agricultural implements_Hindi 2024
+Source: Pamphlets/Crop residue management by using various modern agricultural implements_Hindi 2024.pdf | Category: Pamphlet
+
+Official NDDB extension Pamphlet: Crop residue management by using various modern agricultural implements_Hindi 2024.
+Topics: crop residue; straw enrichment.
+Local source: Pamphlets/Crop residue management by using various modern agricultural implements_Hindi 2024.pdf
+Note: Hindi/Gujarati PDF uses custom fonts \u2014 full text on Dairy Knowledge Portal; chat uses topic summary for RAG.
+
+## Enrichment and Densification of Crop Residues (Hindi)
+Source: Pamphlets/Enrichment and Densification of Crop Residues (Hindi).pdf | Category: Pamphlet
+
+Official NDDB extension Pamphlet: Enrichment and Densification of Crop Residues (Hindi).
+Topics: crop residue; straw enrichment.
+Local source: Pamphlets/Enrichment and Densification of Crop Residues (Hindi).pdf
+Note: Hindi/Gujarati PDF uses custom fonts \u2014 full text on Dairy Knowledge Portal; chat uses topic summary for RAG.
+
+## Feeding of Dairy Animals in Different Stage of Lactation_Hindi_2024
+Source: Pamphlets/Feeding of Dairy Animals in Different Stage of Lactation_Hindi_2024.pdf | Category: Pamphlet
+
+Official NDDB extension Pamphlet: Feeding of Dairy Animals in Different Stage of Lactation_Hindi_2024.
+Topics: lactation feeding; nutrition.
+Local source: Pamphlets/Feeding of Dairy Animals in Different Stage of Lactation_Hindi_2024.pdf
+Note: Hindi/Gujarati PDF uses custom fonts \u2014 full text on Dairy Knowledge Portal; chat uses topic summary for RAG.
+
+## Improved Green Fodder Production (Eng)
+Source: Pamphlets/Improved Green Fodder Production (Eng).pdf | Category: Pamphlet
+
+Improved Green Fodder
+Production
+An important and economic source
+of macro and micro nutrients
+for livestock
+National Dairy Development Board
+Anand
+
+-- 1 of 4 --
+
+Introduction
+In India, an estimated 50 million tonnes of concentrate feed ingredients are available annually
+which yield about 10 million tonnes of crude protein (CP) and 32.5 million tonnes of total
+digestible nutrients (TDN). In comparison, the annual production of green fodder is estimated
+at nearly 500 million tonnes, yielding around 12 million tonnes of crude protein and 55 million
+tonnes of total digestible nutrients. Thus, green fodder is a vital source of nutrients, especially
+vitamins, for livestock.
+Green fodder is primarily obtained through cultivation. Presently, 8.34* million hectares of
+cultivated land is under fodder crops, with a meagre average annual yield of 40 tonnes/
+hectare, which is low. In view of land constraints, efforts need to be put forth to: (i) enhance
+fodder production from available land and (ii) increase availability of fodder by minimising
+wastage.
+Strategies to increase green fodder production and availability
+\u2022 Use quality seeds of high yielding varieties/hybrids of fodder crops
+\u2022 Follow recommended agronomical practices of cultivation
+\u2022 Follow suitable crop rotation
+\u2022 Select short duration fodder crops (sunflower/mustard/turnip) during the switch-over season
+\u2022 Sow legume as an inter-crop or as a mixed crop with a non-legume crop to enhance the
+nutritional value of fodder and improve soil fertility
+\u2022 Plant perennial grasses like hybrid napier bajra/guinea grass in about 15 to 20 per cent of
+the cultivated area to get green fodder round the year
+\u2022 Plant fodder trees/shrubs on farm boundaries to get green fodder during the lean period
+\u2022 Harvest fodder at the appropriate stage to get the maximum nutrients
+\u2022 Adopt modern practices for hay and silage making to ensure supply of fodder during scarcity
+and avoid wastage of surplus green fodder
+\u2022 Use chaff-cutter to minimise wastage of fodder
+Various fodder crops/grasses/trees
+1. Annual Legumes : Berseem, Lucerne, Cowpea, Guar, Rice bean,
+Velvet bean
+Cereals : Sorghum, Oats, Maize, Millets, Barley
+Miscellaneous : Mustard (Chinese cabbage), Turnip, Fodder beet,
+Soya bean, Sunflower
+2. Perennial Grasses : Hybrid napier bajra, Guinea grass, Para grass,
+Congo signal grass
+Range Grasses : Nandi grass, Anjan grass, Blue panic grass, Marvel
+grass, Rhodes grass
+Pasture legumes : Butterfly pea,
+Stylo, Siratro
+Shrubs & trees : Hedge lucerne, Subabool, Siris, Khejari, Shevari,
+Gliricidia
+* For the year 2007-08. Source: Directorate of Economics & Statistics, Department of Agriculture and Cooperation,
+Ministry of Agriculture, Government of India
+
+-- 2 of 4 --
+
+Important fodder crops
+Sorghum
+(Sorghum bicolor): It is the most important cereal fodder crop grown in summer/
+rainy season. Covering the maximum cultivated area among fodder crops, sorghum is grown
+in all parts of the country except the cool hilly areas. It has high tolerance to drought and
+excessive rainfall. There are single, two and multi-cut varieties/hybrids of sorghum giving one
+to six cuts per crop producing 50 to 100 tonnes/hectare of green fodder. To avoid prussic
+acid or cyanide toxicity to livestock, the crop should be harvested at about 50 per cent
+flowering or after irrigation at the pre-flowering stage. The crop is also useful for hay and
+silage making.
+Important varieties: PC-6, PC-9, PC-23, HC-308, HJ-513, SSG-898, COFS-29, Pant Chari-5 and
+Pant Chari-6.
+Berseem
+(Trifolium alexandrinum): It is a legume crop of the winter season grown mainly in
+Bihar, Haryana, Madhya Pradesh, Punjab, Rajasthan and Uttar Pradesh. It gives six to seven cuts
+between November to May and produces 70 to 80 tonnes/hectare of extremely palatable and
+nutritious green fodder containing about 20 per cent crude protein. Berseem fodder is known
+as the \u2018milk multiplier\u2019. Being a leguminous crop it also fixes atmospheric nitrogen in the soil
+and improves soil fertility.
+Important varieties: JB-1, BL-1, BL-10, BL-42, Mescavi and Wardhan.
+Lucerne
+(Medicago sativa): Known as the \u2018queen of fodder\u2019, lucerne is the most popular fodder
+crop in the country after berseem and sorghum. As a winter legume, lucerne is grown mainly
+in Gujarat, Madhya Pradesh, Maharashtra and Rajasthan. The crop can give seven to eight cuts
+from November to June with an average green fodder yield of 60 to 80 tonnes/hectare. The
+fodder contains about 20 per cent crude protein. The crop is appropriate for hay making. In
+some areas, it is cultivated as a perennial crop.
+Important varieties: RL-88, Anand-2, Anand Lucerne-3.
+Cowpea
+(Vigna unguiculata): This legume crop is grown under both irrigated and rainfed
+conditions. It is widely cultivated across the country excluding the temperate hilly areas. It has
+great potential as a mixed crop when sown with maize, sorghum and millets to produce an
+ideal \u2018legume & cereal\u2019 fodder mixture. It grows quickly and can yield 25 to 45 tonnes/hectare
+of green fodder. It also finds use as green manure.
+Important varieties: EC-4216, UPC-9202, UPC-8705, UPC-618 and UPC-628.
+Oats
+(Avena sativa): It is a winter season cereal fodder crop, mainly cultivated in Bihar, Haryana,
+Madhya Pradesh, Punjab, Rajasthan and Uttar Pradesh. It has excellent growth and shows quick
+regeneration capacity after cutting. The green fodder is succulent, rich in carbohydrates and
+palatable. The yield ranges from 30 to 50 tonnes/hectare. The crop can also be used to prepare
+hay and silage.
+Important varieties: Kent, UPO-212, OS-6, OS-7, JHO-822, JHO-851 and RO-19.
+Maize
+(Zea mays): Maize is one of the best cereal fodder crops grown during summer, rainy
+and/or early winter season. It produces rich and nutritious green fodder which is a good source
+of carbohydrates. The green fodder is particularly suitable for silage making. The yield varies
+from 30 to 40 tonnes/hectare.
+Important varieties: African tall, JS-1006, Vijay composite and Pratap Makka Chari-6.
+
+-- 3 of 4 --
+
+Crop rotation
+Suitable rotation of crops not only enhances the productivity of land but also ensures availability
+of green fodder round the year. An indicative list of some crop rotations is given below:
+Sr.
+No. Crop rotations
+Green fodder
+production potential
+(tonnes/hectare/year)
+1. Hybrid napier bajra + Cowpea \u2013 Berseem + Mustard 285
+2. Maize + Cowpea \u2013 Maize \u2013 Cowpea \u2013 Oats \u2013 Maize + Cowpea 165
+3. Maize + Cowpea \u2013 Rice bean \u2013 Berseem + Mustard 110
+4. Hybrid napier bajra + Guar \u2013 Lucerne 250
+5. Sorghum + Cowpea \u2013 Maize + Cowpea \u2013 Maize + Cowpea 110
+6. M.P chari \u2013 Cowpea \u2013 Berseem + Mustard \u2013 Sorghum + Cowpea 168
+Silage
+It is preserved fodder obtained from the anaerobic fermentation of green fodder. Cereal fodder
+crops rich in carbohydrates make good silage. About 5 to 1000 tonnes of green fodder can be
+preserved as silage in a surface silo.
+To make silage: (i) harvest the crop at 30 to 35 per cent dry matter stage (ii) chop the crop
+into small-sized pieces (2-3 centimetres) (iii) fill the chopped fodder into a silo (iv) press the
+green fodder either manually or mechanically to create anaerobic condition (v) seal the silo with
+a polythene sheet and cover with soil and (vi) leave it for a minimum 45 days to complete the
+process of anaerobic fermentation. The silage is ready for feeding animals.
+Cowpea Sorghum
+Chopping of fodder Pressing of fodder in a silo Sealing of silo
+For more information, please contact: Animal Nutrition Group, NDDB, Anand.
+For free pdf version visit www.dairyknowledge.in
+
+-- 4 of 4 --
+
+## Improved Green Fodder Production (Hindi)_2024
+Source: Pamphlets/Improved Green Fodder Production (Hindi)_2024.pdf | Category: Pamphlet
+
+Official NDDB extension Pamphlet: Improved Green Fodder Production (Hindi)_2024.
+Topics: green fodder; fodder production.
+Local source: Pamphlets/Improved Green Fodder Production (Hindi)_2024.pdf
+Note: Hindi/Gujarati PDF uses custom fonts \u2014 full text on Dairy Knowledge Portal; chat uses topic summary for RAG.
+
+## Integrated Pest Management (Hindi)
+Source: Pamphlets/Integrated Pest Management (Hindi).pdf | Category: Pamphlet
+
+Official NDDB extension Pamphlet: Integrated Pest Management (Hindi).
+Topics: integrated pest management.
+Local source: Pamphlets/Integrated Pest Management (Hindi).pdf
+Note: Hindi/Gujarati PDF uses custom fonts \u2014 full text on Dairy Knowledge Portal; chat uses topic summary for RAG.
+
+## Maize (Hindi) 2025
+Source: Pamphlets/Maize (Hindi) 2025.pdf | Category: Pamphlet
+
+Official NDDB extension Pamphlet: Maize (Hindi) 2025.
+Topics: green fodder; fodder production.
+Local source: Pamphlets/Maize (Hindi) 2025.pdf
+Note: Hindi/Gujarati PDF uses custom fonts \u2014 full text on Dairy Knowledge Portal; chat uses topic summary for RAG.
+
+## Methane Emission 21.7.16(Eng)
+Source: Pamphlets/Methane Emission 21.7.16(Eng).pdf | Category: Pamphlet
+
+Methane Emission
+Reduction in Dairy Animals
+National Dairy Development Board
+Anand
+Methane emission reduction also helps in
+improving milk production
+
+-- 1 of 4 --
+
+Introduction
+Global climate change has become a major cause of concern due to increase in atmospheric
+concentrations of greenhouse gases (GHGs). Climate change affects animal production and well-
+being, especially due to increase in ambient temperature. Methane is a potent GHG, emitted
+as a result of enteric fermentation of feed by ruminants. Enteric fermentation is responsible for
+about half of the total methane emission in India. Ruminant animals loose 4-12 per cent of
+gross energy intake in the form of methane, which is not only detrimental to environment but
+also results in energy loss to animals.
+Methane production in ruminants
+Ruminant livestock have a unique digestive system comprising of four stomach, which includes
+the rumen, reticulum, omasum and abomasum. The rumen is the first and largest compartment
+amounting to 80 per cent of the total stomach volume where microbes such as bacteria,
+protozoa and fungi break down and ferment the feed material into products like volatile fatty
+acids (VFAs), microbial protein, carbon dioxide and methane.
+Amongst the VFAs, acetate and butyrate are methanogenic and spare hydrogen during formation,
+while propionate is glucogenic in nature and utilises hydrogen. More acetate and butyrate
+production leads to production of more hydrogen and carbon dioxide, the main substrates
+for methane production. Under anaerobic conditions of rumen, methanogenic bacteria utilise
+hydrogen and carbon dioxide to form enteric methane, emitted mainly through belching.
+
+-- 2 of 4 --
+
+Measurement of methane by SF6 tracer technique
+\u2022 Sulfur hexafluoride (SF6) tracer technique is an internationally accepted technique for
+measurement of methane emission from ruminants under natural conditions of feeding and
+management.
+\u2022 In this technique, a small permeation tube containing SF6 is placed in the rumen of an
+animal.
+\u2022 Thereafter, the breath samples are collected daily for four consecutive days in canisters and
+brought to the laboratory for methane and SF6 analysis.
+\u2022 Methane and SF6 concentrations are determined by gas chromatography. Methane emission
+rate is calculated as the product of the permeation tube emission rate and the ratio of CH4
+to SF6 concentration in the breath sample.
+Feeding balanced ration for reducing methane emission
+In India, most of the farmers follow traditional methods of feeding which is generally imbalanced
+in terms of energy, protein and minerals. Animals fed on imbalanced ration produce more methane
+per unit of milk due to lower microbial protein synthesis and higher acetate production.
+In view of this, NDDB has initiated studies on measurement of methane emission reduction
+through ration balancing in different agro-climatic regions, where farmers are advised by the
+village based trained local resource persons (LRP) to balance the ration of animals with locally
+available feed resources, using computer software developed by NDDB.
+Balanced diet alters rumen fermentation pattern towards lower acetate, butyrate and higher
+propionate production. This results in higher microbial protein yield and reduced methane
+production. High propionate and microbial protein synthesis provides energy and protein for
+milk production in lactating ruminants.
+Field trials conducted by NDDB indicate that, ration balancing has potential of improving efficiency
+of milk production, microbial protein synthesis while reducing methane emission per kg milk
+yield.
+Methane emission estimation by SF6 tracer technique under field conditions
+
+-- 3 of 4 --
+
+Benefits of reducing methane emission through ration balancing
+\u2022 Better utilisation of locally available feed resources in the ration of animals
+\u2022 Efficient utilisation of dietary energy and proteins by ruminants
+\u2022 Improved efficiency of microbial protein synthesis
+\u2022 Reduction in loss of gross energy intake
+\u2022 A part of dietary energy lost as methane is channelised for productive purpose
+\u2022 Improved productivity of dairy animals
+\u2022 Reduction in the GHG emissions by dairy animals
+Methane emission reduction through balanced feeding under field conditions
+For more information, please contact: Animal Nutrition Group, NDDB, Anand.
+For free pdf version visit www.dairyknowledge.in
+
+-- 4 of 4 --
+
+## Methane Emission-(Hindi)
+Source: Pamphlets/Methane Emission-(Hindi).pdf | Category: Pamphlet
+
+Official NDDB extension Pamphlet: Methane Emission-(Hindi).
+Topics: methane emission; climate.
+Local source: Pamphlets/Methane Emission-(Hindi).pdf
+Note: Hindi/Gujarati PDF uses custom fonts \u2014 full text on Dairy Knowledge Portal; chat uses topic summary for RAG.
+
+## Mineral Mixture (Hindi) 2024
+Source: Pamphlets/Mineral Mixture (Hindi) 2024.pdf | Category: Pamphlet
+
+Official NDDB extension Pamphlet: Mineral Mixture (Hindi) 2024.
+Topics: mineral mixture; ASMM.
+Local source: Pamphlets/Mineral Mixture (Hindi) 2024.pdf
+Note: Hindi/Gujarati PDF uses custom fonts \u2014 full text on Dairy Knowledge Portal; chat uses topic summary for RAG.
+
+## Moringa oleifera (Hindi)
+Source: Pamphlets/Moringa oleifera (Hindi).pdf | Category: Pamphlet
+
+Official NDDB extension Pamphlet: Moringa oleifera (Hindi).
+Topics: moringa fodder.
+Local source: Pamphlets/Moringa oleifera (Hindi).pdf
+Note: Hindi/Gujarati PDF uses custom fonts \u2014 full text on Dairy Knowledge Portal; chat uses topic summary for RAG.
+
+## Moringa Seed Production pamphlet_ Hindi_2025
+Source: Pamphlets/Moringa Seed Production pamphlet_ Hindi_2025.pdf | Category: Pamphlet
+
+Official NDDB extension Pamphlet: Moringa Seed Production pamphlet_ Hindi_2025.
+Topics: moringa fodder.
+Local source: Pamphlets/Moringa Seed Production pamphlet_ Hindi_2025.pdf
+Note: Hindi/Gujarati PDF uses custom fonts \u2014 full text on Dairy Knowledge Portal; chat uses topic summary for RAG.
+
+## Quality Fodder Seed Production (Hindi)
+Source: Pamphlets/Quality Fodder Seed Production (Hindi).pdf | Category: Pamphlet
+
+Official NDDB extension Pamphlet: Quality Fodder Seed Production (Hindi).
+Topics: green fodder; fodder production.
+Local source: Pamphlets/Quality Fodder Seed Production (Hindi).pdf
+Note: Hindi/Gujarati PDF uses custom fonts \u2014 full text on Dairy Knowledge Portal; chat uses topic summary for RAG.
+
+## Ration Balancing-updated (Hindi) 2025
+Source: Pamphlets/Ration Balancing-updated (Hindi) 2025.pdf | Category: Pamphlet
+
+Official NDDB extension Pamphlet: Ration Balancing-updated (Hindi) 2025.
+Topics: ration balancing; least-cost feed; NDDB RBP.
+Local source: Pamphlets/Ration Balancing-updated (Hindi) 2025.pdf
+Note: Hindi/Gujarati PDF uses custom fonts \u2014 full text on Dairy Knowledge Portal; chat uses topic summary for RAG.
+
+## Ration Balancing-updated 21.7.16 (Eng)
+Source: Pamphlets/Ration Balancing-updated 21.7.16 (Eng).pdf | Category: Pamphlet
+
+Ration Balancing
+Programme
+An effective tool to improve milk production
+at least cost
+National Dairy Development Board
+Anand
+Cottonseed Groundnut Rice Wheat Maize Sorghum
+Mineral mixture Oats Sorghum Maize Lucerne Berseem
+Cakes Brans Grains
+Supplement Fodders
+Babool pods Prosopis pods Jackfruit Banana Azolla	Mulberry leaves
+Agro-industrial byproducts
+Commonly used feed ingredients
+
+-- 1 of 4 --
+
+Introduction
+The feed given to animals usually comprises one or two locally available concentrate feed
+ingredients, grasses and crop residues. This leads to imbalanced feeding which means that
+proteins, energy, minerals and vitamins in the ration are either more or less. While imbalanced
+feeding adversely affects the health and productivity of animals in various ways, it also reduces
+the net daily income to milk producers from dairying because the potential of milk production
+of animals is not fully exploited. At times, when the animals are overfed, this can also raise the
+cost of milk production.
+Therefore, milk producers need to understand the implications of imbalanced feeding and
+recognise the importance of giving their animals balanced ration.
+Disadvantages of imbalanced feeding
+\u2022 Low milk production, poor growth and reproduction
+\u2022 Milk production of animals lower than their genetic potential
+\u2022 Shorter lactation length and increased inter-calving period
+\u2022 Animals more prone to metabolic diseases such as milk fever and ketosis
+\u2022 Slow growth of young animals delaying the age of first calving
+\u2022 Low productivity and shorter duration of productive life
+What is ration balancing?
+All species require balanced ration for optimal growth. Ration balancing is the process to balance
+the level of various nutrients of an animal, from the available feed resources, to meet its
+nutrient requirements for maintenance and production.
+Types of dietary feed ingredients
+\u2022 Compound cattle feed: This is considered to be a balanced source of nutrients for growth
+and milk production. However, only 10 to 12 per cent of the total feed ingredients are used
+to produce compound cattle feed. Compound cattle feed does not always complement the
+feed ingredients used by milk producers.
+\u2022 Other feeds: Feed ingredients like rapeseed cake/meal, groundnut cake/meal, sunflower
+meal, cottonseed cake/meal, soya bean meal, guar meal, maize gluten, sesame cake,
+coconut cake, linseed cake, safflower meal, deoiled rice bran, rice polish, wheat bran, maize
+bran, maize grain, sorghum grain, wheat, broken rice, millets and chunnies are fed as such,
+depending on availability and cost.
+\u2022 Crops residues & grasses: Wheat straw, paddy straw, sorghum straw, maize stovers,
+straw of pearl millet and locally available grasses are fed as basal feed.
+\u2022 Green fodder: Maize, sorghum, oats, hybrid napier bajra, lucerne, cowpea and berseem
+are available seasonally and fed in a limited quantity.
+\u2022 Mineral mixture: This is a source of macro and micro minerals, usually lacking in the
+animal\u2019s ration.
+
+-- 2 of 4 --
+
+NDDB\u2019s Ration Balancing Programme
+The objective of this programme is to produce an optimum quantity of milk at the least cost
+from milch animals by readjusting, wherever required, the proportion of locally available dietary
+feed ingredients, so as to provide them adequate amounts of proteins, minerals, vitamins as
+well as energy. NDDB has developed a user-friendly software for ration balancing, that can be
+used by dedicated local resource persons (LRPs).
+The LRP is trained by the implementing agency to effectively use the software in the local
+language and involves the following steps:
+1. Assessing nutrient status of animals: This is assessed on the basis of prevalent feeding
+practices as well as factors such as the level of milk production, milk fat per cent, body
+weight, lactation stage and pregnancy status.
+2. Assessing chemical composition of locally available feed resources: The software
+contains a database of the analyses of the chemical composition of feeds and fodders
+available in various parts of the country. The chemical composition of different grains, oil
+cakes/meals, brans, chunnies, agro-industrial byproducts, cultivated green fodders, grasses,
+crop residues, tree leaves and mineral supplements can be known through this software.
+3. Assessing nutrient requirement of animals: The software has a database of the nutrient
+requirements of the various types of animals based on the feeding standards commonly
+followed in India. The total nutrient requirement of an animal is assessed for dry matter,
+crude protein, total digestible nutrients (TDN), calcium and phosphorus.
+4. Formulating least cost balanced ration using locally available resources: Based
+on chemical composition of available feed resources and in accordance with the nutrient
+requirement of the animal/s, the software computes the least cost ration within the given
+nutritional and available resource constraints. The LRP advises the milk producer to prepare
+the least cost ration using feed ingredients in the proportion as indicated by the software. In
+case there is a change in feed resources, the LRP reformulates the least cost ration through
+the software.
+Demonstration of ration balancing programme to milk producers	Demonstration of ration balancing programme to milk producers
+
+-- 3 of 4 --
+
+The local resource person (LRP) revisits the milk producer according to his/her requirement and
+keeps a record of the various observations related to the quality and quantity of milk, including
+the cost of milk production before and after implementation of the Ration Balancing Programme
+and increase in the net daily income per animal.
+For this purpose, implementing agencies provide the necessary facilities such as a personal
+digital assistant/netbook loaded with NDDB\u2019s Ration Balancing Programme software, a weighing
+balance, measuring tape and ear tags with applicators, to the LRP.
+The LRP functions in a dedicated manner to implement the Ration Balancing Programme in a
+village and provides services to the farmers.
+Implementing agencies for Ration Balancing Programme
+Various agencies such as dairy cooperatives, service providing organisations and NGOs can
+implement the Ration Balancing Programme.
+Benefits of Ration Balancing Programme
+\u2022 Uses locally available feed resources to balance the ration of animals at least cost
+\u2022 Increases milk production with more fat and solids-not-fat
+\u2022 Helps increase the net daily income
+\u2022 Improves reproduction efficiency
+\u2022 Helps reduce inter-calving period, thereby increasing the productive life of animals
+\u2022 Improves the general health of animals
+\u2022 Improves the growth rate in calves leading to early maturity
+A technical officer explaining the concept
+of RBP to LRPs
+A milk producer feeding balanced ration
+to her cow
+For more information, please contact: Animal Nutrition Group, NDDB, Anand.
+For free pdf version visit www.dairyknowledge.in
+
+-- 4 of 4 --
+
+## Silage Making (Hindi) 2025
+Source: Pamphlets/Silage Making (Hindi) 2025.pdf | Category: Pamphlet
+
+Official NDDB extension Pamphlet: Silage Making (Hindi) 2025.
+Topics: silage making; fodder preservation.
+Local source: Pamphlets/Silage Making (Hindi) 2025.pdf
+Note: Hindi/Gujarati PDF uses custom fonts \u2014 full text on Dairy Knowledge Portal; chat uses topic summary for RAG.
+
+## Silage pamphlet_ Hindi_2024
+Source: Pamphlets/Silage pamphlet_ Hindi_2024.pdf | Category: Pamphlet
+
+Official NDDB extension Pamphlet: Silage pamphlet_ Hindi_2024.
+Topics: silage making; fodder preservation.
+Local source: Pamphlets/Silage pamphlet_ Hindi_2024.pdf
+Note: Hindi/Gujarati PDF uses custom fonts \u2014 full text on Dairy Knowledge Portal; chat uses topic summary for RAG.
+
+## Thorn less Cactus (Hindi)
+Source: Pamphlets/Thorn less Cactus (Hindi).pdf | Category: Pamphlet
+
+Official NDDB extension Pamphlet: Thorn less Cactus (Hindi).
+Topics: dairy extension; livestock advisory.
+Local source: Pamphlets/Thorn less Cactus (Hindi).pdf
+Note: Hindi/Gujarati PDF uses custom fonts \u2014 full text on Dairy Knowledge Portal; chat uses topic summary for RAG.
+
+## Trifold_EVM_Eng_low
+Source: Pamphlets/Trifold_EVM_Eng_low.pdf | Category: Pamphlet
+
+Official NDDB extension Pamphlet: Trifold_EVM_Eng_low.
+Topics: ethno-veterinary medicine; traditional remedies.
+Local source: Pamphlets/Trifold_EVM_Eng_low.pdf
+Note: Hindi/Gujarati PDF uses custom fonts \u2014 full text on Dairy Knowledge Portal; chat uses topic summary for RAG.
+
+## Advisory for management of dairy animals during rainy season_poster_Guj
+Source: Poster/Advisory for management of dairy animals during rainy season_poster_Guj.pdf | Category: Poster
+
+Official NDDB extension Poster: Advisory for management of dairy animals during rainy season_poster_Guj.
+Topics: rainy season management.
+Local source: Poster/Advisory for management of dairy animals during rainy season_poster_Guj.pdf
+Note: Hindi/Gujarati PDF uses custom fonts \u2014 full text on Dairy Knowledge Portal; chat uses topic summary for RAG.
+
+## Advisory for management of dairy animals during rainy season_poster_Hindi
+Source: Poster/Advisory for management of dairy animals during rainy season_poster_Hindi.pdf | Category: Poster
+
+Official NDDB extension Poster: Advisory for management of dairy animals during rainy season_poster_Hindi.
+Topics: rainy season management.
+Local source: Poster/Advisory for management of dairy animals during rainy season_poster_Hindi.pdf
+Note: Hindi/Gujarati PDF uses custom fonts \u2014 full text on Dairy Knowledge Portal; chat uses topic summary for RAG.
+
+## Calf Rearing_Hindi
+Source: Poster/Calf Rearing_Hindi.pdf | Category: Poster
+
+Official NDDB extension Poster: Calf Rearing_Hindi.
+Topics: calf rearing; heifer nutrition.
+Local source: Poster/Calf Rearing_Hindi.pdf
+Note: Hindi/Gujarati PDF uses custom fonts \u2014 full text on Dairy Knowledge Portal; chat uses topic summary for RAG.
+
+## CMP_Hindi
+Source: Poster/CMP_Hindi.pdf | Category: Poster
+
+Official NDDB extension Poster: CMP_Hindi.
+Topics: dairy extension; livestock advisory.
+Local source: Poster/CMP_Hindi.pdf
+Note: Hindi/Gujarati PDF uses custom fonts \u2014 full text on Dairy Knowledge Portal; chat uses topic summary for RAG.
+
+## EVM Poster_Gujarati
+Source: Poster/EVM Poster_Gujarati.pdf | Category: Poster
+
+Official NDDB extension Poster: EVM Poster_Gujarati.
+Topics: ethno-veterinary medicine; traditional remedies.
+Local source: Poster/EVM Poster_Gujarati.pdf
+Note: Hindi/Gujarati PDF uses custom fonts \u2014 full text on Dairy Knowledge Portal; chat uses topic summary for RAG.
+
+## EVM Poster_Hindi
+Source: Poster/EVM Poster_Hindi.pdf | Category: Poster
+
+Official NDDB extension Poster: EVM Poster_Hindi.
+Topics: ethno-veterinary medicine; traditional remedies.
+Local source: Poster/EVM Poster_Hindi.pdf
+Note: Hindi/Gujarati PDF uses custom fonts \u2014 full text on Dairy Knowledge Portal; chat uses topic summary for RAG.
+
+## Green Fodder_Hindi
+Source: Poster/Green Fodder_Hindi.pdf | Category: Poster
+
+Official NDDB extension Poster: Green Fodder_Hindi.
+Topics: green fodder; fodder production.
+Local source: Poster/Green Fodder_Hindi.pdf
+Note: Hindi/Gujarati PDF uses custom fonts \u2014 full text on Dairy Knowledge Portal; chat uses topic summary for RAG.
+
+## Lumpy Skin Disease - Poster (Gujarati) High
+Source: Poster/Lumpy Skin Disease - Poster (Gujarati) High.pdf | Category: Poster
+
+Official NDDB extension Poster: Lumpy Skin Disease - Poster (Gujarati) High.
+Topics: lumpy skin disease; LSD.
+Local source: Poster/Lumpy Skin Disease - Poster (Gujarati) High.pdf
+Note: Hindi/Gujarati PDF uses custom fonts \u2014 full text on Dairy Knowledge Portal; chat uses topic summary for RAG.
+
+## Lumpy Skin Disease - Poster (Hindi) High
+Source: Poster/Lumpy Skin Disease - Poster (Hindi) High.pdf | Category: Poster
+
+Official NDDB extension Poster: Lumpy Skin Disease - Poster (Hindi) High.
+Topics: lumpy skin disease; LSD.
+Local source: Poster/Lumpy Skin Disease - Poster (Hindi) High.pdf
+Note: Hindi/Gujarati PDF uses custom fonts \u2014 full text on Dairy Knowledge Portal; chat uses topic summary for RAG.
+
+## Mastitis control Poster_Gujarati
+Source: Poster/Mastitis control Poster_Gujarati.pdf | Category: Poster
+
+Official NDDB extension Poster: Mastitis control Poster_Gujarati.
+Topics: mastitis control; udder health.
+Local source: Poster/Mastitis control Poster_Gujarati.pdf
+Note: Hindi/Gujarati PDF uses custom fonts \u2014 full text on Dairy Knowledge Portal; chat uses topic summary for RAG.
+
+## Mastitis control Poster_Hindi
+Source: Poster/Mastitis control Poster_Hindi.pdf | Category: Poster
+
+Official NDDB extension Poster: Mastitis control Poster_Hindi.
+Topics: mastitis control; udder health.
+Local source: Poster/Mastitis control Poster_Hindi.pdf
+Note: Hindi/Gujarati PDF uses custom fonts \u2014 full text on Dairy Knowledge Portal; chat uses topic summary for RAG.
+
+## Napier Hybrid Fodder-Poster_Gujarati
+Source: Poster/Napier Hybrid Fodder-Poster_Gujarati.pdf | Category: Poster
+
+Official NDDB extension Poster: Napier Hybrid Fodder-Poster_Gujarati.
+Topics: green fodder; fodder production.
+Local source: Poster/Napier Hybrid Fodder-Poster_Gujarati.pdf
+Note: Hindi/Gujarati PDF uses custom fonts \u2014 full text on Dairy Knowledge Portal; chat uses topic summary for RAG.
+
+## Napier Hybrid Fodder-Poster_Hindi
+Source: Poster/Napier Hybrid Fodder-Poster_Hindi.pdf | Category: Poster
+
+Official NDDB extension Poster: Napier Hybrid Fodder-Poster_Hindi.
+Topics: green fodder; fodder production.
+Local source: Poster/Napier Hybrid Fodder-Poster_Hindi.pdf
+Note: Hindi/Gujarati PDF uses custom fonts \u2014 full text on Dairy Knowledge Portal; chat uses topic summary for RAG.
+
+## EVM Pamplet_Trifold_Gujarati
+Source: Trifold/EVM Pamplet_Trifold_Gujarati.pdf | Category: Trifold
+
+Official NDDB extension Trifold: EVM Pamplet_Trifold_Gujarati.
+Topics: ethno-veterinary medicine; traditional remedies.
+Local source: Trifold/EVM Pamplet_Trifold_Gujarati.pdf
+Note: Hindi/Gujarati PDF uses custom fonts \u2014 full text on Dairy Knowledge Portal; chat uses topic summary for RAG.
+
+## EVM Pamplet_Trifold_Hindi
+Source: Trifold/EVM Pamplet_Trifold_Hindi.pdf | Category: Trifold
+
+Official NDDB extension Trifold: EVM Pamplet_Trifold_Hindi.
+Topics: ethno-veterinary medicine; traditional remedies.
+Local source: Trifold/EVM Pamplet_Trifold_Hindi.pdf
+Note: Hindi/Gujarati PDF uses custom fonts \u2014 full text on Dairy Knowledge Portal; chat uses topic summary for RAG.
+
+## Trifold_Bee-keeping_Guj
+Source: Trifold/Trifold_Bee-keeping_Guj.pdf | Category: Trifold
+
+Official NDDB extension Trifold: Trifold_Bee-keeping_Guj.
+Topics: bee keeping; honey.
+Local source: Trifold/Trifold_Bee-keeping_Guj.pdf
+Note: Hindi/Gujarati PDF uses custom fonts \u2014 full text on Dairy Knowledge Portal; chat uses topic summary for RAG.
+
+## Trifold_Bee-keeping_Hindi
+Source: Trifold/Trifold_Bee-keeping_Hindi.pdf | Category: Trifold
+
+Official NDDB extension Trifold: Trifold_Bee-keeping_Hindi.
+Topics: bee keeping; honey.
+Local source: Trifold/Trifold_Bee-keeping_Hindi.pdf
+Note: Hindi/Gujarati PDF uses custom fonts \u2014 full text on Dairy Knowledge Portal; chat uses topic summary for RAG.
+
+## NDDB Verified YouTube Playlists and Films
+Source: List of Extension Material & Youtube.xlsx | Category: Extension Video
+
+- Youtube: https://youtube.com/playlist?list=PLkPThFz3wlysT1IdFeMnPBuA0itwOSZhk&si=RhSQpxVsO_Btxq_o
+- Youtube: https://youtube.com/playlist?list=PLkPThFz3wlyub-d6xmafSoC-ReBeLgRK8&si=rBfPL6w95bwHQorq
+- Youtube: https://youtu.be/TiyrcCcjuVA?si=ROql5am8xgv1pGH5
+- Youtube: https://youtu.be/Hrz7kar1a-Y?si=iN_f2K8gjHyLa6CT
+- Youtube: https://youtu.be/SFQT1w5q5wM?si=SmqDGJ8bgvu3rA4s
+- Youtube: https://youtu.be/uziQPBVq0yc?si=_RGSgCa-wPB0JGGe
+- Youtube: https://youtu.be/BmHI6wiTXZA?si=EWCKvXvw6Q_cLJus
+- Youtube: https://youtube.com/playlist?list=PLkPThFz3wlyt3UhzYqPmJsjAdhbG5r23g&si=BcsFnwgPygIX5UAD
+
+## NDDB Extension Material and YouTube Index
+Source: List of Extension Material & Youtube.xlsx | Category: Extension Index
+
+1 | Trifold (4) | EVM Pamplet (Gujarati)
+EVM Pamplet (Hindi)
+Bee Keeping (Hindi)
+Bee Keeping (Gujarati)
+2 | Pamphlets (20) | Bypass Fat Supplement (Hindi)
+CALF Nutrition (Hindi)
+Calf Rearing Programme (Hindi)
+Chaf Cutter (Hindi)
+Compound Cattle Feed (Hindi)
+Crop residue management by using various modern agricultural implements (Hindi)
+Enrichment and Densification of Crop Residues (Hindi)
+Feeding of Dairy Animals in Different Stage of Lactation (Hindi)
+Improved Green Fodder Production (Hindi)
+Integrated Pest Management (Hindi)
+Maize (Hindi)
+Methane Emission (Hindi)
+Mineral Mixture (Hindi)
+Moringa oleifera (Hindi)
+Moringa Seed Production pamphlet (Hindi)
+Quality Fodder Seed Production (Hindi)
+Ration Balancing-updated (Hindi)
+Silage Making (Hindi)
+Quality Silage (Hindi)
+Thorn less Cactus (Hindi)
+3 | Booklets (7) | Understanding your Bovine (Hindi)
+Handbook of Good Dairy Husbandry Practices (Hindi) (Pashupalan Nirdeshika)
+Handbook of Good Dairy Husbandry Practices (Gujarati) (Pashupalan Nirdeshika)
+EVM ( Hindi)
+EVM (Gujarati)
+Basic Guide to Good Animal Husbandry Practices (Hindi)
+Brief fodder crop production activities (Hindi)
+4 | Posters (12) | Lumpy Skin Disease (Hindi)
+Lumpy Skin Disease (Gujarati)
+Advisory for Dairy Animals during Rainy Seasons (Hindi)
+Advisory for Dairy Animals during Rainy Seasons (Gujarati)
+EVM (Hindi)
+EVM (Gujarati)
+Napear Hybrid Fodder (Hindi)
+Napear Hybrid Fodder (Gujarati)
+Clean Milk Production (Hindi)
+Mastitis Control (Hindi)
+Mastitis Control (Gujarati)
+Heat Stress (Hindi)
+Sr.No | Details | Link
+1 | Ethno-veterinary formulation (Gujarati) 22 films | https://youtube.com/playlist?list=PLkPThFz3wlysT1IdFeMnPBuA0itwOSZhk&si=RhSQpxVsO_Btxq_o
+2 | Ethno-veterinary formulation (Hindi) 14 films | https://youtube.com/playlist?list=PLkPThFz3wlyub-d6xmafSoC-ReBeLgRK8&si=rBfPL6w95bwHQorq
+3 | Film on Lumpy Skin Disease (Hindi) 1 film | https://youtu.be/TiyrcCcjuVA?si=ROql5am8xgv1pGH5
+4 | Manure Management at Zakariyapura, Anand (Hindi)1 film | https://youtu.be/Hrz7kar1a-Y?si=iN_f2K8gjHyLa6CT
+5 | Awareness Film on Bovine Mastitis (Hindi) 1 Film | https://youtu.be/SFQT1w5q5wM?si=SmqDGJ8bgvu3rA4s
+6 | Film on Green Fodder (Hindi) 1 Film | https://youtu.be/uziQPBVq0yc?si=_RGSgCa-wPB0JGGe
+7 | Moringa Plantation for Green Fodder (Hindi) 1 Film | https://youtu.be/BmHI6wiTXZA?si=EWCKvXvw6Q_cLJus
+8 | Films related to Animal Health & Nutrition (Gujarati) 41 films | https://youtube.com/playlist?list=PLkPThFz3wlyt3UhzYqPmJsjAdhbG5r23g&si=BcsFnwgPygIX5UAD
+Total 82 films
+1 | doodh ki kahani - gai ki jabani | https://www.dairyknowledge.in/sites/default/files/doodh_ki_kahani_-_gai_ki_jabani_hindi.pdf
+2 | Bypass Fat Supplement | https://www.dairyknowledge.in/sites/default/files/bypass_fat_supplement_hindi_2.pdf
+3 | Chara Utpadan ki Sanskhipt Krushi Paddhatiya | https://www.dairyknowledge.in/sites/default/files/chara_utpadan_ki_sanskhipt_krushi_paddhatiya_hindi.pdf
+4 | Improved Green Fodder Production | https://www.dairyknowledge.in/sites/default/files/improved_green_fodder_production-hindi.pdf
+5 | Integrated Pest Management | https://www.dairyknowledge.in/sites/default/files/integrated_pest_management_hindi.pdf
+6 | Quality silage pamphlet | https://www.dairyknowledge.in/sites/default/files/pdfs/Quality_Silage_Pamplet_Hindi.pdf
+7 | Silage Making | https://www.dairyknowledge.in/sites/default/files/silage_making-hindi.pdf
+8 | AI-PTP extension material in Hindi by ULDB | https://www.dairyknowledge.in/sites/default/files/ai-ptp_extension_material_hindi_uldb.pdf
+9 | Karitima Garbhadan AI guidelines for farmers | https://dairyknowledge.in/dkp/sites/default/files/kritrima_garbhadan_ai_guidelines_to_farmers_nddb_hindi_poster.pdf
+10 | Booklet on Rathi breed | https://www.dairyknowledge.in/sites/default/files/rathi_web_.pdf
+11 | Extension material booklet in Hindi by ULDB | https://www.dairyknowledge.in/sites/default/files/extension_material_booklet_hindi_uldb.pdf
+12 | Hariana Cattle Breed Development Programme- a booklet in Hindi | https://www.dairyknowledge.in/sites/default/files/hariana_breed_development_programme-_booklet_in_hindi.pdf
+13 | Message to Farmers About PROGENY TESTING. | https://www.dairyknowledge.in/dkp/sites/default/files/important_message_to_farmers_about_progeny_testing-_in_hindi.pdf
+14 | NDP PTP notice extension material in Hindi by ULDB | https://www.dairyknowledge.in/sites/default/files/ndp_ptp_notice_extension_material_hindi_uldb.pdf
+15 | ndp brochure-hindi | https://www.dairyknowledge.in/sites/default/files/ndp_brochure-hindi.pdf
+16 | Ethnoveterinary Formulations - Hindi | http://dairyknowledge.in/sites/default/files/pdfs/EVM_Pamplet_Trifold_Hindi.pdf
+17 | Handbook of Good Dairy Husbandry Practices in Hindi | https://www.dairyknowledge.in/sites/default/files/pdfs/Pashupalan_Nirdeshika_Hindi_2024.pdf
+18 | Manual on cow comfort | https://www.dairyknowledge.in/sites/default/files/manual-cow-comfort-hindi.pdf
+19 | Brucellosi poster for veterinarian | https://www.dairyknowledge.in/sites/default/files/pdfs/Brucellosi_poster_veterinarian_Hindi.pdf
+20 | Brucellosis Poster- Farmer | https://www.dairyknowledge.in/sites/default/files/pdfs/Brucellosi_poster_farmer_Hindi.jpg
+21 | Ethnoveterinary Medicine (EVM) | https://www.dairyknowledge.in/sites/default/files/pdfs/EVM_Poster_Hindi.pdf
+22 | Jagruk Kissan Uttam Pashu Santan - hindi | https://dairyknowledge.in/sites/default/files/poster-jagruk_kissan_uttam_pashu_santan-20x27.pdf
+23 | kritrim garbhadan (sticker) - hindi | https://www.dairyknowledge.in/dkp/sites/default/files/styles/large/public/kritam_grabhadan_sticker.jpg?itok=NpgFI1F-
+24 | Ethnoveterinary Formulations for lumpy skin disease | https://www.dairyknowledge.in/sites/default/files/pdfs/Lumpy_Skin_Disease_Poster_Hindi.pdf
+25 | Tick Control Poster for Farmer | https://www.dairyknowledge.in/sites/default/files/pdfs/Tick_control_Poster_Hindi.pdf
+26 | E-Learning module on Bulk Milk Cooler Unit (BMCU) \u2013 Operation and Maintenance | https://www.dairyknowledge.in/training/bmchindi/
+27 | Seminar on benefits of scientific bee-keeping organised by NDDB in association with National Bee Board (NBB) at NDDB, Anand dated 10th February, 2017 - Presentation: Production and Processing of Honey | https://dairyknowledge.in/sites/default/files/production_and_processing_of_honey.pdf
+28 | Sexed semen | https://www.dairyknowledge.in/dkp/article/sexed-semen-hindi
+29 | Standard Operating Procedures for Artificial Insemination | https://www.dairyknowledge.in/sites/default/files/pdfs/breeding_policies/Uttarakhand-State-Breeding-Policy.pdf
+30 | Bypass Fat Supplement | https://www.dairyknowledge.in/sites/default/files/final_sop_poster.pdf
+31 | Improved Green Fodder Production | https://dairyknowledge.in/sites/default/files/chara_utpadan_ki_sanskhipt_krushi_paddhatiya_hindi.pdf
+32 | Integrated Pest Management | https://dairyknowledge.in/sites/default/files/improved_green_fodder_production-hindi.pdf
+33 | Quality silage pamphlet | https://dairyknowledge.in/sites/default/files/integrated_pest_management_hindi.pdf
+34 | \u0915\u093E\u0902\u091F\u0947 \u0930\u094B\u0939\u093F\u0924 \u0928\u093E\u0917 \u092B\u0928\u094B - \u0905\u0930\u094D\u0926\u094D\u0927 \u0936\u0941\u0937\u094D\u0915 \u0914\u0930 \u0936\u0941\u0937\u094D\u0915 \u0915\u094D\u0937\u0947\u0924\u094D\u0930\u094B\u0902 \u0915\u0947 \u0932\u093F\u090F \u0939\u0930\u0947 \u091A\u093E\u0930\u0947 \u0915\u093E \u090F\u0915 \u0938\u094D\u0930\u094B\u0924 | https://dairyknowledge.in/sites/default/files/silage_making-hindi.pdf
+35 | \u0939\u0930\u0947 \u091A\u093E\u0930\u093E \u0915\u0947 \u0932\u093F\u090F \u092E\u094B\u0930\u093F\u0902\u0917\u093E \u0915\u0940 \u0916\u0947\u0924\u0940 | https://dairyknowledge.in/sites/default/files/thornless_cactus_hindi.pdf
+36 | Dhudharu Pashu ke liye ghatak banta Plastic | https://www.dairyknowledge.in/sites/default/files/moringa-oleifera-hindi.pdf
+37 | \u0926\u0941\u0927\u093E\u0930\u0942 \u092A\u0936\u0941\u0913\u0902 \u0915\u0947 \u0932\u093F\u090F \u0918\u093E\u0924\u0915 \u092C\u0928\u0924\u093E \u092A\u094D\u0932\u093E\u0938\u094D\u091F\u093F\u0915 \u092A\u094D\u0930\u0926\u0942\u0937\u0923 | https://www.dairyknowledge.in/dkp/sites/default/files/kbjan14.pdf
+38 | Poster on Progeny Testing Gujurati by Banaskantha Union | https://dairyknowledge.in/dkp/sites/default/files/styles/large/public/poster_on_progeny_testing_gujarati_by_banaskantha_union.jpg?itok=4Tf3L8BN
+39 | Poster on Progeny Testing Gujurati by Mehsana Union | https://dairyknowledge.in/dkp/sites/default/files/styles/large/public/poster_on_progeny_testing_gujarati_by_mehsana_union.jpg?itok=iIP0iWUz
+40 | Calf and Heifer rearing Guide in Gujarati- Dudhsagar Dairy- Mehsana. | https://www.dairyknowledge.in/sites/default/files/calf_and_heifer_rearing_guide_in_gujarati-_dudhsagar_dairy-_mehsana.pdf
+41 | Trifold Pamphlet on Ethnoveterinary Formulations - Gujarati | https://www.dairyknowledge.in/sites/default/files/pdfs/EVM_Pamplet_Trifold_Gujarati.pdf
+42 | Ethnoveterinary Formulations - Gujarati | https://www.dairyknowledge.in/sites/default/files/pdfs/EVM_Brochure_Guj.pdf
+43 | Handbook of Good Dairy Husbandry Practices in Gujarati | https://www.dairyknowledge.in/sites/default/files/handbook_of_good_dairy_husbandry_practices_gujarati.pdf
+44 | Manual on cow comfort | https://www.dairyknowledge.in/sites/default/files/manual-cow-comfort-gujarati.pdf
+45 | Brucellosi poster for veterinarian | https://www.dairyknowledge.in/sites/default/files/pdfs/Brucellosi_poster_veterinarian_Gujarati.pdf
+46 | Brucellosis Poster- Farmer | https://www.dairyknowledge.in/sites/default/files/pdfs/Brucellosi_poster_farmer_Gujarati.jpg
+47 | Ethnoveterinary Medicine (EVM) | https://www.dairyknowledge.in/sites/default/files/pdfs/EVM_Poster_Gujarati.pdf
+48 | Gujarati Calendar on Gir Jaffarabadi PS project SAG Bidaj | https://dairyknowledge.in/sites/default/files/gujarati_calendar_on_gir_jaffarabadi_ps_project_sag_bidaj.pdf
+49 | Ethnoveterinary Formulations for lumpy skin disease | https://www.dairyknowledge.in/sites/default/files/pdfs/Lumpy_Skin_Disease_Poster_Gujarati_Low.pdf
+50 | Tick Control Poster for Farmer | https://www.dairyknowledge.in/sites/default/files/pdfs/Tick_control_Poster_Gujarati.pdf
+51 | SAG Gir and Jaffarabadi Breeds Bull Directory | https://www.dairyknowledge.in/dkp/sites/default/files/sag_gir_and_jaffarabadi_breeds_bull_directory.pdf
+
+## DAHD Schemes and Programmes
+Source: https://dahd.gov.in/en/schemes-programmes | Category: Government Scheme
+
+RASHTRIYA GOKUL MISSION (RGM)Read MoreNATIONAL LIVESTOCK MISSION (NLM)Read MoreLIVESTOCK HEALTH DISEASE CONTROL PROGRAM (LHDCP)Read MoreNATIONAL PROGRAMME FOR DAIRY DEVELOPMENT (NPDD)Read MoreLIVESTOCK CENSUS AND INTEGRATED SAMPLE SURVEY (LC&ISS)Read MoreANIMAL HUSBANDRY INFRASTRUCTURE DEVELOPMENT FUND (AHIDF)Read MoreSUPPORTING DAIRY COOPERATIVES & FARMER PRODUCER ORGANIZATIONS (SDCFPO)Read MoreNATIONAL GOPAL RATNA AWARD (NGRA)Read MoreSCHEME FOR SPECIAL ASSISTANCE TO STATES FOR CAPITAL INVESTMENT (SASCI) 2026-27DoE's Consolidated Guidelines on SASCI 2026-27DAHD's Operational Guidelines for Part VIII (Livestock Sector Reforms)
+
+## Dairy Knowledge Portal \u2014 Booklets and Pamphlets
+Source: https://www.dairyknowledge.in/dkp/section/booklets-pamphlets | Category: Extension Index
+
+Official NDDB Dairy Knowledge Portal resources (https://www.dairyknowledge.in/dkp/section/booklets-pamphlets).
+
+- Dairy Knowledge Portal: https://www.dairyknowledge.in/dkp/
+- Home: https://www.dairyknowledge.in/dkp/
+- Discussion Forum: https://www.dairyknowledge.in/dkp/forum
+- Resources: https://www.dairyknowledge.in/dkp/section/resources
+- Schemes: https://www.dairyknowledge.in/dkp/section/schemes
+- Animal Husbandry Schemes: https://www.dairyknowledge.in/dkp/section/animal-husbandry-schemes
+- Dairy Development Schemes: https://www.dairyknowledge.in/dkp/section/dairy-development-schemes-0
+- Skill Development & Extension: https://www.dairyknowledge.in/dkp/section/skill-development-extension
+- Awards: https://www.dairyknowledge.in/dkp/section/awards
+- Extensions: https://www.dairyknowledge.in/dkp/section/extension
+- Posters: https://www.dairyknowledge.in/dkp/section/posters
+- Manuals: https://www.dairyknowledge.in/dkp/section/manuals
+- Booklets / Pamphlets: https://www.dairyknowledge.in/dkp/section/booklets-pamphlets
+- Guidelines: https://www.dairyknowledge.in/dkp/section/guidelines
+- MedicinalPlants: https://www.dairyknowledge.in/dkp/section/medicinalplants
+- Acts: https://www.dairyknowledge.in/dkp/section/acts
+- Policies: https://www.dairyknowledge.in/dkp/section/policies
+- Analytics: https://www.dairyknowledge.in/dkp/section/analytics
+- Dairying: https://www.dairyknowledge.in/dkp/section/dairying
+- Economics - Model Dairy Farm: https://www.dairyknowledge.in/dkp/section/economics-model-dairy-farm
+- Online Books: https://www.dairyknowledge.in/dkp/section/online-books
+- Statistics: https://www.dairyknowledge.in/dkp/section/statistics
+- Training: https://www.dairyknowledge.in/dkp/section/training
+- Workshop Proceedings: https://www.dairyknowledge.in/dkp/section/workshop-proceedings
+- Reports/Publications: https://www.dairyknowledge.in/dkp/section/reportspublications
+- Knowledge Base: https://www.dairyknowledge.in/dkp/section/knowledge-base
+- Animal Breeding: https://www.dairyknowledge.in/dkp/section/animal-breeding
+- Animal Breeding - General: https://www.dairyknowledge.in/dkp/section/animal-breeding-general
+- Animal Genetics & Bull Production: https://www.dairyknowledge.in/dkp/section/animal-genetics-bull-production
+- Artificial Insemination & Animal Reproduction: https://www.dairyknowledge.in/dkp/section/artificial-insemination-animal-reproduction
+- Bull Station & Semen Production: https://www.dairyknowledge.in/dkp/section/bull-station-semen-production
+- Media & Downloads: https://www.dairyknowledge.in/dkp/section/media-downloads
+- Presentations: https://www.dairyknowledge.in/dkp/section/presentations-4
+- CETA Newsletter: https://www.dairyknowledge.in/dkp/content/ceta-newsletter
+- Animal Health: https://www.dairyknowledge.in/dkp/section/animal-health
+- Diseases: https://www.dairyknowledge.in/dkp/section/diseases
+- Bacterial: https://www.dairyknowledge.in/dkp/section/bacterial
+- Fungal: https://www.dairyknowledge.in/dkp/section/fungal
+- Mastitis: https://www.dairyknowledge.in/dkp/section/mastitis
+- Other Diseases: https://www.dairyknowledge.in/dkp/section/other-diseases
+- Post Calving Diseases: https://www.dairyknowledge.in/dkp/section/post-calving-diseases
+- Tick and Fly Borne: https://www.dairyknowledge.in/dkp/section/tick-and-fly-borne
+- Viral: https://www.dairyknowledge.in/dkp/section/viral
+- Management and control: https://www.dairyknowledge.in/dkp/section/management-and-control
+- Care of New Born Calf: https://www.dairyknowledge.in/dkp/article/care-new-born-calf
+- Drying-Off An Animal: https://www.dairyknowledge.in/dkp/article/drying-animal
+- Management Of Worm Infestation: https://www.dairyknowledge.in/dkp/content/management-worm-infestation
+- Management of Calf Diarrhoea: https://www.dairyknowledge.in/dkp/article/management-calf-diarrhoea
+- Management of Infertility: https://www.dairyknowledge.in/dkp/article/management-infertility
+- Tick and fly control: https://www.dairyknowledge.in/dkp/content/tick-and-fly-control
+- Tips: https://www.dairyknowledge.in/dkp/section/tips
+- Vaccination: https://www.dairyknowledge.in/dkp/section/vaccination
+- Vaccination Schedule: https://www.dairyknowledge.in/dkp/article/vaccination-schedule
+- Points to be noted during vaccination: https://www.dairyknowledge.in/dkp/article/points-be-noted-during-vaccination
+- Common reasons for vaccination failure: https://www.dairyknowledge.in/dkp/article/common-reasons-vaccination-failure
+- Poisoning: https://www.dairyknowledge.in/dkp/section/poisoning
+- Cyanide Poisoning: https://www.dairyknowledge.in/dkp/content/cyanide-poisoning
+- Gossypol Poisoning: https://www.dairyknowledge.in/dkp/content/gossypol-poisoning
+- Organophosphorous (OP) poisoning: https://www.dairyknowledge.in/dkp/content/organophosphorous-op-poisoning
+- Zoonoses: https://www.dairyknowledge.in/dkp/section/zoonoses
+- Brucellosis: https://www.dairyknowledge.in/dkp/article/brucellosis
+- Tick Borne Diseases: https://www.dairyknowledge.in/dkp/article/tick-borne-diseases
+- Leptospirosis: https://www.dairyknowledge.in/dkp/article/leptospirosis-0
+- GI Diseases: https://www.dairyknowledge.in/dkp/article/gi-diseases
+- Ethonoveterinary medicine for minor ailments: https://www.dairyknowledge.in/dkp/section/ethonoveterinary-medicine-minor-ailments
+- Media & Downloads: https://www.dairyknowledge.in/dkp/section/photo-gallery-0
+- Photos: https://www.dairyknowledge.in/dkp/section/photos
+- Videos: https://www.dairyknowledge.in/dkp/section/videos
+- Downloads: https://www.dairyknowledge.in/dkp/section/downloads
+- SOPs and Guidelines: https://www.dairyknowledge.in/dkp/section/sops-and-guidelines
+- Writeups: https://www.dairyknowledge.in/dkp/section/writeups
+- Animal Health Newsletter: https://www.dairyknowledge.in/dkp/section/animal-health-newsletter
+- Acts & Rules / Notifications: https://www.dairyknowledge.in/dkp/section/acts-rules-notifications
+- Animal Nutrition: https://www.dairyknowledge.in/dkp/section/animal-nutrition
+- Animal Nutrition Pamphlets: https://www.dairyknowledge.in/dkp/section/animal-nutrition-pamphlets
+- Bypass Protein Technology: https://www.dairyknowledge.in/dkp/section/bypass-protein-technology
+- Fodder Development: https://www.dairyknowledge.in/dkp/section/fodder-development
+- General Research: https://www.dairyknowledge.in/dkp/section/general-research
+- Methane Emission Reduction / RBP: https://www.dairyknowledge.in/dkp/section/methane-emission-reduction-ration-balancing-programme-rbp
+- Mineral Nutrition: https://www.dairyknowledge.in/dkp/section/mineral-nutrition
+
+## Dairy Knowledge Portal \u2014 Posters
+Source: https://www.dairyknowledge.in/dkp/section/posters | Category: Extension Index
+
+Official NDDB Dairy Knowledge Portal resources (https://www.dairyknowledge.in/dkp/section/posters).
+
+- Dairy Knowledge Portal: https://www.dairyknowledge.in/dkp/
+- Home: https://www.dairyknowledge.in/dkp/
+- Discussion Forum: https://www.dairyknowledge.in/dkp/forum
+- Resources: https://www.dairyknowledge.in/dkp/section/resources
+- Schemes: https://www.dairyknowledge.in/dkp/section/schemes
+- Animal Husbandry Schemes: https://www.dairyknowledge.in/dkp/section/animal-husbandry-schemes
+- Dairy Development Schemes: https://www.dairyknowledge.in/dkp/section/dairy-development-schemes-0
+- Skill Development & Extension: https://www.dairyknowledge.in/dkp/section/skill-development-extension
+- Awards: https://www.dairyknowledge.in/dkp/section/awards
+- Extensions: https://www.dairyknowledge.in/dkp/section/extension
+- Posters: https://www.dairyknowledge.in/dkp/section/posters
+- Manuals: https://www.dairyknowledge.in/dkp/section/manuals
+- Booklets / Pamphlets: https://www.dairyknowledge.in/dkp/section/booklets-pamphlets
+- Guidelines: https://www.dairyknowledge.in/dkp/section/guidelines
+- MedicinalPlants: https://www.dairyknowledge.in/dkp/section/medicinalplants
+- Acts: https://www.dairyknowledge.in/dkp/section/acts
+- Policies: https://www.dairyknowledge.in/dkp/section/policies
+- Analytics: https://www.dairyknowledge.in/dkp/section/analytics
+- Dairying: https://www.dairyknowledge.in/dkp/section/dairying
+- Economics - Model Dairy Farm: https://www.dairyknowledge.in/dkp/section/economics-model-dairy-farm
+- Online Books: https://www.dairyknowledge.in/dkp/section/online-books
+- Statistics: https://www.dairyknowledge.in/dkp/section/statistics
+- Training: https://www.dairyknowledge.in/dkp/section/training
+- Workshop Proceedings: https://www.dairyknowledge.in/dkp/section/workshop-proceedings
+- Reports/Publications: https://www.dairyknowledge.in/dkp/section/reportspublications
+- Knowledge Base: https://www.dairyknowledge.in/dkp/section/knowledge-base
+- Animal Breeding: https://www.dairyknowledge.in/dkp/section/animal-breeding
+- Animal Breeding - General: https://www.dairyknowledge.in/dkp/section/animal-breeding-general
+- Animal Genetics & Bull Production: https://www.dairyknowledge.in/dkp/section/animal-genetics-bull-production
+- Artificial Insemination & Animal Reproduction: https://www.dairyknowledge.in/dkp/section/artificial-insemination-animal-reproduction
+- Bull Station & Semen Production: https://www.dairyknowledge.in/dkp/section/bull-station-semen-production
+- Media & Downloads: https://www.dairyknowledge.in/dkp/section/media-downloads
+- Presentations: https://www.dairyknowledge.in/dkp/section/presentations-4
+- CETA Newsletter: https://www.dairyknowledge.in/dkp/content/ceta-newsletter
+- Animal Health: https://www.dairyknowledge.in/dkp/section/animal-health
+- Diseases: https://www.dairyknowledge.in/dkp/section/diseases
+- Bacterial: https://www.dairyknowledge.in/dkp/section/bacterial
+- Fungal: https://www.dairyknowledge.in/dkp/section/fungal
+- Mastitis: https://www.dairyknowledge.in/dkp/section/mastitis
+- Other Diseases: https://www.dairyknowledge.in/dkp/section/other-diseases
+- Post Calving Diseases: https://www.dairyknowledge.in/dkp/section/post-calving-diseases
+- Tick and Fly Borne: https://www.dairyknowledge.in/dkp/section/tick-and-fly-borne
+- Viral: https://www.dairyknowledge.in/dkp/section/viral
+- Management and control: https://www.dairyknowledge.in/dkp/section/management-and-control
+- Care of New Born Calf: https://www.dairyknowledge.in/dkp/article/care-new-born-calf
+- Drying-Off An Animal: https://www.dairyknowledge.in/dkp/article/drying-animal
+- Management Of Worm Infestation: https://www.dairyknowledge.in/dkp/content/management-worm-infestation
+- Management of Calf Diarrhoea: https://www.dairyknowledge.in/dkp/article/management-calf-diarrhoea
+- Management of Infertility: https://www.dairyknowledge.in/dkp/article/management-infertility
+- Tick and fly control: https://www.dairyknowledge.in/dkp/content/tick-and-fly-control
+- Tips: https://www.dairyknowledge.in/dkp/section/tips
+- Vaccination: https://www.dairyknowledge.in/dkp/section/vaccination
+- Vaccination Schedule: https://www.dairyknowledge.in/dkp/article/vaccination-schedule
+- Points to be noted during vaccination: https://www.dairyknowledge.in/dkp/article/points-be-noted-during-vaccination
+- Common reasons for vaccination failure: https://www.dairyknowledge.in/dkp/article/common-reasons-vaccination-failure
+- Poisoning: https://www.dairyknowledge.in/dkp/section/poisoning
+- Cyanide Poisoning: https://www.dairyknowledge.in/dkp/content/cyanide-poisoning
+- Gossypol Poisoning: https://www.dairyknowledge.in/dkp/content/gossypol-poisoning
+- Organophosphorous (OP) poisoning: https://www.dairyknowledge.in/dkp/content/organophosphorous-op-poisoning
+- Zoonoses: https://www.dairyknowledge.in/dkp/section/zoonoses
+- Brucellosis: https://www.dairyknowledge.in/dkp/article/brucellosis
+- Tick Borne Diseases: https://www.dairyknowledge.in/dkp/article/tick-borne-diseases
+- Leptospirosis: https://www.dairyknowledge.in/dkp/article/leptospirosis-0
+- GI Diseases: https://www.dairyknowledge.in/dkp/article/gi-diseases
+- Ethonoveterinary medicine for minor ailments: https://www.dairyknowledge.in/dkp/section/ethonoveterinary-medicine-minor-ailments
+- Media & Downloads: https://www.dairyknowledge.in/dkp/section/photo-gallery-0
+- Photos: https://www.dairyknowledge.in/dkp/section/photos
+- Videos: https://www.dairyknowledge.in/dkp/section/videos
+- Downloads: https://www.dairyknowledge.in/dkp/section/downloads
+- SOPs and Guidelines: https://www.dairyknowledge.in/dkp/section/sops-and-guidelines
+- Writeups: https://www.dairyknowledge.in/dkp/section/writeups
+- Animal Health Newsletter: https://www.dairyknowledge.in/dkp/section/animal-health-newsletter
+- Acts & Rules / Notifications: https://www.dairyknowledge.in/dkp/section/acts-rules-notifications
+- Animal Nutrition: https://www.dairyknowledge.in/dkp/section/animal-nutrition
+- Animal Nutrition Pamphlets: https://www.dairyknowledge.in/dkp/section/animal-nutrition-pamphlets
+- Bypass Protein Technology: https://www.dairyknowledge.in/dkp/section/bypass-protein-technology
+- Fodder Development: https://www.dairyknowledge.in/dkp/section/fodder-development
+- General Research: https://www.dairyknowledge.in/dkp/section/general-research
+- Methane Emission Reduction / RBP: https://www.dairyknowledge.in/dkp/section/methane-emission-reduction-ration-balancing-programme-rbp
+- Mineral Nutrition: https://www.dairyknowledge.in/dkp/section/mineral-nutrition
+
+## Dairy Knowledge Portal \u2014 Guidelines
+Source: https://www.dairyknowledge.in/dkp/section/guidelines | Category: Extension Index
+
+Official NDDB Dairy Knowledge Portal resources (https://www.dairyknowledge.in/dkp/section/guidelines).
+
+- Dairy Knowledge Portal: https://www.dairyknowledge.in/dkp/
+- Home: https://www.dairyknowledge.in/dkp/
+- Discussion Forum: https://www.dairyknowledge.in/dkp/forum
+- Resources: https://www.dairyknowledge.in/dkp/section/resources
+- Schemes: https://www.dairyknowledge.in/dkp/section/schemes
+- Animal Husbandry Schemes: https://www.dairyknowledge.in/dkp/section/animal-husbandry-schemes
+- Dairy Development Schemes: https://www.dairyknowledge.in/dkp/section/dairy-development-schemes-0
+- Skill Development & Extension: https://www.dairyknowledge.in/dkp/section/skill-development-extension
+- Awards: https://www.dairyknowledge.in/dkp/section/awards
+- Extensions: https://www.dairyknowledge.in/dkp/section/extension
+- Posters: https://www.dairyknowledge.in/dkp/section/posters
+- Manuals: https://www.dairyknowledge.in/dkp/section/manuals
+- Booklets / Pamphlets: https://www.dairyknowledge.in/dkp/section/booklets-pamphlets
+- Guidelines: https://www.dairyknowledge.in/dkp/section/guidelines
+- MedicinalPlants: https://www.dairyknowledge.in/dkp/section/medicinalplants
+- Acts: https://www.dairyknowledge.in/dkp/section/acts
+- Policies: https://www.dairyknowledge.in/dkp/section/policies
+- Analytics: https://www.dairyknowledge.in/dkp/section/analytics
+- Dairying: https://www.dairyknowledge.in/dkp/section/dairying
+- Economics - Model Dairy Farm: https://www.dairyknowledge.in/dkp/section/economics-model-dairy-farm
+- Online Books: https://www.dairyknowledge.in/dkp/section/online-books
+- Statistics: https://www.dairyknowledge.in/dkp/section/statistics
+- Training: https://www.dairyknowledge.in/dkp/section/training
+- Workshop Proceedings: https://www.dairyknowledge.in/dkp/section/workshop-proceedings
+- Reports/Publications: https://www.dairyknowledge.in/dkp/section/reportspublications
+- Knowledge Base: https://www.dairyknowledge.in/dkp/section/knowledge-base
+- Animal Breeding: https://www.dairyknowledge.in/dkp/section/animal-breeding
+- Animal Breeding - General: https://www.dairyknowledge.in/dkp/section/animal-breeding-general
+- Animal Genetics & Bull Production: https://www.dairyknowledge.in/dkp/section/animal-genetics-bull-production
+- Artificial Insemination & Animal Reproduction: https://www.dairyknowledge.in/dkp/section/artificial-insemination-animal-reproduction
+- Bull Station & Semen Production: https://www.dairyknowledge.in/dkp/section/bull-station-semen-production
+- Media & Downloads: https://www.dairyknowledge.in/dkp/section/media-downloads
+- Presentations: https://www.dairyknowledge.in/dkp/section/presentations-4
+- CETA Newsletter: https://www.dairyknowledge.in/dkp/content/ceta-newsletter
+- Animal Health: https://www.dairyknowledge.in/dkp/section/animal-health
+- Diseases: https://www.dairyknowledge.in/dkp/section/diseases
+- Bacterial: https://www.dairyknowledge.in/dkp/section/bacterial
+- Fungal: https://www.dairyknowledge.in/dkp/section/fungal
+- Mastitis: https://www.dairyknowledge.in/dkp/section/mastitis
+- Other Diseases: https://www.dairyknowledge.in/dkp/section/other-diseases
+- Post Calving Diseases: https://www.dairyknowledge.in/dkp/section/post-calving-diseases
+- Tick and Fly Borne: https://www.dairyknowledge.in/dkp/section/tick-and-fly-borne
+- Viral: https://www.dairyknowledge.in/dkp/section/viral
+- Management and control: https://www.dairyknowledge.in/dkp/section/management-and-control
+- Care of New Born Calf: https://www.dairyknowledge.in/dkp/article/care-new-born-calf
+- Drying-Off An Animal: https://www.dairyknowledge.in/dkp/article/drying-animal
+- Management Of Worm Infestation: https://www.dairyknowledge.in/dkp/content/management-worm-infestation
+- Management of Calf Diarrhoea: https://www.dairyknowledge.in/dkp/article/management-calf-diarrhoea
+- Management of Infertility: https://www.dairyknowledge.in/dkp/article/management-infertility
+- Tick and fly control: https://www.dairyknowledge.in/dkp/content/tick-and-fly-control
+- Tips: https://www.dairyknowledge.in/dkp/section/tips
+- Vaccination: https://www.dairyknowledge.in/dkp/section/vaccination
+- Vaccination Schedule: https://www.dairyknowledge.in/dkp/article/vaccination-schedule
+- Points to be noted during vaccination: https://www.dairyknowledge.in/dkp/article/points-be-noted-during-vaccination
+- Common reasons for vaccination failure: https://www.dairyknowledge.in/dkp/article/common-reasons-vaccination-failure
+- Poisoning: https://www.dairyknowledge.in/dkp/section/poisoning
+- Cyanide Poisoning: https://www.dairyknowledge.in/dkp/content/cyanide-poisoning
+- Gossypol Poisoning: https://www.dairyknowledge.in/dkp/content/gossypol-poisoning
+- Organophosphorous (OP) poisoning: https://www.dairyknowledge.in/dkp/content/organophosphorous-op-poisoning
+- Zoonoses: https://www.dairyknowledge.in/dkp/section/zoonoses
+- Brucellosis: https://www.dairyknowledge.in/dkp/article/brucellosis
+- Tick Borne Diseases: https://www.dairyknowledge.in/dkp/article/tick-borne-diseases
+- Leptospirosis: https://www.dairyknowledge.in/dkp/article/leptospirosis-0
+- GI Diseases: https://www.dairyknowledge.in/dkp/article/gi-diseases
+- Ethonoveterinary medicine for minor ailments: https://www.dairyknowledge.in/dkp/section/ethonoveterinary-medicine-minor-ailments
+- Media & Downloads: https://www.dairyknowledge.in/dkp/section/photo-gallery-0
+- Photos: https://www.dairyknowledge.in/dkp/section/photos
+- Videos: https://www.dairyknowledge.in/dkp/section/videos
+- Downloads: https://www.dairyknowledge.in/dkp/section/downloads
+- SOPs and Guidelines: https://www.dairyknowledge.in/dkp/section/sops-and-guidelines
+- Writeups: https://www.dairyknowledge.in/dkp/section/writeups
+- Animal Health Newsletter: https://www.dairyknowledge.in/dkp/section/animal-health-newsletter
+- Acts & Rules / Notifications: https://www.dairyknowledge.in/dkp/section/acts-rules-notifications
+- Animal Nutrition: https://www.dairyknowledge.in/dkp/section/animal-nutrition
+- Animal Nutrition Pamphlets: https://www.dairyknowledge.in/dkp/section/animal-nutrition-pamphlets
+- Bypass Protein Technology: https://www.dairyknowledge.in/dkp/section/bypass-protein-technology
+- Fodder Development: https://www.dairyknowledge.in/dkp/section/fodder-development
+- General Research: https://www.dairyknowledge.in/dkp/section/general-research
+- Methane Emission Reduction / RBP: https://www.dairyknowledge.in/dkp/section/methane-emission-reduction-ration-balancing-programme-rbp
+- Mineral Nutrition: https://www.dairyknowledge.in/dkp/section/mineral-nutrition
+
+## Dairy Knowledge Portal \u2014 Manuals
+Source: https://www.dairyknowledge.in/dkp/section/manuals | Category: Extension Index
+
+Official NDDB Dairy Knowledge Portal resources (https://www.dairyknowledge.in/dkp/section/manuals).
+
+- Dairy Knowledge Portal: https://www.dairyknowledge.in/dkp/
+- Home: https://www.dairyknowledge.in/dkp/
+- Discussion Forum: https://www.dairyknowledge.in/dkp/forum
+- Resources: https://www.dairyknowledge.in/dkp/section/resources
+- Schemes: https://www.dairyknowledge.in/dkp/section/schemes
+- Animal Husbandry Schemes: https://www.dairyknowledge.in/dkp/section/animal-husbandry-schemes
+- Dairy Development Schemes: https://www.dairyknowledge.in/dkp/section/dairy-development-schemes-0
+- Skill Development & Extension: https://www.dairyknowledge.in/dkp/section/skill-development-extension
+- Awards: https://www.dairyknowledge.in/dkp/section/awards
+- Extensions: https://www.dairyknowledge.in/dkp/section/extension
+- Posters: https://www.dairyknowledge.in/dkp/section/posters
+- Manuals: https://www.dairyknowledge.in/dkp/section/manuals
+- Booklets / Pamphlets: https://www.dairyknowledge.in/dkp/section/booklets-pamphlets
+- Guidelines: https://www.dairyknowledge.in/dkp/section/guidelines
+- MedicinalPlants: https://www.dairyknowledge.in/dkp/section/medicinalplants
+- Acts: https://www.dairyknowledge.in/dkp/section/acts
+- Policies: https://www.dairyknowledge.in/dkp/section/policies
+- Analytics: https://www.dairyknowledge.in/dkp/section/analytics
+- Dairying: https://www.dairyknowledge.in/dkp/section/dairying
+- Economics - Model Dairy Farm: https://www.dairyknowledge.in/dkp/section/economics-model-dairy-farm
+- Online Books: https://www.dairyknowledge.in/dkp/section/online-books
+- Statistics: https://www.dairyknowledge.in/dkp/section/statistics
+- Training: https://www.dairyknowledge.in/dkp/section/training
+- Workshop Proceedings: https://www.dairyknowledge.in/dkp/section/workshop-proceedings
+- Reports/Publications: https://www.dairyknowledge.in/dkp/section/reportspublications
+- Knowledge Base: https://www.dairyknowledge.in/dkp/section/knowledge-base
+- Animal Breeding: https://www.dairyknowledge.in/dkp/section/animal-breeding
+- Animal Breeding - General: https://www.dairyknowledge.in/dkp/section/animal-breeding-general
+- Animal Genetics & Bull Production: https://www.dairyknowledge.in/dkp/section/animal-genetics-bull-production
+- Artificial Insemination & Animal Reproduction: https://www.dairyknowledge.in/dkp/section/artificial-insemination-animal-reproduction
+- Bull Station & Semen Production: https://www.dairyknowledge.in/dkp/section/bull-station-semen-production
+- Media & Downloads: https://www.dairyknowledge.in/dkp/section/media-downloads
+- Presentations: https://www.dairyknowledge.in/dkp/section/presentations-4
+- CETA Newsletter: https://www.dairyknowledge.in/dkp/content/ceta-newsletter
+- Animal Health: https://www.dairyknowledge.in/dkp/section/animal-health
+- Diseases: https://www.dairyknowledge.in/dkp/section/diseases
+- Bacterial: https://www.dairyknowledge.in/dkp/section/bacterial
+- Fungal: https://www.dairyknowledge.in/dkp/section/fungal
+- Mastitis: https://www.dairyknowledge.in/dkp/section/mastitis
+- Other Diseases: https://www.dairyknowledge.in/dkp/section/other-diseases
+- Post Calving Diseases: https://www.dairyknowledge.in/dkp/section/post-calving-diseases
+- Tick and Fly Borne: https://www.dairyknowledge.in/dkp/section/tick-and-fly-borne
+- Viral: https://www.dairyknowledge.in/dkp/section/viral
+- Management and control: https://www.dairyknowledge.in/dkp/section/management-and-control
+- Care of New Born Calf: https://www.dairyknowledge.in/dkp/article/care-new-born-calf
+- Drying-Off An Animal: https://www.dairyknowledge.in/dkp/article/drying-animal
+- Management Of Worm Infestation: https://www.dairyknowledge.in/dkp/content/management-worm-infestation
+- Management of Calf Diarrhoea: https://www.dairyknowledge.in/dkp/article/management-calf-diarrhoea
+- Management of Infertility: https://www.dairyknowledge.in/dkp/article/management-infertility
+- Tick and fly control: https://www.dairyknowledge.in/dkp/content/tick-and-fly-control
+- Tips: https://www.dairyknowledge.in/dkp/section/tips
+- Vaccination: https://www.dairyknowledge.in/dkp/section/vaccination
+- Vaccination Schedule: https://www.dairyknowledge.in/dkp/article/vaccination-schedule
+- Points to be noted during vaccination: https://www.dairyknowledge.in/dkp/article/points-be-noted-during-vaccination
+- Common reasons for vaccination failure: https://www.dairyknowledge.in/dkp/article/common-reasons-vaccination-failure
+- Poisoning: https://www.dairyknowledge.in/dkp/section/poisoning
+- Cyanide Poisoning: https://www.dairyknowledge.in/dkp/content/cyanide-poisoning
+- Gossypol Poisoning: https://www.dairyknowledge.in/dkp/content/gossypol-poisoning
+- Organophosphorous (OP) poisoning: https://www.dairyknowledge.in/dkp/content/organophosphorous-op-poisoning
+- Zoonoses: https://www.dairyknowledge.in/dkp/section/zoonoses
+- Brucellosis: https://www.dairyknowledge.in/dkp/article/brucellosis
+- Tick Borne Diseases: https://www.dairyknowledge.in/dkp/article/tick-borne-diseases
+- Leptospirosis: https://www.dairyknowledge.in/dkp/article/leptospirosis-0
+- GI Diseases: https://www.dairyknowledge.in/dkp/article/gi-diseases
+- Ethonoveterinary medicine for minor ailments: https://www.dairyknowledge.in/dkp/section/ethonoveterinary-medicine-minor-ailments
+- Media & Downloads: https://www.dairyknowledge.in/dkp/section/photo-gallery-0
+- Photos: https://www.dairyknowledge.in/dkp/section/photos
+- Videos: https://www.dairyknowledge.in/dkp/section/videos
+- Downloads: https://www.dairyknowledge.in/dkp/section/downloads
+- SOPs and Guidelines: https://www.dairyknowledge.in/dkp/section/sops-and-guidelines
+- Writeups: https://www.dairyknowledge.in/dkp/section/writeups
+- Animal Health Newsletter: https://www.dairyknowledge.in/dkp/section/animal-health-newsletter
+- Acts & Rules / Notifications: https://www.dairyknowledge.in/dkp/section/acts-rules-notifications
+- Animal Nutrition: https://www.dairyknowledge.in/dkp/section/animal-nutrition
+- Animal Nutrition Pamphlets: https://www.dairyknowledge.in/dkp/section/animal-nutrition-pamphlets
+- Bypass Protein Technology: https://www.dairyknowledge.in/dkp/section/bypass-protein-technology
+- Fodder Development: https://www.dairyknowledge.in/dkp/section/fodder-development
+- General Research: https://www.dairyknowledge.in/dkp/section/general-research
+- Methane Emission Reduction / RBP: https://www.dairyknowledge.in/dkp/section/methane-emission-reduction-ration-balancing-programme-rbp
+- Mineral Nutrition: https://www.dairyknowledge.in/dkp/section/mineral-nutrition
+
+## Dairy Knowledge Portal \u2014 Medicinal Plants EVM
+Source: https://www.dairyknowledge.in/dkp/section/medicinalplants | Category: Extension Index
+
+Official NDDB Dairy Knowledge Portal resources (https://www.dairyknowledge.in/dkp/section/medicinalplants).
+
+- Dairy Knowledge Portal: https://www.dairyknowledge.in/dkp/
+- Home: https://www.dairyknowledge.in/dkp/
+- Discussion Forum: https://www.dairyknowledge.in/dkp/forum
+- Resources: https://www.dairyknowledge.in/dkp/section/resources
+- Schemes: https://www.dairyknowledge.in/dkp/section/schemes
+- Animal Husbandry Schemes: https://www.dairyknowledge.in/dkp/section/animal-husbandry-schemes
+- Dairy Development Schemes: https://www.dairyknowledge.in/dkp/section/dairy-development-schemes-0
+- Skill Development & Extension: https://www.dairyknowledge.in/dkp/section/skill-development-extension
+- Awards: https://www.dairyknowledge.in/dkp/section/awards
+- Extensions: https://www.dairyknowledge.in/dkp/section/extension
+- Posters: https://www.dairyknowledge.in/dkp/section/posters
+- Manuals: https://www.dairyknowledge.in/dkp/section/manuals
+- Booklets / Pamphlets: https://www.dairyknowledge.in/dkp/section/booklets-pamphlets
+- Guidelines: https://www.dairyknowledge.in/dkp/section/guidelines
+- MedicinalPlants: https://www.dairyknowledge.in/dkp/section/medicinalplants
+- Acts: https://www.dairyknowledge.in/dkp/section/acts
+- Policies: https://www.dairyknowledge.in/dkp/section/policies
+- Analytics: https://www.dairyknowledge.in/dkp/section/analytics
+- Dairying: https://www.dairyknowledge.in/dkp/section/dairying
+- Economics - Model Dairy Farm: https://www.dairyknowledge.in/dkp/section/economics-model-dairy-farm
+- Online Books: https://www.dairyknowledge.in/dkp/section/online-books
+- Statistics: https://www.dairyknowledge.in/dkp/section/statistics
+- Training: https://www.dairyknowledge.in/dkp/section/training
+- Workshop Proceedings: https://www.dairyknowledge.in/dkp/section/workshop-proceedings
+- Reports/Publications: https://www.dairyknowledge.in/dkp/section/reportspublications
+- Knowledge Base: https://www.dairyknowledge.in/dkp/section/knowledge-base
+- Animal Breeding: https://www.dairyknowledge.in/dkp/section/animal-breeding
+- Animal Breeding - General: https://www.dairyknowledge.in/dkp/section/animal-breeding-general
+- Animal Genetics & Bull Production: https://www.dairyknowledge.in/dkp/section/animal-genetics-bull-production
+- Artificial Insemination & Animal Reproduction: https://www.dairyknowledge.in/dkp/section/artificial-insemination-animal-reproduction
+- Bull Station & Semen Production: https://www.dairyknowledge.in/dkp/section/bull-station-semen-production
+- Media & Downloads: https://www.dairyknowledge.in/dkp/section/media-downloads
+- Presentations: https://www.dairyknowledge.in/dkp/section/presentations-4
+- CETA Newsletter: https://www.dairyknowledge.in/dkp/content/ceta-newsletter
+- Animal Health: https://www.dairyknowledge.in/dkp/section/animal-health
+- Diseases: https://www.dairyknowledge.in/dkp/section/diseases
+- Bacterial: https://www.dairyknowledge.in/dkp/section/bacterial
+- Fungal: https://www.dairyknowledge.in/dkp/section/fungal
+- Mastitis: https://www.dairyknowledge.in/dkp/section/mastitis
+- Other Diseases: https://www.dairyknowledge.in/dkp/section/other-diseases
+- Post Calving Diseases: https://www.dairyknowledge.in/dkp/section/post-calving-diseases
+- Tick and Fly Borne: https://www.dairyknowledge.in/dkp/section/tick-and-fly-borne
+- Viral: https://www.dairyknowledge.in/dkp/section/viral
+- Management and control: https://www.dairyknowledge.in/dkp/section/management-and-control
+- Care of New Born Calf: https://www.dairyknowledge.in/dkp/article/care-new-born-calf
+- Drying-Off An Animal: https://www.dairyknowledge.in/dkp/article/drying-animal
+- Management Of Worm Infestation: https://www.dairyknowledge.in/dkp/content/management-worm-infestation
+- Management of Calf Diarrhoea: https://www.dairyknowledge.in/dkp/article/management-calf-diarrhoea
+- Management of Infertility: https://www.dairyknowledge.in/dkp/article/management-infertility
+- Tick and fly control: https://www.dairyknowledge.in/dkp/content/tick-and-fly-control
+- Tips: https://www.dairyknowledge.in/dkp/section/tips
+- Vaccination: https://www.dairyknowledge.in/dkp/section/vaccination
+- Vaccination Schedule: https://www.dairyknowledge.in/dkp/article/vaccination-schedule
+- Points to be noted during vaccination: https://www.dairyknowledge.in/dkp/article/points-be-noted-during-vaccination
+- Common reasons for vaccination failure: https://www.dairyknowledge.in/dkp/article/common-reasons-vaccination-failure
+- Poisoning: https://www.dairyknowledge.in/dkp/section/poisoning
+- Cyanide Poisoning: https://www.dairyknowledge.in/dkp/content/cyanide-poisoning
+- Gossypol Poisoning: https://www.dairyknowledge.in/dkp/content/gossypol-poisoning
+- Organophosphorous (OP) poisoning: https://www.dairyknowledge.in/dkp/content/organophosphorous-op-poisoning
+- Zoonoses: https://www.dairyknowledge.in/dkp/section/zoonoses
+- Brucellosis: https://www.dairyknowledge.in/dkp/article/brucellosis
+- Tick Borne Diseases: https://www.dairyknowledge.in/dkp/article/tick-borne-diseases
+- Leptospirosis: https://www.dairyknowledge.in/dkp/article/leptospirosis-0
+- GI Diseases: https://www.dairyknowledge.in/dkp/article/gi-diseases
+- Ethonoveterinary medicine for minor ailments: https://www.dairyknowledge.in/dkp/section/ethonoveterinary-medicine-minor-ailments
+- Media & Downloads: https://www.dairyknowledge.in/dkp/section/photo-gallery-0
+- Photos: https://www.dairyknowledge.in/dkp/section/photos
+- Videos: https://www.dairyknowledge.in/dkp/section/videos
+- Downloads: https://www.dairyknowledge.in/dkp/section/downloads
+- SOPs and Guidelines: https://www.dairyknowledge.in/dkp/section/sops-and-guidelines
+- Writeups: https://www.dairyknowledge.in/dkp/section/writeups
+- Animal Health Newsletter: https://www.dairyknowledge.in/dkp/section/animal-health-newsletter
+- Acts & Rules / Notifications: https://www.dairyknowledge.in/dkp/section/acts-rules-notifications
+- Animal Nutrition: https://www.dairyknowledge.in/dkp/section/animal-nutrition
+- Animal Nutrition Pamphlets: https://www.dairyknowledge.in/dkp/section/animal-nutrition-pamphlets
+- Bypass Protein Technology: https://www.dairyknowledge.in/dkp/section/bypass-protein-technology
+- Fodder Development: https://www.dairyknowledge.in/dkp/section/fodder-development
+- General Research: https://www.dairyknowledge.in/dkp/section/general-research
+- Methane Emission Reduction / RBP: https://www.dairyknowledge.in/dkp/section/methane-emission-reduction-ration-balancing-programme-rbp
+- Mineral Nutrition: https://www.dairyknowledge.in/dkp/section/mineral-nutrition
+`;
+
 // catalyst/functions/pashumitra_api/lib/knowledge/knowledge.ts
 var KNOWLEDGE_BASE = `
 # DAIRY FARMING & ANIMAL HUSBANDRY KNOWLEDGE BASE
@@ -26077,23 +27401,9 @@ Heat stress: panting, drooling, reduced intake, reduced milk. Provide shade, fan
 Rumen of adult bovine holds 100-150 L. ~500 L blood circulates through udder per 1 L milk.
 Gestation: cattle 280-290 days, buffalo 305-318 days.
 
-## 8. INDIAN GOVERNMENT SCHEMES (DAHD, GoI)
-**AHIDF \u2014 Animal Husbandry Infrastructure Development Fund** (\u20B929,610.25 cr through 2025-26). 3% interest subvention/yr for 8 years (2 yr moratorium). Loan up to 90% of project cost from Scheduled Banks/NABARD/NCDC/NDDB. 25% credit guarantee for MSMEs & dairy cooperatives. For dairy processing, meat processing, animal feed, breed multiplication. Eligible: individuals, companies, FPOs, MSMEs, Sec-8 cos, cooperatives.
-**Rashtriya Gokul Mission (RGM)** \u2014 indigenous bovine breed improvement. Subsidy up to 50% on sex-sorted semen. \u20B95,000/IVF assured pregnancy. Up to 50% capital subsidy (max \u20B92 cr) for Breed Multiplication Farms. NAIP nationwide AI; MAITRI doorstep AI technicians.
-**National Programme for Dairy Development (NPDD)** \u2014 strengthen cooperative procurement, milk testing, primary chilling at village level. Component B (DTC) JICA-aided in UP/Bihar.
-**SDCFPO \u2014 Supporting Dairy Cooperatives & FPOs**: 2% interest subvention on working capital; +2% for prompt repayment.
-**KCC for Animal Husbandry**: short-term working capital up to \u20B93 lakh (\u20B95 lakh in some cases) at 7% interest (extra 3% subvention for prompt repayment).
-**National Livestock Mission (NLM)**: entrepreneurship support for sheep/goat/pig/poultry/fodder; silage/haylage units; fodder seed.
-**Livestock Insurance Scheme**: subsidized premiums for high-yield animals; covers death by disease, accident, calamity.
-**State schemes (typical)**:
-- Hi-Tech Dairy Units (Haryana, UP, Gujarat \u2014 Nand Baba Doodh Mission): credit-linked subsidy for 10/20/50 milch animals.
-- Small-scale (Kerala, Maharashtra, Karnataka): 25-50% subsidy for 2-5 animals + sheds, often for SHGs/JLGs/BPL.
-- Indigenous breed promotion (Gujarat, Rajasthan): subsidies for Gir, Sahiwal etc.
-- Cattle sheds (Kerala \u2014 Ksheera Theeram, UP): 50-75% subsidy on scientific elevated sheds.
-- Equipment: 50-100% grant on Bulk Milk Coolers, milking machines, AMCUs (TN, Puducherry, Punjab).
-- SC/ST/Women: 60-75% subsidy in Maharashtra, Bihar, Assam.
-- Milk price incentives: per-litre premium in Karnataka, Maharashtra cooperatives.
-**How to apply**: Central \u2014 through NDDB/NCDC/SLDB or AHIDF portal. State \u2014 District Animal Husbandry Office / District Dairy Development Officer; many states have online portals.
+## 8. INDIAN GOVERNMENT SCHEMES (see dedicated DAHD section below)
+
+${DAHD_SCHEMES}
 
 ## 9. MILK QUALITY
 Pre-milking: wash udder, dry with individual towel, fore-milk strip, gentle massage.
@@ -26107,6 +27417,8 @@ ${RATION_KNOWLEDGE}
 ${BALANCED_RATION_GUIDE}
 
 ${COOPERATIVE_MILK_POLICY}
+
+${EXTENSION_MATERIAL}
 `;
 
 // catalyst/functions/pashumitra_api/lib/rag-retrieval.ts
@@ -26166,8 +27478,11 @@ function retrieveRagContext(query, topK = 7) {
   if (/milk|sell|pour|cooperative|dcs|union|marketing|dudh|dugh|buyer/i.test(query)) {
     selected = mergeUnique(selected, pickByTitle(chunks, /COOPERATIVE|MILK MARKETING|ECONOMICS/i, 2));
   }
-  if (/scheme|subsidy|loan|kcc|ahidf|rgm|npdd|nlm|government|yojana/i.test(query)) {
-    selected = mergeUnique(selected, pickByTitle(chunks, /GOVERNMENT|SCHEME/i, 2));
+  if (/scheme|subsidy|loan|kcc|ahidf|rgm|npdd|nlm|government|yojana|dahd|gokul|livestock mission/i.test(query)) {
+    selected = mergeUnique(selected, pickByTitle(chunks, /GOVERNMENT|SCHEME|DAHD|AHIDF|GOKUL|NPDD|NLM/i, 3));
+  }
+  if (/extension|pamphlet|booklet|poster|nddb|dairy knowledge|youtube|trifold|pashupalan|nirdeshika/i.test(query)) {
+    selected = mergeUnique(selected, pickByTitle(chunks, /EXTENSION|NDDB|Pamphlet|Booklet|Poster|YouTube|Dairy Knowledge/i, 3));
   }
   if (/mastitis|fever|disease|vaccin|evm|ethno|breed|heat|calv|pregnan/i.test(query)) {
     selected = mergeUnique(selected, pickByTitle(chunks, /HEALTH|EVM|BREEDING|BOVINE/i, 3));

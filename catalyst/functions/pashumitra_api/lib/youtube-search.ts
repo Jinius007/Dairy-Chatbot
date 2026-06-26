@@ -15,6 +15,11 @@ export type YoutubeVideo = {
 const CURATED_VIDEOS: { id: string; title: string; topics: string[] }[] = [
   { id: "4TCt7b1q5aQ", title: "Ration Balancing Programme", topics: ["ration", "feed", "balanced", "poshan", "aahar", "lcf", "tdn"] },
   { id: "LZnqdJjCJiE", title: "NDDB Samvad — Clean milk at DCS", topics: ["clean milk", "cooperative", "dcs", "procurement", "quality"] },
+  { id: "TiyrcCcjuVA", title: "Lumpy Skin Disease awareness (Hindi)", topics: ["lumpy", "lsd", "skin disease", "vaccination"] },
+  { id: "SFQT1w5q5wM", title: "Awareness film on bovine mastitis (Hindi)", topics: ["mastitis", "udder", "milk", "health"] },
+  { id: "uziQPBVq0yc", title: "Film on green fodder (Hindi)", topics: ["green fodder", "fodder", "chara", "napier"] },
+  { id: "BmHI6wiTXZA", title: "Moringa plantation for green fodder (Hindi)", topics: ["moringa", "fodder", "green"] },
+  { id: "Hrz7kar1a-Y", title: "Manure management at Zakariyapura Anand (Hindi)", topics: ["manure", "biogas", "waste", "dung"] },
 ];
 
 const YOUTUBE_REQUEST = /youtube|youtu\.be|video link|वीडियो|youtube link|watch video|कोई वीडियो|ভিডিও|வீடியோ|వీడియో|व्हिडिओ|યુટ્યુબ|youtube का|लिंक दे|link de/i;
