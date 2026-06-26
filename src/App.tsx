@@ -3,7 +3,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { isBackendConfigured } from "@/lib/backend-config";
+import { getBackendConfigIssue, isBackendConfigured } from "@/lib/backend-config";
 import Index from "./pages/Index.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
@@ -15,8 +15,12 @@ const App = () => (
       <div className="h-[100dvh] flex flex-col overflow-hidden">
         {!isBackendConfigured() && (
           <div className="shrink-0 bg-amber-500 text-amber-950 px-4 py-2 text-center text-sm">
-            Set <code className="font-mono">VITE_CATALYST_API_URL</code> to your Catalyst function URL, then rebuild
-            Slate (see <code className="font-mono">docs/CATALYST_DEPLOY.md</code>).
+            {getBackendConfigIssue() ?? (
+              <>
+                Set <code className="font-mono">VITE_CATALYST_API_URL</code> to your Catalyst function URL, then rebuild
+                Slate (see <code className="font-mono">docs/CATALYST_DEPLOY.md</code>).
+              </>
+            )}
           </div>
         )}
         <div className="flex-1 min-h-0 overflow-hidden">

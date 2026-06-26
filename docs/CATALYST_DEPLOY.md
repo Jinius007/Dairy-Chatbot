@@ -158,6 +158,16 @@ VITE_CATALYST_API_URL=https://project-rainfall-60075686570.development.catalysts
 
 4. Rebuild Slate after env changes (Build / Sync).
 
+**Do not** use `http://localhost:8080/catalyst-api` or `/catalyst-api` on Slate — that path only works with the local Vite dev proxy. Slate static hosting returns **405** for POST requests to `/catalyst-api/transcribe`.
+
+### Troubleshooting: 405 on `/catalyst-api/transcribe`
+
+| Symptom | Cause | Fix |
+|---------|-------|-----|
+| Network tab shows `…onslate.in/catalyst-api/transcribe` → **405** | Slate built with local dev URL | Set full `https://…catalystserverless.in/server/pashumitra_api` in Slate env, rebuild |
+| Network tab shows `…catalystserverless.in/…/transcribe` → **404** | Wrong TLD (`.com` vs `.in`) | Copy exact URL from `catalyst deploy` output |
+| **500** on transcribe | Missing `SARVAM_API_KEY` on function | Catalyst Console → Functions → pashumitra_api → Environment |
+
 ## 5. Local dev
 
 ```bash

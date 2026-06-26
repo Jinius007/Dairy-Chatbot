@@ -2,13 +2,37 @@
  * Backend routing — Zoho Catalyst API (chat, transcribe, TTS, logging, YouTube).
  * Set VITE_CATALYST_API_URL in Slate / .env.local.
  */
+
+/** Misconfiguration hint for Slate banner (null = OK). */
+export function getBackendConfigIssue(): string | null {
+  const base = import.meta.env.VITE_CATALYST_API_URL?.trim();
+  if (!base) {
+    return "VITE_CATALYST_API_URL is not set.";
+  }
+
+  if (import.meta.env.PROD) {
+    if (base.includes("/catalyst-api") || base.startsWith("/")) {
+      return "Slate is using the local Vite proxy (/catalyst-api). Set the full Catalyst URL (https://…catalystserverless.in/server/pashumitra_api) and rebuild.";
+    }
+    if (!base.startsWith("https://")) {
+      return "Production requires an https:// Catalyst function URL, not localhost.";
+    }
+    if (!base.includes("catalystserverless")) {
+      return "VITE_CATALYST_API_URL should be your Catalyst function URL (*.catalystserverless.in or .com).";
+    }
+  }
+
+  return null;
+}
+
 export function isBackendConfigured(): boolean {
-  return Boolean(import.meta.env.VITE_CATALYST_API_URL?.trim());
+  return getBackendConfigIssue() === null;
 }
 
 function catalystBase(): string {
-  const base = import.meta.env.VITE_CATALYST_API_URL?.trim();
-  if (!base) throw new Error("VITE_CATALYST_API_URL is not configured");
+  const issue = getBackendConfigIssue();
+  if (issue) throw new Error(issue);
+  const base = import.meta.env.VITE_CATALYST_API_URL!.trim();
   return base.replace(/\/$/, "");
 }
 
