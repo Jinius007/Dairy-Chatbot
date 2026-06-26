@@ -2874,21 +2874,28 @@ async function handleYoutubeSearch(req, res) {
 
 // catalyst/functions/pashumitra_api/src/server.mts
 var app = (0, import_express.default)();
-app.use(import_express.default.json({ limit: "20mb" }));
-var corsHeaders3 = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, content-type, apikey, x-client-info",
-  "Access-Control-Allow-Methods": "GET, POST, OPTIONS"
-};
-app.use((_req, res, next) => {
-  res.set(corsHeaders3);
-  next();
-});
-async function relayWebHandler(handler, req, res) {
+function applyCors(req, res) {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "authorization, content-type, apikey, x-client-info, x-requested-with"
+  );
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.setHeader("Access-Control-Max-Age", "86400");
+  if (req.headers.origin) {
+    res.setHeader("Vary", "Origin");
+  }
+}
+app.use((req, res, next) => {
+  applyCors(req, res);
   if (req.method === "OPTIONS") {
     res.status(204).end();
     return;
   }
+  next();
+});
+app.use(import_express.default.json({ limit: "20mb" }));
+async function relayWebHandler(handler, req, res) {
   const url = `${req.protocol}://${req.get("host") || "localhost"}${req.originalUrl}`;
   const init = {
     method: req.method,
@@ -2915,27 +2922,22 @@ async function relayWebHandler(handler, req, res) {
   }
   res.end();
 }
-app.options("/chat", (_req, res) => res.status(204).end());
 app.post("/chat", (req, res) => void relayWebHandler(handleChat, req, res).catch((e) => {
   console.error("chat route error:", e);
   res.status(500).json({ error: e instanceof Error ? e.message : "Server error" });
 }));
-app.options("/transcribe", (_req, res) => res.status(204).end());
 app.post("/transcribe", (req, res) => void relayWebHandler(handleTranscribe, req, res).catch((e) => {
   console.error("transcribe route error:", e);
   res.status(500).json({ error: e instanceof Error ? e.message : "Server error" });
 }));
-app.options("/log-turn", (_req, res) => res.status(204).end());
 app.post("/log-turn", (req, res) => void handleLogTurn(req, res).catch((e) => {
   console.error("log-turn error:", e);
   res.status(500).json({ error: e instanceof Error ? e.message : "Server error" });
 }));
-app.options("/tts", (_req, res) => res.status(204).end());
 app.post("/tts", (req, res) => void handleTts(req, res).catch((e) => {
   console.error("tts error:", e);
   res.status(500).json({ error: e instanceof Error ? e.message : "Server error" });
 }));
-app.options("/youtube-search", (_req, res) => res.status(204).end());
 app.post("/youtube-search", (req, res) => void handleYoutubeSearch(req, res).catch((e) => {
   console.error("youtube-search error:", e);
   res.status(500).json({ error: e instanceof Error ? e.message : "Server error" });

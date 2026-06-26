@@ -7,29 +7,37 @@ import { handleTts } from "./routes/tts.mts";
 import { handleYoutubeSearch } from "./routes/youtube-search.mts";
 
 const app = express();
-app.use(express.json({ limit: "20mb" }));
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, content-type, apikey, x-client-info",
-  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-};
+function applyCors(req: Request, res: Response): void {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "authorization, content-type, apikey, x-client-info, x-requested-with",
+  );
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.setHeader("Access-Control-Max-Age", "86400");
+  if (req.headers.origin) {
+    res.setHeader("Vary", "Origin");
+  }
+}
 
-app.use((_req, res, next) => {
-  res.set(corsHeaders);
+// Handle preflight before body parsing — Catalyst gateway also requires domain whitelisting (see docs/CATALYST_DEPLOY.md).
+app.use((req, res, next) => {
+  applyCors(req, res);
+  if (req.method === "OPTIONS") {
+    res.status(204).end();
+    return;
+  }
   next();
 });
+
+app.use(express.json({ limit: "20mb" }));
 
 async function relayWebHandler(
   handler: (req: Request) => Promise<Response>,
   req: Request,
   res: Response,
 ): Promise<void> {
-  if (req.method === "OPTIONS") {
-    res.status(204).end();
-    return;
-  }
-
   const url = `${req.protocol}://${req.get("host") || "localhost"}${req.originalUrl}`;
   const init: RequestInit = {
     method: req.method,
@@ -60,31 +68,26 @@ async function relayWebHandler(
   res.end();
 }
 
-app.options("/chat", (_req, res) => res.status(204).end());
 app.post("/chat", (req, res) => void relayWebHandler(handleChat, req, res).catch((e) => {
   console.error("chat route error:", e);
   res.status(500).json({ error: e instanceof Error ? e.message : "Server error" });
 }));
 
-app.options("/transcribe", (_req, res) => res.status(204).end());
 app.post("/transcribe", (req, res) => void relayWebHandler(handleTranscribe, req, res).catch((e) => {
   console.error("transcribe route error:", e);
   res.status(500).json({ error: e instanceof Error ? e.message : "Server error" });
 }));
 
-app.options("/log-turn", (_req, res) => res.status(204).end());
 app.post("/log-turn", (req, res) => void handleLogTurn(req, res).catch((e) => {
   console.error("log-turn error:", e);
   res.status(500).json({ error: e instanceof Error ? e.message : "Server error" });
 }));
 
-app.options("/tts", (_req, res) => res.status(204).end());
 app.post("/tts", (req, res) => void handleTts(req, res).catch((e) => {
   console.error("tts error:", e);
   res.status(500).json({ error: e instanceof Error ? e.message : "Server error" });
 }));
 
-app.options("/youtube-search", (_req, res) => res.status(204).end());
 app.post("/youtube-search", (req, res) => void handleYoutubeSearch(req, res).catch((e) => {
   console.error("youtube-search error:", e);
   res.status(500).json({ error: e instanceof Error ? e.message : "Server error" });

@@ -27,6 +27,21 @@ The React app requires **`VITE_CATALYST_API_URL`** — all API traffic goes to C
 2. [Sarvam API key](https://dashboard.sarvam.ai/)
 3. Catalyst CLI: `npm install -g zcatalyst-cli`
 
+## 0. Enable CORS for Slate (required)
+
+Slate (`https://dairy-mitr-znhzndph.onslate.in`) and your Catalyst function URL are **different origins**. Catalyst blocks browser requests until you whitelist the Slate domain.
+
+1. [Catalyst Console](https://console.catalyst.zoho.com) → your project (**Project-Rainfall**)
+2. **Cloud Scale** → **Authentication** → **Whitelisting**
+   - If Whitelisting is locked, enable any auth type first (e.g. Hosted Authentication) — you do not need to use it in the app.
+3. **Authorized Domains** → **Add Domain**
+4. Domain: `dairy-mitr-znhzndph.onslate.in` (hostname only, no `https://`)
+5. Enable **CORS** → **Configure**
+
+For local Vite dev against the **cloud** API (not the proxy), also add `localhost`.
+
+Without this step, the browser shows: *No 'Access-Control-Allow-Origin' header* on `/transcribe`, `/tts`, etc.
+
 ## 1. Build the API bundle
 
 ```bash
