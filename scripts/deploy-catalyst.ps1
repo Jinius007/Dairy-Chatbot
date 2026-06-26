@@ -1,10 +1,19 @@
-# Deploy Catalyst API + configure Slate (run in YOUR terminal — needs Zoho login)
+# Deploy Catalyst pashumitra_api — run in YOUR terminal (needs interactive Zoho login)
 $ErrorActionPreference = "Stop"
 $Root = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
 Set-Location $Root
 
-Write-Host "Building API bundle..." -ForegroundColor Cyan
+Write-Host "`n=== Pashu Mitra Catalyst deploy ===" -ForegroundColor Cyan
+
+# 1. Build bundle
+Write-Host "`n[1/5] Building API bundle..." -ForegroundColor Cyan
 npm run build:catalyst-api
+
+# 2. Function dependencies (express + zcatalyst-sdk-node)
+Write-Host "`n[2/5] Installing function dependencies..." -ForegroundColor Cyan
+Push-Location (Join-Path $Root "catalyst\functions\pashumitra_api")
+npm install
+Pop-Location
 
 Set-Location (Join-Path $Root "catalyst")
 
@@ -13,32 +22,52 @@ if (-not (Test-Path "catalyst.json") -or (Get-Content "catalyst.json" -Raw).Trim
   exit 1
 }
 
-if (-not (Test-Path ".catalystrc")) {
-  Write-Host "`nFirst time: catalyst login && catalyst init" -ForegroundColor Yellow
+# 3. Login check
+Write-Host "`n[3/5] Checking Catalyst login..." -ForegroundColor Cyan
+$whoami = catalyst whoami 2>&1 | Out-String
+if ($whoami -match "Not logged in") {
+  Write-Host "Not logged in. Opening browser for Zoho login..." -ForegroundColor Yellow
   catalyst login
+  $whoami = catalyst whoami 2>&1 | Out-String
+  if ($whoami -match "Not logged in") {
+    Write-Host "ERROR: catalyst login failed. Run: cd catalyst && catalyst login" -ForegroundColor Red
+    exit 1
+  }
+}
+Write-Host $whoami.Trim()
+
+if (-not (Test-Path ".catalystrc")) {
+  Write-Host "`nNo .catalystrc — linking project (pick Project-Rainfall, Development):" -ForegroundColor Yellow
   catalyst init
 }
 
-Write-Host "`nDeploying pashumitra_api..." -ForegroundColor Cyan
+# 4. Deploy
+Write-Host "`n[4/5] Deploying pashumitra_api..." -ForegroundColor Cyan
+Write-Host "If this is the first deploy, create the function in Console first:" -ForegroundColor Yellow
+Write-Host "  Serverless -> Functions -> Create -> Advanced I/O -> Node 20 -> name: pashumitra_api" -ForegroundColor Yellow
 catalyst deploy --only functions
+if ($LASTEXITCODE -ne 0) {
+  Write-Host "`nDeploy failed. See docs/CATALYST_DEPLOY.md section 'First-time deploy checklist'." -ForegroundColor Red
+  exit $LASTEXITCODE
+}
 
-Write-Host "`nVerifying API..." -ForegroundColor Cyan
+# 5. Verify
+Write-Host "`n[5/5] Verifying API..." -ForegroundColor Cyan
 Set-Location $Root
 npm run verify:catalyst-api
 
 Write-Host @"
 
-NEXT STEPS:
-1. Catalyst Console -> Functions -> pashumitra_api -> Environment:
-   SARVAM_API_KEY=<your key>
-   SARVAM_CHAT_MODEL=sarvam-30b
-   SARVAM_STT_MODEL=saaras:v3
+If verify still shows 404:
+  A) Function missing in Console -> create Advanced I/O function named pashumitra_api, redeploy
+  B) API Gateway enabled -> Cloud Scale -> API Gateway -> disable OR add API rule for pashumitra_api
+  C) Wrong URL -> copy URL from deploy output or Console -> Functions -> pashumitra_api
 
-2. Copy function URL from deploy output (ends with /server/pashumitra_api)
+If verify shows no CORS header:
+  Cloud Scale -> Authentication -> Whitelisting -> Add Domain (CORS ON):
+    - dairy-mitr-znhzndph.onslate.in
+    - project-rainfall-60075686570.development.catalystserverless.com
 
-3. Catalyst Console -> Slate -> Environment:
-   VITE_CATALYST_API_URL=<function URL from step 2>
-
-4. Redeploy Slate -> https://dairy-mitr-znhzndph.onslate.in
+Then set SARVAM_API_KEY on the function and VITE_CATALYST_API_URL on Slate.
 
 "@ -ForegroundColor Green

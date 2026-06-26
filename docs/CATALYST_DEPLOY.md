@@ -55,6 +55,44 @@ curl -i https://project-rainfall-60075686570.development.catalystserverless.com/
 
 Expected: `200` with JSON `{"ok":true,"service":"pashumitra_api",...}` — not `404 The domain is not found`.
 
+## First-time deploy checklist
+
+Run these **in order** in your terminal (login is interactive — cannot be done from CI):
+
+```powershell
+# 1. Log in to Zoho (browser opens)
+cd catalyst
+catalyst login
+catalyst whoami          # must NOT say "Not logged in"
+
+# 2. Link project (first time only — pick Project-Rainfall, Development)
+catalyst init
+
+# 3. Create function in Console if it does not exist yet
+#    Catalyst Console -> Serverless -> Functions -> Create Function
+#    Type: Advanced I/O | Stack: Node 20 | Name: pashumitra_api
+
+# 4. Build + deploy from repo root
+cd ..
+npm run deploy:catalyst
+
+# 5. Verify (must pass before Slate will work)
+npm run verify:catalyst-api
+```
+
+### If verify still returns 404
+
+| Cause | Fix |
+|-------|-----|
+| Function never created in Console | Create **Advanced I/O** function named exactly `pashumitra_api` |
+| **API Gateway** enabled | Cloud Scale → **API Gateway** → disable it **or** create an API rule targeting `pashumitra_api` ([known 404 cause](https://stackoverflow.com/questions/78292630)) |
+| Wrong function URL | Copy URL from deploy output or Console → Functions → pashumitra_api |
+| Not logged in / wrong project | `catalyst whoami` and `.catalystrc` must show **Project-Rainfall** |
+
+### If verify returns 404 fixed but CORS still fails
+
+Whitelisting is separate from deploy. Both domains need **CORS ON** under Authentication → Whitelisting (see step 0 above).
+
 ## 1. Build the API bundle
 
 ```bash
