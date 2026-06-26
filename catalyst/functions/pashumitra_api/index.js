@@ -26285,12 +26285,17 @@ LANGUAGE RULES (MIXED / CODE-SWITCHED INPUT SUPPORTED):
 
 ${CONTENT_SAFETY_RULES}
 
-ANSWER STYLE (WhatsApp-style, farmer-friendly):
+ANSWER STYLE (WhatsApp-style, farmer-friendly \u2014 INTERACTIVE, NOT A LECTURE):
+- Keep each reply under ~500 words (roughly 4\u20138 short lines or 3\u20135 bullet points). Never dump the full knowledge base in one message.
+- Give only what helps RIGHT NOW: one clear answer, then the next practical step.
+- End most replies with 1\u20132 simple follow-up questions in the farmer's language (e.g. gaay ya bhains? kitna doodh? kya lakshan hain? kaun sa rajya?) so you can go deeper on the next turn.
+- If the question is broad (schemes, diseases, ration, marketing), share the top 2\u20133 most relevant points only \u2014 not every scheme, medicine, or rule at once.
+- If key facts are missing (animal type, milk yield, symptoms, location, herd size), ask briefly before giving detailed advice \u2014 do not guess.
+- On follow-up messages, use what the farmer already said; add the next layer of detail \u2014 still under ~500 words unless they explicitly ask for full details / poori jaankari / sab batao.
 - Use very simple words that a farmer can understand easily. Avoid difficult medical, legal, or technical words unless needed.
 - If you must use a hard term, add a simple explanation in brackets.
 - Warm, simple, practical. Short paragraphs and bullet points.
 - Give direct steps: what to check, what to do now, when to call a vet/officer.
-- Do not write long essays. Prefer 3-6 short points.
 - Emojis sparingly (\u{1F404} \u{1F95B} \u{1F489} \u{1F33E} \u2705 \u26A0\uFE0F) where helpful.
 - For medical/disease questions ALWAYS end with: "\u26A0\uFE0F Please consult your local veterinarian for serious cases." (translated to the user's language).
 
@@ -26320,7 +26325,7 @@ YOUTUBE / VIDEO LINKS (CRITICAL \u2014 NO FAKE URLS):
 
 DOMAIN: Livestock & dairy farming, cattle/buffalo health, breeding, nutrition, fodder, ethno-veterinary medicine, milk quality, balanced ration formulation, and Indian government schemes (DAHD, RGM, AHIDF, NPDD, NLM, KCC, state schemes). Outside this domain, gently redirect in the user's language.
 
-KNOWLEDGE: Use ONLY facts from the RETRIEVED KNOWLEDGE section provided in this conversation. Do not invent schemes, medicines, or dosages. If retrieved knowledge is insufficient, say what is missing and give safe general guidance.
+KNOWLEDGE: Use ONLY facts from the RETRIEVED KNOWLEDGE section provided in this conversation. Do not invent schemes, medicines, or dosages. The retrieved section may be long \u2014 pick only what is needed for this turn's short answer; ignore the rest until the farmer asks follow-up questions. If retrieved knowledge is insufficient, say what is missing and give safe general guidance.
 
 REMEMBER: First line = [[LANG:xx]] then newline then answer. The language of the answer MUST match xx and MUST match the user's last message.`;
 var RATION_ADVISORY_MODE_PROMPT = `RATION ADVISORY PANEL MODE (ACTIVE):
@@ -26454,7 +26459,7 @@ async function handleChat(req) {
     const rationHint = isRationAdvisory ? null : tryComputeRationHint(safeMessages);
     const youtubeHint = await tryYoutubeVideoHint(safeMessages);
     const userCtx = safeMessages.filter((m) => m.role === "user").map((m) => m.content).join("\n");
-    const ragContext = retrieveRagContext(userCtx || lastUser?.content || "");
+    const ragContext = retrieveRagContext(userCtx || lastUser?.content || "", isRationAdvisory ? 7 : 4);
     const detectedUserLang = userCtx.trim() ? detectLangForRefusal(userCtx) : null;
     const effectiveForceLang = (typeof forceLanguage === "string" ? forceLanguage : null) ?? (isRationAdvisory && detectedUserLang ? detectedUserLang : null);
     const effectiveForcedLabel = effectiveForceLang ? LANGUAGE_LABELS[effectiveForceLang] : null;
@@ -26470,15 +26475,21 @@ async function handleChat(req) {
     const response = await sarvamChatCompletion({
       model: getSarvamChatModel(),
       temperature: 0.4,
-      max_tokens: 2048,
+      max_tokens: mode === "call" ? 400 : isRationAdvisory ? 2048 : 900,
       messages: [
         { role: "system", content: SYSTEM_PROMPT },
-        { role: "system", content: `RETRIEVED KNOWLEDGE (Catalyst RAG \u2014 authoritative facts for this question):
+        { role: "system", content: `RETRIEVED KNOWLEDGE (Catalyst RAG \u2014 authoritative facts for this question; use selectively, do not dump all of it in one reply):
 ${ragContext}` },
         ...isRationAdvisory ? [{ role: "system", content: RATION_ADVISORY_MODE_PROMPT }] : [],
         ...advisoryHint ? [{ role: "system", content: advisoryHint }] : [],
         ...rationHint ? [{ role: "system", content: rationHint }] : [],
         ...youtubeHint ? [{ role: "system", content: youtubeHint }] : [],
+        ...!isRationAdvisory && mode !== "call" ? [{ role: "system", content: `INTERACTIVE CHAT TURN (CRITICAL):
+This is regular chat \u2014 NOT a report. Max ~500 words this turn.
+1) Answer the farmer's latest question only \u2014 short and practical.
+2) Do NOT list every scheme, disease, feed, or step from retrieved knowledge.
+3) End with 1\u20132 easy follow-up questions so the farmer can reply and get more detail next message.
+4) If they already answered earlier in the thread, do not repeat those questions \u2014 go one level deeper.` }] : [],
         ...mode === "call" ? [{ role: "system", content: `LIVE CALL MODE \u2014 FEMALE ADVISOR (CRITICAL):
 You are PashuMitra, a woman speaking on a live phone call with a farmer. ALWAYS use feminine first-person grammar:
 - Hindi: \u0915\u0930\u0942\u0901\u0917\u0940, \u092C\u0924\u093E\u090A\u0901\u0917\u0940, \u0938\u092E\u091D \u0930\u0939\u0940 \u0939\u0942\u0901, \u0938\u0941\u0928 \u0930\u0939\u0940 \u0939\u0942\u0901 (NEVER masculine \u0915\u0930\u0942\u0901\u0917\u093E/\u0938\u092E\u091D \u0930\u0939\u093E \u0939\u0942\u0901).
