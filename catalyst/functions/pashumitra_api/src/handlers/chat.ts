@@ -116,6 +116,43 @@ WHEN "COMPUTED RESULTS" in system message — present in this ORDER:
 2. PER ANIMAL SECOND: each animal's daily share (breed, doodh/sukhi/garbh, milk litres, kg of each feed).
 Use exact numbers from COMPUTED RESULTS. Simple words only.`;
 
+const CALL_SYSTEM_PROMPT = `You are PashuMitra, a warm female dairy advisor on a live phone call with an Indian farmer.
+
+OUTPUT FORMAT (STRICT):
+First line MUST be exactly [[LANG:xx]] then one newline then your spoken answer.
+xx = hi, bn, ta, te, mr, gu, kn, ml, pa, or, as, ur, or en — matching the language you speak in.
+
+VOICE CALL RULES:
+- Reply in the farmer's language. Use feminine first-person (Hindi: करूँगी, बताऊँगी, समझ रही हूँ).
+- 2–4 short sentences only — easy to speak aloud. No headings, no bullet lists, no markdown.
+- Simple village words. Give the next practical step first.
+- Use ONLY facts from RETRIEVED KNOWLEDGE below. If unsure, say what to check or ask the vet.
+- For disease topics, end with a brief vet-consult reminder in the farmer's language.
+
+${CONTENT_SAFETY_RULES}`;
+
+function extractSarvamChatText(data: unknown): string {
+  if (!data || typeof data !== "object") return "";
+  const d = data as Record<string, unknown>;
+  if (typeof d.message === "string" && d.message.trim()) return d.message;
+  if (typeof d.response === "string" && d.response.trim()) return d.response;
+  if (typeof d.content === "string" && d.content.trim()) return d.content;
+  const fromChoice = (d.choices as { message?: { content?: string } }[] | undefined)?.[0]?.message?.content;
+  if (typeof fromChoice === "string" && fromChoice.trim()) return fromChoice;
+  if (typeof d.text === "string") return d.text;
+  if (typeof d.output === "string") return d.output;
+  return "";
+}
+
+function callModeFallbackAnswer(lang: string | null): string {
+  const known = lang && /^(hi|bn|ta|te|mr|gu|kn|ml|pa|or|as|ur|en)$/.test(lang) ? lang : "hi";
+  const fallbacks: Record<string, string> = {
+    hi: "[[LANG:hi]]\nमाफ़ कीजिए, अभी जवाब नहीं बन पाया। कृपया अपना सवाल दोबारा बोलिए।",
+    en: "[[LANG:en]]\nSorry, I could not form an answer just now. Please ask your question again.",
+  };
+  return fallbacks[known] || fallbacks.hi;
+}
+
 const LANGUAGE_LABELS: Record<string, string> = {
   hi: "Hindi / हिन्दी", bn: "Bengali / বাংলা", ta: "Tamil / தமிழ்", te: "Telugu / తెలుగు",
   mr: "Marathi / मराठी", gu: "Gujarati / ગુજરાતી", kn: "Kannada / ಕನ್ನಡ", ml: "Malayalam / മലയാളം",
@@ -225,11 +262,12 @@ export async function handleChat(req: Request): Promise<Response> {
 
     const isRationAdvisory = mode === "ration_advisory";
     const advisoryHint = isRationAdvisory ? tryRationAdvisoryHint(safeMessages) : null;
-    const rationHint = isRationAdvisory ? null : tryComputeRationHint(safeMessages);
-    const youtubeHint = await tryYoutubeVideoHint(safeMessages);
+    const rationHint = isRationAdvisory || mode === "call" ? null : tryComputeRationHint(safeMessages);
+    const youtubeHint = mode === "call" ? null : await tryYoutubeVideoHint(safeMessages);
 
     const userCtx = safeMessages.filter((m: { role: string }) => m.role === "user").map((m: { content: string }) => m.content).join("\n");
-    const ragContext = retrieveRagContext(userCtx || lastUser?.content || "", isRationAdvisory ? 7 : 4);
+    const ragChunks = mode === "call" ? 2 : isRationAdvisory ? 7 : 4;
+    const ragContext = retrieveRagContext(userCtx || lastUser?.content || "", ragChunks);
     const detectedUserLang = userCtx.trim() ? detectLangForRefusal(userCtx) : null;
     const effectiveForceLang = (typeof forceLanguage === "string" ? forceLanguage : null)
       ?? (isRationAdvisory && detectedUserLang ? detectedUserLang : null);
@@ -245,12 +283,14 @@ export async function handleChat(req: Request): Promise<Response> {
       }
     }
 
+    const maxTokens = mode === "call" ? 420 : isRationAdvisory ? 2048 : 900;
+
     const response = await sarvamChatCompletion({
       model: getSarvamChatModel(),
       temperature: 0.4,
-      max_tokens: mode === "call" ? 400 : isRationAdvisory ? 2048 : 900,
+      max_tokens: maxTokens,
       messages: [
-        { role: "system", content: SYSTEM_PROMPT },
+        { role: "system", content: mode === "call" ? CALL_SYSTEM_PROMPT : SYSTEM_PROMPT },
         { role: "system", content: `RETRIEVED KNOWLEDGE (Catalyst RAG — authoritative facts for this question; use selectively, do not dump all of it in one reply):\n${ragContext}` },
         ...(isRationAdvisory ? [{ role: "system", content: RATION_ADVISORY_MODE_PROMPT }] : []),
         ...(advisoryHint ? [{ role: "system", content: advisoryHint }] : []),
@@ -262,11 +302,7 @@ This is regular chat — NOT a report. Max ~500 words this turn.
 2) Do NOT list every scheme, disease, feed, or step from retrieved knowledge.
 3) End with 1–2 easy follow-up questions so the farmer can reply and get more detail next message.
 4) If they already answered earlier in the thread, do not repeat those questions — go one level deeper.` }] : []),
-        ...(mode === "call" ? [{ role: "system", content: `LIVE CALL MODE — FEMALE ADVISOR (CRITICAL):
-You are PashuMitra, a woman speaking on a live phone call with a farmer. ALWAYS use feminine first-person grammar:
-- Hindi: करूँगी, बताऊँगी, समझ रही हूँ, सुन रही हूँ (NEVER masculine करूँगा/समझ रहा हूँ).
-- Marathi/Gujarati/Bengali/Punjabi/etc.: use feminine verb forms for "I".
-Answer like a warm, patient human helper. Very simple village/farmer words. 2–4 short speakable sentences only. No headings, no long bullet lists. Give the next practical step first.` }] : []),
+        ...(mode === "call" ? [{ role: "system", content: `LIVE CALL — speak naturally in short sentences with clear pauses at commas and full stops. Feminine voice.` }] : []),
         ...(isRationAdvisory && isHerdGathering(advisoryHint) ? [{ role: "system", content: "RATION DATA COLLECTION MODE: The main prompt's RATION BALANCING rules are DISABLED this turn. Do NOT give generic ration advice, kg amounts, or feed plans. ONLY ask questions or read back summary for confirmation." }] : []),
         ...(effectiveForceLang && effectiveForcedLabel ? [{ role: "system", content: `CRITICAL LANGUAGE LOCK: The next answer MUST be written only in ${effectiveForcedLabel}. The first line MUST be [[LANG:${effectiveForceLang}]]. Do not use Hindi unless the locked language is Hindi. Do not mix scripts.` }] : []),
         ...safeMessages,
@@ -303,7 +339,12 @@ Answer like a warm, patient human helper. Very simple village/farmer words. 2–
     }
 
     const data = await response.json();
-    const text = filterAbusiveLanguage(data.choices?.[0]?.message?.content || "");
+    let text = filterAbusiveLanguage(extractSarvamChatText(data));
+    if (!text.trim() && mode === "call") {
+      text = callModeFallbackAnswer(
+        typeof forceLanguage === "string" ? forceLanguage : detectedUserLang,
+      );
+    }
     return new Response(JSON.stringify({ text }), {
       headers: jsonHeaders,
     });

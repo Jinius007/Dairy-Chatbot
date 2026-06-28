@@ -1,4 +1,10 @@
-import { prepareTextForSpeech, resolveTtsLanguage, splitForTts, TTS_LANG } from "@/lib/languages";
+import {
+  prepareTextForSpeech,
+  resolveTtsLanguage,
+  splitForTts,
+  ttsPauseMsAfterChunk,
+  TTS_LANG,
+} from "@/lib/languages";
 import { filterAbusiveLanguage } from "@/lib/content-safety";
 import { getTtsUrl } from "@/lib/backend-config";
 
@@ -17,6 +23,8 @@ let callGain: GainNode | null = null;
 let callRefAnalyser: AnalyserNode | null = null;
 let callSources: AudioBufferSourceNode[] = [];
 let callPlaying = false;
+/** True for entire multi-chunk utterance — prevents listen starting between chunks. */
+let callSpeechBusy = false;
 
 const SILENT_WAV =
   "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==";
@@ -226,16 +234,22 @@ function playBlob(blob: Blob, token: number): Promise<boolean> {
   return attempt(true);
 }
 
-async function fetchTtsBlob(text: string, lang: string, token: number): Promise<Blob | null> {
+async function fetchTtsBlob(
+  text: string,
+  lang: string,
+  token: number,
+  callMode = false,
+  cancelPrevious = true,
+): Promise<Blob | null> {
   if (token !== activeToken) return null;
-  ttsAbort?.abort();
+  if (cancelPrevious) ttsAbort?.abort();
   const ctrl = new AbortController();
-  ttsAbort = ctrl;
+  if (cancelPrevious) ttsAbort = ctrl;
   try {
     const resp = await fetch(ttsEndpoint(), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text, lang }),
+      body: JSON.stringify({ text, lang, callMode }),
       signal: ctrl.signal,
     });
     if (!resp.ok || token !== activeToken) return null;
@@ -246,8 +260,22 @@ async function fetchTtsBlob(text: string, lang: string, token: number): Promise<
     if ((err as Error).name === "AbortError") return null;
     return null;
   } finally {
-    if (ttsAbort === ctrl) ttsAbort = null;
+    if (cancelPrevious && ttsAbort === ctrl) ttsAbort = null;
   }
+}
+
+async function fetchAllTtsBlobs(
+  chunks: string[],
+  lang: string,
+  token: number,
+  callMode = false,
+): Promise<Blob[]> {
+  if (token !== activeToken || chunks.length === 0) return [];
+  const blobs = await Promise.all(
+    chunks.map((chunk) => fetchTtsBlob(chunk, lang, token, callMode, false)),
+  );
+  if (token !== activeToken) return [];
+  return blobs.filter((b): b is Blob => !!b && b.size > 0);
 }
 
 async function speakViaBhashini(
@@ -260,21 +288,18 @@ async function speakViaBhashini(
   if (!spoken || token !== activeToken) return false;
 
   const code = forceLang && lang ? lang : resolveTtsLanguage(spoken, lang);
-  const chunks = splitForTts(spoken);
+  const chunks = splitForTts(spoken, 180);
   if (chunks.length === 0) return false;
 
   await unlockAudioPlayback();
+  const blobs = await fetchAllTtsBlobs(chunks, code, token, false);
+  if (blobs.length === 0 || token !== activeToken) return false;
 
-  for (let i = 0; i < chunks.length; i++) {
+  for (let i = 0; i < blobs.length; i++) {
     if (token !== activeToken) return false;
-    const blob = await fetchTtsBlob(chunks[i], code, token);
-    if (!blob || token !== activeToken) return false;
-    const played = await playBlob(blob, token);
+    const played = await playBlob(blobs[i], token);
     if (!played || token !== activeToken) return false;
-    if (i < chunks.length - 1) {
-      await delay(80);
-      if (token !== activeToken) return false;
-    }
+    if (i < blobs.length - 1) await delay(ttsPauseMsAfterChunk(chunks[i], false));
   }
 
   return token === activeToken;
@@ -290,36 +315,40 @@ async function speakViaBhashiniCall(
   if (!spoken || token !== activeToken) return false;
 
   const code = forceLang && lang ? lang : resolveTtsLanguage(spoken, lang);
-  const chunks = splitForTts(spoken);
+  const chunks = splitForTts(spoken, 180);
   if (chunks.length === 0) return false;
 
-  await unlockAudioPlayback();
-  await ensureCallAudio();
+  callSpeechBusy = true;
+  try {
+    await unlockAudioPlayback();
+    const blobs = await fetchAllTtsBlobs(chunks, code, token, true);
+    if (blobs.length === 0 || token !== activeToken) return false;
 
-  for (let i = 0; i < chunks.length; i++) {
-    if (token !== activeToken) return false;
-    const blob = await fetchTtsBlob(chunks[i], code, token);
-    if (!blob || token !== activeToken) return false;
-    const arrayBuf = await blob.arrayBuffer();
-    if (token !== activeToken) return false;
     const ctx = await ensureCallAudio();
     if (!ctx || token !== activeToken) return false;
-    let audioBuf: AudioBuffer;
-    try {
-      audioBuf = await ctx.decodeAudioData(arrayBuf.slice(0));
-    } catch {
-      return false;
-    }
-    if (token !== activeToken) return false;
-    const played = await playCallBuffer(audioBuf, token);
-    if (!played || token !== activeToken) return false;
-    if (i < chunks.length - 1) {
-      await delay(80);
-      if (token !== activeToken) return false;
-    }
-  }
 
-  return token === activeToken;
+    const buffers: AudioBuffer[] = [];
+    for (const blob of blobs) {
+      if (token !== activeToken) return false;
+      try {
+        const arrayBuf = await blob.arrayBuffer();
+        buffers.push(await ctx.decodeAudioData(arrayBuf.slice(0)));
+      } catch {
+        return false;
+      }
+    }
+
+    for (let i = 0; i < buffers.length; i++) {
+      if (token !== activeToken) return false;
+      const played = await playCallBuffer(buffers[i], token);
+      if (!played || token !== activeToken) return false;
+      if (i < buffers.length - 1) await delay(ttsPauseMsAfterChunk(chunks[i], true));
+    }
+
+    return token === activeToken;
+  } finally {
+    if (token === activeToken) callSpeechBusy = false;
+  }
 }
 
 function pickFemaleVoice(locale: string): SpeechSynthesisVoice | null {
@@ -407,6 +436,7 @@ export function stopSpeech(): void {
   activeToken += 1;
   ttsAbort?.abort();
   ttsAbort = null;
+  callSpeechBusy = false;
   flushCallPlayback();
   cleanupAudio();
   if (typeof window !== "undefined" && "speechSynthesis" in window) {
@@ -470,7 +500,15 @@ export function waitForSpeechIdle(): Promise<void> {
 }
 
 export function isCallPlaybackActive(): boolean {
-  return callPlaying || callSources.length > 0;
+  return callSpeechBusy || callPlaying || callSources.length > 0;
+}
+
+export async function waitUntilPlaybackFullyIdle(maxMs = 5000): Promise<void> {
+  const started = Date.now();
+  while (isCallPlaybackActive() && Date.now() - started < maxMs) {
+    await delay(40);
+  }
+  await delay(500);
 }
 
 function analyserRms(analyser: AnalyserNode): number {

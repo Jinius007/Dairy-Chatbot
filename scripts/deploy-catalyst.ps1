@@ -1,4 +1,4 @@
-# Deploy Catalyst pashumitra_api — run in YOUR terminal (needs interactive Zoho login)
+# Deploy Catalyst pashumitra_api - run in YOUR terminal (needs interactive Zoho login)
 $ErrorActionPreference = "Stop"
 $Root = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
 Set-Location $Root
@@ -20,6 +20,12 @@ Pop-Location
 
 Set-Location (Join-Path $Root "catalyst")
 
+function Invoke-CatalystCli {
+  param([Parameter(ValueFromRemainingArguments = $true)][string[]]$CliArgs)
+  # CLI waits on stdin when not a TTY; pipe empty input (whoami can take 60-90s).
+  '' | & catalyst @CliArgs 2>&1
+}
+
 if (-not (Test-Path "catalyst.json") -or (Get-Content "catalyst.json" -Raw).Trim() -eq "{}") {
   Write-Host "ERROR: catalyst/catalyst.json must list pashumitra_api under functions.targets" -ForegroundColor Red
   exit 1
@@ -28,22 +34,30 @@ if (-not (Test-Path "catalyst.json") -or (Get-Content "catalyst.json" -Raw).Trim
 # 3. Login check
 Write-Host ""
 Write-Host "[3/5] Checking Catalyst login..." -ForegroundColor Cyan
-$whoami = catalyst whoami 2>&1 | Out-String
+$whoamiJob = Start-Job { param($dir) Set-Location $dir; '' | & catalyst whoami 2>&1 | Out-String } -ArgumentList (Get-Location).Path
+$done = Wait-Job $whoamiJob -Timeout 90
+if (-not $done) {
+  Stop-Job $whoamiJob -Force | Out-Null
+  Remove-Job $whoamiJob -Force | Out-Null
+  Write-Host "ERROR: catalyst whoami timed out (90s)." -ForegroundColor Red
+  Write-Host "Run in Windows Terminal: cd catalyst; catalyst login; catalyst whoami" -ForegroundColor Yellow
+  exit 1
+}
+$whoami = (Receive-Job $whoamiJob).Trim()
+Remove-Job $whoamiJob -Force | Out-Null
 if ($whoami -match "Not logged in") {
-  Write-Host "Not logged in. Opening browser for Zoho login..." -ForegroundColor Yellow
-  catalyst login
-  $whoami = catalyst whoami 2>&1 | Out-String
-  if ($whoami -match "Not logged in") {
-    Write-Host "ERROR: catalyst login failed. Run: cd catalyst; catalyst login" -ForegroundColor Red
-    exit 1
-  }
+  Write-Host "Not logged in. Run this in Windows Terminal (browser login required):" -ForegroundColor Yellow
+  Write-Host "  cd catalyst" -ForegroundColor Yellow
+  Write-Host "  catalyst login" -ForegroundColor Yellow
+  Write-Host "India DC: sign in at accounts.zoho.in if prompted." -ForegroundColor Yellow
+  exit 1
 }
 Write-Host $whoami.Trim()
 
 if (-not (Test-Path ".catalystrc")) {
   Write-Host ""
   Write-Host "No .catalystrc - linking project (pick Project-Rainfall, Development):" -ForegroundColor Yellow
-  catalyst init
+  Invoke-CatalystCli init
 }
 
 # 4. Deploy
@@ -51,7 +65,7 @@ Write-Host ""
 Write-Host "[4/5] Deploying pashumitra_api..." -ForegroundColor Cyan
 Write-Host "If this is the first deploy, create the function in Console first:" -ForegroundColor Yellow
 Write-Host "  Serverless -> Functions -> Create -> Advanced I/O -> Node 20 -> name: pashumitra_api" -ForegroundColor Yellow
-catalyst deploy --only functions
+Invoke-CatalystCli deploy --only functions
 if ($LASTEXITCODE -ne 0) {
   Write-Host ""
   Write-Host "Deploy failed. See docs/CATALYST_DEPLOY.md section 'First-time deploy checklist'." -ForegroundColor Red
@@ -61,10 +75,10 @@ if ($LASTEXITCODE -ne 0) {
 # 4b. If URL returns "The domain is not found", API Gateway is likely blocking direct function URLs
 Write-Host ""
 Write-Host "Checking API Gateway status..." -ForegroundColor Cyan
-$apigStatus = catalyst apig:status 2>&1 | Out-String
+$apigStatus = Invoke-CatalystCli apig:status | Out-String
 if ($apigStatus -match "enabled.*true|Enabled|ENABLED") {
   Write-Host "API Gateway is ENABLED - disabling so /server/pashumitra_api URLs work..." -ForegroundColor Yellow
-  catalyst apig:disable
+  Invoke-CatalystCli apig:disable
   if ($LASTEXITCODE -eq 0) {
     Write-Host "API Gateway disabled. Waiting 5s for propagation..." -ForegroundColor Green
     Start-Sleep -Seconds 5
@@ -93,3 +107,4 @@ Write-Host "Update Slate VITE_CATALYST_API_URL (India DC uses .in not .com):" -F
 Write-Host "  https://project-rainfall-60075686570.development.catalystserverless.in/server/pashumitra_api" -ForegroundColor Green
 Write-Host ""
 Write-Host "Then set SARVAM_API_KEY on the function and VITE_CATALYST_API_URL on Slate." -ForegroundColor Green
+Write-Host "Phone calls: configure Bolna separately (Vobiz steps removed from this deploy script)." -ForegroundColor Green

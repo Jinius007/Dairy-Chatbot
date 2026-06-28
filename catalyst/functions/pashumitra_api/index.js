@@ -1287,8 +1287,8 @@ var require_node = __commonJS({
           }
           break;
         case "FILE":
-          var fs = require("fs");
-          stream2 = new fs.SyncWriteStream(fd2, { autoClose: false });
+          var fs3 = require("fs");
+          stream2 = new fs3.SyncWriteStream(fd2, { autoClose: false });
           stream2._type = "fs";
           break;
         case "PIPE":
@@ -14075,11 +14075,11 @@ var require_mime_types = __commonJS({
       }
       return exts[0];
     }
-    function lookup(path) {
-      if (!path || typeof path !== "string") {
+    function lookup(path2) {
+      if (!path2 || typeof path2 !== "string") {
         return false;
       }
-      var extension2 = extname("x." + path).toLowerCase().substr(1);
+      var extension2 = extname("x." + path2).toLowerCase().substr(1);
       if (!extension2) {
         return false;
       }
@@ -17708,8 +17708,8 @@ var require_node2 = __commonJS({
           }
           break;
         case "FILE":
-          var fs = require("fs");
-          stream2 = new fs.SyncWriteStream(fd2, { autoClose: false });
+          var fs3 = require("fs");
+          stream2 = new fs3.SyncWriteStream(fd2, { autoClose: false });
           stream2._type = "fs";
           break;
         case "PIPE":
@@ -18427,8 +18427,8 @@ var require_node3 = __commonJS({
           }
           break;
         case "FILE":
-          var fs = require("fs");
-          stream2 = new fs.SyncWriteStream(fd2, { autoClose: false });
+          var fs3 = require("fs");
+          stream2 = new fs3.SyncWriteStream(fd2, { autoClose: false });
           stream2._type = "fs";
           break;
         case "PIPE":
@@ -18516,7 +18516,7 @@ var require_path_to_regexp = __commonJS({
   "catalyst/functions/pashumitra_api/node_modules/path-to-regexp/index.js"(exports2, module2) {
     module2.exports = pathToRegexp;
     var MATCHING_GROUP_REGEXP = /\\.|\((?:\?<(.*?)>)?(?!\?)/g;
-    function pathToRegexp(path, keys, options) {
+    function pathToRegexp(path2, keys, options) {
       options = options || {};
       keys = keys || [];
       var strict = options.strict;
@@ -18530,8 +18530,8 @@ var require_path_to_regexp = __commonJS({
       var pos = 0;
       var backtrack = "";
       var m;
-      if (path instanceof RegExp) {
-        while (m = MATCHING_GROUP_REGEXP.exec(path.source)) {
+      if (path2 instanceof RegExp) {
+        while (m = MATCHING_GROUP_REGEXP.exec(path2.source)) {
           if (m[0][0] === "\\") continue;
           keys.push({
             name: m[1] || name++,
@@ -18539,18 +18539,18 @@ var require_path_to_regexp = __commonJS({
             offset: m.index
           });
         }
-        return path;
+        return path2;
       }
-      if (Array.isArray(path)) {
-        path = path.map(function(value) {
+      if (Array.isArray(path2)) {
+        path2 = path2.map(function(value) {
           return pathToRegexp(value, keys, options).source;
         });
-        return new RegExp(path.join("|"), flags);
+        return new RegExp(path2.join("|"), flags);
       }
-      if (typeof path !== "string") {
+      if (typeof path2 !== "string") {
         throw new TypeError("path must be a string, array of strings, or regular expression");
       }
-      path = path.replace(
+      path2 = path2.replace(
         /\\.|(\/)?(\.)?:(\w+)(\(.*?\))?(\*)?(\?)?|[.*]|\/\(/g,
         function(match, slash, format, key, capture, star, optional, offset) {
           if (match[0] === "\\") {
@@ -18567,7 +18567,7 @@ var require_path_to_regexp = __commonJS({
           if (slash || format) {
             backtrack = "";
           } else {
-            backtrack += path.slice(pos, offset);
+            backtrack += path2.slice(pos, offset);
           }
           pos = offset + match.length;
           if (match === "*") {
@@ -18597,7 +18597,7 @@ var require_path_to_regexp = __commonJS({
           return result;
         }
       );
-      while (m = MATCHING_GROUP_REGEXP.exec(path)) {
+      while (m = MATCHING_GROUP_REGEXP.exec(path2)) {
         if (m[0][0] === "\\") continue;
         if (keysOffset + i === keys.length || keys[keysOffset + i].offset > m.index) {
           keys.splice(keysOffset + i, 0, {
@@ -18609,13 +18609,13 @@ var require_path_to_regexp = __commonJS({
         }
         i++;
       }
-      path += strict ? "" : path[path.length - 1] === "/" ? "?" : "/?";
+      path2 += strict ? "" : path2[path2.length - 1] === "/" ? "?" : "/?";
       if (end) {
-        path += "$";
-      } else if (path[path.length - 1] !== "/") {
-        path += lookahead ? "(?=/|$)" : "(?:/|$)";
+        path2 += "$";
+      } else if (path2[path2.length - 1] !== "/") {
+        path2 += lookahead ? "(?=/|$)" : "(?:/|$)";
       }
-      return new RegExp("^" + path, flags);
+      return new RegExp("^" + path2, flags);
     }
   }
 });
@@ -18628,19 +18628,19 @@ var require_layer = __commonJS({
     var debug = require_src3()("express:router:layer");
     var hasOwnProperty = Object.prototype.hasOwnProperty;
     module2.exports = Layer;
-    function Layer(path, options, fn) {
+    function Layer(path2, options, fn) {
       if (!(this instanceof Layer)) {
-        return new Layer(path, options, fn);
+        return new Layer(path2, options, fn);
       }
-      debug("new %o", path);
+      debug("new %o", path2);
       var opts = options || {};
       this.handle = fn;
       this.name = fn.name || "<anonymous>";
       this.params = void 0;
       this.path = void 0;
-      this.regexp = pathRegexp(path, this.keys = [], opts);
-      this.regexp.fast_star = path === "*";
-      this.regexp.fast_slash = path === "/" && opts.end === false;
+      this.regexp = pathRegexp(path2, this.keys = [], opts);
+      this.regexp.fast_star = path2 === "*";
+      this.regexp.fast_slash = path2 === "/" && opts.end === false;
     }
     Layer.prototype.handle_error = function handle_error(error, req, res, next) {
       var fn = this.handle;
@@ -18664,20 +18664,20 @@ var require_layer = __commonJS({
         next(err);
       }
     };
-    Layer.prototype.match = function match(path) {
+    Layer.prototype.match = function match(path2) {
       var match2;
-      if (path != null) {
+      if (path2 != null) {
         if (this.regexp.fast_slash) {
           this.params = {};
           this.path = "";
           return true;
         }
         if (this.regexp.fast_star) {
-          this.params = { "0": decode_param(path) };
-          this.path = path;
+          this.params = { "0": decode_param(path2) };
+          this.path = path2;
           return true;
         }
-        match2 = this.regexp.exec(path);
+        match2 = this.regexp.exec(path2);
       }
       if (!match2) {
         this.params = void 0;
@@ -18770,10 +18770,10 @@ var require_route = __commonJS({
     var slice = Array.prototype.slice;
     var toString = Object.prototype.toString;
     module2.exports = Route;
-    function Route(path) {
-      this.path = path;
+    function Route(path2) {
+      this.path = path2;
       this.stack = [];
-      debug("new %o", path);
+      debug("new %o", path2);
       this.methods = {};
     }
     Route.prototype._handles_method = function _handles_method(method) {
@@ -18985,8 +18985,8 @@ var require_router = __commonJS({
         if (++sync > 100) {
           return setImmediate(next, err);
         }
-        var path = getPathname(req);
-        if (path == null) {
+        var path2 = getPathname(req);
+        if (path2 == null) {
           return done(layerError);
         }
         var layer;
@@ -18994,7 +18994,7 @@ var require_router = __commonJS({
         var route;
         while (match !== true && idx < stack.length) {
           layer = stack[idx++];
-          match = matchLayer(layer, path);
+          match = matchLayer(layer, path2);
           route = layer.route;
           if (typeof match !== "boolean") {
             layerError = layerError || match;
@@ -19032,18 +19032,18 @@ var require_router = __commonJS({
           } else if (route) {
             layer.handle_request(req, res, next);
           } else {
-            trim_prefix(layer, layerError, layerPath, path);
+            trim_prefix(layer, layerError, layerPath, path2);
           }
           sync = 0;
         });
       }
-      function trim_prefix(layer, layerError, layerPath, path) {
+      function trim_prefix(layer, layerError, layerPath, path2) {
         if (layerPath.length !== 0) {
-          if (layerPath !== path.slice(0, layerPath.length)) {
+          if (layerPath !== path2.slice(0, layerPath.length)) {
             next(layerError);
             return;
           }
-          var c = path[layerPath.length];
+          var c = path2[layerPath.length];
           if (c && c !== "/" && c !== ".") return next(layerError);
           debug("trim prefix (%s) from url %s", layerPath, req.url);
           removed = layerPath;
@@ -19121,7 +19121,7 @@ var require_router = __commonJS({
     };
     proto.use = function use(fn) {
       var offset = 0;
-      var path = "/";
+      var path2 = "/";
       if (typeof fn !== "function") {
         var arg = fn;
         while (Array.isArray(arg) && arg.length !== 0) {
@@ -19129,7 +19129,7 @@ var require_router = __commonJS({
         }
         if (typeof arg !== "function") {
           offset = 1;
-          path = fn;
+          path2 = fn;
         }
       }
       var callbacks = flatten(slice.call(arguments, offset));
@@ -19141,8 +19141,8 @@ var require_router = __commonJS({
         if (typeof fn !== "function") {
           throw new TypeError("Router.use() requires a middleware function but got a " + gettype(fn));
         }
-        debug("use %o %s", path, fn.name || "<anonymous>");
-        var layer = new Layer(path, {
+        debug("use %o %s", path2, fn.name || "<anonymous>");
+        var layer = new Layer(path2, {
           sensitive: this.caseSensitive,
           strict: false,
           end: false
@@ -19152,9 +19152,9 @@ var require_router = __commonJS({
       }
       return this;
     };
-    proto.route = function route(path) {
-      var route2 = new Route(path);
-      var layer = new Layer(path, {
+    proto.route = function route(path2) {
+      var route2 = new Route(path2);
+      var layer = new Layer(path2, {
         sensitive: this.caseSensitive,
         strict: this.strict,
         end: true
@@ -19164,8 +19164,8 @@ var require_router = __commonJS({
       return route2;
     };
     methods.concat("all").forEach(function(method) {
-      proto[method] = function(path) {
-        var route = this.route(path);
+      proto[method] = function(path2) {
+        var route = this.route(path2);
         route[method].apply(route, slice.call(arguments, 1));
         return this;
       };
@@ -19201,9 +19201,9 @@ var require_router = __commonJS({
       }
       return toString.call(obj).replace(objectRegExp, "$1");
     }
-    function matchLayer(layer, path) {
+    function matchLayer(layer, path2) {
       try {
-        return layer.match(path);
+        return layer.match(path2);
       } catch (err) {
         return err;
       }
@@ -19321,13 +19321,13 @@ var require_view = __commonJS({
   "catalyst/functions/pashumitra_api/node_modules/express/lib/view.js"(exports2, module2) {
     "use strict";
     var debug = require_src3()("express:view");
-    var path = require("path");
-    var fs = require("fs");
-    var dirname = path.dirname;
-    var basename = path.basename;
-    var extname = path.extname;
-    var join = path.join;
-    var resolve = path.resolve;
+    var path2 = require("path");
+    var fs3 = require("fs");
+    var dirname = path2.dirname;
+    var basename = path2.basename;
+    var extname = path2.extname;
+    var join = path2.join;
+    var resolve = path2.resolve;
     module2.exports = View;
     function View(name, options) {
       var opts = options || {};
@@ -19356,17 +19356,17 @@ var require_view = __commonJS({
       this.path = this.lookup(fileName);
     }
     View.prototype.lookup = function lookup(name) {
-      var path2;
+      var path3;
       var roots = [].concat(this.root);
       debug('lookup "%s"', name);
-      for (var i = 0; i < roots.length && !path2; i++) {
+      for (var i = 0; i < roots.length && !path3; i++) {
         var root = roots[i];
         var loc = resolve(root, name);
         var dir = dirname(loc);
         var file = basename(loc);
-        path2 = this.resolve(dir, file);
+        path3 = this.resolve(dir, file);
       }
-      return path2;
+      return path3;
     };
     View.prototype.render = function render(options, callback) {
       debug('render "%s"', this.path);
@@ -19374,21 +19374,21 @@ var require_view = __commonJS({
     };
     View.prototype.resolve = function resolve2(dir, file) {
       var ext = this.ext;
-      var path2 = join(dir, file);
-      var stat = tryStat(path2);
+      var path3 = join(dir, file);
+      var stat = tryStat(path3);
       if (stat && stat.isFile()) {
-        return path2;
+        return path3;
       }
-      path2 = join(dir, basename(file, ext), "index" + ext);
-      stat = tryStat(path2);
+      path3 = join(dir, basename(file, ext), "index" + ext);
+      stat = tryStat(path3);
       if (stat && stat.isFile()) {
-        return path2;
+        return path3;
       }
     };
-    function tryStat(path2) {
-      debug('stat "%s"', path2);
+    function tryStat(path3) {
+      debug('stat "%s"', path3);
       try {
-        return fs.statSync(path2);
+        return fs3.statSync(path3);
       } catch (e) {
         return void 0;
       }
@@ -19993,8 +19993,8 @@ var require_node4 = __commonJS({
           }
           break;
         case "FILE":
-          var fs = require("fs");
-          stream2 = new fs.SyncWriteStream(fd2, { autoClose: false });
+          var fs3 = require("fs");
+          stream2 = new fs3.SyncWriteStream(fd2, { autoClose: false });
           stream2._type = "fs";
           break;
         case "PIPE":
@@ -20046,14 +20046,14 @@ var require_etag = __commonJS({
   "catalyst/functions/pashumitra_api/node_modules/etag/index.js"(exports2, module2) {
     "use strict";
     module2.exports = etag;
-    var crypto = require("crypto");
+    var crypto2 = require("crypto");
     var Stats = require("fs").Stats;
     var toString = Object.prototype.toString;
     function entitytag(entity) {
       if (entity.length === 0) {
         return '"0-2jmj7l5rSw0yVb/vlWAYkK/YBwk"';
       }
-      var hash = crypto.createHash("sha1").update(entity, "utf8").digest("base64").substring(0, 27);
+      var hash = crypto2.createHash("sha1").update(entity, "utf8").digest("base64").substring(0, 27);
       var len = typeof entity === "string" ? Buffer.byteLength(entity, "utf8") : entity.length;
       return '"' + len.toString(16) + "-" + hash + '"';
     }
@@ -20166,8 +20166,8 @@ var require_types = __commonJS({
 // catalyst/functions/pashumitra_api/node_modules/mime/mime.js
 var require_mime = __commonJS({
   "catalyst/functions/pashumitra_api/node_modules/mime/mime.js"(exports2, module2) {
-    var path = require("path");
-    var fs = require("fs");
+    var path2 = require("path");
+    var fs3 = require("fs");
     function Mime() {
       this.types = /* @__PURE__ */ Object.create(null);
       this.extensions = /* @__PURE__ */ Object.create(null);
@@ -20188,7 +20188,7 @@ var require_mime = __commonJS({
     };
     Mime.prototype.load = function(file) {
       this._loading = file;
-      var map = {}, content = fs.readFileSync(file, "ascii"), lines = content.split(/[\r\n]+/);
+      var map = {}, content = fs3.readFileSync(file, "ascii"), lines = content.split(/[\r\n]+/);
       lines.forEach(function(line) {
         var fields = line.replace(/\s*#.*|^\s*|\s*$/g, "").split(/\s+/);
         map[fields.shift()] = fields;
@@ -20196,8 +20196,8 @@ var require_mime = __commonJS({
       this.define(map);
       this._loading = null;
     };
-    Mime.prototype.lookup = function(path2, fallback) {
-      var ext = path2.replace(/^.*[\.\/\\]/, "").toLowerCase();
+    Mime.prototype.lookup = function(path3, fallback) {
+      var ext = path3.replace(/^.*[\.\/\\]/, "").toLowerCase();
       return this.types[ext] || fallback || this.default_type;
     };
     Mime.prototype.extension = function(mimeType) {
@@ -20426,33 +20426,33 @@ var require_send = __commonJS({
     var escapeHtml = require_escape_html();
     var etag = require_etag();
     var fresh = require_fresh();
-    var fs = require("fs");
+    var fs3 = require("fs");
     var mime = require_mime();
     var ms = require_ms5();
     var onFinished = require_on_finished();
     var parseRange = require_range_parser();
-    var path = require("path");
+    var path2 = require("path");
     var statuses = require_statuses();
     var Stream = require("stream");
     var util = require("util");
-    var extname = path.extname;
-    var join = path.join;
-    var normalize = path.normalize;
-    var resolve = path.resolve;
-    var sep = path.sep;
+    var extname = path2.extname;
+    var join = path2.join;
+    var normalize = path2.normalize;
+    var resolve = path2.resolve;
+    var sep = path2.sep;
     var BYTES_RANGE_REGEXP = /^ *bytes=/;
     var MAX_MAXAGE = 60 * 60 * 24 * 365 * 1e3;
     var UP_PATH_REGEXP = /(?:^|[\\/])\.\.(?:[\\/]|$)/;
     module2.exports = send;
     module2.exports.mime = mime;
-    function send(req, path2, options) {
-      return new SendStream(req, path2, options);
+    function send(req, path3, options) {
+      return new SendStream(req, path3, options);
     }
-    function SendStream(req, path2, options) {
+    function SendStream(req, path3, options) {
       Stream.call(this);
       var opts = options || {};
       this.options = opts;
-      this.path = path2;
+      this.path = path3;
       this.req = req;
       this._acceptRanges = opts.acceptRanges !== void 0 ? Boolean(opts.acceptRanges) : true;
       this._cacheControl = opts.cacheControl !== void 0 ? Boolean(opts.cacheControl) : true;
@@ -20498,8 +20498,8 @@ var require_send = __commonJS({
       this._index = index2;
       return this;
     }, "send.index: pass index as option");
-    SendStream.prototype.root = function root(path2) {
-      this._root = resolve(String(path2));
+    SendStream.prototype.root = function root(path3) {
+      this._root = resolve(String(path3));
       debug("root %s", this._root);
       return this;
     };
@@ -20612,10 +20612,10 @@ var require_send = __commonJS({
       var lastModified = this.res.getHeader("Last-Modified");
       return parseHttpDate(lastModified) <= parseHttpDate(ifRange);
     };
-    SendStream.prototype.redirect = function redirect(path2) {
+    SendStream.prototype.redirect = function redirect(path3) {
       var res = this.res;
       if (hasListeners(this, "directory")) {
-        this.emit("directory", res, path2);
+        this.emit("directory", res, path3);
         return;
       }
       if (this.hasTrailingSlash()) {
@@ -20635,42 +20635,42 @@ var require_send = __commonJS({
     SendStream.prototype.pipe = function pipe(res) {
       var root = this._root;
       this.res = res;
-      var path2 = decode(this.path);
-      if (path2 === -1) {
+      var path3 = decode(this.path);
+      if (path3 === -1) {
         this.error(400);
         return res;
       }
-      if (~path2.indexOf("\0")) {
+      if (~path3.indexOf("\0")) {
         this.error(400);
         return res;
       }
       var parts;
       if (root !== null) {
-        if (path2) {
-          path2 = normalize("." + sep + path2);
+        if (path3) {
+          path3 = normalize("." + sep + path3);
         }
-        if (UP_PATH_REGEXP.test(path2)) {
-          debug('malicious path "%s"', path2);
+        if (UP_PATH_REGEXP.test(path3)) {
+          debug('malicious path "%s"', path3);
           this.error(403);
           return res;
         }
-        parts = path2.split(sep);
-        path2 = normalize(join(root, path2));
+        parts = path3.split(sep);
+        path3 = normalize(join(root, path3));
       } else {
-        if (UP_PATH_REGEXP.test(path2)) {
-          debug('malicious path "%s"', path2);
+        if (UP_PATH_REGEXP.test(path3)) {
+          debug('malicious path "%s"', path3);
           this.error(403);
           return res;
         }
-        parts = normalize(path2).split(sep);
-        path2 = resolve(path2);
+        parts = normalize(path3).split(sep);
+        path3 = resolve(path3);
       }
       if (containsDotFile(parts)) {
         var access = this._dotfiles;
         if (access === void 0) {
           access = parts[parts.length - 1][0] === "." ? this._hidden ? "allow" : "ignore" : "allow";
         }
-        debug('%s dotfile "%s"', access, path2);
+        debug('%s dotfile "%s"', access, path3);
         switch (access) {
           case "allow":
             break;
@@ -20684,13 +20684,13 @@ var require_send = __commonJS({
         }
       }
       if (this._index.length && this.hasTrailingSlash()) {
-        this.sendIndex(path2);
+        this.sendIndex(path3);
         return res;
       }
-      this.sendFile(path2);
+      this.sendFile(path3);
       return res;
     };
-    SendStream.prototype.send = function send2(path2, stat) {
+    SendStream.prototype.send = function send2(path3, stat) {
       var len = stat.size;
       var options = this.options;
       var opts = {};
@@ -20702,9 +20702,9 @@ var require_send = __commonJS({
         this.headersAlreadySent();
         return;
       }
-      debug('pipe "%s"', path2);
-      this.setHeader(path2, stat);
-      this.type(path2);
+      debug('pipe "%s"', path3);
+      this.setHeader(path3, stat);
+      this.type(path3);
       if (this.isConditionalGET()) {
         if (this.isPreconditionFailure()) {
           this.error(412);
@@ -20753,28 +20753,28 @@ var require_send = __commonJS({
         res.end();
         return;
       }
-      this.stream(path2, opts);
+      this.stream(path3, opts);
     };
-    SendStream.prototype.sendFile = function sendFile(path2) {
+    SendStream.prototype.sendFile = function sendFile(path3) {
       var i = 0;
       var self = this;
-      debug('stat "%s"', path2);
-      fs.stat(path2, function onstat(err, stat) {
-        if (err && err.code === "ENOENT" && !extname(path2) && path2[path2.length - 1] !== sep) {
+      debug('stat "%s"', path3);
+      fs3.stat(path3, function onstat(err, stat) {
+        if (err && err.code === "ENOENT" && !extname(path3) && path3[path3.length - 1] !== sep) {
           return next(err);
         }
         if (err) return self.onStatError(err);
-        if (stat.isDirectory()) return self.redirect(path2);
-        self.emit("file", path2, stat);
-        self.send(path2, stat);
+        if (stat.isDirectory()) return self.redirect(path3);
+        self.emit("file", path3, stat);
+        self.send(path3, stat);
       });
       function next(err) {
         if (self._extensions.length <= i) {
           return err ? self.onStatError(err) : self.error(404);
         }
-        var p = path2 + "." + self._extensions[i++];
+        var p = path3 + "." + self._extensions[i++];
         debug('stat "%s"', p);
-        fs.stat(p, function(err2, stat) {
+        fs3.stat(p, function(err2, stat) {
           if (err2) return next(err2);
           if (stat.isDirectory()) return next();
           self.emit("file", p, stat);
@@ -20782,7 +20782,7 @@ var require_send = __commonJS({
         });
       }
     };
-    SendStream.prototype.sendIndex = function sendIndex(path2) {
+    SendStream.prototype.sendIndex = function sendIndex(path3) {
       var i = -1;
       var self = this;
       function next(err) {
@@ -20790,9 +20790,9 @@ var require_send = __commonJS({
           if (err) return self.onStatError(err);
           return self.error(404);
         }
-        var p = join(path2, self._index[i]);
+        var p = join(path3, self._index[i]);
         debug('stat "%s"', p);
-        fs.stat(p, function(err2, stat) {
+        fs3.stat(p, function(err2, stat) {
           if (err2) return next(err2);
           if (stat.isDirectory()) return next();
           self.emit("file", p, stat);
@@ -20801,10 +20801,10 @@ var require_send = __commonJS({
       }
       next();
     };
-    SendStream.prototype.stream = function stream(path2, options) {
+    SendStream.prototype.stream = function stream(path3, options) {
       var self = this;
       var res = this.res;
-      var stream2 = fs.createReadStream(path2, options);
+      var stream2 = fs3.createReadStream(path3, options);
       this.emit("stream", stream2);
       stream2.pipe(res);
       function cleanup() {
@@ -20819,10 +20819,10 @@ var require_send = __commonJS({
         self.emit("end");
       });
     };
-    SendStream.prototype.type = function type(path2) {
+    SendStream.prototype.type = function type(path3) {
       var res = this.res;
       if (res.getHeader("Content-Type")) return;
-      var type2 = mime.lookup(path2);
+      var type2 = mime.lookup(path3);
       if (!type2) {
         debug("no content-type");
         return;
@@ -20831,9 +20831,9 @@ var require_send = __commonJS({
       debug("content-type %s", type2);
       res.setHeader("Content-Type", type2 + (charset ? "; charset=" + charset : ""));
     };
-    SendStream.prototype.setHeader = function setHeader(path2, stat) {
+    SendStream.prototype.setHeader = function setHeader(path3, stat) {
       var res = this.res;
-      this.emit("headers", res, path2, stat);
+      this.emit("headers", res, path3, stat);
       if (this._acceptRanges && !res.getHeader("Accept-Ranges")) {
         debug("accept ranges");
         res.setHeader("Accept-Ranges", "bytes");
@@ -20892,9 +20892,9 @@ var require_send = __commonJS({
       }
       return err instanceof Error ? createError(status, err, { expose: false }) : createError(status, err);
     }
-    function decode(path2) {
+    function decode(path3) {
       try {
-        return decodeURIComponent(path2);
+        return decodeURIComponent(path3);
       } catch (err) {
         return -1;
       }
@@ -21803,10 +21803,10 @@ var require_utils2 = __commonJS({
     var querystring = require("querystring");
     exports2.etag = createETagGenerator({ weak: false });
     exports2.wetag = createETagGenerator({ weak: true });
-    exports2.isAbsolute = function(path) {
-      if ("/" === path[0]) return true;
-      if (":" === path[1] && ("\\" === path[2] || "/" === path[2])) return true;
-      if ("\\\\" === path.substring(0, 2)) return true;
+    exports2.isAbsolute = function(path2) {
+      if ("/" === path2[0]) return true;
+      if (":" === path2[1] && ("\\" === path2[2] || "/" === path2[2])) return true;
+      if ("\\\\" === path2.substring(0, 2)) return true;
     };
     exports2.flatten = deprecate.function(
       flatten,
@@ -22018,7 +22018,7 @@ var require_application = __commonJS({
     };
     app2.use = function use(fn) {
       var offset = 0;
-      var path = "/";
+      var path2 = "/";
       if (typeof fn !== "function") {
         var arg = fn;
         while (Array.isArray(arg) && arg.length !== 0) {
@@ -22026,7 +22026,7 @@ var require_application = __commonJS({
         }
         if (typeof arg !== "function") {
           offset = 1;
-          path = fn;
+          path2 = fn;
         }
       }
       var fns = flatten(slice.call(arguments, offset));
@@ -22037,12 +22037,12 @@ var require_application = __commonJS({
       var router = this._router;
       fns.forEach(function(fn2) {
         if (!fn2 || !fn2.handle || !fn2.set) {
-          return router.use(path, fn2);
+          return router.use(path2, fn2);
         }
-        debug(".use app under %s", path);
-        fn2.mountpath = path;
+        debug(".use app under %s", path2);
+        fn2.mountpath = path2;
         fn2.parent = this;
-        router.use(path, function mounted_app(req, res, next) {
+        router.use(path2, function mounted_app(req, res, next) {
           var orig = req.app;
           fn2.handle(req, res, function(err) {
             setPrototypeOf(req, orig.request);
@@ -22054,9 +22054,9 @@ var require_application = __commonJS({
       }, this);
       return this;
     };
-    app2.route = function route(path) {
+    app2.route = function route(path2) {
       this.lazyrouter();
-      return this._router.route(path);
+      return this._router.route(path2);
     };
     app2.engine = function engine(ext, fn) {
       if (typeof fn !== "function") {
@@ -22107,7 +22107,7 @@ var require_application = __commonJS({
       }
       return this;
     };
-    app2.path = function path() {
+    app2.path = function path2() {
       return this.parent ? this.parent.path() + this.mountpath : "";
     };
     app2.enabled = function enabled(setting) {
@@ -22123,19 +22123,19 @@ var require_application = __commonJS({
       return this.set(setting, false);
     };
     methods.forEach(function(method) {
-      app2[method] = function(path) {
+      app2[method] = function(path2) {
         if (method === "get" && arguments.length === 1) {
-          return this.set(path);
+          return this.set(path2);
         }
         this.lazyrouter();
-        var route = this._router.route(path);
+        var route = this._router.route(path2);
         route[method].apply(route, slice.call(arguments, 1));
         return this;
       };
     });
-    app2.all = function all(path) {
+    app2.all = function all(path2) {
       this.lazyrouter();
-      var route = this._router.route(path);
+      var route = this._router.route(path2);
       var args = slice.call(arguments, 1);
       for (var i = 0; i < methods.length; i++) {
         route[methods[i]].apply(route, args);
@@ -22894,7 +22894,7 @@ var require_request = __commonJS({
       var subdomains2 = !isIP(hostname) ? hostname.split(".").reverse() : [hostname];
       return subdomains2.slice(offset);
     });
-    defineGetter(req, "path", function path() {
+    defineGetter(req, "path", function path2() {
       return parse(this).pathname;
     });
     defineGetter(req, "hostname", function hostname() {
@@ -22946,11 +22946,11 @@ var require_request = __commonJS({
 // catalyst/functions/pashumitra_api/node_modules/cookie-signature/index.js
 var require_cookie_signature = __commonJS({
   "catalyst/functions/pashumitra_api/node_modules/cookie-signature/index.js"(exports2) {
-    var crypto = require("crypto");
+    var crypto2 = require("crypto");
     exports2.sign = function(val, secret) {
       if ("string" !== typeof val) throw new TypeError("Cookie value must be provided as a string.");
       if (null == secret) throw new TypeError("Secret key must be provided.");
-      return val + "." + crypto.createHmac("sha256", secret).update(val).digest("base64").replace(/\=+$/, "");
+      return val + "." + crypto2.createHmac("sha256", secret).update(val).digest("base64").replace(/\=+$/, "");
     };
     exports2.unsign = function(val, secret) {
       if ("string" !== typeof val) throw new TypeError("Signed cookie string must be provided.");
@@ -22959,7 +22959,7 @@ var require_cookie_signature = __commonJS({
       return sha1(mac) == sha1(val) ? str : false;
     };
     function sha1(str) {
-      return crypto.createHash("sha1").update(str).digest("hex");
+      return crypto2.createHash("sha1").update(str).digest("hex");
     }
   }
 });
@@ -23216,7 +23216,7 @@ var require_response = __commonJS({
     var http = require("http");
     var isAbsolute = require_utils2().isAbsolute;
     var onFinished = require_on_finished();
-    var path = require("path");
+    var path2 = require("path");
     var statuses = require_statuses();
     var merge = require_utils_merge();
     var sign = require_cookie_signature().sign;
@@ -23225,9 +23225,9 @@ var require_response = __commonJS({
     var setCharset = require_utils2().setCharset;
     var cookie = require_cookie();
     var send = require_send();
-    var extname = path.extname;
+    var extname = path2.extname;
     var mime = send.mime;
-    var resolve = path.resolve;
+    var resolve = path2.resolve;
     var vary = require_vary();
     var res = Object.create(http.ServerResponse.prototype);
     module2.exports = res;
@@ -23404,26 +23404,26 @@ var require_response = __commonJS({
       this.type("txt");
       return this.send(body);
     };
-    res.sendFile = function sendFile(path2, options, callback) {
+    res.sendFile = function sendFile(path3, options, callback) {
       var done = callback;
       var req = this.req;
       var res2 = this;
       var next = req.next;
       var opts = options || {};
-      if (!path2) {
+      if (!path3) {
         throw new TypeError("path argument is required to res.sendFile");
       }
-      if (typeof path2 !== "string") {
+      if (typeof path3 !== "string") {
         throw new TypeError("path must be a string to res.sendFile");
       }
       if (typeof options === "function") {
         done = options;
         opts = {};
       }
-      if (!opts.root && !isAbsolute(path2)) {
+      if (!opts.root && !isAbsolute(path3)) {
         throw new TypeError("path must be absolute or specify root to res.sendFile");
       }
-      var pathname = encodeURI(path2);
+      var pathname = encodeURI(path3);
       var file = send(req, pathname, opts);
       sendfile(res2, file, opts, function(err) {
         if (done) return done(err);
@@ -23433,7 +23433,7 @@ var require_response = __commonJS({
         }
       });
     };
-    res.sendfile = function(path2, options, callback) {
+    res.sendfile = function(path3, options, callback) {
       var done = callback;
       var req = this.req;
       var res2 = this;
@@ -23443,7 +23443,7 @@ var require_response = __commonJS({
         done = options;
         opts = {};
       }
-      var file = send(req, path2, opts);
+      var file = send(req, path3, opts);
       sendfile(res2, file, opts, function(err) {
         if (done) return done(err);
         if (err && err.code === "EISDIR") return next();
@@ -23456,7 +23456,7 @@ var require_response = __commonJS({
       res.sendfile,
       "res.sendfile: Use res.sendFile instead"
     );
-    res.download = function download(path2, filename, options, callback) {
+    res.download = function download(path3, filename, options, callback) {
       var done = callback;
       var name = filename;
       var opts = options || null;
@@ -23473,7 +23473,7 @@ var require_response = __commonJS({
         opts = filename;
       }
       var headers = {
-        "Content-Disposition": contentDisposition(name || path2)
+        "Content-Disposition": contentDisposition(name || path3)
       };
       if (opts && opts.headers) {
         var keys = Object.keys(opts.headers);
@@ -23486,7 +23486,7 @@ var require_response = __commonJS({
       }
       opts = Object.create(opts);
       opts.headers = headers;
-      var fullPath = !opts.root ? resolve(path2) : path2;
+      var fullPath = !opts.root ? resolve(path3) : path3;
       return this.sendFile(fullPath, opts, done);
     };
     res.contentType = res.type = function contentType(type) {
@@ -23787,11 +23787,11 @@ var require_serve_static = __commonJS({
         }
         var forwardError = !fallthrough;
         var originalUrl = parseUrl.original(req);
-        var path = parseUrl(req).pathname;
-        if (path === "/" && originalUrl.pathname.substr(-1) !== "/") {
-          path = "";
+        var path2 = parseUrl(req).pathname;
+        if (path2 === "/" && originalUrl.pathname.substr(-1) !== "/") {
+          path2 = "";
         }
-        var stream = send(req, path, opts);
+        var stream = send(req, path2, opts);
         stream.on("directory", onDirectory);
         if (setHeaders) {
           stream.on("headers", setHeaders);
@@ -27496,6 +27496,7 @@ function retrieveRagContext(query, topK = 7) {
 // catalyst/functions/pashumitra_api/lib/sarvam.ts
 var SARVAM_CHAT_URL = "https://api.sarvam.ai/v1/chat/completions";
 var SARVAM_STT_URL = "https://api.sarvam.ai/speech-to-text";
+var SARVAM_TTS_URL = "https://api.sarvam.ai/text-to-speech";
 function env(key) {
   if (typeof process !== "undefined" && process.env?.[key]) return process.env[key];
   if (typeof Deno !== "undefined") return Deno.env.get(key);
@@ -27505,6 +27506,9 @@ function getSarvamApiKey() {
   const key = env("SARVAM_API_KEY");
   if (!key) throw new Error("SARVAM_API_KEY not configured");
   return key;
+}
+function hasSarvamApiKey() {
+  return Boolean(env("SARVAM_API_KEY"));
 }
 function getSarvamChatModel() {
   return env("SARVAM_CHAT_MODEL") || "sarvam-30b";
@@ -27572,6 +27576,53 @@ async function sarvamTranscribe(audioBytes, mimeType, languageCode) {
   }
   const data = await res.json();
   return (data.transcript || "").trim();
+}
+function getSarvamTtsSpeaker() {
+  return env("SARVAM_TTS_SPEAKER") || "suhani";
+}
+function getSarvamCallSpeaker() {
+  return env("SARVAM_TTS_CALL_SPEAKER") || "suhani";
+}
+function getSarvamTtsPace(callMode = false) {
+  const raw = env(callMode ? "SARVAM_TTS_CALL_PACE" : "SARVAM_TTS_PACE");
+  const n = raw ? Number(raw) : callMode ? 0.8 : 0.84;
+  if (!Number.isFinite(n)) return callMode ? 0.8 : 0.84;
+  return Math.min(2, Math.max(0.5, n));
+}
+function decodeBase64Audio(b64) {
+  const binary = atob(b64);
+  const out = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) out[i] = binary.charCodeAt(i);
+  return out;
+}
+async function sarvamSynthesizeSpeech(text, languageCode, opts) {
+  const callMode = opts?.callMode ?? false;
+  const speaker = opts?.speaker ?? (callMode ? getSarvamCallSpeaker() : getSarvamTtsSpeaker());
+  const res = await fetch(SARVAM_TTS_URL, {
+    method: "POST",
+    headers: {
+      "api-subscription-key": getSarvamApiKey(),
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      text,
+      target_language_code: languageCode,
+      model: "bulbul:v3",
+      speaker,
+      pace: getSarvamTtsPace(callMode),
+      temperature: opts?.temperature ?? (callMode ? 0.62 : 0.65),
+      speech_sample_rate: callMode ? "8000" : "24000",
+      output_audio_codec: "mp3"
+    })
+  });
+  if (!res.ok) {
+    const detail = await res.text().catch(() => "");
+    throw new Error(detail || `Sarvam TTS error ${res.status}`);
+  }
+  const data = await res.json();
+  const b64 = data.audios?.[0];
+  if (!b64) throw new Error("Sarvam TTS returned no audio");
+  return decodeBase64Audio(b64);
 }
 
 // catalyst/functions/pashumitra_api/src/handlers/chat.ts
@@ -27663,6 +27714,40 @@ WHEN "COMPUTED RESULTS" in system message \u2014 present in this ORDER:
 1. HERD PREP FIRST: total kg to prepare/mix for the whole herd today (green fodder + dry + concentrate + mineral).
 2. PER ANIMAL SECOND: each animal's daily share (breed, doodh/sukhi/garbh, milk litres, kg of each feed).
 Use exact numbers from COMPUTED RESULTS. Simple words only.`;
+var CALL_SYSTEM_PROMPT = `You are PashuMitra, a warm female dairy advisor on a live phone call with an Indian farmer.
+
+OUTPUT FORMAT (STRICT):
+First line MUST be exactly [[LANG:xx]] then one newline then your spoken answer.
+xx = hi, bn, ta, te, mr, gu, kn, ml, pa, or, as, ur, or en \u2014 matching the language you speak in.
+
+VOICE CALL RULES:
+- Reply in the farmer's language. Use feminine first-person (Hindi: \u0915\u0930\u0942\u0901\u0917\u0940, \u092C\u0924\u093E\u090A\u0901\u0917\u0940, \u0938\u092E\u091D \u0930\u0939\u0940 \u0939\u0942\u0901).
+- 2\u20134 short sentences only \u2014 easy to speak aloud. No headings, no bullet lists, no markdown.
+- Simple village words. Give the next practical step first.
+- Use ONLY facts from RETRIEVED KNOWLEDGE below. If unsure, say what to check or ask the vet.
+- For disease topics, end with a brief vet-consult reminder in the farmer's language.
+
+${CONTENT_SAFETY_RULES}`;
+function extractSarvamChatText(data) {
+  if (!data || typeof data !== "object") return "";
+  const d = data;
+  if (typeof d.message === "string" && d.message.trim()) return d.message;
+  if (typeof d.response === "string" && d.response.trim()) return d.response;
+  if (typeof d.content === "string" && d.content.trim()) return d.content;
+  const fromChoice = d.choices?.[0]?.message?.content;
+  if (typeof fromChoice === "string" && fromChoice.trim()) return fromChoice;
+  if (typeof d.text === "string") return d.text;
+  if (typeof d.output === "string") return d.output;
+  return "";
+}
+function callModeFallbackAnswer(lang) {
+  const known = lang && /^(hi|bn|ta|te|mr|gu|kn|ml|pa|or|as|ur|en)$/.test(lang) ? lang : "hi";
+  const fallbacks = {
+    hi: "[[LANG:hi]]\n\u092E\u093E\u092B\u093C \u0915\u0940\u091C\u093F\u090F, \u0905\u092D\u0940 \u091C\u0935\u093E\u092C \u0928\u0939\u0940\u0902 \u092C\u0928 \u092A\u093E\u092F\u093E\u0964 \u0915\u0943\u092A\u092F\u093E \u0905\u092A\u0928\u093E \u0938\u0935\u093E\u0932 \u0926\u094B\u092C\u093E\u0930\u093E \u092C\u094B\u0932\u093F\u090F\u0964",
+    en: "[[LANG:en]]\nSorry, I could not form an answer just now. Please ask your question again."
+  };
+  return fallbacks[known] || fallbacks.hi;
+}
 var LANGUAGE_LABELS = {
   hi: "Hindi / \u0939\u093F\u0928\u094D\u0926\u0940",
   bn: "Bengali / \u09AC\u09BE\u0982\u09B2\u09BE",
@@ -27771,10 +27856,11 @@ async function handleChat(req) {
     );
     const isRationAdvisory = mode === "ration_advisory";
     const advisoryHint = isRationAdvisory ? tryRationAdvisoryHint(safeMessages) : null;
-    const rationHint = isRationAdvisory ? null : tryComputeRationHint(safeMessages);
-    const youtubeHint = await tryYoutubeVideoHint(safeMessages);
+    const rationHint = isRationAdvisory || mode === "call" ? null : tryComputeRationHint(safeMessages);
+    const youtubeHint = mode === "call" ? null : await tryYoutubeVideoHint(safeMessages);
     const userCtx = safeMessages.filter((m) => m.role === "user").map((m) => m.content).join("\n");
-    const ragContext = retrieveRagContext(userCtx || lastUser?.content || "", isRationAdvisory ? 7 : 4);
+    const ragChunks = mode === "call" ? 2 : isRationAdvisory ? 7 : 4;
+    const ragContext = retrieveRagContext(userCtx || lastUser?.content || "", ragChunks);
     const detectedUserLang = userCtx.trim() ? detectLangForRefusal(userCtx) : null;
     const effectiveForceLang = (typeof forceLanguage === "string" ? forceLanguage : null) ?? (isRationAdvisory && detectedUserLang ? detectedUserLang : null);
     const effectiveForcedLabel = effectiveForceLang ? LANGUAGE_LABELS[effectiveForceLang] : null;
@@ -27787,12 +27873,13 @@ async function handleChat(req) {
         });
       }
     }
+    const maxTokens = mode === "call" ? 420 : isRationAdvisory ? 2048 : 900;
     const response = await sarvamChatCompletion({
       model: getSarvamChatModel(),
       temperature: 0.4,
-      max_tokens: mode === "call" ? 400 : isRationAdvisory ? 2048 : 900,
+      max_tokens: maxTokens,
       messages: [
-        { role: "system", content: SYSTEM_PROMPT },
+        { role: "system", content: mode === "call" ? CALL_SYSTEM_PROMPT : SYSTEM_PROMPT },
         { role: "system", content: `RETRIEVED KNOWLEDGE (Catalyst RAG \u2014 authoritative facts for this question; use selectively, do not dump all of it in one reply):
 ${ragContext}` },
         ...isRationAdvisory ? [{ role: "system", content: RATION_ADVISORY_MODE_PROMPT }] : [],
@@ -27805,11 +27892,7 @@ This is regular chat \u2014 NOT a report. Max ~500 words this turn.
 2) Do NOT list every scheme, disease, feed, or step from retrieved knowledge.
 3) End with 1\u20132 easy follow-up questions so the farmer can reply and get more detail next message.
 4) If they already answered earlier in the thread, do not repeat those questions \u2014 go one level deeper.` }] : [],
-        ...mode === "call" ? [{ role: "system", content: `LIVE CALL MODE \u2014 FEMALE ADVISOR (CRITICAL):
-You are PashuMitra, a woman speaking on a live phone call with a farmer. ALWAYS use feminine first-person grammar:
-- Hindi: \u0915\u0930\u0942\u0901\u0917\u0940, \u092C\u0924\u093E\u090A\u0901\u0917\u0940, \u0938\u092E\u091D \u0930\u0939\u0940 \u0939\u0942\u0901, \u0938\u0941\u0928 \u0930\u0939\u0940 \u0939\u0942\u0901 (NEVER masculine \u0915\u0930\u0942\u0901\u0917\u093E/\u0938\u092E\u091D \u0930\u0939\u093E \u0939\u0942\u0901).
-- Marathi/Gujarati/Bengali/Punjabi/etc.: use feminine verb forms for "I".
-Answer like a warm, patient human helper. Very simple village/farmer words. 2\u20134 short speakable sentences only. No headings, no long bullet lists. Give the next practical step first.` }] : [],
+        ...mode === "call" ? [{ role: "system", content: `LIVE CALL \u2014 speak naturally in short sentences with clear pauses at commas and full stops. Feminine voice.` }] : [],
         ...isRationAdvisory && isHerdGathering(advisoryHint) ? [{ role: "system", content: "RATION DATA COLLECTION MODE: The main prompt's RATION BALANCING rules are DISABLED this turn. Do NOT give generic ration advice, kg amounts, or feed plans. ONLY ask questions or read back summary for confirmation." }] : [],
         ...effectiveForceLang && effectiveForcedLabel ? [{ role: "system", content: `CRITICAL LANGUAGE LOCK: The next answer MUST be written only in ${effectiveForcedLabel}. The first line MUST be [[LANG:${effectiveForceLang}]]. Do not use Hindi unless the locked language is Hindi. Do not mix scripts.` }] : [],
         ...safeMessages,
@@ -27846,7 +27929,12 @@ Answer like a warm, patient human helper. Very simple village/farmer words. 2\u2
       });
     }
     const data = await response.json();
-    const text = filterAbusiveLanguage(data.choices?.[0]?.message?.content || "");
+    let text = filterAbusiveLanguage(extractSarvamChatText(data));
+    if (!text.trim() && mode === "call") {
+      text = callModeFallbackAnswer(
+        typeof forceLanguage === "string" ? forceLanguage : detectedUserLang
+      );
+    }
     return new Response(JSON.stringify({ text }), {
       headers: jsonHeaders
     });
@@ -27861,7 +27949,7 @@ Answer like a warm, patient human helper. Very simple village/farmer words. 2\u2
 
 // catalyst/functions/pashumitra_api/src/handlers/transcribe.ts
 var jsonHeaders2 = { "Content-Type": "application/json" };
-function decodeBase64Audio(audioBase64) {
+function decodeBase64Audio2(audioBase64) {
   const binary = atob(audioBase64);
   const bytes = new Uint8Array(binary.length);
   for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
@@ -27872,7 +27960,7 @@ async function handleTranscribe(req) {
   try {
     const { audioBase64, mimeType, language } = await req.json();
     if (!audioBase64) throw new Error("audioBase64 required");
-    const audioBytes = decodeBase64Audio(audioBase64);
+    const audioBytes = decodeBase64Audio2(audioBase64);
     const transcript = await sarvamTranscribe(audioBytes, mimeType, language);
     if (transcript === "[BLOCKED]" || containsAbusiveLanguage(transcript)) {
       return new Response(JSON.stringify({ transcript: "", blocked: true }), {
@@ -27959,16 +28047,64 @@ var GOOGLE_TTS_LANG = {
   or: "hi",
   as: "bn"
 };
-function cleanTtsText(text) {
-  return String(text || "").replace(/\[?\[?\s*LANG\s*:\s*[a-zA-Z]{2}\s*\]?\]?/gi, " ").replace(/```[\s\S]*?```/g, " ").replace(/[`*_#>~[\]]/g, "").replace(/^\s*[-–—•]\s+/gm, "").replace(/(\d)\s*[-–—]\s*(?=\d)/g, "$1 to ").replace(/\s+[-–—]\s+/g, ", ").replace(/[-–—]+/g, " ").replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, "").replace(/\s+/g, " ").trim();
+var PRONUNCIATION_REPLACEMENTS = [
+  [/\bPashu\s*Mitra\b/gi, "\u092A\u0936\u0941 \u092E\u093F\u0924\u094D\u0930"],
+  [/\bPashuMitra\b/gi, "\u092A\u0936\u0941\u092E\u093F\u0924\u094D\u0930"],
+  [/\bpashumitra\b/gi, "\u092A\u0936\u0941\u092E\u093F\u0924\u094D\u0930"],
+  [/\bPashu\b/g, "\u092A\u0936\u0941"],
+  [/\bpashu\b/g, "\u092A\u0936\u0941"],
+  [/\bSahayak\b/gi, "\u0938\u0939\u093E\u092F\u0915"],
+  [/\bsahayak\b/gi, "\u0938\u0939\u093E\u092F\u0915"],
+  [/\bDairy\s*Sakha\b/gi, "\u0921\u0947\u092F\u0930\u0940 \u0938\u0916\u093E"],
+  [/\bDairy\s*Mitra\b/gi, "\u0921\u0947\u092F\u0930\u0940 \u092E\u093F\u0924\u094D\u0930"],
+  [/\bNDDB\b/g, "\u090F\u0928 \u0921\u0940 \u0921\u0940 \u092C\u0940"],
+  [/\bDAHD\b/g, "\u0921\u0940 \u090F \u090F\u091A \u0921\u0940"],
+  [/\bAIIMS\b/g, "\u090F \u0906\u0908 \u0906\u0908 \u090F\u092E \u090F\u0938"],
+  [/\bLSD\b/g, "\u090F\u0932 \u090F\u0938 \u0921\u0940"],
+  [/\bFMD\b/g, "\u090F\u092B \u090F\u092E \u0921\u0940"],
+  [/\bHSN\b/g, "\u090F\u091A \u090F\u0938 \u090F\u0928"],
+  [/\bGST\b/g, "\u091C\u0940 \u090F\u0938 \u091F\u0940"],
+  [/\bML\b/g, "\u090F\u092E \u090F\u0932"],
+  [/\bkg\b/gi, "\u0915\u093F\u0932\u094B\u0917\u094D\u0930\u093E\u092E"],
+  [/\blitre?s?\b/gi, "\u0932\u0940\u091F\u0930"],
+  [/\bRs\.?\s*/g, "\u0930\u0941\u092A\u092F\u0947 "],
+  [/\bINR\b/g, "\u0930\u0941\u092A\u092F\u0947"]
+];
+function applyTtsPronunciationFixes(text) {
+  let out = text;
+  for (const [pattern, replacement] of PRONUNCIATION_REPLACEMENTS) {
+    out = out.replace(pattern, replacement);
+  }
+  return out;
 }
-function chunkText(text, max = 180) {
+function cleanTtsText(text, langHint = "hi") {
+  const langCode = langHint === "en" ? "en" : langHint;
+  const connector = langCode === "en" ? " to " : " se ";
+  const stripped = String(text || "").replace(/\[?\[?\s*LANG\s*:\s*[a-zA-Z]{2}\s*\]?\]?/gi, " ").replace(/```[\s\S]*?```/g, " ").replace(/[`*_#>~[\]]/g, "").replace(/^\s*[-–—•]\s+/gm, "").replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, "");
+  const withRanges = stripped.replace(
+    /(\d+(?:\.\d+)?)\s*[-–—]\s*(\d+(?:\.\d+)?)(\s*(?:kg|kgs|kilograms?|g|grams?|l|litres?|liters?|ml|ltr|percent|%))?/gi,
+    (_m, a, b, unit = "") => `${a}${connector}${b}${unit}`
+  );
+  const useDanda = langCode !== "en";
+  const withPauses = withRanges.replace(/\r\n/g, "\n").replace(/\n{2,}/g, useDanda ? "\u0964 " : ". ").replace(/\n/g, ", ").replace(/[;:]/g, ",").replace(/\s+[-–—]\s+/g, ", ").replace(/([,।])([^\s\d])/g, "$1 $2");
+  return applyTtsPronunciationFixes(
+    withPauses.replace(/[-–—]+/g, " ").replace(/[ \t]+/g, " ").replace(/\s+([,।])/g, "$1").trim()
+  );
+}
+function splitTtsClauses(text, max = 200) {
+  const trimmed = text.trim();
+  if (!trimmed) return [];
+  if (trimmed.length <= max) return [trimmed];
+  return trimmed.split(/(?<=[.!?।\u0964\u0965,])\s+/).map((s) => s.trim()).filter(Boolean);
+}
+function chunkText(text, max = 2200) {
   if (text.length <= max) return [text];
   const parts = [];
   let rest = text;
   while (rest.length > max) {
-    let cut = rest.lastIndexOf(" ", max);
-    if (cut < max * 0.5) cut = max;
+    let cut = rest.lastIndexOf(". ", max);
+    if (cut < max * 0.4) cut = rest.lastIndexOf(" ", max);
+    if (cut < max * 0.4) cut = max;
     parts.push(rest.slice(0, cut).trim());
     rest = rest.slice(cut).trim();
   }
@@ -27996,7 +28132,7 @@ async function synthesizeBhashini(text, lang, apiKey) {
       text,
       language,
       voiceName: "Female1",
-      speechRate: 1,
+      speechRate: 0.92,
       voiceStyle: "Neutral"
     })
   });
@@ -28017,23 +28153,37 @@ async function synthesizeGoogle(text, lang) {
   if (!resp.ok) throw new Error(`Google TTS error ${resp.status}`);
   return new Uint8Array(await resp.arrayBuffer());
 }
-async function synthesizeSpeech(text, lang = "hi") {
+async function synthesizeSpeech(text, lang = "hi", opts) {
   const code = String(lang || "hi").toLowerCase();
-  const apiKey = Deno.env.get("BHASHINI_API_KEY");
-  const useBhashini = BHASHINI_SUPPORTED.has(code);
-  const parts = chunkText(text);
+  const sarvamLang = appLangToSarvam(code) || "hi-IN";
+  const cleaned = cleanTtsText(text, code);
+  const parts = splitTtsClauses(cleaned).length > 0 ? splitTtsClauses(cleaned) : chunkText(cleaned);
   const audioChunks = [];
+  let contentType = "audio/mpeg";
+  const trySarvam = hasSarvamApiKey();
   for (const part of parts) {
-    if (useBhashini) {
+    if (trySarvam) {
+      try {
+        audioChunks.push(await sarvamSynthesizeSpeech(part, sarvamLang, opts));
+        contentType = "audio/mpeg";
+        continue;
+      } catch (err) {
+        console.warn("Sarvam TTS failed, falling back:", err instanceof Error ? err.message : err);
+      }
+    }
+    const apiKey = Deno.env.get("BHASHINI_API_KEY");
+    if (BHASHINI_SUPPORTED.has(code)) {
       try {
         audioChunks.push(await synthesizeBhashini(part, code, apiKey));
+        contentType = "audio/mpeg";
         continue;
       } catch {
       }
     }
     audioChunks.push(await synthesizeGoogle(part, code));
+    contentType = "audio/mpeg";
   }
-  return concatAudio(audioChunks);
+  return { audio: concatAudio(audioChunks), contentType };
 }
 
 // catalyst/functions/pashumitra_api/src/routes/tts.mts
@@ -28047,15 +28197,17 @@ async function handleTts(req, res) {
     return;
   }
   try {
-    const { text, lang = "hi" } = req.body ?? {};
+    const { text, lang = "hi", callMode = false } = req.body ?? {};
     const clean = cleanTtsText(String(text || ""));
     if (!clean) {
       res.status(400).json({ error: "Empty text" });
       return;
     }
-    const audio = await synthesizeSpeech(clean, String(lang));
+    const { audio, contentType } = await synthesizeSpeech(clean, String(lang), {
+      callMode: Boolean(callMode)
+    });
     res.status(200);
-    res.setHeader("Content-Type", "audio/mpeg");
+    res.setHeader("Content-Type", contentType);
     res.setHeader("Cache-Control", "no-store");
     res.send(Buffer.from(audio));
   } catch (e) {
@@ -28096,6 +28248,404 @@ async function handleYoutubeSearch(req, res) {
   }
 }
 
+// catalyst/functions/pashumitra_api/lib/vobiz-audio-cache.ts
+var store = /* @__PURE__ */ new Map();
+var TTL_MS = 20 * 60 * 1e3;
+function purge() {
+  const now = Date.now();
+  for (const [key, entry] of store) {
+    if (entry.expires <= now) store.delete(key);
+  }
+}
+function putAudio(bytes) {
+  purge();
+  const id = crypto.randomUUID().replace(/-/g, "").slice(0, 16);
+  store.set(id, { bytes, expires: Date.now() + TTL_MS });
+  return id;
+}
+function getAudio(id) {
+  purge();
+  const clean = id.replace(/\.mp3$/i, "");
+  const entry = store.get(clean);
+  if (!entry || entry.expires <= Date.now()) {
+    store.delete(clean);
+    return null;
+  }
+  return entry.bytes;
+}
+
+// catalyst/functions/pashumitra_api/lib/vobiz-call.ts
+var GREETING_TEXT = "\u0928\u092E\u0938\u094D\u0924\u0947! \u092E\u0948\u0902 \u092A\u0936\u0941 \u092E\u093F\u0924\u094D\u0930 \u0939\u0942\u0901\u0964 \u0921\u0947\u092F\u0930\u0940 \u0914\u0930 \u092A\u0936\u0941\u092A\u093E\u0932\u0928 \u0915\u0947 \u0938\u0935\u093E\u0932\u094B\u0902 \u092E\u0947\u0902 \u092E\u0948\u0902 \u0906\u092A\u0915\u0940 \u092E\u0926\u0926 \u0915\u0930\u0924\u0940 \u0939\u0942\u0901\u0964 \u091C\u092C \u0924\u0948\u092F\u093E\u0930 \u0939\u094B\u0902, \u0905\u092A\u0928\u093E \u0938\u0935\u093E\u0932 \u092C\u094B\u0932\u093F\u090F\u0964";
+var WAIT_TEXT = "\u090F\u0915 \u092A\u0932 \u0930\u0941\u0915\u093F\u090F, \u092E\u0948\u0902 \u0906\u092A\u0915\u093E \u0938\u0935\u093E\u0932 \u0938\u092E\u091D \u0930\u0939\u0940 \u0939\u0942\u0901\u0964";
+var RETRY_TEXT = "\u0925\u094B\u0921\u093C\u093E \u0914\u0930 \u0907\u0902\u0924\u091C\u093C\u093E\u0930 \u0915\u0940\u091C\u093F\u090F, \u091C\u0935\u093E\u092C \u0924\u0948\u092F\u093E\u0930 \u0939\u094B \u0930\u0939\u093E \u0939\u0948\u0964";
+var ERROR_TEXT = "\u092E\u093E\u092B\u093C \u0915\u0940\u091C\u093F\u090F, \u0905\u092D\u0940 \u091C\u0935\u093E\u092C \u0928\u0939\u0940\u0902 \u0926\u0947 \u092A\u093E\u0908\u0964 \u0915\u0943\u092A\u092F\u093E \u0925\u094B\u0921\u093C\u0940 \u0926\u0947\u0930 \u092C\u093E\u0926 \u092B\u093F\u0930 \u0915\u0949\u0932 \u0915\u0930\u0947\u0902\u0964";
+var replyCache = /* @__PURE__ */ new Map();
+function pickCallUuid(body, query) {
+  return String(
+    body.CallUUID || body.call_uuid || body.CallId || body.call_id || body.RequestUUID || body.request_uuid || query.CallUUID || query.CallId || ""
+  ).trim();
+}
+function pickSpeechText(body, query) {
+  const raw = body.Speech || body.speech || body.Transcription || body.transcript || body.SpeechResult || body.speech_result || query.Speech || query.speech || "";
+  return String(raw).trim();
+}
+function logVobizForm(label, body, extra) {
+  console.log(`vobiz ${label}:`, JSON.stringify({ ...body, ...extra }));
+}
+function stripLangHeader(text) {
+  return text.replace(/^\[\[LANG:[a-z]{2}\]\]\s*/i, "").trim();
+}
+function truncateForCall(text, max = 380) {
+  const clean = cleanTtsText(stripLangHeader(text));
+  if (clean.length <= max) return clean;
+  const cut = clean.lastIndexOf("\u0964", max);
+  if (cut > max * 0.45) return clean.slice(0, cut + 1).trim();
+  return `${clean.slice(0, max).trim()}\u2026`;
+}
+async function getCallChatReply(transcript) {
+  const req = new Request("http://internal/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      messages: [{ role: "user", content: transcript }],
+      stream: false,
+      mode: "call"
+    })
+  });
+  const res = await handleChat(req);
+  if (!res.ok) throw new Error("Chat failed");
+  const data = await res.json();
+  if (!data.text?.trim()) throw new Error(data.error || "Empty reply");
+  return truncateForCall(data.text);
+}
+function cacheReply(key, reply) {
+  replyCache.set(key, { reply, expires: Date.now() + 15 * 60 * 1e3 });
+}
+function getCachedReply(key) {
+  const hit = replyCache.get(key);
+  if (!hit || hit.expires <= Date.now()) {
+    replyCache.delete(key);
+    return null;
+  }
+  return hit.reply;
+}
+async function processSpeechToReply(speech) {
+  const key = speech.slice(0, 200);
+  const cached = getCachedReply(key);
+  if (cached) return cached;
+  if (!speech.trim()) throw new Error("Empty speech");
+  console.log("vobiz farmer speech:", speech.slice(0, 200));
+  const reply = await getCallChatReply(speech);
+  cacheReply(key, reply);
+  return reply;
+}
+
+// catalyst/functions/pashumitra_api/lib/vobiz-assets.ts
+var import_fs = __toESM(require("fs"));
+var import_path = __toESM(require("path"));
+function vobizAssetsDir() {
+  const candidates = [
+    import_path.default.join(__dirname, "assets"),
+    import_path.default.join(__dirname, "..", "assets")
+  ];
+  for (const dir of candidates) {
+    if (import_fs.default.existsSync(dir)) return dir;
+  }
+  return import_path.default.join(__dirname, "assets");
+}
+function staticPhrasePath(name) {
+  const safe = name.replace(/[^a-z0-9-]/gi, "");
+  return import_path.default.join(vobizAssetsDir(), `vobiz-${safe}.mp3`);
+}
+function readStaticPhrase(name) {
+  try {
+    const p = staticPhrasePath(name);
+    if (import_fs.default.existsSync(p) && import_fs.default.statSync(p).size > 500) return import_fs.default.readFileSync(p);
+  } catch {
+  }
+  return null;
+}
+
+// catalyst/functions/pashumitra_api/lib/vobiz-phrases.ts
+var VOBIZ_PHRASES = {
+  greeting: GREETING_TEXT,
+  prompt: "\u0905\u092A\u0928\u093E \u0938\u0935\u093E\u0932 \u092C\u094B\u0932\u093F\u090F\u0964",
+  wait: WAIT_TEXT,
+  retry: RETRY_TEXT,
+  error: ERROR_TEXT,
+  menu: "\u0914\u0930 \u0915\u094B\u0908 \u0938\u0935\u093E\u0932 \u0939\u0948 \u0924\u094B \u090F\u0915 \u0926\u092C\u093E\u0907\u090F, \u092B\u093F\u0930 \u0938\u0947 \u092C\u094B\u0932\u0928\u0947 \u0915\u0947 \u0932\u093F\u090F \u0926\u094B \u0926\u092C\u093E\u0907\u090F\u0964",
+  goodbye: "\u0927\u0928\u094D\u092F\u0935\u093E\u0926\u0964 \u092A\u0936\u0941 \u092E\u093F\u0924\u094D\u0930 \u0915\u094B \u0915\u0949\u0932 \u0915\u0930\u0928\u0947 \u0915\u0947 \u0932\u093F\u090F \u0936\u0941\u0915\u094D\u0930\u093F\u092F\u093E\u0964"
+};
+var memoryCache = /* @__PURE__ */ new Map();
+var synthInflight = /* @__PURE__ */ new Map();
+var warmStarted = false;
+async function getPhraseBytes(name) {
+  const key = name.replace(/[^a-z0-9-]/gi, "");
+  const fromDisk = readStaticPhrase(key);
+  if (fromDisk) return fromDisk;
+  const cached = memoryCache.get(key);
+  if (cached) return cached;
+  const inflight = synthInflight.get(key);
+  if (inflight) return inflight;
+  const text = VOBIZ_PHRASES[key];
+  if (!text) return null;
+  const job = (async () => {
+    try {
+      const { audio } = await synthesizeSpeech(cleanTtsText(text), "hi", { callMode: true });
+      const buf = Buffer.from(audio);
+      memoryCache.set(key, buf);
+      return buf;
+    } catch (e) {
+      console.error(`vobiz phrase synth failed (${key}):`, e);
+      return null;
+    } finally {
+      synthInflight.delete(key);
+    }
+  })();
+  synthInflight.set(key, job);
+  return job;
+}
+function warmVobizPhrasesBackground() {
+  if (warmStarted) return;
+  warmStarted = true;
+  void (async () => {
+    for (const key of ["greeting", "prompt", "wait", "error"]) {
+      await getPhraseBytes(key);
+    }
+  })().catch((e) => console.error("warmVobizPhrasesBackground:", e));
+}
+function phrasePlayUrl(base, name) {
+  return `${base}/vobiz/phrase/${name.replace(/[^a-z0-9-]/gi, "")}.mp3`;
+}
+
+// catalyst/functions/pashumitra_api/lib/vobiz-play.ts
+function staticAssetPath(name) {
+  return staticPhrasePath(name);
+}
+function hasStaticAsset(name) {
+  try {
+    const p = staticAssetPath(name);
+    return fs.existsSync(p) && fs.statSync(p).size > 500;
+  } catch {
+    return false;
+  }
+}
+function readStaticAsset(name) {
+  if (!hasStaticAsset(name)) return null;
+  return fs.readFileSync(staticAssetPath(name));
+}
+function xmlAttrEscape(url) {
+  return url.replace(/&/g, "&amp;");
+}
+function playBlock(url) {
+  return `<Play>${xmlAttrEscape(url)}</Play>`;
+}
+function playPhraseBlock(base, phraseName) {
+  return playBlock(phrasePlayUrl(base, phraseName));
+}
+async function textToPlayBlock(base, text, lang = "hi") {
+  const { audio } = await synthesizeSpeech(cleanTtsText(text), lang, { callMode: true });
+  const id = putAudio(audio);
+  return playBlock(`${base}/vobiz/audio/${id}.mp3`);
+}
+
+// catalyst/functions/pashumitra_api/src/routes/vobiz.mts
+var CATALYST_BASE = "https://project-rainfall-60075686570.development.catalystserverless.in/server/pashumitra_api";
+var MAX_REPLY_ATTEMPTS = 6;
+function publicBaseUrl(_req) {
+  return CATALYST_BASE;
+}
+function vobizXml(body) {
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+${body}
+</Response>`;
+}
+function replyTextUrl(base, speech, attempt) {
+  return xmlAttrEscape(
+    `${base}/vobiz/reply?Speech=${encodeURIComponent(speech)}&n=${attempt}`
+  );
+}
+function speechGatherBlock(base, actionPath) {
+  const action = `${base}${actionPath}`;
+  return `<Gather action="${xmlAttrEscape(action)}" method="POST" inputType="speech" language="hi-IN" speechModel="telephony" speechEndTimeout="auto" executionTimeout="45">
+    ${playPhraseBlock(base, "prompt")}
+  </Gather>`;
+}
+function sendXml(res, body) {
+  res.status(200);
+  res.setHeader("Content-Type", "application/xml; charset=utf-8");
+  res.send(vobizXml(body));
+}
+function handleVobizStaticClip(req, res) {
+  const clip = String(req.params.clip || "greeting").replace(/\.mp3$/i, "");
+  const bytes = readStaticAsset(clip);
+  if (!bytes) {
+    res.status(404).send(`Missing vobiz-${clip}.mp3 \u2014 run: npm run gen:vobiz-audio`);
+    return;
+  }
+  res.status(200);
+  res.setHeader("Content-Type", "audio/mpeg");
+  res.setHeader("Cache-Control", "public, max-age=86400");
+  res.send(bytes);
+}
+function handleVobizStaticGreeting(req, res) {
+  req.params = { ...req.params, clip: "greeting" };
+  handleVobizStaticClip(req, res);
+}
+async function handleVobizPhrase(req, res) {
+  const name = String(req.params.name || "greeting").replace(/\.mp3$/i, "");
+  const bytes = await getPhraseBytes(name);
+  if (!bytes) {
+    res.status(404).send("Phrase unavailable");
+    return;
+  }
+  res.status(200);
+  res.setHeader("Content-Type", "audio/mpeg");
+  res.setHeader("Cache-Control", "public, max-age=86400");
+  res.send(bytes);
+}
+function inboundCallXml(base) {
+  return `${playPhraseBlock(base, "greeting")}
+  ${speechGatherBlock(base, "/vobiz/speech")}
+  ${playPhraseBlock(base, "error")}
+  <Hangup />`;
+}
+function handleVobizFallback(_req, res) {
+  const base = publicBaseUrl(_req);
+  warmVobizPhrasesBackground();
+  sendXml(res, inboundCallXml(base));
+}
+function handleVobizPing(_req, res) {
+  const base = publicBaseUrl(_req);
+  sendXml(
+    res,
+    `${playPhraseBlock(base, "prompt")}
+  <Hangup />`
+  );
+}
+function handleVobizAnswer(req, res) {
+  const base = publicBaseUrl(req);
+  warmVobizPhrasesBackground();
+  sendXml(res, inboundCallXml(base));
+}
+function handleVobizListen(req, res) {
+  handleVobizAnswer(req, res);
+}
+function handleVobizSpeech(req, res) {
+  const base = publicBaseUrl(req);
+  const body = req.body ?? {};
+  const query = req.query;
+  logVobizForm("speech", body, { CallUUID: pickCallUuid(body, query) });
+  const speech = pickSpeechText(body, query);
+  if (!speech) {
+    console.warn("vobiz/speech: no Speech field, keys=", Object.keys(body).join(","));
+    sendXml(
+      res,
+      `${playPhraseBlock(base, "error")}
+  ${speechGatherBlock(base, "/vobiz/speech")}
+  <Hangup />`
+    );
+    return;
+  }
+  sendXml(
+    res,
+    `${playPhraseBlock(base, "wait")}
+  <Redirect method="POST">${replyTextUrl(base, speech, 0)}</Redirect>`
+  );
+}
+async function handleVobizReply(req, res) {
+  const base = publicBaseUrl(req);
+  const body = req.body ?? {};
+  const query = req.query;
+  logVobizForm("reply", body, { n: query.n, CallUUID: pickCallUuid(body, query) });
+  const speech = pickSpeechText(body, query);
+  const attempt = Number(query.n ?? body.n ?? 0) || 0;
+  if (!speech) {
+    sendXml(
+      res,
+      `${playPhraseBlock(base, "error")}
+  <Hangup />`
+    );
+    return;
+  }
+  try {
+    const reply = await processSpeechToReply(speech);
+    const replyPlay = await textToPlayBlock(base, reply, "hi");
+    sendXml(
+      res,
+      `${replyPlay}
+  <Gather numDigits="1" action="${xmlAttrEscape(`${base}/vobiz/menu`)}" method="POST" executionTimeout="12">
+    ${playPhraseBlock(base, "menu")}
+  </Gather>
+  <Hangup />`
+    );
+  } catch (e) {
+    console.error(`vobiz/reply attempt ${attempt} failed:`, e);
+    if (attempt + 1 >= MAX_REPLY_ATTEMPTS) {
+      sendXml(
+        res,
+        `${playPhraseBlock(base, "error")}
+  <Hangup />`
+      );
+      return;
+    }
+    sendXml(
+      res,
+      `${playPhraseBlock(base, "retry")}
+  <Redirect method="POST">${replyTextUrl(base, speech, attempt + 1)}</Redirect>`
+    );
+  }
+}
+function handleVobizRecorded(req, res) {
+  handleVobizSpeech(req, res);
+}
+async function handleVobizProcess(req, res) {
+  return handleVobizReply(req, res);
+}
+function handleVobizMenu(req, res) {
+  const base = publicBaseUrl(req);
+  const digit = String(req.body?.Digits || req.query?.Digits || "").trim();
+  if (digit === "1" || digit === "2") {
+    sendXml(
+      res,
+      `${playPhraseBlock(base, "prompt")}
+  ${speechGatherBlock(base, "/vobiz/speech")}
+  <Hangup />`
+    );
+    return;
+  }
+  sendXml(
+    res,
+    `${playPhraseBlock(base, "goodbye")}
+  <Hangup />`
+  );
+}
+function handleVobizAudio(req, res) {
+  const bytes = getAudio(String(req.params.id || ""));
+  if (!bytes) {
+    res.status(404).send("Audio expired");
+    return;
+  }
+  res.status(200);
+  res.setHeader("Content-Type", "audio/mpeg");
+  res.setHeader("Cache-Control", "no-store");
+  res.send(Buffer.from(bytes));
+}
+function handleVobizHangup(req, res) {
+  logVobizForm("hangup", req.body ?? {});
+  res.status(200).send("OK");
+}
+function handleVobizWebhook(_req, res) {
+  res.status(200).json({ ok: true });
+}
+function handleVobizError(_req, res) {
+  res.status(200).setHeader("Content-Type", "application/xml; charset=utf-8");
+  res.send(
+    '<?xml version="1.0" encoding="UTF-8"?><Response><Redirect method="POST">https://project-rainfall-60075686570.development.catalystserverless.in/server/pashumitra_api/vobiz/listen</Redirect></Response>'
+  );
+}
+
 // catalyst/functions/pashumitra_api/src/server.mts
 var app = (0, import_express.default)();
 app.use((req, res, next) => {
@@ -28105,6 +28655,7 @@ app.use((req, res, next) => {
   }
   next();
 });
+app.use("/vobiz", import_express.default.urlencoded({ extended: false }));
 app.use(import_express.default.json({ limit: "20mb" }));
 async function relayWebHandler(handler, req, res) {
   const url = `${req.protocol}://${req.get("host") || "localhost"}${req.originalUrl}`;
@@ -28154,6 +28705,43 @@ app.post("/youtube-search", (req, res) => void handleYoutubeSearch(req, res).cat
   console.error("youtube-search error:", e);
   res.status(500).json({ error: e instanceof Error ? e.message : "Server error" });
 }));
+app.all("/vobiz/answer", (req, res) => handleVobizAnswer(req, res));
+app.all("/vobiz/listen", (req, res) => handleVobizListen(req, res));
+app.get("/vobiz/phrase/:name.mp3", (req, res) => void handleVobizPhrase(req, res).catch(() => {
+  res.status(404).send("Phrase unavailable");
+}));
+app.all("/vobiz/ping", (req, res) => handleVobizPing(req, res));
+app.all("/vobiz/fallback", (req, res) => handleVobizFallback(req, res));
+app.all("/vobiz/speech", (req, res) => {
+  try {
+    handleVobizSpeech(req, res);
+  } catch (e) {
+    console.error("vobiz speech error:", e);
+    handleVobizError(req, res);
+  }
+});
+app.all("/vobiz/recorded", (req, res) => {
+  try {
+    handleVobizRecorded(req, res);
+  } catch (e) {
+    console.error("vobiz recorded error:", e);
+    handleVobizError(req, res);
+  }
+});
+app.all("/vobiz/reply", (req, res) => void handleVobizReply(req, res).catch((e) => {
+  console.error("vobiz reply error:", e);
+  handleVobizError(req, res);
+}));
+app.all("/vobiz/process", (req, res) => void handleVobizProcess(req, res).catch((e) => {
+  console.error("vobiz process error:", e);
+  handleVobizError(req, res);
+}));
+app.all("/vobiz/menu", (req, res) => handleVobizMenu(req, res));
+app.get("/vobiz/static/greeting.mp3", (req, res) => handleVobizStaticGreeting(req, res));
+app.get("/vobiz/static/:clip.mp3", (req, res) => handleVobizStaticClip(req, res));
+app.get("/vobiz/audio/:id", (req, res) => handleVobizAudio(req, res));
+app.all("/vobiz/hangup", (req, res) => handleVobizHangup(req, res));
+app.all("/vobiz/webhook", (req, res) => handleVobizWebhook(req, res));
 app.get("/", (_req, res) => {
   res.json({ ok: true, service: "pashumitra_api", llm: "sarvam", rag: "catalyst-keyword", knowledge: "catalyst/lib/knowledge" });
 });

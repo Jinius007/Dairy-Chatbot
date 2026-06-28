@@ -69,55 +69,125 @@ export function resolveTtsLanguage(text: string, hint: string | null): string {
   return tag || fromText || "hi";
 }
 
-export function prepareTextForSpeech(text: string): string {
+const PRONUNCIATION_REPLACEMENTS: [RegExp, string][] = [
+  [/\bPashu\s*Mitra\b/gi, "पशु मित्र"],
+  [/\bPashuMitra\b/gi, "पशुमित्र"],
+  [/\bpashumitra\b/gi, "पशुमित्र"],
+  [/\bPashu\b/g, "पशु"],
+  [/\bpashu\b/g, "पशु"],
+  [/\bSahayak\b/gi, "सहायक"],
+  [/\bsahayak\b/gi, "सहायक"],
+  [/\bDairy\s*Sakha\b/gi, "डेयरी सखा"],
+  [/\bDairy\s*Mitra\b/gi, "डेयरी मित्र"],
+  [/\bNDDB\b/g, "एन डी डी बी"],
+  [/\bkg\b/gi, "किलोग्राम"],
+  [/\blitre?s?\b/gi, "लीटर"],
+];
+
+function applyTtsPronunciationFixes(text: string): string {
+  let out = text;
+  for (const [pattern, replacement] of PRONUNCIATION_REPLACEMENTS) {
+    out = out.replace(pattern, replacement);
+  }
+  return out;
+}
+
+/** Expand "2-3 kg" to "2 se 3 kg" (Hindi) or "2 to 3 kg" (English). */
+function expandNumericRanges(text: string, langCode: string | null): string {
+  const connector = langCode === "en" ? " to " : " se ";
+  return text.replace(
+    /(\d+(?:\.\d+)?)\s*[-–—]\s*(\d+(?:\.\d+)?)(\s*(?:kg|kgs|kilograms?|g|grams?|l|litres?|liters?|ml|ltr|percent|%))?/gi,
+    (_match, start: string, end: string, unit = "") => `${start}${connector}${end}${unit}`,
+  );
+}
+
+/** Turn markdown / layout into spoken pause markers (Whisper / Wispr-style prosody). */
+function addSpokenPauses(text: string, langCode: string | null): string {
+  const useDanda = langCode !== "en";
+  const listBreak = useDanda ? "। " : ". ";
   return text
+    .replace(/\r\n/g, "\n")
+    // List / bullet boundaries → sentence-level pause
+    .replace(/\n\s*[-–—•*]\s+/g, listBreak)
+    .replace(/\n\s*\d+[.)]\s+/g, listBreak)
+    .replace(/\n{2,}/g, listBreak)
+    // Single line break → short breath (like Wispr clause comma)
+    .replace(/\n/g, ", ")
+    // Ellipsis → breath pause marker
+    .replace(/\.{3,}/g, "… ")
+    // Em/en dash between phrases → short pause
+    .replace(/\s+[-–—]\s+/g, ", ")
+    // Keep : ; , . ! ? as distinct tiers for split + gap timing
+    .replace(/([,।:;])([^\s\d])/g, "$1 $2")
+    .replace(/([.!?])([^\s])/g, "$1 $2")
+    .replace(/,\s*([^\s])/g, ", $1");
+}
+
+export type TtsPauseTier = "none" | "micro" | "short" | "medium" | "long" | "breath";
+
+/** Infer pause strength from trailing punctuation — mirrors dictation-style phrasing. */
+export function ttsPauseTierFromChunk(chunk: string): TtsPauseTier {
+  const t = chunk.trim();
+  if (!t) return "none";
+  if (/…$/.test(t)) return "breath";
+  if (/[,]$/.test(t)) return "short";
+  if (/[:;]$/.test(t)) return "medium";
+  if (/[.!?؟。！？।\u0964\u0965]$/.test(t)) return "long";
+  return "micro";
+}
+
+/** Natural gap after a TTS chunk — tiered like Whisper / Wispr speech rhythm. */
+export function ttsPauseMsAfterChunk(chunk: string, callMode = false): number {
+  const tier = ttsPauseTierFromChunk(chunk);
+  const table: Record<TtsPauseTier, number> = callMode
+    ? { none: 0, micro: 175, short: 200, medium: 270, long: 320, breath: 350 }
+    : { none: 0, micro: 195, short: 225, medium: 300, long: 370, breath: 400 };
+  return table[tier];
+}
+
+export function prepareTextForSpeech(text: string): string {
+  const langCode = detectLanguageCode(text);
+  const stripped = text
     .replace(/\[?\[?\s*LANG\s*:\s*[a-zA-Z]{2}\s*\]?\]?/gi, " ")
     .replace(/```[\s\S]*?```/g, " ")
     .replace(/[`*_#>~[\]]/g, "")
-    .replace(/^\s*[-–—•]\s+/gm, "")
-    .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, "")
-    .replace(/(\d)\s*[-–—]\s*(?=\d)/g, "$1 to ")
-    .replace(/\s+[-–—]\s+/g, ", ")
-    .replace(/[-–—]+/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
+    .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, "");
+
+  const withRanges = expandNumericRanges(stripped, langCode);
+  const withPauses = addSpokenPauses(withRanges, langCode);
+
+  return applyTtsPronunciationFixes(
+    withPauses
+      .replace(/[-–—]+/g, " ")
+      .replace(/[ \t]+/g, " ")
+      .replace(/\s+([,।])/g, "$1")
+      .trim(),
+  );
 }
 
-/** Split long replies into TTS-sized chunks (Bhashini truncates long input). */
-export function splitForTts(text: string, maxLen = 180): string[] {
+/** Split at comma / sentence / list boundaries for natural TTS pauses; hard-split only oversized clauses. */
+export function splitForTts(text: string, maxLen = 200): string[] {
   const trimmed = text.trim();
   if (!trimmed) return [];
-  if (trimmed.length <= maxLen) return [trimmed];
 
-  const sentences = trimmed
-    .split(/(?<=[.!?।\u0964\u0965])\s+/)
+  const clauses = trimmed
+    .split(/(?<=[.!?…؟。！？।\u0964\u0965,:;])\s+/)
     .map((s) => s.trim())
     .filter(Boolean);
 
-  if (sentences.length === 0) return hardSplitForTts(trimmed, maxLen);
-
-  const chunks: string[] = [];
-  let current = "";
-
-  for (const sentence of sentences) {
-    if (sentence.length > maxLen) {
-      if (current) {
-        chunks.push(current);
-        current = "";
-      }
-      chunks.push(...hardSplitForTts(sentence, maxLen));
-      continue;
-    }
-    const combined = current ? `${current} ${sentence}` : sentence;
-    if (combined.length > maxLen) {
-      if (current) chunks.push(current);
-      current = sentence;
-    } else {
-      current = combined;
-    }
+  if (clauses.length === 0) {
+    return trimmed.length <= maxLen ? [trimmed] : hardSplitForTts(trimmed, maxLen);
   }
 
-  if (current) chunks.push(current);
+  const chunks: string[] = [];
+  for (const clause of clauses) {
+    if (clause.length <= maxLen) {
+      chunks.push(clause);
+      continue;
+    }
+    chunks.push(...hardSplitForTts(clause, maxLen));
+  }
+
   return chunks.filter(Boolean);
 }
 

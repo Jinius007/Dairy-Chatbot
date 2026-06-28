@@ -58,13 +58,13 @@ Expected: `200` with JSON `{"ok":true,"service":"pashumitra_api",...}` — not `
 
 ## First-time deploy checklist
 
-Run these **in order** in your terminal (login is interactive — cannot be done from CI):
+Run these **in order** in **Windows Terminal or PowerShell** (not the Cursor agent terminal — `catalyst login` needs a real browser + TTY):
 
 ```powershell
 # 1. Log in to Zoho (browser opens)
 cd catalyst
 catalyst login
-catalyst whoami          # must NOT say "Not logged in"
+catalyst whoami          # must show your email — NOT "Not logged in"
 
 # 2. Link project (first time only — pick Project-Rainfall, Development)
 catalyst init
@@ -104,6 +104,8 @@ Or in Console: **Cloud Scale → API Gateway → Disable** (type DISABLE to conf
 | **API Gateway** enabled | Cloud Scale → **API Gateway** → disable it **or** create an API rule targeting `pashumitra_api` ([known 404 cause](https://stackoverflow.com/questions/78292630)) |
 | Wrong function URL | Copy URL from deploy output or Console → Functions → pashumitra_api |
 | Not logged in / wrong project | `catalyst whoami` and `.catalystrc` must show **Project-Rainfall** |
+| `catalyst login` hangs or does nothing | Run in **Windows Terminal** outside Cursor; India accounts use **accounts.zoho.in** |
+| Deploy stuck at "Checking Catalyst login" | Agent/CI shells cannot login — run `catalyst login` manually first |
 
 ### If verify returns 404 fixed but CORS still fails
 

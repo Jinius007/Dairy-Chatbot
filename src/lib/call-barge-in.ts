@@ -40,7 +40,7 @@ export function isAdvisorEchoTranscript(transcript: string, advisorText: string)
   const words = t.split(" ").filter((w) => w.length > 1);
   if (words.length === 0) return true;
   const overlap = words.filter((w) => a.includes(w)).length;
-  if (overlap / words.length >= 0.65) return true;
+  if (overlap / words.length >= 0.55) return true;
   return false;
 }
 
@@ -66,7 +66,7 @@ function startSttBargeIn(options: CallBargeInOptions, fireOnce: () => void): Cal
   const { langCode, advisorText, isSpeaking } = options;
   let rec: SpeechRecognition | null = null;
   let stopped = false;
-  const sttArmedAt = Date.now() + 750;
+  const sttArmedAt = Date.now() + 1400;
 
   try {
     rec = new SR();
@@ -82,7 +82,7 @@ function startSttBargeIn(options: CallBargeInOptions, fireOnce: () => void): Cal
         const text = result[0]?.transcript?.trim() || "";
         if (text.length < 3) continue;
         if (isAdvisorEchoTranscript(text, advisorText)) continue;
-        if (result.isFinal || text.length >= 4) {
+        if (result.isFinal || text.length >= 5) {
           fireOnce();
           return;
         }
@@ -125,6 +125,13 @@ function startSttBargeIn(options: CallBargeInOptions, fireOnce: () => void): Cal
   };
 }
 
+/** Mic level tracks TTS speaker output — treat as echo, not user interrupt. */
+function isLikelyOwnVoiceEcho(micLevel: number, refLevel: number): boolean {
+  if (refLevel < 0.01 || micLevel < 0.022) return false;
+  const ratio = micLevel / refLevel;
+  return ratio >= 0.45 && ratio <= 1.55 && micLevel < 0.11;
+}
+
 function startEnergyBargeIn(options: CallBargeInOptions, fireOnce: () => void): CallBargeInHandle {
   const { stream, isSpeaking } = options;
   let frame = 0;
@@ -133,7 +140,7 @@ function startEnergyBargeIn(options: CallBargeInOptions, fireOnce: () => void): 
   let micAnalyser: AnalyserNode | null = null;
   let spikeSince = 0;
   let baseline = 0.015;
-  const calibrateUntil = Date.now() + 500;
+  const calibrateUntil = Date.now() + 700;
 
   const micRms = (): number => {
     if (!micAnalyser) return 0;
@@ -164,15 +171,20 @@ function startEnergyBargeIn(options: CallBargeInOptions, fireOnce: () => void): 
       baseline = baseline * 0.985 + micLevel * 0.015;
     }
 
-    const spike = micLevel - baseline;
-    const loudUser = micLevel > 0.065;
-    const clearSpike = spike > 0.028 && micLevel > 0.042;
-    const overEcho =
-      refLevel > 0.01 && micLevel > refLevel * 1.35 + 0.022 && micLevel > 0.048;
+    if (isLikelyOwnVoiceEcho(micLevel, refLevel)) {
+      spikeSince = 0;
+      frame = requestAnimationFrame(tick);
+      return;
+    }
 
-    if (loudUser || clearSpike || overEcho) {
+    const spike = micLevel - baseline;
+    const clearUserSpike = spike > 0.032 && micLevel > 0.055;
+    const louderThanEcho = refLevel > 0.012 && micLevel > refLevel * 1.85 + 0.038;
+    const loudDirectSpeech = micLevel > 0.085 && spike > 0.025;
+
+    if (clearUserSpike || louderThanEcho || loudDirectSpeech) {
       spikeSince ||= now;
-      if (now - spikeSince > 180) {
+      if (now - spikeSince > 240) {
         fireOnce();
         return;
       }

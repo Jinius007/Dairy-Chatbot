@@ -16,6 +16,8 @@
     "android:apk": "cd android && .\\gradlew.bat assembleDebug",
     "android:apk:release": "cd android && .\\gradlew.bat assembleRelease",
     "build:catalyst-api": "node scripts/build-catalyst-api.mjs",
+    "gen:vobiz-greeting": "node scripts/gen-vobiz-greeting.mjs",
+    "gen:vobiz-audio": "node scripts/gen-vobiz-audio.mjs",
     "build:knowledge": "node scripts/build-knowledge-repo.mjs",
     "build:catalyst": "npm run build:knowledge && npm run build:catalyst-api",
     "setup:catalyst": "powershell -ExecutionPolicy Bypass -File scripts/setup-catalyst-branch.ps1",

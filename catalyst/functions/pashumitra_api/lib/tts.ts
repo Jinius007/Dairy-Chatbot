@@ -1,5 +1,6 @@
-/** Bhashini + Google Translate TTS — Catalyst-hosted (no Vercel). */
+/** Sarvam Bulbul v3 (primary) + Bhashini + Google TTS fallbacks. */
 import { BHASHINI_LANG } from "./bhashini.ts";
+import { appLangToSarvam, hasSarvamApiKey, sarvamSynthesizeSpeech } from "./sarvam.ts";
 
 const BHASHINI_SUPPORTED = new Set(["hi", "bn", "ta", "te", "mr", "kn", "ml", "en"]);
 
@@ -11,27 +12,98 @@ const GOOGLE_TTS_LANG: Record<string, string> = {
   as: "bn",
 };
 
-export function cleanTtsText(text: string): string {
-  return String(text || "")
+/** Latin/Hinglish dairy terms → native script so TTS does not misread (e.g. "Pashu" → "pahu"). */
+const PRONUNCIATION_REPLACEMENTS: [RegExp, string][] = [
+  [/\bPashu\s*Mitra\b/gi, "पशु मित्र"],
+  [/\bPashuMitra\b/gi, "पशुमित्र"],
+  [/\bpashumitra\b/gi, "पशुमित्र"],
+  [/\bPashu\b/g, "पशु"],
+  [/\bpashu\b/g, "पशु"],
+  [/\bSahayak\b/gi, "सहायक"],
+  [/\bsahayak\b/gi, "सहायक"],
+  [/\bDairy\s*Sakha\b/gi, "डेयरी सखा"],
+  [/\bDairy\s*Mitra\b/gi, "डेयरी मित्र"],
+  [/\bNDDB\b/g, "एन डी डी बी"],
+  [/\bDAHD\b/g, "डी ए एच डी"],
+  [/\bAIIMS\b/g, "ए आई आई एम एस"],
+  [/\bLSD\b/g, "एल एस डी"],
+  [/\bFMD\b/g, "एफ एम डी"],
+  [/\bHSN\b/g, "एच एस एन"],
+  [/\bGST\b/g, "जी एस टी"],
+  [/\bML\b/g, "एम एल"],
+  [/\bkg\b/gi, "किलोग्राम"],
+  [/\blitre?s?\b/gi, "लीटर"],
+  [/\bRs\.?\s*/g, "रुपये "],
+  [/\bINR\b/g, "रुपये"],
+];
+
+export function applyTtsPronunciationFixes(text: string): string {
+  let out = text;
+  for (const [pattern, replacement] of PRONUNCIATION_REPLACEMENTS) {
+    out = out.replace(pattern, replacement);
+  }
+  return out;
+}
+
+export function cleanTtsText(text: string, langHint = "hi"): string {
+  const langCode = langHint === "en" ? "en" : langHint;
+  const connector = langCode === "en" ? " to " : " se ";
+  const stripped = String(text || "")
     .replace(/\[?\[?\s*LANG\s*:\s*[a-zA-Z]{2}\s*\]?\]?/gi, " ")
     .replace(/```[\s\S]*?```/g, " ")
     .replace(/[`*_#>~[\]]/g, "")
-    .replace(/^\s*[-–—•]\s+/gm, "")
-    .replace(/(\d)\s*[-–—]\s*(?=\d)/g, "$1 to ")
+    .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, "");
+
+  const withRanges = stripped.replace(
+    /(\d+(?:\.\d+)?)\s*[-–—]\s*(\d+(?:\.\d+)?)(\s*(?:kg|kgs|kilograms?|g|grams?|l|litres?|liters?|ml|ltr|percent|%))?/gi,
+    (_m, a: string, b: string, unit = "") => `${a}${connector}${b}${unit}`,
+  );
+
+  const useDanda = langCode !== "en";
+  const listBreak = useDanda ? "। " : ". ";
+  const withPauses = withRanges
+    .replace(/\r\n/g, "\n")
+    .replace(/\n\s*[-–—•*]\s+/g, listBreak)
+    .replace(/\n\s*\d+[.)]\s+/g, listBreak)
+    .replace(/\n{2,}/g, listBreak)
+    .replace(/\n/g, ", ")
+    .replace(/\.{3,}/g, "… ")
     .replace(/\s+[-–—]\s+/g, ", ")
-    .replace(/[-–—]+/g, " ")
-    .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, "")
-    .replace(/\s+/g, " ")
-    .trim();
+    .replace(/([,।:;])([^\s\d])/g, "$1 $2");
+
+  return applyTtsPronunciationFixes(
+    withPauses
+      .replace(/[-–—]+/g, " ")
+      .replace(/[ \t]+/g, " ")
+      .replace(/\s+([,।])/g, "$1")
+      .trim(),
+  );
 }
 
-function chunkText(text: string, max = 180): string[] {
+function splitTtsClauses(text: string, max = 200): string[] {
+  const trimmed = text.trim();
+  if (!trimmed) return [];
+  const clauses = trimmed
+    .split(/(?<=[.!?…؟。！？।\u0964\u0965,:;])\s+/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+  if (clauses.length === 0) return trimmed.length <= max ? [trimmed] : chunkText(trimmed, max);
+  const out: string[] = [];
+  for (const clause of clauses) {
+    if (clause.length <= max) out.push(clause);
+    else out.push(...chunkText(clause, max));
+  }
+  return out;
+}
+
+function chunkText(text: string, max = 2200): string[] {
   if (text.length <= max) return [text];
   const parts: string[] = [];
   let rest = text;
   while (rest.length > max) {
-    let cut = rest.lastIndexOf(" ", max);
-    if (cut < max * 0.5) cut = max;
+    let cut = rest.lastIndexOf(". ", max);
+    if (cut < max * 0.4) cut = rest.lastIndexOf(" ", max);
+    if (cut < max * 0.4) cut = max;
     parts.push(rest.slice(0, cut).trim());
     rest = rest.slice(cut).trim();
   }
@@ -62,7 +134,7 @@ async function synthesizeBhashini(text: string, lang: string, apiKey?: string): 
       text,
       language,
       voiceName: "Female1",
-      speechRate: 1.0,
+      speechRate: 0.92,
       voiceStyle: "Neutral",
     }),
   });
@@ -89,24 +161,48 @@ async function synthesizeGoogle(text: string, lang: string): Promise<Uint8Array>
   return new Uint8Array(await resp.arrayBuffer());
 }
 
-export async function synthesizeSpeech(text: string, lang = "hi"): Promise<Uint8Array> {
-  const code = String(lang || "hi").toLowerCase();
-  const apiKey = Deno.env.get("BHASHINI_API_KEY");
-  const useBhashini = BHASHINI_SUPPORTED.has(code);
-  const parts = chunkText(text);
-  const audioChunks: Uint8Array[] = [];
+export type SynthesizeSpeechResult = {
+  audio: Uint8Array;
+  contentType: string;
+};
 
+export async function synthesizeSpeech(
+  text: string,
+  lang = "hi",
+  opts?: { callMode?: boolean },
+): Promise<SynthesizeSpeechResult> {
+  const code = String(lang || "hi").toLowerCase();
+  const sarvamLang = appLangToSarvam(code) || "hi-IN";
+  const cleaned = cleanTtsText(text, code);
+  const parts = splitTtsClauses(cleaned).length > 0 ? splitTtsClauses(cleaned) : chunkText(cleaned);
+  const audioChunks: Uint8Array[] = [];
+  let contentType = "audio/mpeg";
+
+  const trySarvam = hasSarvamApiKey();
   for (const part of parts) {
-    if (useBhashini) {
+    if (trySarvam) {
+      try {
+        audioChunks.push(await sarvamSynthesizeSpeech(part, sarvamLang, opts));
+        contentType = "audio/mpeg";
+        continue;
+      } catch (err) {
+        console.warn("Sarvam TTS failed, falling back:", err instanceof Error ? err.message : err);
+      }
+    }
+
+    const apiKey = Deno.env.get("BHASHINI_API_KEY");
+    if (BHASHINI_SUPPORTED.has(code)) {
       try {
         audioChunks.push(await synthesizeBhashini(part, code, apiKey));
+        contentType = "audio/mpeg";
         continue;
       } catch {
-        // Fall through to Google if Bhashini rejects this language/voice.
+        // Fall through to Google.
       }
     }
     audioChunks.push(await synthesizeGoogle(part, code));
+    contentType = "audio/mpeg";
   }
 
-  return concatAudio(audioChunks);
+  return { audio: concatAudio(audioChunks), contentType };
 }

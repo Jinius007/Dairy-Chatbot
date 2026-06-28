@@ -5,6 +5,24 @@ import { handleTranscribe } from "./handlers/transcribe.ts";
 import { handleLogTurn } from "./routes/log-turn.mts";
 import { handleTts } from "./routes/tts.mts";
 import { handleYoutubeSearch } from "./routes/youtube-search.mts";
+import {
+  handleVobizAnswer,
+  handleVobizAudio,
+  handleVobizError,
+  handleVobizFallback,
+  handleVobizHangup,
+  handleVobizListen,
+  handleVobizMenu,
+  handleVobizPhrase,
+  handleVobizPing,
+  handleVobizProcess,
+  handleVobizRecorded,
+  handleVobizSpeech,
+  handleVobizReply,
+  handleVobizStaticClip,
+  handleVobizStaticGreeting,
+  handleVobizWebhook,
+} from "./routes/vobiz.mts";
 
 const app = express();
 
@@ -19,6 +37,8 @@ app.use((req, res, next) => {
   next();
 });
 
+// Vobiz sends form-urlencoded — parse before JSON middleware.
+app.use("/vobiz", express.urlencoded({ extended: false }));
 app.use(express.json({ limit: "20mb" }));
 
 async function relayWebHandler(
@@ -81,6 +101,45 @@ app.post("/youtube-search", (req, res) => void handleYoutubeSearch(req, res).cat
   console.error("youtube-search error:", e);
   res.status(500).json({ error: e instanceof Error ? e.message : "Server error" });
 }));
+
+// Vobiz voice — must return XML in ~1–2 s or error 7012 (Error Reaching Action URL).
+app.all("/vobiz/answer", (req, res) => handleVobizAnswer(req, res));
+app.all("/vobiz/listen", (req, res) => handleVobizListen(req, res));
+app.get("/vobiz/phrase/:name.mp3", (req, res) => void handleVobizPhrase(req, res).catch(() => {
+  res.status(404).send("Phrase unavailable");
+}));
+app.all("/vobiz/ping", (req, res) => handleVobizPing(req, res));
+app.all("/vobiz/fallback", (req, res) => handleVobizFallback(req, res));
+app.all("/vobiz/speech", (req, res) => {
+  try {
+    handleVobizSpeech(req, res);
+  } catch (e) {
+    console.error("vobiz speech error:", e);
+    handleVobizError(req, res);
+  }
+});
+app.all("/vobiz/recorded", (req, res) => {
+  try {
+    handleVobizRecorded(req, res);
+  } catch (e) {
+    console.error("vobiz recorded error:", e);
+    handleVobizError(req, res);
+  }
+});
+app.all("/vobiz/reply", (req, res) => void handleVobizReply(req, res).catch((e) => {
+  console.error("vobiz reply error:", e);
+  handleVobizError(req, res);
+}));
+app.all("/vobiz/process", (req, res) => void handleVobizProcess(req, res).catch((e) => {
+  console.error("vobiz process error:", e);
+  handleVobizError(req, res);
+}));
+app.all("/vobiz/menu", (req, res) => handleVobizMenu(req, res));
+app.get("/vobiz/static/greeting.mp3", (req, res) => handleVobizStaticGreeting(req, res));
+app.get("/vobiz/static/:clip.mp3", (req, res) => handleVobizStaticClip(req, res));
+app.get("/vobiz/audio/:id", (req, res) => handleVobizAudio(req, res));
+app.all("/vobiz/hangup", (req, res) => handleVobizHangup(req, res));
+app.all("/vobiz/webhook", (req, res) => handleVobizWebhook(req, res));
 
 app.get("/", (_req, res) => {
   res.json({ ok: true, service: "pashumitra_api", llm: "sarvam", rag: "catalyst-keyword", knowledge: "catalyst/lib/knowledge" });

@@ -12,16 +12,18 @@ export async function handleTts(req: Request, res: Response): Promise<void> {
   }
 
   try {
-    const { text, lang = "hi" } = req.body ?? {};
+    const { text, lang = "hi", callMode = false } = req.body ?? {};
     const clean = cleanTtsText(String(text || ""));
     if (!clean) {
       res.status(400).json({ error: "Empty text" });
       return;
     }
 
-    const audio = await synthesizeSpeech(clean, String(lang));
+    const { audio, contentType } = await synthesizeSpeech(clean, String(lang), {
+      callMode: Boolean(callMode),
+    });
     res.status(200);
-    res.setHeader("Content-Type", "audio/mpeg");
+    res.setHeader("Content-Type", contentType);
     res.setHeader("Cache-Control", "no-store");
     res.send(Buffer.from(audio));
   } catch (e) {
