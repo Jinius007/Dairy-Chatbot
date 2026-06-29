@@ -1,5 +1,5 @@
 // NDDB Ration Balancing Programme (RBP) — Least-Cost Formulation guide
-// Source: NDDB RBP / ICAR 2013 / Pashu Poshan methodology
+// Source: NDDB RBP / ICAR 2013 / NDLM 1962 app ecosystem
 export const RATION_KNOWLEDGE = `
 ## 11. NDDB RATION BALANCING PROGRAMME (RBP) — LEAST-COST BALANCED RATION
 
@@ -11,7 +11,7 @@ Key principles:
 - Use **Linear Programming (LP)** objective: Minimize Cost = Σ (Priceᵢ × Quantityᵢ) subject to meeting TDN, CP, Ca, P, DM requirements; roughage DM ≥ 50% of total DM
 - Include **Area Specific Mineral Mixture (ASMM)** 100–200 g/day (use 150 g for lactating animals)
 - Prioritize locally available feeds; validate with season and palatability
-- Delivered via trained LRPs and **Pashu Poshan** Android app / INAPH platform
+- Delivered via trained LRPs, **1962 Farmer App** (scheme/nutrition info), and **INAPH** platform for professionals
 
 ### When farmer asks about ration / feed / balanced diet
 **Always follow this workflow:**
@@ -125,10 +125,12 @@ When farmer gives herd size and groups:
 - BIS Type II (≥18% CP, TDN ≥68%): 5–10 L/day, average yielders, dry period maintenance
 
 ### References for farmer
-- **Pashu Poshan** app (Google Play) — free self-service ration formulator
-- **INAPH** platform for LRPs/veterinarians
+- **1962 Farmer App** (Google Play — DAHD/NDLM; renamed from e-Gopala under Bharat Pashudhan) — schemes, Pashupedia, animal records, ethnoveterinary guides
+- **Toll-free 1962** — Mobile Veterinary Units at doorstep
+- **Bharat Pashudhan portal:** https://bharatpashudhan.ndlm.co.in/
+- **INAPH** platform for LRPs/veterinarians (professional ration balancing)
 - NDDB cooperative Cattle Feed Plants for BIS-compliant affordable feed
-- For exact LP optimization with 500+ feed database, recommend Pashu Poshan or local NDDB LRP visit
+- For exact LP optimization with 500+ feed database, contact nearest **NDDB LRP** or dairy cooperative extension officer
 
 ### Answer format for ration queries
 Use WhatsApp-friendly structure:

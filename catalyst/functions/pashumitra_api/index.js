@@ -25281,6 +25281,66 @@ async function tryYoutubeVideoHint(messages) {
   return formatYoutubeHint(videos, query);
 }
 
+// catalyst/functions/pashumitra_api/lib/knowledge/ndlm-digital-platforms.ts
+var NDLM_DIGITAL_PLATFORMS = `
+## OFFICIAL DAHD / NDDB DIGITAL PLATFORMS (NDLM \u2014 LATEST ONLY, 2024\u20132025)
+
+**CRITICAL FOR AI REPLIES:** Do NOT recommend **Pashu Poshan** or **e-Gopala** as current farmer apps \u2014 they were superseded. The current official farmer app is **1962** (formerly e-Gopala, renamed under Bharat Pashudhan in 2025).
+
+### National Digital Livestock Mission (NDLM)
+- Joint initiative: **Department of Animal Husbandry & Dairying (DAHD)** + **National Dairy Development Board (NDDB)**.
+- National digital livestock ecosystem brand: **Bharat Pashudhan**.
+- Dedicated to the nation by Hon'ble PM (March 2024); rolled out pan-India from 2023.
+- Official portal / dashboard: **https://bharatpashudhan.ndlm.co.in/**
+- Support email: dahdndlm@gmail.com
+
+### Pashu Aadhaar (animal digital ID)
+- **12-digit bar-coded ear tag** for each cattle/buffalo \u2014 primary key in Bharat Pashudhan.
+- All field transactions (vaccination, AI, treatment, breeding, milk recording, ownership change) are logged against this tag ID.
+- Farmer and field workers can view the full history chain for each animal.
+
+### 1962 Farmer App (main app for farmers \u2014 USE THIS)
+- **Google Play:** search **"1962"** by Department of Animal Husbandry & Dairying (package: com.farmerpashudhan.production).
+- **Renamed from e-Gopala** to **1962** under Bharat Pashudhan (2025 update).
+- One-stop app for livestock farmers:
+  - View own animals and complete health/breeding/treatment history (mirrored from field worker entries)
+  - **Pashupedia** \u2014 breed & species guidebook
+  - Government schemes and facilities for farmers
+  - Buy/sell animals; access to quality breeding services (AI, semen, embryo transfer info)
+  - Ethnoveterinary / Ayurvedic medicine guidance (videos & printable documents)
+  - Unique QR code for farmer and each tagged animal
+  - Alerts for vaccination, pregnancy diagnosis, calving due dates
+- **Toll-free helpline 1962:** doorstep veterinary services via **Mobile Veterinary Units (MVUs)**.
+
+### Bharat Pashudhan Worker App (for vets / paravets / field staff \u2014 NOT for farmers)
+- **Google Play:** **BHARAT PASHUDHAN** (package: com.epashu.in).
+- Used by veterinarians, paravets, AI technicians, and extension workers to register owners, tag animals, and upload field transactions in real time.
+
+### Ration balancing & professional nutrition (separate from 1962)
+- **NDDB Ration Balancing Programme (RBP):** delivered by trained **Local Resource Persons (LRPs)** at village/cooperative level.
+- **INAPH** (Information Network for Animal Productivity & Health): professional platform for LRPs/vets \u2014 https://www.nddb.coop/resources/inaph
+- For exact least-cost ration optimization beyond PashuMitra's estimate: contact **nearest NDDB LRP** or **dairy cooperative extension officer** \u2014 NOT the old Pashu Poshan app.
+
+### Other NDDB digital systems (reference only \u2014 mostly for cooperatives/professionals)
+- **i-DIS** \u2014 Internet-based Dairy Information System for cooperatives/unions
+- **NDERP / iNDERP** \u2014 dairy ERP for unions and federations
+- **AMCS** \u2014 Automatic Milk Collection System at cooperative level
+- **NDDB Dairy Knowledge Portal:** https://www.dairyknowledge.in/
+
+### When farmer asks "which app should I download?"
+Always recommend: **1962 app** (Google Play) + **1962 helpline** for MVU vet visit + **Bharat Pashudhan portal** for scheme info.
+Never recommend: Pashu Poshan, e-Gopala (old names only \u2014 say "now called 1962 app").
+`;
+var NDLM_DIGITAL_RULES = `
+OFFICIAL DIGITAL PLATFORMS (DAHD / NDLM \u2014 NON-NEGOTIABLE):
+- For government schemes, animal records, breeding services, Pashupedia, buy/sell animals \u2192 recommend **1962 Farmer App** (Google Play) and toll-free **1962** helpline for Mobile Veterinary Units.
+- National livestock database ecosystem: **Bharat Pashudhan** \u2014 portal https://bharatpashudhan.ndlm.co.in/
+- Animal ID: **Pashu Aadhaar** (12-digit ear tag).
+- Field workers use **Bharat Pashudhan Worker App** \u2014 do NOT tell farmers to download the worker app unless they are paravets/vets.
+- **NEVER recommend Pashu Poshan or e-Gopala** as current apps \u2014 they are superseded by **1962** under NDLM (2025).
+- For professional ration LP optimization \u2192 NDDB **LRP** / **INAPH** via cooperative extension, not old mobile apps.
+`;
+
 // catalyst/functions/pashumitra_api/lib/knowledge/balanced-ration-guide.ts
 var BALANCED_RATION_GUIDE = `
 BALANCED RATION CALCULATION GUIDE
@@ -25483,7 +25543,7 @@ SUBJECT TO (constraints):
   \u2022 Crude Fibre \u2265 14% of DM (rumen health minimum)
   \u2022 Calcium : Phosphorus ratio between 1:1 and 1.5:1
   \u2022 Each ingredient \u2265 0 (can't use negative amounts)
-The Simplex method iterates through all possible combinations and identifies the one with the lowest total daily cost that satisfies all the above constraints. This is what NDDB's INAPH software and Pashu Poshan app do automatically.
+The Simplex method iterates through all possible combinations and identifies the one with the lowest total daily cost that satisfies all the above constraints. This is what NDDB's INAPH software (used by LRPs) does automatically.
 SECTION 3: Farmer Interview Questionnaire
 The following questions should be asked to the farmer in simple, field-friendly language. The farmer does not need to know anything about nutrition \u2014 the extension worker collects the answers and enters them into the software.
 Before You Begin
@@ -25896,9 +25956,12 @@ Available from ICAR Publication Unit, New Delhi. ISBN available. Authoritative I
 NDDB Ration Balancing Programme (INAPH Software)
 NDDB, Anand, Gujarat
 nddb.coop/services/animalnutrition/programmes/ration-balancing-programme
-Pashu Poshan App (simplified mobile version)
-NDDB
-Available free on Google Play Store. Search: "Pashu Poshan NDDB"
+1962 Farmer App (NDLM / Bharat Pashudhan \u2014 current official app)
+DAHD + NDDB
+Google Play: search "1962" by Department of Animal Husbandry & Dairying. Portal: bharatpashudhan.ndlm.co.in. (Formerly e-Gopala \u2014 do not use old name.)
+Bharat Pashudhan Worker App (field staff only)
+DAHD + NDDB
+Google Play: "BHARAT PASHUDHAN" (com.epashu.in) \u2014 for vets/paravets, not farmers.
 BIS IS 2052:2009 \u2014 Compounded Cattle Feed Standards
 Bureau of Indian Standards / FSSAI
 Available via BIS website: bis.gov.in. Mandatory standard for commercial concentrate in India.
@@ -25907,7 +25970,7 @@ MDPI Agriculture, 2024
 mdpi.com/2077-0472/14/9/1580 \u2014 Full open-access article. Mathematical methodology reference.
 This guide was compiled for Indian dairy farmers and extension workers.
 All nutrient standards are from ICAR (2013) and NDDB. American (NASEM/NRC) standards are NOT used in calculations.
-For field implementation, use the Pashu Poshan App (NDDB) or contact your nearest dairy cooperative extension officer.
+For field implementation, use the **1962 Farmer App** for schemes and records, or contact your nearest **NDDB LRP** / dairy cooperative extension officer for professional ration balancing.
 `;
 
 // catalyst/functions/pashumitra_api/lib/knowledge/ration-knowledge.ts
@@ -25922,7 +25985,7 @@ Key principles:
 - Use **Linear Programming (LP)** objective: Minimize Cost = \u03A3 (Price\u1D62 \xD7 Quantity\u1D62) subject to meeting TDN, CP, Ca, P, DM requirements; roughage DM \u2265 50% of total DM
 - Include **Area Specific Mineral Mixture (ASMM)** 100\u2013200 g/day (use 150 g for lactating animals)
 - Prioritize locally available feeds; validate with season and palatability
-- Delivered via trained LRPs and **Pashu Poshan** Android app / INAPH platform
+- Delivered via trained LRPs, **1962 Farmer App** (scheme/nutrition info), and **INAPH** platform for professionals
 
 ### When farmer asks about ration / feed / balanced diet
 **Always follow this workflow:**
@@ -26036,10 +26099,12 @@ When farmer gives herd size and groups:
 - BIS Type II (\u226518% CP, TDN \u226568%): 5\u201310 L/day, average yielders, dry period maintenance
 
 ### References for farmer
-- **Pashu Poshan** app (Google Play) \u2014 free self-service ration formulator
-- **INAPH** platform for LRPs/veterinarians
+- **1962 Farmer App** (Google Play \u2014 DAHD/NDLM; renamed from e-Gopala under Bharat Pashudhan) \u2014 schemes, Pashupedia, animal records, ethnoveterinary guides
+- **Toll-free 1962** \u2014 Mobile Veterinary Units at doorstep
+- **Bharat Pashudhan portal:** https://bharatpashudhan.ndlm.co.in/
+- **INAPH** platform for LRPs/veterinarians (professional ration balancing)
 - NDDB cooperative Cattle Feed Plants for BIS-compliant affordable feed
-- For exact LP optimization with 500+ feed database, recommend Pashu Poshan or local NDDB LRP visit
+- For exact LP optimization with 500+ feed database, contact nearest **NDDB LRP** or dairy cooperative extension officer
 
 ### Answer format for ration queries
 Use WhatsApp-friendly structure:
@@ -34248,6 +34313,8 @@ Official NDDB resources (https://www.dairyknowledge.in/dkp/section/medicinalplan
 var KNOWLEDGE_BASE = `
 # DAIRY FARMING & ANIMAL HUSBANDRY KNOWLEDGE BASE
 
+${NDLM_DIGITAL_PLATFORMS}
+
 ## 1. ANIMAL NUTRITION
 Balanced ration: 14-16% crude protein for lactating animals; Calcium:Phosphorus = 2:1.
 Green fodder targets: 25-30 kg/day lactating; dry fodder 4-6 kg; concentrate 1 kg per 2.5-3 L milk.
@@ -35018,6 +35085,272 @@ Maaf kijiye, jawab nahi aa paya (${upstream.status}). Dubara koshish karein.`;
   return new Response(ts.readable, { headers: sseHeaders });
 }
 
+// catalyst/functions/pashumitra_api/lib/domain-guard.ts
+var DAIRY_SIGNAL = new RegExp(
+  [
+    "dairy",
+    "dairying",
+    "milk",
+    "milch",
+    "doodh",
+    "dudh",
+    "cheese",
+    "ghee",
+    "paneer",
+    "curd",
+    "yogurt",
+    "cow",
+    "cattle",
+    "buffalo",
+    "gaay",
+    "gai",
+    "gay",
+    "bhains",
+    "bhainsa",
+    "pashu",
+    "livestock",
+    "herd",
+    "calf",
+    "calving",
+    "heifer",
+    "lactation",
+    "mastitis",
+    "udder",
+    "teat",
+    "fodder",
+    "chara",
+    "silage",
+    "hay",
+    "straw",
+    "berseem",
+    "napier",
+    "ration",
+    "feed",
+    "concentrate",
+    "breed",
+    "gir",
+    "sahiwal",
+    "murrah",
+    "jaffarabadi",
+    "surti",
+    "holstein",
+    "jersey",
+    "crossbred",
+    "artificial insemination",
+    "insemination",
+    "semen",
+    "breeding",
+    "heat",
+    "estrus",
+    "oestrus",
+    "pregnancy",
+    "garbha",
+    "vaccin",
+    "fmd",
+    "brucellosis",
+    "black quarter",
+    "lumpy",
+    "lsd",
+    "theileria",
+    "babesia",
+    "vet",
+    "veterinar",
+    "paravet",
+    "doctor",
+    "daktar",
+    "animal health",
+    "nddb",
+    "dahd",
+    "dcs",
+    "cooperative",
+    "sahakari",
+    "union",
+    "amul",
+    "milk union",
+    "scheme",
+    "yojana",
+    "subsidy",
+    "ahidf",
+    "rgm",
+    "npdd",
+    "nlm",
+    "kcc",
+    "ndlm",
+    "bharat pashudhan",
+    "pashu aadhaar",
+    "1962",
+    "inaph",
+    "lrp",
+    "evm",
+    "ethno",
+    "ayurved",
+    "goat",
+    "sheep",
+    "poultry",
+    "layer",
+    "broiler",
+    "pig",
+    "swine",
+    "biogas",
+    "manure",
+    "dung",
+    "vermicompost",
+    "snf",
+    "fat%",
+    "milk yield",
+    "procurement",
+    "collection centre",
+    "collection center"
+  ].join("|"),
+  "i"
+);
+var OFF_TOPIC_STRICT = new RegExp(
+  [
+    "\\bcricket\\b",
+    "\\bfootball\\b",
+    "\\bipl\\b",
+    "\\bfifa\\b",
+    "\\bolympics\\b",
+    "\\bmovie\\b",
+    "\\bbollywood\\b",
+    "\\bnetflix\\b",
+    "\\brecipe for chicken\\b",
+    "\\bcook pasta\\b",
+    "\\bbitcoin\\b",
+    "\\bcrypto\\b",
+    "\\bstock market\\b",
+    "\\bshare price\\b",
+    "\\belection\\b",
+    "\\bpolitics\\b",
+    "\\bpm modi\\b",
+    "\\btrump\\b",
+    "\\bpython\\b",
+    "\\bjavascript\\b",
+    "\\bwrite code\\b",
+    "\\bhomework\\b",
+    "\\bessay on\\b",
+    "\\bweather forecast\\b",
+    "\\btemperature tomorrow\\b",
+    "\\btell me a joke\\b",
+    "\\bjoke\\b",
+    "\\bpoem\\b",
+    "\\bstory about\\b",
+    "\\bgirlfriend\\b",
+    "\\bboyfriend\\b",
+    "\\bdating\\b",
+    "\\bwho won (the )?world cup\\b",
+    "machine learning",
+    "artificial intelligence",
+    "chatgpt",
+    "openai"
+  ].join("|"),
+  "i"
+);
+var FOLLOW_UP = /^(yes|no|haan|ha|nahi|na|ok|okay|theek|thik|aur|more|continue|batao|bata|tell more|samjha|samjhao|why|kaise|kab|kitna|kitne|kya aur|please explain|explain|detail|details|dhanyavad|thanks|thank you)[\s!.?]*$/i;
+function hasDairySignal(text) {
+  return DAIRY_SIGNAL.test(String(text || ""));
+}
+function isStrictOffTopic(text) {
+  return OFF_TOPIC_STRICT.test(String(text || ""));
+}
+function isFollowUpInDairyThread(lastUserText, priorUserText) {
+  if (!FOLLOW_UP.test(lastUserText.trim())) return false;
+  return hasDairySignal(priorUserText);
+}
+function isDairyRelatedQuery(messages, lastUserText) {
+  const last = String(lastUserText || "").trim();
+  if (!last) return false;
+  if (isStrictOffTopic(last)) return false;
+  const userMsgs = messages.filter((m) => m.role === "user").map((m) => m.content);
+  const priorUser = userMsgs.slice(0, -1).slice(-4).join(" ");
+  const fullCtx = userMsgs.slice(-4).join(" ");
+  if (hasDairySignal(last)) return true;
+  if (isFollowUpInDairyThread(last, priorUser)) return true;
+  if (hasDairySignal(fullCtx)) return true;
+  return false;
+}
+function offTopicRefusalMessage(lang) {
+  const code = lang && /^[a-z]{2}$/.test(lang) ? lang : "hi";
+  const messages = {
+    hi: "[[LANG:hi]]\nMain sirf dairy aur pashu-palan (gaay, bhains, doodh, chara, bimaari, yojana) se jude sawaalon ka jawab deta hoon.\n\nKripya apna dairy / pashu se related sawal poochhen \u2014 jaise doodh, chara, bimaari, ya sarkari yojana.",
+    en: "[[LANG:en]]\nI only answer questions about dairy and livestock farming (cows, buffaloes, milk, fodder, disease, schemes).\n\nPlease ask a dairy or animal-related question.",
+    bn: "[[LANG:bn]]\n\u0986\u09AE\u09BF \u09B6\u09C1\u09A7\u09C1 \u09A6\u09C1\u0997\u09CD\u09A7 \u0993 \u09AA\u09B6\u09C1\u09AA\u09BE\u09B2\u09A8 \u09B8\u0982\u0995\u09CD\u09B0\u09BE\u09A8\u09CD\u09A4 \u09AA\u09CD\u09B0\u09B6\u09CD\u09A8\u09C7\u09B0 \u0989\u09A4\u09CD\u09A4\u09B0 \u09A6\u09BF\u0987\u0964 \u09A6\u09AF\u09BC\u09BE \u0995\u09B0\u09C7 dairy/pashu \u09B8\u09AE\u09CD\u09AA\u09B0\u09CD\u0995\u09BF\u09A4 \u09AA\u09CD\u09B0\u09B6\u09CD\u09A8 \u099C\u09BF\u099C\u09CD\u099E\u09BE\u09B8\u09BE \u0995\u09B0\u09C1\u09A8\u0964",
+    ta: "[[LANG:ta]]\n\u0BA8\u0BBE\u0BA9\u0BCD \u0BAA\u0BBE\u0BB2\u0BCD \u0BB5\u0BB3\u0BB0\u0BCD\u0BAA\u0BCD\u0BAA\u0BC1 \u0BAE\u0BB1\u0BCD\u0BB1\u0BC1\u0BAE\u0BCD \u0B95\u0BBE\u0BB2\u0BCD\u0BA8\u0B9F\u0BC8 \u0BB5\u0BB3\u0BB0\u0BCD\u0BAA\u0BCD\u0BAA\u0BC1 \u0B95\u0BC7\u0BB3\u0BCD\u0BB5\u0BBF\u0B95\u0BB3\u0BC1\u0B95\u0BCD\u0B95\u0BC1 \u0BAE\u0B9F\u0BCD\u0B9F\u0BC1\u0BAE\u0BC7 \u0BAA\u0BA4\u0BBF\u0BB2\u0BB3\u0BBF\u0B95\u0BCD\u0B95\u0BBF\u0BB1\u0BC7\u0BA9\u0BCD.",
+    te: "[[LANG:te]]\n\u0C28\u0C47\u0C28\u0C41 \u0C2A\u0C3E\u0C32 \u0C2A\u0C36\u0C41 \u0C2A\u0C46\u0C02\u0C2A\u0C15\u0C02 \u0C2E\u0C30\u0C3F\u0C2F\u0C41 dairy \u0C38\u0C02\u0C2C\u0C02\u0C27\u0C3F\u0C24 \u0C2A\u0C4D\u0C30\u0C36\u0C4D\u0C28\u0C32\u0C15\u0C41 \u0C2E\u0C3E\u0C24\u0C4D\u0C30\u0C2E\u0C47 \u0C38\u0C2E\u0C3E\u0C27\u0C3E\u0C28\u0C02 \u0C07\u0C38\u0C4D\u0C24\u0C3E\u0C28\u0C41.",
+    gu: "[[LANG:gu]]\n\u0AB9\u0AC1\u0A82 \u0AAB\u0A95\u0ACD\u0AA4 dairy \u0A85\u0AA8\u0AC7 \u0AAA\u0AB6\u0AC1\u0AAA\u0ABE\u0AB2\u0AA8 \u0AB8\u0A82\u0AAC\u0A82\u0AA7\u0ABF\u0AA4 \u0AAA\u0ACD\u0AB0\u0AB6\u0ACD\u0AA8\u0ACB\u0AA8\u0ABE \u0A9C\u0AB5\u0ABE\u0AAC \u0A86\u0AAA\u0AC1\u0A82 \u0A9B\u0AC1\u0A82.",
+    mr: "[[LANG:mr]]\n\u092E\u0940 \u092B\u0915\u094D\u0924 dairy \u0935 \u092A\u0936\u0941\u092A\u093E\u0932\u0928\u093E\u0936\u0940 \u0938\u0902\u092C\u0902\u0927\u093F\u0924 \u092A\u094D\u0930\u0936\u094D\u0928\u093E\u0902\u091A\u0940 \u0909\u0924\u094D\u0924\u0930\u0947 \u0926\u0947\u0924\u094B."
+  };
+  return messages[code] || messages.hi;
+}
+function detectOffTopicLang(text, fallback) {
+  return detectLangForRefusal(text) || fallback || "hi";
+}
+var KNOWLEDGE_BOUNDARY_RULES = `
+KNOWLEDGE BOUNDARY (CRITICAL \u2014 NO OPEN WEB):
+- Your ONLY source of facts is the **RETRIEVED KNOWLEDGE** block in this conversation (NDDB/DAHD/ICAR curated corpus).
+- NEVER use general internet knowledge, news, Wikipedia, or training-data guesses.
+- NEVER invent scheme names, subsidy amounts, medicine doses, phone numbers, or statistics not present in RETRIEVED KNOWLEDGE.
+- If RETRIEVED KNOWLEDGE does not contain enough to answer, say clearly in the farmer's language that this information is not in your records and suggest: nearest dairy cooperative / veterinarian / **1962 app** \u2014 do NOT guess or fill gaps.
+- Do NOT answer questions outside dairy & livestock even if you know the answer \u2014 refuse politely (see DOMAIN rules).
+
+URL RULES (CRITICAL):
+- NEVER paste a web link unless that exact URL (same host and path) appears verbatim in RETRIEVED KNOWLEDGE.
+- Allowed domains when present in retrieved text only: dahd.gov.in, nddb.coop, dairyknowledge.in, bharatpashudhan.ndlm.co.in, icar.org.in, ivri.nic.in, nivedi.res.in, bis.gov.in, pib.gov.in.
+- Do NOT link to random blogs, Wikipedia, news sites, or Play Store \u2014 you may name "1962 app on Google Play" in words without a URL unless the exact Play Store URL is in retrieved knowledge.
+- YouTube: never paste youtube.com / youtu.be links in chat \u2014 the app attaches verified videos separately.
+`;
+var DOMAIN_SCOPE_RULES = `
+DOMAIN SCOPE (STRICT):
+In scope ONLY: dairy & livestock farming \u2014 cattle/buffalo/goat/sheep/poultry health, breeding, nutrition, fodder, milk quality, cooperative milk marketing, ethno-veterinary medicine, NDDB/DAHD schemes (RGM, AHIDF, NPDD, NLM, KCC, NDLM), ration balancing, housing, economics of small dairy farms.
+Out of scope (ALWAYS refuse): sports, entertainment, politics, general knowledge, human recipes, coding, finance/crypto, weather, homework, jokes, relationships, AI/tech unrelated to farming.
+If out of scope: one short refusal in farmer's language \u2014 do NOT attempt a partial answer.
+`;
+
+// catalyst/functions/pashumitra_api/lib/allowed-urls.ts
+var ALLOWED_HOSTS = /* @__PURE__ */ new Set([
+  "dahd.gov.in",
+  "www.dahd.gov.in",
+  "nddb.coop",
+  "www.nddb.coop",
+  "dairyknowledge.in",
+  "www.dairyknowledge.in",
+  "bharatpashudhan.ndlm.co.in",
+  "icar.org.in",
+  "www.icar.org.in",
+  "icar.org.in",
+  "ivri.nic.in",
+  "nivedi.res.in",
+  "bis.gov.in",
+  "www.bis.gov.in",
+  "pib.gov.in",
+  "www.pib.gov.in"
+]);
+function hostAllowed(hostname) {
+  const h = hostname.toLowerCase().replace(/^www\./, "");
+  for (const allowed of ALLOWED_HOSTS) {
+    const base = allowed.replace(/^www\./, "");
+    if (h === base || h.endsWith(`.${base}`)) return true;
+  }
+  return false;
+}
+function isAllowedUrl(raw) {
+  try {
+    const u = new URL(raw);
+    if (u.protocol !== "https:" && u.protocol !== "http:") return false;
+    return hostAllowed(u.hostname);
+  } catch {
+    return false;
+  }
+}
+function filterToAllowedUrls(text) {
+  if (!text?.trim()) return text;
+  return text.replace(/https?:\/\/[^\s)\]"'<>]+/gi, (url) => {
+    const cleaned = url.replace(/[.,;:!?)]+$/, "");
+    const trailing = url.slice(cleaned.length);
+    return isAllowedUrl(cleaned) ? cleaned + trailing : "";
+  }).replace(/\s{2,}/g, " ").replace(/ +\n/g, "\n").trim();
+}
+
 // catalyst/functions/pashumitra_api/src/handlers/chat.ts
 var jsonHeaders = { "Content-Type": "application/json" };
 var sseHeaders2 = { "Content-Type": "text/event-stream" };
@@ -35071,8 +35404,10 @@ When the farmer asks about ration, balanced feed, least-cost feed, what to feed,
 - Pick seasonal/local feeds (berseem in rabi, maize/sorghum in kharif, silage/straw in summer).
 - Recommend BIS Type I for >10 L/day, BIS Type II for 5\u201310 L/day.
 - If COMPUTED RATION ADVISORY is provided below in this prompt, use those exact numbers as the basis of your answer (translate to farmer's language, keep amounts and costs).
-- End with note to verify local prices and consult Pashu Poshan app / NDDB LRP for fine-tuning.
+- End with note to verify local prices; for fine-tuning recommend **1962 app** / nearest **NDDB LRP** or cooperative extension officer.
 - For generic ration questions without full details, give practical guidance from the knowledge base \u2014 do NOT force a long interview unless the farmer opened Ration Advisory mode.
+
+${NDLM_DIGITAL_RULES}
 
 ${MILK_MARKETING_SYSTEM_RULES}
 - Explain cooperative benefits: fair fat/SNF price, timely payment, bonus, cattle feed, AI, vet services.
@@ -35084,9 +35419,9 @@ YOUTUBE / VIDEO LINKS (CRITICAL \u2014 NO FAKE URLS):
 - If you must mention video, say "verified link is below" without a URL.
 - ONLY include a YouTube URL if it appears verbatim in VERIFIED YOUTUBE VIDEOS below (rare \u2014 prefer no URL).
 
-DOMAIN: Livestock & dairy farming, cattle/buffalo health, breeding, nutrition, fodder, ethno-veterinary medicine, milk quality, balanced ration formulation, and Indian government schemes (DAHD, RGM, AHIDF, NPDD, NLM, KCC, state schemes). Outside this domain, gently redirect in the user's language.
+${DOMAIN_SCOPE_RULES}
 
-KNOWLEDGE: Use ONLY facts from the RETRIEVED KNOWLEDGE section provided in this conversation. Do not invent schemes, medicines, or dosages. The retrieved section may be long \u2014 pick only what is needed for this turn's short answer; ignore the rest until the farmer asks follow-up questions. If retrieved knowledge is insufficient, say what is missing and give safe general guidance.
+${KNOWLEDGE_BOUNDARY_RULES}
 
 REMEMBER: First line = [[LANG:xx]] then newline then answer. The language of the answer MUST match xx and MUST match the user's last message.`;
 var RATION_ADVISORY_MODE_PROMPT = `RATION ADVISORY PANEL MODE (ACTIVE):
@@ -35261,6 +35596,13 @@ async function handleChat(req) {
     const rationHint = isRationAdvisory || mode === "call" ? null : tryComputeRationHint(safeMessages);
     const userCtx = safeMessages.filter((m) => m.role === "user").map((m) => m.content).join("\n");
     const lastUserText = lastUser?.content || "";
+    if (mode !== "ration_advisory" && !isVetContactRequest(lastUserText || userCtx) && !isDairyRelatedQuery(safeMessages, lastUserText)) {
+      const refusal = offTopicRefusalMessage(
+        detectOffTopicLang(lastUserText, typeof forceLanguage === "string" ? forceLanguage : null)
+      );
+      if (stream) return streamStaticText(refusal);
+      return new Response(JSON.stringify({ text: refusal }), { headers: jsonHeaders });
+    }
     const vetConsultQuery = mode === "chat" && isVetConsultQuery(userCtx || lastUserText);
     const vetContactDirect = (mode === "chat" || mode === "call") && isVetContactRequest(lastUserText || userCtx);
     const cooperativeHint = buildCooperativeMarketingPrompt(userCtx || lastUserText);
@@ -35287,7 +35629,7 @@ async function handleChat(req) {
     const maxTokens = mode === "call" ? 420 : isRationAdvisory ? 2048 : 1200;
     const buildSarvamMessages = (youtubeHint2, ragContext2) => [
       { role: "system", content: mode === "call" ? CALL_SYSTEM_PROMPT : SYSTEM_PROMPT },
-      { role: "system", content: `RETRIEVED KNOWLEDGE (Sarvam RAG \u2014 NDDB/DAHD/ICAR curated corpus; authoritative facts; use selectively, do not dump all in one reply):
+      { role: "system", content: `RETRIEVED KNOWLEDGE (SOLE AUTHORITATIVE SOURCE \u2014 NDDB/DAHD/ICAR curated corpus; use ONLY these facts; if missing, say so; do not use open web):
 ${ragContext2}` },
       ...isRationAdvisory ? [{ role: "system", content: RATION_ADVISORY_MODE_PROMPT }] : [],
       ...advisoryHint ? [{ role: "system", content: advisoryHint }] : [],
@@ -35365,7 +35707,7 @@ This is regular chat \u2014 NOT a report. Max ~500 words this turn.
       return new Response(response.body, { headers: sseHeaders2 });
     }
     const data = await response.json();
-    let text = filterAbusiveLanguage(extractSarvamChatText(data));
+    let text = filterToAllowedUrls(filterAbusiveLanguage(extractSarvamChatText(data)));
     if (!text.trim() && mode === "call") {
       text = callModeFallbackAnswer(
         typeof forceLanguage === "string" ? forceLanguage : detectedUserLang

@@ -200,7 +200,7 @@ SUBJECT TO (constraints):
   • Crude Fibre ≥ 14% of DM (rumen health minimum)
   • Calcium : Phosphorus ratio between 1:1 and 1.5:1
   • Each ingredient ≥ 0 (can't use negative amounts)
-The Simplex method iterates through all possible combinations and identifies the one with the lowest total daily cost that satisfies all the above constraints. This is what NDDB's INAPH software and Pashu Poshan app do automatically.
+The Simplex method iterates through all possible combinations and identifies the one with the lowest total daily cost that satisfies all the above constraints. This is what NDDB's INAPH software (used by LRPs) does automatically.
 SECTION 3: Farmer Interview Questionnaire
 The following questions should be asked to the farmer in simple, field-friendly language. The farmer does not need to know anything about nutrition — the extension worker collects the answers and enters them into the software.
 Before You Begin
@@ -613,9 +613,12 @@ Available from ICAR Publication Unit, New Delhi. ISBN available. Authoritative I
 NDDB Ration Balancing Programme (INAPH Software)
 NDDB, Anand, Gujarat
 nddb.coop/services/animalnutrition/programmes/ration-balancing-programme
-Pashu Poshan App (simplified mobile version)
-NDDB
-Available free on Google Play Store. Search: "Pashu Poshan NDDB"
+1962 Farmer App (NDLM / Bharat Pashudhan — current official app)
+DAHD + NDDB
+Google Play: search "1962" by Department of Animal Husbandry & Dairying. Portal: bharatpashudhan.ndlm.co.in. (Formerly e-Gopala — do not use old name.)
+Bharat Pashudhan Worker App (field staff only)
+DAHD + NDDB
+Google Play: "BHARAT PASHUDHAN" (com.epashu.in) — for vets/paravets, not farmers.
 BIS IS 2052:2009 — Compounded Cattle Feed Standards
 Bureau of Indian Standards / FSSAI
 Available via BIS website: bis.gov.in. Mandatory standard for commercial concentrate in India.
@@ -624,5 +627,5 @@ MDPI Agriculture, 2024
 mdpi.com/2077-0472/14/9/1580 — Full open-access article. Mathematical methodology reference.
 This guide was compiled for Indian dairy farmers and extension workers.
 All nutrient standards are from ICAR (2013) and NDDB. American (NASEM/NRC) standards are NOT used in calculations.
-For field implementation, use the Pashu Poshan App (NDDB) or contact your nearest dairy cooperative extension officer.
+For field implementation, use the **1962 Farmer App** for schemes and records, or contact your nearest **NDDB LRP** / dairy cooperative extension officer for professional ration balancing.
 `;

@@ -17,6 +17,7 @@ import {
   containsAbusiveLanguage,
   filterAbusiveLanguage,
 } from "@/lib/content-safety";
+import { filterToAllowedUrls } from "@/lib/allowed-urls";
 import {
   callConnectingMessage,
   callInterruptedMessage,
@@ -312,6 +313,7 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
       if (replyLang && replyLang !== "en") {
         body = await ensureNativeScriptText(body, replyLang, chatCtrl.signal);
       }
+      body = filterToAllowedUrls(body);
       const lang = resolveTtsLanguage(body, replyLang);
       const answer = body.trim();
       if (!answer) {

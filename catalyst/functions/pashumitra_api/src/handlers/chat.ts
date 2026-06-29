@@ -30,6 +30,15 @@ import { ensureNativeScriptText } from "../../lib/native-script.ts";
 import { getVetContactDirectReply, isVetConsultQuery, isVetContactRequest, VET_CONSULT_MARKER } from "../../lib/vet-consult.ts";
 import { trimChatMessages } from "../../lib/chat-history.ts";
 import { createSsePassthroughStream } from "../../lib/sse-passthrough.ts";
+import { NDLM_DIGITAL_RULES } from "../../lib/knowledge/ndlm-digital-platforms.ts";
+import {
+  detectOffTopicLang,
+  isDairyRelatedQuery,
+  KNOWLEDGE_BOUNDARY_RULES,
+  DOMAIN_SCOPE_RULES,
+  offTopicRefusalMessage,
+} from "../../lib/domain-guard.ts";
+import { filterToAllowedUrls } from "../../lib/allowed-urls.ts";
 
 const jsonHeaders = { "Content-Type": "application/json" };
 const sseHeaders = { "Content-Type": "text/event-stream" };
@@ -84,8 +93,10 @@ When the farmer asks about ration, balanced feed, least-cost feed, what to feed,
 - Pick seasonal/local feeds (berseem in rabi, maize/sorghum in kharif, silage/straw in summer).
 - Recommend BIS Type I for >10 L/day, BIS Type II for 5–10 L/day.
 - If COMPUTED RATION ADVISORY is provided below in this prompt, use those exact numbers as the basis of your answer (translate to farmer's language, keep amounts and costs).
-- End with note to verify local prices and consult Pashu Poshan app / NDDB LRP for fine-tuning.
+- End with note to verify local prices; for fine-tuning recommend **1962 app** / nearest **NDDB LRP** or cooperative extension officer.
 - For generic ration questions without full details, give practical guidance from the knowledge base — do NOT force a long interview unless the farmer opened Ration Advisory mode.
+
+${NDLM_DIGITAL_RULES}
 
 ${MILK_MARKETING_SYSTEM_RULES}
 - Explain cooperative benefits: fair fat/SNF price, timely payment, bonus, cattle feed, AI, vet services.
@@ -97,9 +108,9 @@ YOUTUBE / VIDEO LINKS (CRITICAL — NO FAKE URLS):
 - If you must mention video, say "verified link is below" without a URL.
 - ONLY include a YouTube URL if it appears verbatim in VERIFIED YOUTUBE VIDEOS below (rare — prefer no URL).
 
-DOMAIN: Livestock & dairy farming, cattle/buffalo health, breeding, nutrition, fodder, ethno-veterinary medicine, milk quality, balanced ration formulation, and Indian government schemes (DAHD, RGM, AHIDF, NPDD, NLM, KCC, state schemes). Outside this domain, gently redirect in the user's language.
+${DOMAIN_SCOPE_RULES}
 
-KNOWLEDGE: Use ONLY facts from the RETRIEVED KNOWLEDGE section provided in this conversation. Do not invent schemes, medicines, or dosages. The retrieved section may be long — pick only what is needed for this turn's short answer; ignore the rest until the farmer asks follow-up questions. If retrieved knowledge is insufficient, say what is missing and give safe general guidance.
+${KNOWLEDGE_BOUNDARY_RULES}
 
 REMEMBER: First line = [[LANG:xx]] then newline then answer. The language of the answer MUST match xx and MUST match the user's last message.`;
 
@@ -281,6 +292,19 @@ export async function handleChat(req: Request): Promise<Response> {
 
     const userCtx = safeMessages.filter((m: { role: string }) => m.role === "user").map((m: { content: string }) => m.content).join("\n");
     const lastUserText = lastUser?.content || "";
+
+    if (
+      mode !== "ration_advisory"
+      && !isVetContactRequest(lastUserText || userCtx)
+      && !isDairyRelatedQuery(safeMessages, lastUserText)
+    ) {
+      const refusal = offTopicRefusalMessage(
+        detectOffTopicLang(lastUserText, typeof forceLanguage === "string" ? forceLanguage : null),
+      );
+      if (stream) return streamStaticText(refusal);
+      return new Response(JSON.stringify({ text: refusal }), { headers: jsonHeaders });
+    }
+
     const vetConsultQuery = mode === "chat" && isVetConsultQuery(userCtx || lastUserText);
     const vetContactDirect = (mode === "chat" || mode === "call") && isVetContactRequest(lastUserText || userCtx);
     const cooperativeHint = buildCooperativeMarketingPrompt(userCtx || lastUserText);
@@ -315,7 +339,7 @@ export async function handleChat(req: Request): Promise<Response> {
 
     const buildSarvamMessages = (youtubeHint: string | null, ragContext: string) => [
       { role: "system", content: mode === "call" ? CALL_SYSTEM_PROMPT : SYSTEM_PROMPT },
-      { role: "system", content: `RETRIEVED KNOWLEDGE (Sarvam RAG — NDDB/DAHD/ICAR curated corpus; authoritative facts; use selectively, do not dump all in one reply):\n${ragContext}` },
+      { role: "system", content: `RETRIEVED KNOWLEDGE (SOLE AUTHORITATIVE SOURCE — NDDB/DAHD/ICAR curated corpus; use ONLY these facts; if missing, say so; do not use open web):\n${ragContext}` },
       ...(isRationAdvisory ? [{ role: "system", content: RATION_ADVISORY_MODE_PROMPT }] : []),
       ...(advisoryHint ? [{ role: "system", content: advisoryHint }] : []),
       ...(rationHint ? [{ role: "system", content: rationHint }] : []),
@@ -397,7 +421,7 @@ This is regular chat — NOT a report. Max ~500 words this turn.
     }
 
     const data = await response.json();
-    let text = filterAbusiveLanguage(extractSarvamChatText(data));
+    let text = filterToAllowedUrls(filterAbusiveLanguage(extractSarvamChatText(data)));
     if (!text.trim() && mode === "call") {
       text = callModeFallbackAnswer(
         typeof forceLanguage === "string" ? forceLanguage : detectedUserLang,

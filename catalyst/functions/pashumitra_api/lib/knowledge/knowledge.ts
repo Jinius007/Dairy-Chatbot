@@ -1,6 +1,7 @@
 // Curated knowledge base on dairy farming, livestock, ethno-veterinary medicine,
 // and Indian government schemes. Compiled from NDDB Knowledge Repo, EVM Brochure,
 // Cow Comfort manual, Pashupalan Nirdeshika, and DAHD Schemes documents.
+import { NDLM_DIGITAL_PLATFORMS } from "./ndlm-digital-platforms.ts";
 import { BALANCED_RATION_GUIDE } from "./balanced-ration-guide.ts";
 import { RATION_KNOWLEDGE } from "./ration-knowledge.ts";
 import { COOPERATIVE_MILK_POLICY } from "./cooperative-policy.ts";
@@ -11,6 +12,8 @@ import { SARVAM_RAG_CORPUS } from "./sarvam-rag.generated.ts";
 
 export const KNOWLEDGE_BASE = `
 # DAIRY FARMING & ANIMAL HUSBANDRY KNOWLEDGE BASE
+
+${NDLM_DIGITAL_PLATFORMS}
 
 ## 1. ANIMAL NUTRITION
 Balanced ration: 14-16% crude protein for lactating animals; Calcium:Phosphorus = 2:1.

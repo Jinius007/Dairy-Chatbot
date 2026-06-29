@@ -39,6 +39,7 @@ import { trimChatHistory, incompleteReplyFallback } from "@/lib/chat-history";
 import { fetchChatContinuation, looksIncompleteReply } from "@/lib/chat-continuation";
 import { readSseChatStream } from "@/lib/chat-stream";
 import { createTimeoutSignal, anyAbortSignal, isAbortError } from "@/lib/abort-utils";
+import { filterToAllowedUrls } from "@/lib/allowed-urls";
 import { transcribeAudio } from "@/lib/transcribe-api";
 import {
   SLOW_RESPONSE_MS,
@@ -354,6 +355,8 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
         const fallback = incompleteReplyFallback(replyLang);
         ({ lang, body } = splitLangHeader(fallback));
       }
+
+      body = filterToAllowedUrls(body);
 
       const updated = messagesRef.current.map((m) =>
         m.id === assistantId ? { ...m, content: body, language: lang ?? m.language ?? null } : m
