@@ -50,6 +50,7 @@ import {
   isAffirmativeConsultReply,
   isVetContactRequest,
   stripVetConsultMarker,
+  vetContactFallbackReply,
 } from "@/lib/vet-consult";
 
 interface Message {
@@ -382,8 +383,21 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
 
     try {
       const wantsVetsDirect = isVetContactRequest(text);
+      if (wantsVetsDirect) {
+        void loadNearbyVets(assistantMsg.id, userLang);
+      }
       const { text: reply, lang, wantsVets } = await streamReply(nextHistory, assistantMsg.id, text, isVoice, startedAt, userLang);
       const replyLang = lang ?? userLang;
+      if (wantsVetsDirect && !wantsVets) {
+        const fallback = vetContactFallbackReply(replyLang);
+        const { lang: fbLang, body } = splitLangHeader(fallback);
+        const updated = messagesRef.current.map((m) =>
+          m.id === assistantMsg.id ? { ...m, content: stripVetConsultMarker(body), language: fbLang ?? replyLang } : m,
+        );
+        messagesRef.current = updated;
+        setMessages(updated);
+        persist(updated);
+      }
       if (wantsVetsDirect || wantsVets) {
         void loadNearbyVets(assistantMsg.id, replyLang);
       }

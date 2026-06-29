@@ -6,7 +6,8 @@ import { transcribeAudio } from "@/lib/transcribe-api";
 import { LANG_NAMES, detectUserLanguage, resolveTtsLanguage } from "@/lib/languages";
 import { getChatCompletionsUrl, getChatRequestHeaders } from "@/lib/chat-api";
 import { fetchChatCompletionText, splitLangHeader } from "@/lib/chat-response";
-import { speakText, stopSpeech, unlockAudioPlayback, waitUntilPlaybackFullyIdle, isCallPlaybackActive } from "@/lib/speech";
+import { speakText, stopSpeech, unlockAudioPlayback, waitForCallPlaybackIdle } from "@/lib/speech";
+import { startCallBargeInWithStream, type CallBargeInHandle } from "@/lib/call-barge-in";
 import { getSessionId } from "@/lib/session";
 import { logConversationTurn } from "@/lib/log-turn";
 import {
@@ -93,12 +94,9 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
   const chatAbortRef = useRef<AbortController | null>(null);
   const userLangRef = useRef("hi");
   const startListeningRef = useRef<() => void>(() => undefined);
-
-  const setMicCaptureEnabled = (enabled: boolean) => {
-    streamRef.current?.getAudioTracks().forEach((track) => {
-      track.enabled = enabled;
-    });
-  };
+  const bargeWatchRef = useRef<CallBargeInHandle | null>(null);
+  const bargeTriggeredRef = useRef(false);
+  const interruptListenTimerRef = useRef<number | null>(null);
 
   const setPhaseBoth = (p: Phase) => {
     phaseRef.current = p;
@@ -138,6 +136,43 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
     audioContextRef.current = null;
   };
 
+  const clearBargeWatch = () => {
+    bargeWatchRef.current?.stop();
+    bargeWatchRef.current = null;
+  };
+
+  const clearInterruptListenTimer = () => {
+    if (interruptListenTimerRef.current) {
+      window.clearTimeout(interruptListenTimerRef.current);
+      interruptListenTimerRef.current = null;
+    }
+  };
+
+  const interruptAndListen = useCallback(() => {
+    if (closedRef.current || bargeTriggeredRef.current) return;
+    bargeTriggeredRef.current = true;
+    speechGenRef.current += 1;
+    chatAbortRef.current?.abort();
+    chatAbortRef.current = null;
+    stopSpeech();
+    clearBargeWatch();
+    processingRef.current = false;
+    setInterrupted(true);
+    setPhaseBoth("listening");
+
+    clearInterruptListenTimer();
+    void (async () => {
+      await waitForCallPlaybackIdle(800);
+      await new Promise<void>((r) => {
+        interruptListenTimerRef.current = window.setTimeout(() => {
+          interruptListenTimerRef.current = null;
+          r();
+        }, 180);
+      });
+      if (!closedRef.current && bargeTriggeredRef.current) startListeningRef.current();
+    })();
+  }, []);
+
   const speak = useCallback(
     (text: string, lang: string | null) =>
       speakText(text, { lang, priority: true, preferFemale: true, callMode: true }),
@@ -146,25 +181,18 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
 
   const resumeListening = useCallback((delay = 300) => {
     if (closedRef.current) return;
-    if (phaseRef.current === "speaking" || isCallPlaybackActive()) return;
     if (restartTimerRef.current) window.clearTimeout(restartTimerRef.current);
     setPhaseBoth("idle");
     restartTimerRef.current = window.setTimeout(() => {
       restartTimerRef.current = null;
-      if (
-        !closedRef.current &&
-        !processingRef.current &&
-        phaseRef.current !== "speaking" &&
-        !isCallPlaybackActive()
-      ) {
-        startListeningRef.current();
-      }
+      if (!closedRef.current && !processingRef.current) startListeningRef.current();
     }, delay);
   }, []);
 
   const playAdvisorSpeech = useCallback(
     async (text: string, lang: string | null) => {
       const gen = ++speechGenRef.current;
+      bargeTriggeredRef.current = false;
       setInterrupted(false);
       setPhaseBoth("speaking");
       stopSilenceMonitor();
@@ -174,33 +202,36 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
         /* ignore */
       }
       mediaRef.current = null;
-      setMicCaptureEnabled(false);
+
+      const stream = streamRef.current;
+      if (stream?.active) {
+        clearBargeWatch();
+        bargeWatchRef.current = startCallBargeInWithStream(
+          userLangRef.current,
+          stream,
+          text,
+          () => interruptAndListen(),
+          () => phaseRef.current === "speaking" && !bargeTriggeredRef.current,
+        );
+      }
 
       try {
         await speak(text, lang);
       } catch (e) {
         console.error("playAdvisorSpeech:", e);
       } finally {
-        await waitUntilPlaybackFullyIdle(8000);
-        if (closedRef.current || speechGenRef.current !== gen) {
-          setMicCaptureEnabled(true);
-          return;
-        }
-        if (phaseRef.current === "listening") {
-          setMicCaptureEnabled(true);
-          return;
-        }
-        setPhaseBoth("idle");
-        await new Promise((r) => window.setTimeout(r, 450));
-        if (closedRef.current || speechGenRef.current !== gen) {
-          setMicCaptureEnabled(true);
-          return;
-        }
-        setMicCaptureEnabled(true);
-        resumeListening(250);
+        clearBargeWatch();
+      }
+      if (
+        !closedRef.current &&
+        speechGenRef.current === gen &&
+        phaseRef.current === "speaking" &&
+        !bargeTriggeredRef.current
+      ) {
+        resumeListening(280);
       }
     },
-    [resumeListening, speak],
+    [interruptAndListen, resumeListening, speak],
   );
 
   const processBlob = async (blob: Blob, mime: string) => {
@@ -312,11 +343,12 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
   function startListening() {
     if (closedRef.current) return;
     if (processingRef.current || phaseRef.current === "thinking") return;
-    if (phaseRef.current === "speaking" || isCallPlaybackActive()) return;
+    if (phaseRef.current === "speaking" && !bargeTriggeredRef.current) return;
     const stream = streamRef.current;
     if (!stream || !stream.active) return;
     if (mediaRef.current?.state === "recording") return;
     setInterrupted(false);
+    bargeTriggeredRef.current = false;
     stopSilenceMonitor();
     const mimeType = getSupportedMimeType();
     const rec = mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream);
@@ -328,7 +360,7 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
       if (maxRecordTimerRef.current) window.clearTimeout(maxRecordTimerRef.current);
       maxRecordTimerRef.current = null;
       const recorded = new Blob(chunksRef.current, { type: blobType });
-      if (recorded.size < 500) {
+      if (recorded.size < 800) {
         if (!closedRef.current) resumeListening(400);
         return;
       }
@@ -348,15 +380,9 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
       const data = new Uint8Array(analyser.fftSize);
       let speechStarted = false;
       let silenceStartedAt = 0;
-      let loudFrames = 0;
       const startedAt = Date.now();
-      const graceMs = 2000;
       const monitor = () => {
         if (closedRef.current || mediaRef.current !== rec || rec.state !== "recording") return;
-        if (phaseRef.current === "speaking" || isCallPlaybackActive()) {
-          analyserFrameRef.current = requestAnimationFrame(monitor);
-          return;
-        }
         analyser.getByteTimeDomainData(data);
         let sum = 0;
         for (const value of data) {
@@ -365,24 +391,14 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
         }
         const volume = Math.sqrt(sum / data.length);
         const now = Date.now();
-        if (now - startedAt < graceMs) {
-          analyserFrameRef.current = requestAnimationFrame(monitor);
-          return;
-        }
-        if (volume > 0.042) {
-          loudFrames += 1;
-          if (loudFrames >= 5) {
-            speechStarted = true;
-            silenceStartedAt = 0;
-          }
-        } else {
-          loudFrames = 0;
-          if (speechStarted) {
-            silenceStartedAt ||= now;
-            if (now - silenceStartedAt > 1500 && now - startedAt > graceMs + 1200) {
-              rec.stop();
-              return;
-            }
+        if (volume > 0.03) {
+          speechStarted = true;
+          silenceStartedAt = 0;
+        } else if (speechStarted) {
+          silenceStartedAt ||= now;
+          if (now - silenceStartedAt > 1400 && now - startedAt > 1800) {
+            rec.stop();
+            return;
           }
         }
         analyserFrameRef.current = requestAnimationFrame(monitor);
@@ -450,7 +466,8 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
       if (maxRecordTimerRef.current) window.clearTimeout(maxRecordTimerRef.current);
       stopSpeech();
       stopSilenceMonitor();
-      setMicCaptureEnabled(true);
+      clearBargeWatch();
+      clearInterruptListenTimer();
       try {
         if (mediaRef.current?.state === "recording") mediaRef.current.stop();
       } catch {
@@ -471,7 +488,8 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
     chatAbortRef.current = null;
     stopSpeech();
     stopSilenceMonitor();
-    setMicCaptureEnabled(true);
+    clearBargeWatch();
+    clearInterruptListenTimer();
     try {
       if (mediaRef.current?.state === "recording") mediaRef.current.stop();
     } catch {

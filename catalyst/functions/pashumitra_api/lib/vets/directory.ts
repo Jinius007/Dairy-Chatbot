@@ -23,6 +23,8 @@ export interface VetProfessional {
   languages: string[];
   available?: boolean;
   distanceKm?: number;
+  licenseCertificateName?: string;
+  licenseCertificateMime?: string;
 }
 
 export interface VetRegistrationInput {
@@ -42,6 +44,8 @@ export interface VetRegistrationInput {
   lat: number;
   lng: number;
   yearsExperience: number;
+  googleId?: string;
+  licenseCertificate?: { fileName: string; mimeType: string; dataUrl?: string };
 }
 
 const STATE_CODES = [
@@ -198,6 +202,8 @@ export function registerVet(input: VetRegistrationInput): VetProfessional {
     yearsExperience: input.yearsExperience,
     languages: ["hi", "en"],
     available: true,
+    licenseCertificateName: input.licenseCertificate?.fileName,
+    licenseCertificateMime: input.licenseCertificate?.mimeType,
   };
 
   const existing = loadRegistrations();

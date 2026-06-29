@@ -13,7 +13,16 @@ export function isAffirmativeConsultReply(text: string): boolean {
 }
 
 export function isVetContactRequest(text: string): boolean {
-  return /vet|veterinar|doctor|daktar|pashu\s*chikits|paravet|vaid|consult|contact|number|phone|call|video|whatsapp|nearby|najdeek|paas|ka\s*number|dua|de\s*do|bhej|dikhao|connect|doctor\s*ka/i.test(text);
+  return /vet|veterinar|doctor|daktar|pashu\s*chikits|chikitsak|paravet|vaid|consult|contact|sampark|sanpark|number|phone|mobile|call|video|whatsapp|nearby|najdeek|paas|ka\s*number|number\s*do|de\s*do|bhej|dikhao|connect|doctor\s*ka|vet\s*ka|give\s*me|share|list|details/i.test(text);
+}
+
+/** Client-side fallback when backend has not deployed vet short-circuit yet. */
+export function vetContactFallbackReply(lang: string): string {
+  const replies: Record<string, string> = {
+    hi: "[[LANG:hi]]\nयहाँ आपके पास के पशु चिकित्सक / पैरावेट की सूची है (WhatsApp कॉल और वीडियो नीचे)।\n[[VET_CONSULT_OFFER]]",
+    en: "[[LANG:en]]\nHere are nearby veterinarians and paravets — WhatsApp call and video below.\n[[VET_CONSULT_OFFER]]",
+  };
+  return replies[lang] || replies.hi;
 }
 
 export function isVetConsultQuery(text: string): boolean {

@@ -35308,7 +35308,7 @@ async function sarvamSynthesizeSpeech(text, languageCode, opts) {
 
 // catalyst/functions/pashumitra_api/lib/vet-consult.ts
 var DISEASE_PATTERNS = /mastitis|fever|bimar|bimari|rogi|disease|symptom|lakshan|chhale|chale|blister|diarr|dast|lumpy|lsd|fmd|lameness|langda|bloat|afara|udder|than|vaccin|tika|ilaj|treatment|infection|anthrax|galghotu|brucellosis|repeat breed|pashu.*(bimar|problem)|gaay.*(bimar|problem)|bhains.*(bimar|problem)/i;
-var VET_CONTACT_PATTERNS = /vet|veterinar|doctor|daktar|pashu\s*chikits|paravet|vaid|consult|contact|number|phone|call|video|whatsapp|nearby|najdeek|paas|ka\s*number|dua|de\s*do|bhej|dikhao|connect|doctor\s*ka/i;
+var VET_CONTACT_PATTERNS = /vet|veterinar|doctor|daktar|pashu\s*chikits|chikitsak|paravet|vaid|consult|contact|sampark|sanpark|number|phone|mobile|call|video|whatsapp|nearby|najdeek|paas|ka\s*number|number\s*do|de\s*do|bhej|dikhao|connect|doctor\s*ka|vet\s*ka|give\s*me|share|list|details/i;
 var VET_CONSULT_MARKER = "[[VET_CONSULT_OFFER]]";
 function isDiseaseRelatedQuery(text) {
   return DISEASE_PATTERNS.test(text);
@@ -35318,6 +35318,33 @@ function isVetContactRequest(text) {
 }
 function isVetConsultQuery(text) {
   return isDiseaseRelatedQuery(text) || isVetContactRequest(text);
+}
+var VET_CONTACT_REPLIES = {
+  hi: `[[LANG:hi]]
+\u092F\u0939\u093E\u0901 \u0906\u092A\u0915\u0947 \u092A\u093E\u0938 \u0915\u0947 \u092A\u0936\u0941 \u091A\u093F\u0915\u093F\u0924\u094D\u0938\u0915 / \u092A\u0948\u0930\u093E\u0935\u0947\u091F \u0915\u0940 \u0938\u0942\u091A\u0940 \u0939\u0948 (WhatsApp \u0915\u0949\u0932 \u0914\u0930 \u0935\u0940\u0921\u093F\u092F\u094B \u0915\u0949\u0932 \u0928\u0940\u091A\u0947)\u0964
+${VET_CONSULT_MARKER}`,
+  bn: `[[LANG:bn]]
+\u0986\u09AA\u09A8\u09BE\u09B0 \u0995\u09BE\u099B\u09C7\u09B0 \u09AA\u09B6\u09C1 \u099A\u09BF\u0995\u09BF\u09CE\u09B8\u0995 / \u09AA\u09CD\u09AF\u09BE\u09B0\u09BE\u09AD\u09C7\u099F\u09C7\u09B0 \u09A4\u09BE\u09B2\u09BF\u0995\u09BE \u09A8\u09BF\u099A\u09C7 \u09A6\u09C7\u0993\u09AF\u09BC\u09BE \u09B9\u09B2 (WhatsApp \u0995\u09B2 \u0993 \u09AD\u09BF\u09A1\u09BF\u0993 \u0995\u09B2)\u0964
+${VET_CONSULT_MARKER}`,
+  ta: `[[LANG:ta]]
+\u0B89\u0B99\u0BCD\u0B95\u0BB3\u0BC1\u0B95\u0BCD\u0B95\u0BC1 \u0B85\u0BB0\u0BC1\u0B95\u0BBF\u0BB2\u0BC1\u0BB3\u0BCD\u0BB3 veterinarians / paravets \u0BAA\u0B9F\u0BCD\u0B9F\u0BBF\u0BAF\u0BB2\u0BCD \u0B95\u0BC0\u0BB4\u0BC7 (WhatsApp call & video)\u0964
+${VET_CONSULT_MARKER}`,
+  te: `[[LANG:te]]
+\u0C2E\u0C40 \u0C26\u0C17\u0C4D\u0C17\u0C30lo vet / paravet contacts \u0C15\u0C4D\u0C30\u0C3F\u0C02\u0C26 \u0C09\u0C28\u0C4D\u0C28\u0C3E\u0C2F\u0C3F (WhatsApp call & video)\u0964
+${VET_CONSULT_MARKER}`,
+  mr: `[[LANG:mr]]
+\u091C\u0935\u0933\u091A\u0947 \u092A\u0936uvaidyak / paravet \u0916\u093E\u0932\u0940 \u0926\u093F\u0932\u0947 \u0906\u0939\u0947\u0924 (WhatsApp call & video)\u0964
+${VET_CONSULT_MARKER}`,
+  gu: `[[LANG:gu]]
+\u0AA8\u0A9C\u0AC0\u0A95\u0AA8\u0ABE vet / paravet \u0AA8\u0AC0\u0A9A\u0AC7 \u0A9B\u0AC7 (WhatsApp call & video)\u0964
+${VET_CONSULT_MARKER}`,
+  en: `[[LANG:en]]
+Here are nearby veterinarians and paravets \u2014 use WhatsApp call or video below.
+${VET_CONSULT_MARKER}`
+};
+function getVetContactDirectReply(lang) {
+  if (lang && VET_CONTACT_REPLIES[lang]) return VET_CONTACT_REPLIES[lang];
+  return VET_CONTACT_REPLIES.hi;
 }
 
 // catalyst/functions/pashumitra_api/src/handlers/chat.ts
@@ -35375,6 +35402,7 @@ When the farmer asks about ration, balanced feed, least-cost feed, what to feed,
 MILK MARKETING \u2014 COOPERATIVE ONLY (CRITICAL):
 - When discussing selling/pouring/marketing milk: ALWAYS advise farmers to pour milk ONLY at their local **dairy cooperative** collection centre (DCS/village society \u2192 district milk union).
 - NEVER recommend private dairies, hotels, restaurants, or middlemen as primary milk buyers.
+- EXCEPTION \u2014 VET / DOCTOR CONTACT: When farmer asks for veterinarian, paravet, doctor phone, or consultation \u2014 use the in-app vet directory (NOT DCS). Never tell them to ask DCS for vet contacts.
 - Explain cooperative benefits: fair fat/SNF price, timely payment, bonus, cattle feed, AI, vet services.
 - Redirect any private-buyer question to nearest cooperative centre / DCS Secretary / milk union field officer.
 
@@ -35572,6 +35600,11 @@ async function handleChat(req) {
           headers: jsonHeaders
         });
       }
+    }
+    if (vetContactDirect && mode === "chat") {
+      const directReply = getVetContactDirectReply(effectiveForceLang || lastUserLang);
+      if (stream) return streamStaticText(directReply);
+      return new Response(JSON.stringify({ text: directReply }), { headers: jsonHeaders });
     }
     const maxTokens = mode === "call" ? 420 : isRationAdvisory ? 2048 : 900;
     const response = await sarvamChatCompletion({
@@ -36119,7 +36152,9 @@ function registerVet(input) {
     lng: input.lng,
     yearsExperience: input.yearsExperience,
     languages: ["hi", "en"],
-    available: true
+    available: true,
+    licenseCertificateName: input.licenseCertificate?.fileName,
+    licenseCertificateMime: input.licenseCertificate?.mimeType
   };
   const existing = loadRegistrations();
   const dup = existing.some((r) => r.phone === record.phone || r.registrationNumber === record.registrationNumber);

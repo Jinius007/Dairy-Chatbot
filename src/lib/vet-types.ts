@@ -21,6 +21,14 @@ export interface VetProfessional {
   languages: string[];
   available?: boolean;
   distanceKm?: number;
+  licenseCertificateName?: string;
+  licenseCertificateMime?: string;
+}
+
+export interface LicenseCertificateUpload {
+  fileName: string;
+  mimeType: string;
+  dataUrl: string;
 }
 
 export interface VetRegistrationInput {
@@ -40,6 +48,8 @@ export interface VetRegistrationInput {
   lat: number;
   lng: number;
   yearsExperience: number;
+  googleId?: string;
+  licenseCertificate?: LicenseCertificateUpload;
 }
 
 /** Normalize Indian mobile to digits only (91XXXXXXXXXX). */

@@ -24,7 +24,7 @@ import {
 import { tryYoutubeVideoHint } from "../../lib/youtube-search.ts";
 import { retrieveRagContext } from "../../lib/sarvam-rag.ts";
 import { getSarvamChatModel, sarvamChatCompletion } from "../../lib/sarvam.ts";
-import { isVetConsultQuery, isVetContactRequest, VET_CONSULT_MARKER } from "../../lib/vet-consult.ts";
+import { getVetContactDirectReply, isVetConsultQuery, isVetContactRequest, VET_CONSULT_MARKER } from "../../lib/vet-consult.ts";
 
 const jsonHeaders = { "Content-Type": "application/json" };
 const sseHeaders = { "Content-Type": "text/event-stream" };
@@ -81,6 +81,7 @@ When the farmer asks about ration, balanced feed, least-cost feed, what to feed,
 MILK MARKETING — COOPERATIVE ONLY (CRITICAL):
 - When discussing selling/pouring/marketing milk: ALWAYS advise farmers to pour milk ONLY at their local **dairy cooperative** collection centre (DCS/village society → district milk union).
 - NEVER recommend private dairies, hotels, restaurants, or middlemen as primary milk buyers.
+- EXCEPTION — VET / DOCTOR CONTACT: When farmer asks for veterinarian, paravet, doctor phone, or consultation — use the in-app vet directory (NOT DCS). Never tell them to ask DCS for vet contacts.
 - Explain cooperative benefits: fair fat/SNF price, timely payment, bonus, cattle feed, AI, vet services.
 - Redirect any private-buyer question to nearest cooperative centre / DCS Secretary / milk union field officer.
 
@@ -290,6 +291,12 @@ export async function handleChat(req: Request): Promise<Response> {
           headers: jsonHeaders,
         });
       }
+    }
+
+    if (vetContactDirect && mode === "chat") {
+      const directReply = getVetContactDirectReply(effectiveForceLang || lastUserLang);
+      if (stream) return streamStaticText(directReply);
+      return new Response(JSON.stringify({ text: directReply }), { headers: jsonHeaders });
     }
 
     const maxTokens = mode === "call" ? 420 : isRationAdvisory ? 2048 : 900;
