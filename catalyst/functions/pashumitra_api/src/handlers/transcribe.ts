@@ -2,6 +2,8 @@ import {
   containsAbusiveLanguage,
   filterAbusiveLanguage,
 } from "../../lib/content-safety.ts";
+import { detectLanguageCode } from "../../lib/languages.ts";
+import { ensureNativeScriptText } from "../../lib/native-script.ts";
 import { sarvamTranscribe } from "../../lib/sarvam.ts";
 
 const jsonHeaders = { "Content-Type": "application/json" };
@@ -21,7 +23,10 @@ export async function handleTranscribe(req: Request): Promise<Response> {
     if (!audioBase64) throw new Error("audioBase64 required");
 
     const audioBytes = decodeBase64Audio(audioBase64);
-    const transcript = await sarvamTranscribe(audioBytes, mimeType, language);
+    const langHint = typeof language === "string" ? language : undefined;
+    let transcript = await sarvamTranscribe(audioBytes, mimeType, langHint);
+    const detected = detectLanguageCode(transcript) || langHint || "hi";
+    transcript = await ensureNativeScriptText(transcript, detected);
 
     if (transcript === "[BLOCKED]" || containsAbusiveLanguage(transcript)) {
       return new Response(JSON.stringify({ transcript: "", blocked: true }), {

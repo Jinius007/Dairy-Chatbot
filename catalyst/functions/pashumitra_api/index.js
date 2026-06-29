@@ -24797,6 +24797,128 @@ function isRationComputed(hint) {
   return hint !== null && hint.includes("COMPUTED RESULTS");
 }
 
+// catalyst/functions/pashumitra_api/lib/languages.ts
+var NATIVE_SCRIPT_LABELS = {
+  hi: "Devanagari (\u0939\u093F\u0928\u094D\u0926\u0940)",
+  bn: "Bengali script (\u09AC\u09BE\u0982\u09B2\u09BE)",
+  ta: "Tamil script (\u0BA4\u0BAE\u0BBF\u0BB4\u0BCD)",
+  te: "Telugu script (\u0C24\u0C46\u0C32\u0C41\u0C17\u0C41)",
+  mr: "Devanagari (\u092E\u0930\u093E\u0920\u0940)",
+  gu: "Gujarati script (\u0A97\u0AC1\u0A9C\u0AB0\u0ABE\u0AA4\u0AC0)",
+  kn: "Kannada script (\u0C95\u0CA8\u0CCD\u0CA8\u0CA1)",
+  ml: "Malayalam script (\u0D2E\u0D32\u0D2F\u0D3E\u0D33\u0D02)",
+  pa: "Gurmukhi (\u0A2A\u0A70\u0A1C\u0A3E\u0A2C\u0A40)",
+  or: "Odia script (\u0B13\u0B21\u0B3C\u0B3F\u0B06)",
+  as: "Assamese/Bengali script (\u0985\u09B8\u09AE\u09C0\u09AF\u09BC\u09BE)",
+  ur: "Perso-Arabic / Urdu script (\u0627\u0631\u062F\u0648)",
+  en: "Latin (English)"
+};
+var ROMANIZED_LANG_HINTS = [
+  [/\b(kya|kaise|kaisa|hai|hain|meri|mera|mere|gaay|gai|bhains|doodh|bimar|bimari|ilaj|daktar|pashu|kisan|nahi|haan|batao|bataiye|madad|dard|chara|poshan|yojana|sarkar|gaon|mahine|sal|din|ji|chahiye|dikhao|bhejo|paas|najdeek|vet|doctor|kahan|kaha)\b/i, "hi"],
+  [/\b(ki|ache|kemon|bhalo|dudh|goru|bhais|chikitsa|daktar|kisan|amake|bolun|hobe|na|lagbe|dorkar)\b/i, "bn"],
+  [/\b(enna|epdi|eppadi|paal|pasu|maruthuvam|vaidhyan|sollunga|illai|aama|venum|kodu)\b/i, "ta"],
+  [/\b(elaa|em|eppudu|paalu|pashuvu|doctor|cheppandi|ledu|avunu|kavali|ivvu)\b/i, "te"],
+  [/\b(kasa|kay|dudh|gai|mhashi|doctor|sanga|nahi|ho|pahije|de)\b/i, "mr"],
+  [/\b(shu|kem|dudh|gai|bhains|doctor|kaho|nathi|ha|joiye|aapo)\b/i, "gu"],
+  [/\b(yaav|hege|halu|pasu|doctor|heli|illa|howdu|beku|kodi)\b/i, "kn"],
+  [/\b(engane|ente|eppozha|paal|pashu|doctor|parayu|illa|athe|venam|tharu)\b/i, "ml"],
+  [/\b(ki|kive|dudh|gaan|doctor|daso|nahi|haan|chahida|deyo)\b/i, "pa"],
+  [/\b(kana|kemiti|khir|pashu|daktar|kaha|nahi|haan|diya|pathao)\b/i, "or"],
+  [/\b(ki|kenekoi|dudh|goru|daktar|kobo|nai|hoi|lagibo)\b/i, "as"],
+  [/\b(kya|kaise|hai|doodh|janwar|doctor|batao|nahi|ji|chahiye)\b/i, "ur"]
+];
+function detectRomanizedLang(text) {
+  for (const [re, code] of ROMANIZED_LANG_HINTS) {
+    if (re.test(text)) return code;
+  }
+  return null;
+}
+function isClearlyEnglish(text) {
+  const t = text.trim();
+  if (!/^[a-z0-9\s.,!?'"()-]+$/i.test(t)) return false;
+  return /\b(the|what|how|when|where|why|please|help|disease|milk|cattle|cow|buffalo|vet|doctor|scheme|feed|ration|can you|could you|would you|my|your|is|are|was|were)\b/i.test(t);
+}
+function detectLanguageCode(text) {
+  const counts = {};
+  const add = (code) => {
+    counts[code] = (counts[code] || 0) + 1;
+  };
+  for (const char of text) {
+    const cp = char.codePointAt(0) || 0;
+    if (cp >= 2304 && cp <= 2431) add(/[ळऱ]/.test(char) ? "mr" : "hi");
+    else if (cp >= 2432 && cp <= 2559) add(/[ৰৱ]/.test(char) ? "as" : "bn");
+    else if (cp >= 2816 && cp <= 2943) add("or");
+    else if (cp >= 2560 && cp <= 2687) add("pa");
+    else if (cp >= 2688 && cp <= 2815) add("gu");
+    else if (cp >= 2944 && cp <= 3071) add("ta");
+    else if (cp >= 3072 && cp <= 3199) add("te");
+    else if (cp >= 3200 && cp <= 3327) add("kn");
+    else if (cp >= 3328 && cp <= 3455) add("ml");
+    else if (cp >= 1536 && cp <= 1791) add("ur");
+  }
+  const best = Object.entries(counts).sort((a, b) => b[1] - a[1])[0]?.[0];
+  if (best) return best;
+  const romanized = detectRomanizedLang(text);
+  if (romanized) return romanized;
+  if (isClearlyEnglish(text)) return "en";
+  if (/[a-z]/i.test(text)) return "hi";
+  return null;
+}
+function detectUserLanguage(text, fallback = "hi") {
+  return detectLanguageCode(text) ?? fallback;
+}
+function detectLangForRefusal(text) {
+  return detectUserLanguage(text, "hi");
+}
+var LANG_SCRIPT_RANGES = {
+  hi: [[2304, 2431]],
+  mr: [[2304, 2431]],
+  bn: [[2432, 2559]],
+  as: [[2432, 2559]],
+  or: [[2816, 2943]],
+  pa: [[2560, 2687]],
+  gu: [[2688, 2815]],
+  ta: [[2944, 3071]],
+  te: [[3072, 3199]],
+  kn: [[3200, 3327]],
+  ml: [[3328, 3455]],
+  ur: [[1536, 1791]]
+};
+function charInRanges(cp, ranges) {
+  return ranges.some(([lo, hi]) => cp >= lo && cp <= hi);
+}
+function countScriptLetters(text, lang) {
+  const ranges = LANG_SCRIPT_RANGES[lang] || [];
+  let native = 0;
+  let latin = 0;
+  for (const char of text) {
+    if (/[0-9\s\d.,!?;:()[\]{}"'+\-/%₹@#&*…]/u.test(char)) continue;
+    const cp = char.codePointAt(0) || 0;
+    if (/[a-zA-Z]/.test(char)) latin++;
+    else if (ranges.length && charInRanges(cp, ranges)) native++;
+    else if (new RegExp("\\p{L}", "u").test(char)) native++;
+  }
+  return { native, latin };
+}
+function needsNativeScriptConversion(text, lang) {
+  if (!lang || lang === "en" || !text?.trim()) return false;
+  const cleaned = text.replace(/\[?\[?\s*LANG\s*:\s*[a-z]{2}\s*\]?\]?/gi, " ").replace(/https?:\/\/[^\s]+/g, " ").replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, " ");
+  const { native, latin } = countScriptLetters(cleaned, lang);
+  if (native >= 10) return false;
+  if (latin < 12) return false;
+  const ratio = native / (native + latin);
+  return ratio < 0.12;
+}
+var NATIVE_SCRIPT_RULES = `NATIVE SCRIPT (NON-NEGOTIABLE for Indian languages):
+- For hi, bn, ta, te, mr, gu, kn, ml, pa, or, as, ur: write ALL words of that language in its native script (Devanagari, Bengali, Tamil, Telugu, Gujarati, Gurmukhi, Odia, Arabic for Urdu, etc.).
+- NEVER reply in Roman/Latin transliteration (wrong: "aapki gaay bimar hai", "ungal pasu rogam"; correct: use the proper script for that language).
+- If the farmer spoke or typed Hinglish/Banglish/Tanglish (mixed English + romanized Indian words), still reply in native script for their language \u2014 only keep common English loanwords (vet, WhatsApp, kg, NDDB) in Latin when natural.
+- Only pure English (en) replies use Latin script throughout.`;
+function nativeScriptLockPrompt(lang, languageLabel) {
+  const script = NATIVE_SCRIPT_LABELS[lang] || languageLabel;
+  return `CRITICAL SCRIPT LOCK: Answer in ${languageLabel} using ${script} ONLY \u2014 NOT Roman transliteration. First line [[LANG:${lang}]]. Body script MUST match the header.`;
+}
+
 // catalyst/functions/pashumitra_api/lib/content-safety.ts
 var CONTENT_SAFETY_RULES = "CONTENT SAFETY (NON-NEGOTIABLE): Never use profanity, slurs, sexual abuse, hate speech, or insults in ANY language (Hindi, English, Hinglish, Gujarati, etc.). If the farmer uses abusive words, respond calmly in their language: ask them to rephrase politely and say PashuMitra helps with dairy and livestock only. Do NOT repeat, quote, or spell out abusive words. Do NOT transcribe abusive speech verbatim.";
 var DEVANAGARI_DIGITS2 = "\u0966\u0967\u0968\u0969\u096A\u096B\u096C\u096D\u096E\u096F";
@@ -24856,42 +24978,6 @@ function abuseRefusalMessage(lang = "hi") {
     en: "[[LANG:en]]\nPlease use respectful language. PashuMitra helps with dairy and livestock \u2014 ask your question again politely."
   };
   return messages[lang] || messages.hi;
-}
-function detectLangForRefusal(text) {
-  const counts = {};
-  const add = (code) => {
-    counts[code] = (counts[code] || 0) + 1;
-  };
-  for (const char of text) {
-    const cp = char.codePointAt(0) || 0;
-    if (cp >= 2304 && cp <= 2431) add(/[ळऱ]/.test(char) ? "mr" : "hi");
-    else if (cp >= 2432 && cp <= 2559) add(/[ৰৱ]/.test(char) ? "as" : "bn");
-    else if (cp >= 2816 && cp <= 2943) add("or");
-    else if (cp >= 2560 && cp <= 2687) add("pa");
-    else if (cp >= 2688 && cp <= 2815) add("gu");
-    else if (cp >= 2944 && cp <= 3071) add("ta");
-    else if (cp >= 3072 && cp <= 3199) add("te");
-    else if (cp >= 3200 && cp <= 3327) add("kn");
-    else if (cp >= 3328 && cp <= 3455) add("ml");
-    else if (cp >= 1536 && cp <= 1791) add("ur");
-  }
-  const best = Object.entries(counts).sort((a, b) => b[1] - a[1])[0]?.[0];
-  if (best) return best;
-  const romanizedHints = [
-    [/\b(kya|kaise|hai|meri|gaay|bhains|doodh|bimar|daktar|pashu|haan|nahi|batao|chahiye|vet|doctor|paas|najdeek)\b/i, "hi"],
-    [/\b(ki|dudh|goru|daktar|kemon|bhalo)\b/i, "bn"],
-    [/\b(enna|paal|pasu|maruthuvam)\b/i, "ta"],
-    [/\b(elaa|paalu|pashuvu|doctor)\b/i, "te"]
-  ];
-  for (const [re, code] of romanizedHints) {
-    if (re.test(text)) return code;
-  }
-  const t = text.trim();
-  if (/^[a-z0-9\s.,!?'"()-]+$/i.test(t)) {
-    if (/\b(the|what|how|please|help|disease|milk|cattle|vet|doctor|scheme|feed|ration)\b/i.test(t)) return "en";
-    return "hi";
-  }
-  return "hi";
 }
 
 // catalyst/functions/pashumitra_api/lib/youtube-channels.ts
@@ -31479,14 +31565,14 @@ Jobs
  Tenders
  Contact Us
 
+ Enhancing animal production
+ through genetic improvement of cattle, buffalo and other livestock species
+
  Offer UG and Post Graduate education
  in almost all branches of animal and veterinary sciences
 
  Research in frontier and cutting edge areas
  new generation vaccines, diagnostics, therapeutics, stem cells, genomics, bio-sensors, nano-technology etc
-
- Creating excellence in clinical sciences
- with capacity building on super specialization in veterinary \xA0medicine, surgery, gynaecology & obstretrics
 
  Created niche
  in R&D on veterinary biologicals, technology generation and transfer
@@ -31699,738 +31785,6 @@ Jobs
  Image Gallery
 
  Video GalleryView All
-
-## ICAR \u2014 Guidelines on ID devices
-Source: https://www.icar.org/guidelines/#section10 | Category: Animal Health
-
-Skip to content
-
- Guidelines for the 2025 certification for genetic laboratories by SNP-based genotyping and STR microsatellite-based parentage testing in cattle
-
- February 7, 2025
-
- Certifications
-
-The need of getting reliable high-quality standards in bovine parentage testing is negatively affected by wrong parentage analysis, producing a negative impact on the estimation of genetic indexes and adversely affecting national and international genetic evaluations.
-Following these considerations and for supporting its member organisations, ICAR decided to define minimum requirements for organisations running DNA analyses for breeding purposes in cattle. Guidelines for certification are presently given for parentage testing in cattle based on microsatellite analyses as well as SNP-based genotyping by laboratories and SNP-based parentage analysis by DNA Data Interpretation Centres.
-Laboratories requesting microsatellite- and/or SNP-based certificationwill have to apply by downloading from the ICAR website the necessary forms below listed, filling them out and emailing them to\xA0DNA@icar.org.
-
-Application form for STR microsatellite-based parentage testing
-Application form for SNP-based genotyping laboratories
-Application form for SNP-based parentage analysis as a DNA Data Interpretation Centre
-Simplified form for the renewal of the STR microsatellte-based parentage testing certification and of the SNP-based genotyping certification for already certified laboratories
-
-The latest version of the forms must be filled out accurately and completely, providing necessary documentation as required. The application will be evaluated by experts appointed by ICAR that will either approve it, request additional information, or reject it. In case of rejection for some services, the applicant may submit a new form and pay the associated fees.
-For the above laboratory certifications, applicants have to provide the\xA0ISAG membership number, and the Certificate of Participation issued at the most recent round of Cattle SNP and Cattle microsatellite (STR) comparison tests organised by ISAG. Certifications can be provided in any language if a translation into English (even an in-house translation) is attached to the original documents.
-Certification will be given for a two-year period, at the end of which a new application is to be completed and submitted.
-Rules for STR microsatellite-based certification and SNP-based genotyping certification in cattle
-The \u201CRules for STR microsatellite-based certification and SNP-based genotyping certification in cattle containing the rules and the guidelines for STR microsatellite-based parentage verification in cattle\u201D are available below in this page
-
-The file containing the rules and the guidelines for SNP-based genotyping required for parentage analysis in cattle is available\xA0here
-The file containing the rules and the guidelines for SNP-based parentage analysis as a DNA Data Interpretation Centre in cattle is available\xA0here
-The list of recommended SNP to be considered in the SNP-based certification\xA0for genotyping and parentage analysis is available here
-The list of recommended ISAG microsatellite markers to be considered in the certification is available\xA0here
-
-Form for STR microsatellite-based parentage testing in cattle
-For the laboratory certification for STR microsatellite-based parentage testing in cattle, the following application form has to be considered:
-
-The application form for laboratories using STR microsatellites for parentage verification
-
-Form for SNP-based genotyping required for parentage analysis in cattle
-For the laboratory certification for SNP-based genotyping in cattle that is required for parentage analysis, the following application form is required :
-
-The application form for laboratories conducting SNP-based genotyping
-
-Previously certified laboratories
-For the renewal of an already certified laboratory, please complete the specific form available\xA0here
-Check list of the documents to be submitted for the application
-
-Application form for STR microsatellite-based\xA0and/or\xA0application form for the SNP-based genotyping certification (or the simplified form for the renewal of a previously certified laboratory)
-ISAG Certificate for SNP
-ISAG Certificate for STR
-For SNP-based genotyping and/or STR microsatellite-based certification, the ISO17025 Certificate of accreditation in original form and
-
-its translation into English (an in-house translation is also accepted)
-Scope of the ISO17025 Certificate of accreditation in original and its translation into English (an in-house translation is also accepted)
-
-PARTICIPATORY FEE
-The participatory fee is organised on ICAR Member/Non ICAR Member criteria and summarised in the below tables:
-
-Class of application
-Euros
-
-ICAR Member Laboratory (Full or Associate)
-390\u20AC
-
-Non-ICAR Member Laboratory
-1,300\u20AC
-
-Priority submission (i.e.: application out of\xA0schedule)
-1,700\u20AC
-
-Flat fee covers both STR and/or SNP certification and in case a laboratory is interested in becoming an ICAR Member the instructions and the form for the submission are available\xA0here.
-
-NOTE
-
-Please be aware that for ICAR certification to be granted to laboratories carrying out STR microsatellite-based parentage testing or SNP-based genotyping, ISO17025 accreditation is a mandatory minimum requirement as per the ICAR Guidelines.
-Please also be aware that for ICAR certification of SNP-based Parentage Verification or Discovery, the ICAR Parentage Analysis certification for DNA Data Interpretation Centres must be requested.
-
-Minimum requirements for certification of STR Microsatellite-based parentage testing and SNP-based genotyping in cattle
-The present rules contain minimum requirements for certification of STR Microsatellite-based parentage testing and SNP-based genotyping in cattle.
-1 \u2013 LABORATORY IDENTIFICATION
-The applicant should be unambiguously identified by:
-
-Name of the laboratory.
-Institution if relevant.
-Address and Country.
-A reference person as well as all information necessary for quickly getting in touch with her/him is to be given.
-
-2 \u2013 EDUCATION AND TRAINING OF LAB SUPERVISOR AND OPERATORS
-The minimum requirements for education and training of laboratory supervisor and operators are:
-
-At least a bachelor\u2019s degree in a scientific discipline is required to the laboratory head or supervisor.
-At least 5 years experience in molecular diagnostics is required to the laboratory senior operator.
-
-Experience is considered a key factor both in data production and in the interpretation of results.
-3 \u2013 EQUIPMENT
-
-Equipment used to run and score microsatellite is to be described.
-The year of purchase and last revision is to be made available, to check the appropriateness of technologies used and the following of a proper maintenance program ensuring the production of high-quality data.
-Yearly revision is considered as a minimum requirement.
-A personal opinion on the performance of the laboratory set up available is asked to foresee the need for improvements in quality standards.
-
-4 \u2013 CERTIFICATION
-
-International or national certification should be declared.
-Effective 2022, international certification meeting ISO17025 standards will be a minimum requirement for both of these types of ICAR certification for laboratories.
-
-5 \u2013 PARTICIPATION AND PERFORMANCE IN RING TEST
-
-The participation to international and national ring test is to be declared and the performance in these ring tests disclosed.
-The participation in at least two international ring tests is considered a minimum requirement.
-
-The Committee of Experts, considering the structure of the ring test and the average performance of laboratories in the ring test and year, will decide performance thresholds.
-6 \u2013 MICROSATELLITE MARKERS
-
-Name of all microsatellites typed on all animals (marker set I) and of the additional ones assayed in the case of unresolved parentage (marker set II) is to be declared, as well as the number of animals typed in the last two years.
-Minimum requirement is to use the complete set of 12 microsatellites recommended by ISAG (see Annex III) on all animals typed
-To ensure sufficient experience within the lab, a number of 500 animals analysed per year is set as minimum requirement for certification.
-Exclusion probability (2 parents and 1 parent) of each and every marker and of complete marker sets is to be calculated and declared.
-The type of population and the number of animals used for computations are to be described. ICAR recommends using Holstein as reference when possible. The ICAR Committee of Experts will evaluate that an appropriate PE is reached for certification, on the basis of the population analyzed.
-
-7 \u2013 SNP MARKERS
-
-The name of all SNP genotyped on all animals and of the additional markers assayed in the case of unresolved parentage must be declared, as well as the number of animals genotyped in at least the last two years.
-It is a minimum requirement to use at least 200 SNP from the set recommended by ISAG on all animals typed.
-To ensure sufficient experience within the lab, genotyping 500 animals per year is set as a minimum requirement for certification.
-
-8 \u2013 MARKER NOMENCLATURE
-For STR Microsatellite-based Parentage Testing
-
-Nomenclature of markers and SNP has to be described.
-Minimum requirement is the use of ISAG nomenclature at least for the ISAG marker set.
-
-For SNP-based Genotyping required for Parentage Verification
-
-Nomenclature of markers must be described.
-ISAG nomenclature is required for the ISAG SNP marker
-
- Manage Consent
-
- To provide the best experiences, we use technologies like cookies to store and/or access device information. Consenting to these technologies will allow us to process data such as browsing behavior or unique IDs on this site. Not consenting or withdrawing consent, may adversely affect certain features and functions.
-
- Functional
-
- Functional
-
- Always active
-
- The technical storage or access is strictly necessary for the legitimate purpose of enabling the use of a specific service explicitly requested by the subscriber or user, or for the sole purpose of carrying out the transmission of a communication over an electronic communications network.
-
- Preferences
-
- Preferences
-
- The technical storage or access is necessary for the legitimate purpose of storing preferences that are not requested by the subscriber or user.
-
- Statistics
-
- Statistics
-
- The technical storage or access that is used exclusively for statistical purposes.
- The technical storage or access that is used exclusively for anonymous statistical purposes. Without a subpoena, voluntary compliance on the part of your Internet Service Provider, or additional records from a third party, information stored or retrieved for this purpose alone cannot usually be used to identify you.
-
- Marketing
-
- Marketing
-
- The technical storage or access is required to create user profiles to send advertising, or to track the user on a website or across several websites for similar marketing purposes.
-
- Manage options
- Manage services
- Manage {vendor_count} vendors
- Read more about these purposes
-
- Accept
- Deny
- View preferences
- Save preferences
- View preferences
-
- {title}
- {title}
- {title}
-
- Manage consent
-
-## ICAR \u2014 Guidelines on milk recording devices
-Source: https://www.icar.org/guidelines/#section11 | Category: Animal Health
-
-Skip to content
-
- Guidelines for the 2025 certification for genetic laboratories by SNP-based genotyping and STR microsatellite-based parentage testing in cattle
-
- February 7, 2025
-
- Certifications
-
-The need of getting reliable high-quality standards in bovine parentage testing is negatively affected by wrong parentage analysis, producing a negative impact on the estimation of genetic indexes and adversely affecting national and international genetic evaluations.
-Following these considerations and for supporting its member organisations, ICAR decided to define minimum requirements for organisations running DNA analyses for breeding purposes in cattle. Guidelines for certification are presently given for parentage testing in cattle based on microsatellite analyses as well as SNP-based genotyping by laboratories and SNP-based parentage analysis by DNA Data Interpretation Centres.
-Laboratories requesting microsatellite- and/or SNP-based certificationwill have to apply by downloading from the ICAR website the necessary forms below listed, filling them out and emailing them to\xA0DNA@icar.org.
-
-Application form for STR microsatellite-based parentage testing
-Application form for SNP-based genotyping laboratories
-Application form for SNP-based parentage analysis as a DNA Data Interpretation Centre
-Simplified form for the renewal of the STR microsatellte-based parentage testing certification and of the SNP-based genotyping certification for already certified laboratories
-
-The latest version of the forms must be filled out accurately and completely, providing necessary documentation as required. The application will be evaluated by experts appointed by ICAR that will either approve it, request additional information, or reject it. In case of rejection for some services, the applicant may submit a new form and pay the associated fees.
-For the above laboratory certifications, applicants have to provide the\xA0ISAG membership number, and the Certificate of Participation issued at the most recent round of Cattle SNP and Cattle microsatellite (STR) comparison tests organised by ISAG. Certifications can be provided in any language if a translation into English (even an in-house translation) is attached to the original documents.
-Certification will be given for a two-year period, at the end of which a new application is to be completed and submitted.
-Rules for STR microsatellite-based certification and SNP-based genotyping certification in cattle
-The \u201CRules for STR microsatellite-based certification and SNP-based genotyping certification in cattle containing the rules and the guidelines for STR microsatellite-based parentage verification in cattle\u201D are available below in this page
-
-The file containing the rules and the guidelines for SNP-based genotyping required for parentage analysis in cattle is available\xA0here
-The file containing the rules and the guidelines for SNP-based parentage analysis as a DNA Data Interpretation Centre in cattle is available\xA0here
-The list of recommended SNP to be considered in the SNP-based certification\xA0for genotyping and parentage analysis is available here
-The list of recommended ISAG microsatellite markers to be considered in the certification is available\xA0here
-
-Form for STR microsatellite-based parentage testing in cattle
-For the laboratory certification for STR microsatellite-based parentage testing in cattle, the following application form has to be considered:
-
-The application form for laboratories using STR microsatellites for parentage verification
-
-Form for SNP-based genotyping required for parentage analysis in cattle
-For the laboratory certification for SNP-based genotyping in cattle that is required for parentage analysis, the following application form is required :
-
-The application form for laboratories conducting SNP-based genotyping
-
-Previously certified laboratories
-For the renewal of an already certified laboratory, please complete the specific form available\xA0here
-Check list of the documents to be submitted for the application
-
-Application form for STR microsatellite-based\xA0and/or\xA0application form for the SNP-based genotyping certification (or the simplified form for the renewal of a previously certified laboratory)
-ISAG Certificate for SNP
-ISAG Certificate for STR
-For SNP-based genotyping and/or STR microsatellite-based certification, the ISO17025 Certificate of accreditation in original form and
-
-its translation into English (an in-house translation is also accepted)
-Scope of the ISO17025 Certificate of accreditation in original and its translation into English (an in-house translation is also accepted)
-
-PARTICIPATORY FEE
-The participatory fee is organised on ICAR Member/Non ICAR Member criteria and summarised in the below tables:
-
-Class of application
-Euros
-
-ICAR Member Laboratory (Full or Associate)
-390\u20AC
-
-Non-ICAR Member Laboratory
-1,300\u20AC
-
-Priority submission (i.e.: application out of\xA0schedule)
-1,700\u20AC
-
-Flat fee covers both STR and/or SNP certification and in case a laboratory is interested in becoming an ICAR Member the instructions and the form for the submission are available\xA0here.
-
-NOTE
-
-Please be aware that for ICAR certification to be granted to laboratories carrying out STR microsatellite-based parentage testing or SNP-based genotyping, ISO17025 accreditation is a mandatory minimum requirement as per the ICAR Guidelines.
-Please also be aware that for ICAR certification of SNP-based Parentage Verification or Discovery, the ICAR Parentage Analysis certification for DNA Data Interpretation Centres must be requested.
-
-Minimum requirements for certification of STR Microsatellite-based parentage testing and SNP-based genotyping in cattle
-The present rules contain minimum requirements for certification of STR Microsatellite-based parentage testing and SNP-based genotyping in cattle.
-1 \u2013 LABORATORY IDENTIFICATION
-The applicant should be unambiguously identified by:
-
-Name of the laboratory.
-Institution if relevant.
-Address and Country.
-A reference person as well as all information necessary for quickly getting in touch with her/him is to be given.
-
-2 \u2013 EDUCATION AND TRAINING OF LAB SUPERVISOR AND OPERATORS
-The minimum requirements for education and training of laboratory supervisor and operators are:
-
-At least a bachelor\u2019s degree in a scientific discipline is required to the laboratory head or supervisor.
-At least 5 years experience in molecular diagnostics is required to the laboratory senior operator.
-
-Experience is considered a key factor both in data production and in the interpretation of results.
-3 \u2013 EQUIPMENT
-
-Equipment used to run and score microsatellite is to be described.
-The year of purchase and last revision is to be made available, to check the appropriateness of technologies used and the following of a proper maintenance program ensuring the production of high-quality data.
-Yearly revision is considered as a minimum requirement.
-A personal opinion on the performance of the laboratory set up available is asked to foresee the need for improvements in quality standards.
-
-4 \u2013 CERTIFICATION
-
-International or national certification should be declared.
-Effective 2022, international certification meeting ISO17025 standards will be a minimum requirement for both of these types of ICAR certification for laboratories.
-
-5 \u2013 PARTICIPATION AND PERFORMANCE IN RING TEST
-
-The participation to international and national ring test is to be declared and the performance in these ring tests disclosed.
-The participation in at least two international ring tests is considered a minimum requirement.
-
-The Committee of Experts, considering the structure of the ring test and the average performance of laboratories in the ring test and year, will decide performance thresholds.
-6 \u2013 MICROSATELLITE MARKERS
-
-Name of all microsatellites typed on all animals (marker set I) and of the additional ones assayed in the case of unresolved parentage (marker set II) is to be declared, as well as the number of animals typed in the last two years.
-Minimum requirement is to use the complete set of 12 microsatellites recommended by ISAG (see Annex III) on all animals typed
-To ensure sufficient experience within the lab, a number of 500 animals analysed per year is set as minimum requirement for certification.
-Exclusion probability (2 parents and 1 parent) of each and every marker and of complete marker sets is to be calculated and declared.
-The type of population and the number of animals used for computations are to be described. ICAR recommends using Holstein as reference when possible. The ICAR Committee of Experts will evaluate that an appropriate PE is reached for certification, on the basis of the population analyzed.
-
-7 \u2013 SNP MARKERS
-
-The name of all SNP genotyped on all animals and of the additional markers assayed in the case of unresolved parentage must be declared, as well as the number of animals genotyped in at least the last two years.
-It is a minimum requirement to use at least 200 SNP from the set recommended by ISAG on all animals typed.
-To ensure sufficient experience within the lab, genotyping 500 animals per year is set as a minimum requirement for certification.
-
-8 \u2013 MARKER NOMENCLATURE
-For STR Microsatellite-based Parentage Testing
-
-Nomenclature of markers and SNP has to be described.
-Minimum requirement is the use of ISAG nomenclature at least for the ISAG marker set.
-
-For SNP-based Genotyping required for Parentage Verification
-
-Nomenclature of markers must be described.
-ISAG nomenclature is required for the ISAG SNP marker
-
- Manage Consent
-
- To provide the best experiences, we use technologies like cookies to store and/or access device information. Consenting to these technologies will allow us to process data such as browsing behavior or unique IDs on this site. Not consenting or withdrawing consent, may adversely affect certain features and functions.
-
- Functional
-
- Functional
-
- Always active
-
- The technical storage or access is strictly necessary for the legitimate purpose of enabling the use of a specific service explicitly requested by the subscriber or user, or for the sole purpose of carrying out the transmission of a communication over an electronic communications network.
-
- Preferences
-
- Preferences
-
- The technical storage or access is necessary for the legitimate purpose of storing preferences that are not requested by the subscriber or user.
-
- Statistics
-
- Statistics
-
- The technical storage or access that is used exclusively for statistical purposes.
- The technical storage or access that is used exclusively for anonymous statistical purposes. Without a subpoena, voluntary compliance on the part of your Internet Service Provider, or additional records from a third party, information stored or retrieved for this purpose alone cannot usually be used to identify you.
-
- Marketing
-
- Marketing
-
- The technical storage or access is required to create user profiles to send advertising, or to track the user on a website or across several websites for similar marketing purposes.
-
- Manage options
- Manage services
- Manage {vendor_count} vendors
- Read more about these purposes
-
- Accept
- Deny
- View preferences
- Save preferences
- View preferences
-
- {title}
- {title}
- {title}
-
- Manage consent
-
-## ICAR \u2014 Guidelines on cattle genetic evaluations
-Source: https://www.icar.org/guidelines/#section9 | Category: Animal Health
-
-Skip to content
-
- Guidelines for the 2025 certification for genetic laboratories by SNP-based genotyping and STR microsatellite-based parentage testing in cattle
-
- February 7, 2025
-
- Certifications
-
-The need of getting reliable high-quality standards in bovine parentage testing is negatively affected by wrong parentage analysis, producing a negative impact on the estimation of genetic indexes and adversely affecting national and international genetic evaluations.
-Following these considerations and for supporting its member organisations, ICAR decided to define minimum requirements for organisations running DNA analyses for breeding purposes in cattle. Guidelines for certification are presently given for parentage testing in cattle based on microsatellite analyses as well as SNP-based genotyping by laboratories and SNP-based parentage analysis by DNA Data Interpretation Centres.
-Laboratories requesting microsatellite- and/or SNP-based certificationwill have to apply by downloading from the ICAR website the necessary forms below listed, filling them out and emailing them to\xA0DNA@icar.org.
-
-Application form for STR microsatellite-based parentage testing
-Application form for SNP-based genotyping laboratories
-Application form for SNP-based parentage analysis as a DNA Data Interpretation Centre
-Simplified form for the renewal of the STR microsatellte-based parentage testing certification and of the SNP-based genotyping certification for already certified laboratories
-
-The latest version of the forms must be filled out accurately and completely, providing necessary documentation as required. The application will be evaluated by experts appointed by ICAR that will either approve it, request additional information, or reject it. In case of rejection for some services, the applicant may submit a new form and pay the associated fees.
-For the above laboratory certifications, applicants have to provide the\xA0ISAG membership number, and the Certificate of Participation issued at the most recent round of Cattle SNP and Cattle microsatellite (STR) comparison tests organised by ISAG. Certifications can be provided in any language if a translation into English (even an in-house translation) is attached to the original documents.
-Certification will be given for a two-year period, at the end of which a new application is to be completed and submitted.
-Rules for STR microsatellite-based certification and SNP-based genotyping certification in cattle
-The \u201CRules for STR microsatellite-based certification and SNP-based genotyping certification in cattle containing the rules and the guidelines for STR microsatellite-based parentage verification in cattle\u201D are available below in this page
-
-The file containing the rules and the guidelines for SNP-based genotyping required for parentage analysis in cattle is available\xA0here
-The file containing the rules and the guidelines for SNP-based parentage analysis as a DNA Data Interpretation Centre in cattle is available\xA0here
-The list of recommended SNP to be considered in the SNP-based certification\xA0for genotyping and parentage analysis is available here
-The list of recommended ISAG microsatellite markers to be considered in the certification is available\xA0here
-
-Form for STR microsatellite-based parentage testing in cattle
-For the laboratory certification for STR microsatellite-based parentage testing in cattle, the following application form has to be considered:
-
-The application form for laboratories using STR microsatellites for parentage verification
-
-Form for SNP-based genotyping required for parentage analysis in cattle
-For the laboratory certification for SNP-based genotyping in cattle that is required for parentage analysis, the following application form is required :
-
-The application form for laboratories conducting SNP-based genotyping
-
-Previously certified laboratories
-For the renewal of an already certified laboratory, please complete the specific form available\xA0here
-Check list of the documents to be submitted for the application
-
-Application form for STR microsatellite-based\xA0and/or\xA0application form for the SNP-based genotyping certification (or the simplified form for the renewal of a previously certified laboratory)
-ISAG Certificate for SNP
-ISAG Certificate for STR
-For SNP-based genotyping and/or STR microsatellite-based certification, the ISO17025 Certificate of accreditation in original form and
-
-its translation into English (an in-house translation is also accepted)
-Scope of the ISO17025 Certificate of accreditation in original and its translation into English (an in-house translation is also accepted)
-
-PARTICIPATORY FEE
-The participatory fee is organised on ICAR Member/Non ICAR Member criteria and summarised in the below tables:
-
-Class of application
-Euros
-
-ICAR Member Laboratory (Full or Associate)
-390\u20AC
-
-Non-ICAR Member Laboratory
-1,300\u20AC
-
-Priority submission (i.e.: application out of\xA0schedule)
-1,700\u20AC
-
-Flat fee covers both STR and/or SNP certification and in case a laboratory is interested in becoming an ICAR Member the instructions and the form for the submission are available\xA0here.
-
-NOTE
-
-Please be aware that for ICAR certification to be granted to laboratories carrying out STR microsatellite-based parentage testing or SNP-based genotyping, ISO17025 accreditation is a mandatory minimum requirement as per the ICAR Guidelines.
-Please also be aware that for ICAR certification of SNP-based Parentage Verification or Discovery, the ICAR Parentage Analysis certification for DNA Data Interpretation Centres must be requested.
-
-Minimum requirements for certification of STR Microsatellite-based parentage testing and SNP-based genotyping in cattle
-The present rules contain minimum requirements for certification of STR Microsatellite-based parentage testing and SNP-based genotyping in cattle.
-1 \u2013 LABORATORY IDENTIFICATION
-The applicant should be unambiguously identified by:
-
-Name of the laboratory.
-Institution if relevant.
-Address and Country.
-A reference person as well as all information necessary for quickly getting in touch with her/him is to be given.
-
-2 \u2013 EDUCATION AND TRAINING OF LAB SUPERVISOR AND OPERATORS
-The minimum requirements for education and training of laboratory supervisor and operators are:
-
-At least a bachelor\u2019s degree in a scientific discipline is required to the laboratory head or supervisor.
-At least 5 years experience in molecular diagnostics is required to the laboratory senior operator.
-
-Experience is considered a key factor both in data production and in the interpretation of results.
-3 \u2013 EQUIPMENT
-
-Equipment used to run and score microsatellite is to be described.
-The year of purchase and last revision is to be made available, to check the appropriateness of technologies used and the following of a proper maintenance program ensuring the production of high-quality data.
-Yearly revision is considered as a minimum requirement.
-A personal opinion on the performance of the laboratory set up available is asked to foresee the need for improvements in quality standards.
-
-4 \u2013 CERTIFICATION
-
-International or national certification should be declared.
-Effective 2022, international certification meeting ISO17025 standards will be a minimum requirement for both of these types of ICAR certification for laboratories.
-
-5 \u2013 PARTICIPATION AND PERFORMANCE IN RING TEST
-
-The participation to international and national ring test is to be declared and the performance in these ring tests disclosed.
-The participation in at least two international ring tests is considered a minimum requirement.
-
-The Committee of Experts, considering the structure of the ring test and the average performance of laboratories in the ring test and year, will decide performance thresholds.
-6 \u2013 MICROSATELLITE MARKERS
-
-Name of all microsatellites typed on all animals (marker set I) and of the additional ones assayed in the case of unresolved parentage (marker set II) is to be declared, as well as the number of animals typed in the last two years.
-Minimum requirement is to use the complete set of 12 microsatellites recommended by ISAG (see Annex III) on all animals typed
-To ensure sufficient experience within the lab, a number of 500 animals analysed per year is set as minimum requirement for certification.
-Exclusion probability (2 parents and 1 parent) of each and every marker and of complete marker sets is to be calculated and declared.
-The type of population and the number of animals used for computations are to be described. ICAR recommends using Holstein as reference when possible. The ICAR Committee of Experts will evaluate that an appropriate PE is reached for certification, on the basis of the population analyzed.
-
-7 \u2013 SNP MARKERS
-
-The name of all SNP genotyped on all animals and of the additional markers assayed in the case of unresolved parentage must be declared, as well as the number of animals genotyped in at least the last two years.
-It is a minimum requirement to use at least 200 SNP from the set recommended by ISAG on all animals typed.
-To ensure sufficient experience within the lab, genotyping 500 animals per year is set as a minimum requirement for certification.
-
-8 \u2013 MARKER NOMENCLATURE
-For STR Microsatellite-based Parentage Testing
-
-Nomenclature of markers and SNP has to be described.
-Minimum requirement is the use of ISAG nomenclature at least for the ISAG marker set.
-
-For SNP-based Genotyping required for Parentage Verification
-
-Nomenclature of markers must be described.
-ISAG nomenclature is required for the ISAG SNP marker
-
- Manage Consent
-
- To provide the best experiences, we use technologies like cookies to store and/or access device information. Consenting to these technologies will allow us to process data such as browsing behavior or unique IDs on this site. Not consenting or withdrawing consent, may adversely affect certain features and functions.
-
- Functional
-
- Functional
-
- Always active
-
- The technical storage or access is strictly necessary for the legitimate purpose of enabling the use of a specific service explicitly requested by the subscriber or user, or for the sole purpose of carrying out the transmission of a communication over an electronic communications network.
-
- Preferences
-
- Preferences
-
- The technical storage or access is necessary for the legitimate purpose of storing preferences that are not requested by the subscriber or user.
-
- Statistics
-
- Statistics
-
- The technical storage or access that is used exclusively for statistical purposes.
- The technical storage or access that is used exclusively for anonymous statistical purposes. Without a subpoena, voluntary compliance on the part of your Internet Service Provider, or additional records from a third party, information stored or retrieved for this purpose alone cannot usually be used to identify you.
-
- Marketing
-
- Marketing
-
- The technical storage or access is required to create user profiles to send advertising, or to track the user on a website or across several websites for similar marketing purposes.
-
- Manage options
- Manage services
- Manage {vendor_count} vendors
- Read more about these purposes
-
- Accept
- Deny
- View preferences
- Save preferences
- View preferences
-
- {title}
- {title}
- {title}
-
- Manage consent
-
-## ICAR \u2014 Guidelines on milk analysis
-Source: https://www.icar.org/guidelines/#section12 | Category: Animal Health
-
-Skip to content
-
- Guidelines for the 2025 certification for genetic laboratories by SNP-based genotyping and STR microsatellite-based parentage testing in cattle
-
- February 7, 2025
-
- Certifications
-
-The need of getting reliable high-quality standards in bovine parentage testing is negatively affected by wrong parentage analysis, producing a negative impact on the estimation of genetic indexes and adversely affecting national and international genetic evaluations.
-Following these considerations and for supporting its member organisations, ICAR decided to define minimum requirements for organisations running DNA analyses for breeding purposes in cattle. Guidelines for certification are presently given for parentage testing in cattle based on microsatellite analyses as well as SNP-based genotyping by laboratories and SNP-based parentage analysis by DNA Data Interpretation Centres.
-Laboratories requesting microsatellite- and/or SNP-based certificationwill have to apply by downloading from the ICAR website the necessary forms below listed, filling them out and emailing them to\xA0DNA@icar.org.
-
-Application form for STR microsatellite-based parentage testing
-Application form for SNP-based genotyping laboratories
-Application form for SNP-based parentage analysis as a DNA Data Interpretation Centre
-Simplified form for the renewal of the STR microsatellte-based parentage testing certification and of the SNP-based genotyping certification for already certified laboratories
-
-The latest version of the forms must be filled out accurately and completely, providing necessary documentation as required. The application will be evaluated by experts appointed by ICAR that will either approve it, request additional information, or reject it. In case of rejection for some services, the applicant may submit a new form and pay the associated fees.
-For the above laboratory certifications, applicants have to provide the\xA0ISAG membership number, and the Certificate of Participation issued at the most recent round of Cattle SNP and Cattle microsatellite (STR) comparison tests organised by ISAG. Certifications can be provided in any language if a translation into English (even an in-house translation) is attached to the original documents.
-Certification will be given for a two-year period, at the end of which a new application is to be completed and submitted.
-Rules for STR microsatellite-based certification and SNP-based genotyping certification in cattle
-The \u201CRules for STR microsatellite-based certification and SNP-based genotyping certification in cattle containing the rules and the guidelines for STR microsatellite-based parentage verification in cattle\u201D are available below in this page
-
-The file containing the rules and the guidelines for SNP-based genotyping required for parentage analysis in cattle is available\xA0here
-The file containing the rules and the guidelines for SNP-based parentage analysis as a DNA Data Interpretation Centre in cattle is available\xA0here
-The list of recommended SNP to be considered in the SNP-based certification\xA0for genotyping and parentage analysis is available here
-The list of recommended ISAG microsatellite markers to be considered in the certification is available\xA0here
-
-Form for STR microsatellite-based parentage testing in cattle
-For the laboratory certification for STR microsatellite-based parentage testing in cattle, the following application form has to be considered:
-
-The application form for laboratories using STR microsatellites for parentage verification
-
-Form for SNP-based genotyping required for parentage analysis in cattle
-For the laboratory certification for SNP-based genotyping in cattle that is required for parentage analysis, the following application form is required :
-
-The application form for laboratories conducting SNP-based genotyping
-
-Previously certified laboratories
-For the renewal of an already certified laboratory, please complete the specific form available\xA0here
-Check list of the documents to be submitted for the application
-
-Application form for STR microsatellite-based\xA0and/or\xA0application form for the SNP-based genotyping certification (or the simplified form for the renewal of a previously certified laboratory)
-ISAG Certificate for SNP
-ISAG Certificate for STR
-For SNP-based genotyping and/or STR microsatellite-based certification, the ISO17025 Certificate of accreditation in original form and
-
-its translation into English (an in-house translation is also accepted)
-Scope of the ISO17025 Certificate of accreditation in original and its translation into English (an in-house translation is also accepted)
-
-PARTICIPATORY FEE
-The participatory fee is organised on ICAR Member/Non ICAR Member criteria and summarised in the below tables:
-
-Class of application
-Euros
-
-ICAR Member Laboratory (Full or Associate)
-390\u20AC
-
-Non-ICAR Member Laboratory
-1,300\u20AC
-
-Priority submission (i.e.: application out of\xA0schedule)
-1,700\u20AC
-
-Flat fee covers both STR and/or SNP certification and in case a laboratory is interested in becoming an ICAR Member the instructions and the form for the submission are available\xA0here.
-
-NOTE
-
-Please be aware that for ICAR certification to be granted to laboratories carrying out STR microsatellite-based parentage testing or SNP-based genotyping, ISO17025 accreditation is a mandatory minimum requirement as per the ICAR Guidelines.
-Please also be aware that for ICAR certification of SNP-based Parentage Verification or Discovery, the ICAR Parentage Analysis certification for DNA Data Interpretation Centres must be requested.
-
-Minimum requirements for certification of STR Microsatellite-based parentage testing and SNP-based genotyping in cattle
-The present rules contain minimum requirements for certification of STR Microsatellite-based parentage testing and SNP-based genotyping in cattle.
-1 \u2013 LABORATORY IDENTIFICATION
-The applicant should be unambiguously identified by:
-
-Name of the laboratory.
-Institution if relevant.
-Address and Country.
-A reference person as well as all information necessary for quickly getting in touch with her/him is to be given.
-
-2 \u2013 EDUCATION AND TRAINING OF LAB SUPERVISOR AND OPERATORS
-The minimum requirements for education and training of laboratory supervisor and operators are:
-
-At least a bachelor\u2019s degree in a scientific discipline is required to the laboratory head or supervisor.
-At least 5 years experience in molecular diagnostics is required to the laboratory senior operator.
-
-Experience is considered a key factor both in data production and in the interpretation of results.
-3 \u2013 EQUIPMENT
-
-Equipment used to run and score microsatellite is to be described.
-The year of purchase and last revision is to be made available, to check the appropriateness of technologies used and the following of a proper maintenance program ensuring the production of high-quality data.
-Yearly revision is considered as a minimum requirement.
-A personal opinion on the performance of the laboratory set up available is asked to foresee the need for improvements in quality standards.
-
-4 \u2013 CERTIFICATION
-
-International or national certification should be declared.
-Effective 2022, international certification meeting ISO17025 standards will be a minimum requirement for both of these types of ICAR certification for laboratories.
-
-5 \u2013 PARTICIPATION AND PERFORMANCE IN RING TEST
-
-The participation to international and national ring test is to be declared and the performance in these ring tests disclosed.
-The participation in at least two international ring tests is considered a minimum requirement.
-
-The Committee of Experts, considering the structure of the ring test and the average performance of laboratories in the ring test and year, will decide performance thresholds.
-6 \u2013 MICROSATELLITE MARKERS
-
-Name of all microsatellites typed on all animals (marker set I) and of the additional ones assayed in the case of unresolved parentage (marker set II) is to be declared, as well as the number of animals typed in the last two years.
-Minimum requirement is to use the complete set of 12 microsatellites recommended by ISAG (see Annex III) on all animals typed
-To ensure sufficient experience within the lab, a number of 500 animals analysed per year is set as minimum requirement for certification.
-Exclusion probability (2 parents and 1 parent) of each and every marker and of complete marker sets is to be calculated and declared.
-The type of population and the number of animals used for computations are to be described. ICAR recommends using Holstein as reference when possible. The ICAR Committee of Experts will evaluate that an appropriate PE is reached for certification, on the basis of the population analyzed.
-
-7 \u2013 SNP MARKERS
-
-The name of all SNP genotyped on all animals and of the additional markers assayed in the case of unresolved parentage must be declared, as well as the number of animals genotyped in at least the last two years.
-It is a minimum requirement to use at least 200 SNP from the set recommended by ISAG on all animals typed.
-To ensure sufficient experience within the lab, genotyping 500 animals per year is set as a minimum requirement for certification.
-
-8 \u2013 MARKER NOMENCLATURE
-For STR Microsatellite-based Parentage Testing
-
-Nomenclature of markers and SNP has to be described.
-Minimum requirement is the use of ISAG nomenclature at least for the ISAG marker set.
-
-For SNP-based Genotyping required for Parentage Verification
-
-Nomenclature of markers must be described.
-ISAG nomenclature is required for the ISAG SNP marker
-
- Manage Consent
-
- To provide the best experiences, we use technologies like cookies to store and/or access device information. Consenting to these technologies will allow us to process data such as browsing behavior or unique IDs on this site. Not consenting or withdrawing consent, may adversely affect certain features and functions.
-
- Functional
-
- Functional
-
- Always active
-
- The technical storage or access is strictly necessary for the legitimate purpose of enabling the use of a specific service explicitly requested by the subscriber or user, or for the sole purpose of carrying out the transmission of a communication over an electronic communications network.
-
- Preferences
-
- Preferences
-
- The technical storage or access is necessary for the legitimate purpose of storing preferences that are not requested by the subscriber or user.
-
- Statistics
-
- Statistics
-
- The technical storage or access that is used exclusively for statistical purposes.
- The technical storage or access that is used exclusively for anonymous statistical purposes. Without a subpoena, voluntary compliance on the part of your Internet Service Provider, or additional records from a third party, information stored or retrieved for this purpose alone cannot usually be used to identify you.
-
- Marketing
-
- Marketing
-
- The technical storage or access is required to create user profiles to send advertising, or to track the user on a website or across several websites for similar marketing purposes.
-
- Manage options
- Manage services
- Manage {vendor_count} vendors
- Read more about these purposes
-
- Accept
- Deny
- View preferences
- Save preferences
- View preferences
-
- {title}
- {title}
- {title}
-
- Manage consent
 
 ## ICAR Manual on Management of Gaushalas \u2014 Veterinary Care & Vaccination
 Source: https://icar.org.in/sites/default/files/2022-06/Gaushala-Booklet_Eng-Oct-2020.pdf | Category: Animal Health
@@ -35240,11 +34594,38 @@ function mimeToBlobType(mimeType) {
   if (mimeType?.includes("ogg")) return "audio/ogg";
   return "audio/webm";
 }
+function getSttMode(languageCode) {
+  if (!languageCode || languageCode === "en") return "transcribe";
+  return "codemix";
+}
+async function sarvamTransliterateToNative(text, languageCode) {
+  const target = appLangToSarvam(languageCode);
+  if (!target || languageCode === "en") return text;
+  const res = await fetch("https://api.sarvam.ai/transliterate", {
+    method: "POST",
+    headers: {
+      "api-subscription-key": getSarvamApiKey(),
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      input: text,
+      source_language_code: "en-IN",
+      target_language_code: target,
+      numerals_format: "international"
+    })
+  });
+  if (!res.ok) {
+    const detail = await res.text().catch(() => "");
+    throw new Error(detail || `Sarvam transliterate error ${res.status}`);
+  }
+  const data = await res.json();
+  return (data.transliterated_text || text).trim();
+}
 async function sarvamTranscribe(audioBytes, mimeType, languageCode) {
   const form = new FormData();
   form.append("file", new Blob([audioBytes], { type: mimeToBlobType(mimeType) }), mimeToFilename(mimeType));
   form.append("model", getSarvamSttModel());
-  form.append("mode", "transcribe");
+  form.append("mode", getSttMode(languageCode));
   const sarvamLang = appLangToSarvam(languageCode);
   if (sarvamLang) form.append("language_code", sarvamLang);
   const res = await fetch(SARVAM_STT_URL, {
@@ -35488,6 +34869,19 @@ LOCATION CONTEXT (${loc.state}):
 Mention these names naturally in the farmer's language. NEVER suggest hotel/private dealer/middleman even as backup.`;
 }
 
+// catalyst/functions/pashumitra_api/lib/native-script.ts
+async function ensureNativeScriptText(text, language) {
+  if (!text?.trim() || !language || language === "en") return text;
+  if (!needsNativeScriptConversion(text, language)) return text;
+  if (!appLangToSarvam(language)) return text;
+  try {
+    return await sarvamTransliterateToNative(text, language);
+  } catch (e) {
+    console.warn("native script conversion failed:", e);
+    return text;
+  }
+}
+
 // catalyst/functions/pashumitra_api/lib/vet-consult.ts
 var DISEASE_PATTERNS = /mastitis|fever|bimar|bimari|rogi|disease|symptom|lakshan|chhale|chale|blister|diarr|dast|lumpy|lsd|fmd|lameness|langda|bloat|afara|udder|than|vaccin|tika|ilaj|treatment|infection|anthrax|galghotu|brucellosis|repeat breed|pashu.*(bimar|problem)|gaay.*(bimar|problem)|bhains.*(bimar|problem)|बीमार|रोग|लक्षण|इलाज|बुखार|दस्त|রোগ|জ্বর|நோய|مرض/i;
 var VET_ROLE = /(?:\bvet\b|paravet|veterinar|veterinary|vaid|daktar|doctor|chikitsak|chikits|pashu\s*chikits|veterin|vaidya|marut|pashu\s*doctor|animal\s*doctor|livestock\s*doctor|पशु\s*चिकित्स|चिकित्सक|डॉक्ट|डाक्ट|वैद|पैरावेट|पशु\s*डॉक्ट|পশু\s*চিকিৎস|চিকিৎসক|ডাক্তার|ভেট|மருத்துவ|வைத்திய|వెట్|పశు\s*వైద|પશુ\s*ડોક્ટ|पशुवैद|जनावर\s*डॉक|ಪಶು\s*ವೈದ|പശു\s*ഡോക്ട|ਜਾਨਵਰ\s*ਡਾਕਟ|ପଶୁ\s*ଡାକ୍ତ|পশু\s*চিকিৎস|پشو\s*ڈاکٹر|ویٹ)/i;
@@ -35570,6 +34964,9 @@ LANGUAGE RULES (MIXED / CODE-SWITCHED INPUT SUPPORTED):
 - ALWAYS reply in the SAME language as the user's LAST message. If the user wrote in Bengali script, reply in Bengali (bn) \u2014 NEVER default to Hindi. Same for Tamil, Telugu, etc.
 - The xx code in [[LANG:xx]] MUST exactly match the language/script you actually use in the answer body. If body is Bengali script \u2192 header must be [[LANG:bn]]. If body is Hindi Devanagari \u2192 [[LANG:hi]]. They must agree.
 - For romanized/code-mixed input (Hinglish, Banglish, Tanglish), reply in the native script of the dominant Indian language.
+
+${NATIVE_SCRIPT_RULES}
+
 - If purely English \u2192 reply in English (en). If totally unclear \u2192 Hindi (hi).
 - Keep technical/scheme/medicine names in English in parentheses when helpful. NEVER refuse due to mixed language.
 - DO NOT greet. Answer directly.
@@ -35649,6 +35046,8 @@ VOICE CALL RULES:
 - Simple village words. Give the next practical step first.
 - Use ONLY facts from RETRIEVED KNOWLEDGE below. If unsure, say what to check or ask the vet.
 - For disease topics, end with a brief vet-consult reminder in the farmer's language.
+
+${NATIVE_SCRIPT_RULES}
 
 ${MILK_MARKETING_SYSTEM_RULES}
 
@@ -35838,11 +35237,12 @@ This is regular chat \u2014 NOT a report. Max ~500 words this turn.
         ...mode === "call" ? [{ role: "system", content: `LIVE CALL \u2014 speak naturally in short sentences with clear pauses at commas and full stops. Feminine voice.` }] : [],
         ...isRationAdvisory && isHerdGathering(advisoryHint) ? [{ role: "system", content: "RATION DATA COLLECTION MODE: The main prompt's RATION BALANCING rules are DISABLED this turn. Do NOT give generic ration advice, kg amounts, or feed plans. ONLY ask questions or read back summary for confirmation." }] : [],
         ...effectiveForceLang && effectiveForcedLabel ? [{ role: "system", content: `CRITICAL LANGUAGE LOCK: The next answer MUST be written only in ${effectiveForcedLabel}. The first line MUST be [[LANG:${effectiveForceLang}]]. Do not use Hindi unless the locked language is Hindi. Do not mix scripts.` }] : [],
+        ...effectiveForceLang && effectiveForcedLabel && effectiveForceLang !== "en" ? [{ role: "system", content: nativeScriptLockPrompt(effectiveForceLang, effectiveForcedLabel) }] : [],
         ...safeMessages,
         ...isRationAdvisory && isHerdGathering(advisoryHint) && !isVerificationStep(advisoryHint) ? [{ role: "system", content: "FINAL INSTRUCTION: Reply with ONLY 2\u20134 simple questions for the farmer in the LOCKED language. Acknowledge herd size if stated. Ask about the next animal. NO ration advice, NO kg, NO \u20B9. First line must still be [[LANG:xx]]." }] : [],
         ...isRationAdvisory && isVerificationStep(advisoryHint) ? [{ role: "system", content: "FINAL INSTRUCTION: Read back ALL animal details from PARSED SUMMARY in farmer's language. Confirm total count matches. Ask 'Kya sab sahi hai?' NO ration kg amounts yet. First line [[LANG:xx]]." }] : [],
         ...isRationAdvisory && isRationComputed(advisoryHint) ? [{ role: "system", content: "FINAL INSTRUCTION: Present COMPUTED RESULTS in farmer's language. ORDER: (1) HERD PREP \u2014 total kg to mix/prepare for whole herd today; (2) PER ANIMAL \u2014 each animal's daily share with breed and status. Use exact kg from system block." }] : [],
-        ...effectiveForceLang && effectiveForcedLabel ? [{ role: "system", content: `FINAL CHECK BEFORE ANSWERING: Reply in ${effectiveForcedLabel} only, with [[LANG:${effectiveForceLang}]] as the first line. Keep it simple enough for a farmer.` }] : []
+        ...effectiveForceLang && effectiveForcedLabel ? [{ role: "system", content: `FINAL CHECK BEFORE ANSWERING: Reply in ${effectiveForcedLabel} only, with [[LANG:${effectiveForceLang}]] as the first line. Keep it simple enough for a farmer.${effectiveForceLang !== "en" ? " Use native script \u2014 NOT Roman transliteration." : ""}` }] : []
       ],
       stream
     });
@@ -35878,6 +35278,10 @@ This is regular chat \u2014 NOT a report. Max ~500 words this turn.
         typeof forceLanguage === "string" ? forceLanguage : detectedUserLang
       );
     }
+    const replyLang = effectiveForceLang || lastUserLang || detectedUserLang;
+    if (replyLang && replyLang !== "en") {
+      text = await ensureNativeScriptText(text, replyLang);
+    }
     return new Response(JSON.stringify({ text }), {
       headers: jsonHeaders
     });
@@ -35890,8 +35294,29 @@ This is regular chat \u2014 NOT a report. Max ~500 words this turn.
   }
 }
 
-// catalyst/functions/pashumitra_api/src/handlers/transcribe.ts
+// catalyst/functions/pashumitra_api/src/handlers/native-script.ts
 var jsonHeaders2 = { "Content-Type": "application/json" };
+async function handleNativeScript(req) {
+  if (req.method === "OPTIONS") return new Response(null, { status: 204 });
+  try {
+    const { text, language } = await req.json();
+    if (!text?.trim()) {
+      return new Response(JSON.stringify({ text: "" }), { headers: jsonHeaders2 });
+    }
+    const lang = language || detectLanguageCode(text) || "hi";
+    const converted = await ensureNativeScriptText(text, lang);
+    return new Response(JSON.stringify({ text: converted, language: lang }), { headers: jsonHeaders2 });
+  } catch (e) {
+    console.error("native-script error:", e);
+    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Unknown" }), {
+      status: 500,
+      headers: jsonHeaders2
+    });
+  }
+}
+
+// catalyst/functions/pashumitra_api/src/handlers/transcribe.ts
+var jsonHeaders3 = { "Content-Type": "application/json" };
 function decodeBase64Audio2(audioBase64) {
   const binary = atob(audioBase64);
   const bytes = new Uint8Array(binary.length);
@@ -35904,20 +35329,23 @@ async function handleTranscribe(req) {
     const { audioBase64, mimeType, language } = await req.json();
     if (!audioBase64) throw new Error("audioBase64 required");
     const audioBytes = decodeBase64Audio2(audioBase64);
-    const transcript = await sarvamTranscribe(audioBytes, mimeType, language);
+    const langHint = typeof language === "string" ? language : void 0;
+    let transcript = await sarvamTranscribe(audioBytes, mimeType, langHint);
+    const detected = detectLanguageCode(transcript) || langHint || "hi";
+    transcript = await ensureNativeScriptText(transcript, detected);
     if (transcript === "[BLOCKED]" || containsAbusiveLanguage(transcript)) {
       return new Response(JSON.stringify({ transcript: "", blocked: true }), {
-        headers: jsonHeaders2
+        headers: jsonHeaders3
       });
     }
     return new Response(JSON.stringify({ transcript: filterAbusiveLanguage(transcript) }), {
-      headers: jsonHeaders2
+      headers: jsonHeaders3
     });
   } catch (e) {
     console.error(e);
     return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Unknown" }), {
       status: 500,
-      headers: jsonHeaders2
+      headers: jsonHeaders3
     });
   }
 }
@@ -36387,7 +35815,7 @@ function getVetStats() {
 }
 
 // catalyst/functions/pashumitra_api/src/routes/vets.mts
-var jsonHeaders3 = {
+var jsonHeaders4 = {
   "Content-Type": "application/json",
   "Access-Control-Allow-Origin": "*"
 };
@@ -36402,7 +35830,7 @@ async function handleVetsNearby(req) {
     if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
       return new Response(JSON.stringify({ error: "lat and lng required" }), {
         status: 400,
-        headers: jsonHeaders3
+        headers: jsonHeaders4
       });
     }
     let extra = [];
@@ -36411,18 +35839,18 @@ async function handleVetsNearby(req) {
       if (Array.isArray(body.extra)) extra = body.extra;
     }
     const results = findNearbyVets({ lat, lng, type, limit, extra });
-    return new Response(JSON.stringify({ results, count: results.length }), { headers: jsonHeaders3 });
+    return new Response(JSON.stringify({ results, count: results.length }), { headers: jsonHeaders4 });
   } catch (e) {
     return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Server error" }), {
       status: 500,
-      headers: jsonHeaders3
+      headers: jsonHeaders4
     });
   }
 }
 async function handleVetsRegister(req) {
   if (req.method === "OPTIONS") return new Response(null, { status: 204 });
   if (req.method !== "POST") {
-    return new Response(JSON.stringify({ error: "POST only" }), { status: 405, headers: jsonHeaders3 });
+    return new Response(JSON.stringify({ error: "POST only" }), { status: 405, headers: jsonHeaders4 });
   }
   try {
     const body = await req.json();
@@ -36444,31 +35872,31 @@ async function handleVetsRegister(req) {
       if (!body[k] || String(body[k]).trim() === "") {
         return new Response(JSON.stringify({ error: `Missing field: ${k}` }), {
           status: 400,
-          headers: jsonHeaders3
+          headers: jsonHeaders4
         });
       }
     }
     if (!Number.isFinite(body.lat) || !Number.isFinite(body.lng)) {
       return new Response(JSON.stringify({ error: "GPS location (lat/lng) required" }), {
         status: 400,
-        headers: jsonHeaders3
+        headers: jsonHeaders4
       });
     }
     const record = registerVet({
       ...body,
       yearsExperience: Number(body.yearsExperience) || 1
     });
-    return new Response(JSON.stringify({ ok: true, vet: record }), { headers: jsonHeaders3 });
+    return new Response(JSON.stringify({ ok: true, vet: record }), { headers: jsonHeaders4 });
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Registration failed";
     return new Response(JSON.stringify({ error: msg }), {
       status: 400,
-      headers: jsonHeaders3
+      headers: jsonHeaders4
     });
   }
 }
 async function handleVetsStats(_req) {
-  return new Response(JSON.stringify(getVetStats()), { headers: jsonHeaders3 });
+  return new Response(JSON.stringify(getVetStats()), { headers: jsonHeaders4 });
 }
 
 // catalyst/functions/pashumitra_api/lib/vobiz-audio-cache.ts
@@ -36914,6 +36342,10 @@ app.post("/chat", (req, res) => void relayWebHandler(handleChat, req, res).catch
 }));
 app.post("/transcribe", (req, res) => void relayWebHandler(handleTranscribe, req, res).catch((e) => {
   console.error("transcribe route error:", e);
+  res.status(500).json({ error: e instanceof Error ? e.message : "Server error" });
+}));
+app.post("/native-script", (req, res) => void relayWebHandler(handleNativeScript, req, res).catch((e) => {
+  console.error("native-script route error:", e);
   res.status(500).json({ error: e instanceof Error ? e.message : "Server error" });
 }));
 app.post("/log-turn", (req, res) => void handleLogTurn(req, res).catch((e) => {

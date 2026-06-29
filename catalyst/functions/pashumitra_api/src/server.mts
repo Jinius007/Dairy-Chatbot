@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import express from "express";
 import { handleChat } from "./handlers/chat.ts";
+import { handleNativeScript } from "./handlers/native-script.ts";
 import { handleTranscribe } from "./handlers/transcribe.ts";
 import { handleLogTurn } from "./routes/log-turn.mts";
 import { handleTts } from "./routes/tts.mts";
@@ -89,6 +90,11 @@ app.post("/chat", (req, res) => void relayWebHandler(handleChat, req, res).catch
 
 app.post("/transcribe", (req, res) => void relayWebHandler(handleTranscribe, req, res).catch((e) => {
   console.error("transcribe route error:", e);
+  res.status(500).json({ error: e instanceof Error ? e.message : "Server error" });
+}));
+
+app.post("/native-script", (req, res) => void relayWebHandler(handleNativeScript, req, res).catch((e) => {
+  console.error("native-script route error:", e);
   res.status(500).json({ error: e instanceof Error ? e.message : "Server error" });
 }));
 

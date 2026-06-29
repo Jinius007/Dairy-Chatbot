@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { isBackendConfigured } from "@/lib/backend-config";
 import { transcribeAudio } from "@/lib/transcribe-api";
 import { LANG_NAMES, detectUserLanguage, resolveTtsLanguage } from "@/lib/languages";
+import { ensureNativeScriptText } from "@/lib/native-script-api";
 import { getChatCompletionsUrl, getChatRequestHeaders } from "@/lib/chat-api";
 import { fetchChatCompletionText, splitLangHeader } from "@/lib/chat-response";
 import { speakText, stopSpeech, unlockAudioPlayback, waitForCallPlaybackIdle } from "@/lib/speech";
@@ -290,8 +291,12 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
       if (chatAbortRef.current === chatCtrl) chatAbortRef.current = null;
       if (chatCtrl.signal.aborted || closedRef.current) return;
       const parsed = splitLangHeader(raw);
-      const body = filterAbusiveLanguage(parsed.body);
-      const lang = resolveTtsLanguage(body, parsed.lang || detectedLang);
+      let body = filterAbusiveLanguage(parsed.body);
+      const replyLang = parsed.lang || detectedLang;
+      if (replyLang && replyLang !== "en") {
+        body = await ensureNativeScriptText(body, replyLang);
+      }
+      const lang = resolveTtsLanguage(body, replyLang);
       const answer = body.trim();
       if (!answer) {
         throw new Error("No answer was generated. Please try again.");

@@ -81,6 +81,11 @@ export function getTranscribeHeaders(): Record<string, string> {
   return getChatRequestHeaders();
 }
 
+/** Romanized Indic → native script (Sarvam transliteration). */
+export function getNativeScriptUrl(): string {
+  return `${catalystBase()}/native-script`;
+}
+
 /** TTS proxy (Bhashini + Google fallback). */
 export function getTtsUrl(): string {
   return `${catalystBase()}/tts`;

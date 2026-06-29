@@ -25,18 +25,18 @@ export const LANG_CODES = Object.keys(LANG_NAMES);
 
 /** Romanized / code-mixed Indian language cues (Hinglish, Banglish, etc.). */
 const ROMANIZED_LANG_HINTS: [RegExp, string][] = [
-  [/\b(kya|kaise|kaisa|hai|hain|meri|mera|mere|gaay|gai|bhains|doodh|bimar|bimari|ilaj|daktar|pashu|kisan|nahi|haan|batao|bataiye|madad|sujan|dard|chara|poshan|yojana|sarkar|gaon|mahine|sal|din|ji|chahiye|dikhao|bhejo|paas|najdeek|vet|doctor)\b/i, "hi"],
-  [/\b(ki|ache|kemon|bhalo|dudh|goru|bhais|chikitsa|daktar|kisan|amake|bolun|hobe|na)\b/i, "bn"],
-  [/\b(enna|epdi|paal|pasu|maruthuvam|vaidhyan|sollunga|illai|aama)\b/i, "ta"],
-  [/\b(elaa|em|paalu|pashuvu|doctor|cheppandi|ledu|avunu)\b/i, "te"],
-  [/\b(kasa|kay|dudh|gai|mhashi|doctor|sanga|nahi|ho)\b/i, "mr"],
-  [/\b(shu|kem|dudh|gai|bhains|doctor|kaho|nathi|ha)\b/i, "gu"],
-  [/\b(yaav|hege|halu|pasu|doctor|heli|illa|howdu)\b/i, "kn"],
-  [/\b(engane|ente|paal|pashu|doctor|parayu|illa|athe)\b/i, "ml"],
-  [/\b(ki|kive|dudh|gaan|doctor|daso|nahi|haan)\b/i, "pa"],
-  [/\b(kana|kemiti|khir|pashu|daktar|kaha|nahi|haan)\b/i, "or"],
-  [/\b(ki|kenekoi|dudh|goru|daktar|kobo|nai|hoi)\b/i, "as"],
-  [/\b(kya|kaise|hai|doodh|janwar|doctor|batao|nahi|ji)\b/i, "ur"],
+  [/\b(kya|kaise|kaisa|hai|hain|meri|mera|mere|gaay|gai|bhains|doodh|bimar|bimari|ilaj|daktar|pashu|kisan|nahi|haan|batao|bataiye|madad|sujan|dard|chara|poshan|yojana|sarkar|gaon|mahine|sal|din|ji|chahiye|dikhao|bhejo|paas|najdeek|vet|doctor|kahan|kaha)\b/i, "hi"],
+  [/\b(ki|ache|kemon|bhalo|dudh|goru|bhais|chikitsa|daktar|kisan|amake|bolun|hobe|na|lagbe|dorkar)\b/i, "bn"],
+  [/\b(enna|epdi|eppadi|paal|pasu|maruthuvam|vaidhyan|sollunga|illai|aama|venum|kodu)\b/i, "ta"],
+  [/\b(elaa|em|eppudu|paalu|pashuvu|doctor|cheppandi|ledu|avunu|kavali|ivvu)\b/i, "te"],
+  [/\b(kasa|kay|dudh|gai|mhashi|doctor|sanga|nahi|ho|pahije|de)\b/i, "mr"],
+  [/\b(shu|kem|dudh|gai|bhains|doctor|kaho|nathi|ha|joiye|aapo)\b/i, "gu"],
+  [/\b(yaav|hege|halu|pasu|doctor|heli|illa|howdu|beku|kodi)\b/i, "kn"],
+  [/\b(engane|ente|eppozha|paal|pashu|doctor|parayu|illa|athe|venam|tharu)\b/i, "ml"],
+  [/\b(ki|kive|dudh|gaan|doctor|daso|nahi|haan|chahida|deyo)\b/i, "pa"],
+  [/\b(kana|kemiti|khir|pashu|daktar|kaha|nahi|haan|diya|pathao)\b/i, "or"],
+  [/\b(ki|kenekoi|dudh|goru|daktar|kobo|nai|hoi|lagibo)\b/i, "as"],
+  [/\b(kya|kaise|hai|doodh|janwar|doctor|batao|nahi|ji|chahiye)\b/i, "ur"],
 ];
 
 function detectRomanizedLang(text: string): string | null {
@@ -94,6 +94,43 @@ export function detectLanguageFromMessages(messages: { role: string; content: st
     .join("\n");
   if (!userText.trim()) return null;
   return detectLanguageCode(userText);
+}
+
+const LANG_SCRIPT_RANGES: Record<string, [number, number][]> = {
+  hi: [[0x0900, 0x097f]], mr: [[0x0900, 0x097f]], bn: [[0x0980, 0x09ff]], as: [[0x0980, 0x09ff]],
+  or: [[0x0b00, 0x0b7f]], pa: [[0x0a00, 0x0a7f]], gu: [[0x0a80, 0x0aff]], ta: [[0x0b80, 0x0bff]],
+  te: [[0x0c00, 0x0c7f]], kn: [[0x0c80, 0x0cff]], ml: [[0x0d00, 0x0d7f]], ur: [[0x0600, 0x06ff]],
+};
+
+function charInRanges(cp: number, ranges: [number, number][]): boolean {
+  return ranges.some(([lo, hi]) => cp >= lo && cp <= hi);
+}
+
+export function countScriptLetters(text: string, lang: string): { native: number; latin: number } {
+  const ranges = LANG_SCRIPT_RANGES[lang] || [];
+  let native = 0;
+  let latin = 0;
+  for (const char of text) {
+    if (/[0-9\s\d.,!?;:()[\]{}"'+\-/%₹@#&*…]/u.test(char)) continue;
+    const cp = char.codePointAt(0) || 0;
+    if (/[a-zA-Z]/.test(char)) latin++;
+    else if (ranges.length && charInRanges(cp, ranges)) native++;
+    else if (/\p{L}/u.test(char)) native++;
+  }
+  return { native, latin };
+}
+
+/** True when an Indic reply is mostly Roman transliteration instead of native script. */
+export function needsNativeScriptConversion(text: string, lang: string | null | undefined): boolean {
+  if (!lang || lang === "en" || !text?.trim()) return false;
+  const cleaned = text
+    .replace(/\[?\[?\s*LANG\s*:\s*[a-z]{2}\s*\]?\]?/gi, " ")
+    .replace(/https?:\/\/[^\s]+/g, " ")
+    .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, " ");
+  const { native, latin } = countScriptLetters(cleaned, lang);
+  if (native >= 10) return false;
+  if (latin < 12) return false;
+  return native / (native + latin) < 0.12;
 }
 
 /** Bhashini TTS: prefer the script actually used in the reply body. */

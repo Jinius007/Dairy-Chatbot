@@ -33,6 +33,7 @@ import {
   stripUnverifiedYoutubeUrls,
 } from "@/lib/youtube";
 import { detectLanguageFromMessages } from "@/lib/languages";
+import { ensureNativeScriptText } from "@/lib/native-script-api";
 import { getChatCompletionsUrl, getChatRequestHeaders } from "@/lib/chat-api";
 import { transcribeAudio } from "@/lib/transcribe-api";
 import {
@@ -302,6 +303,10 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
 
     let { lang, body } = splitLangHeader(full);
     body = filterAbusiveLanguage(body);
+    const replyLang = lang ?? userLang;
+    if (replyLang && replyLang !== "en") {
+      body = await ensureNativeScriptText(body, replyLang);
+    }
     const wantsVets = hasVetConsultMarker(body);
     if (wantsVets) {
       body = stripVetConsultMarker(body);

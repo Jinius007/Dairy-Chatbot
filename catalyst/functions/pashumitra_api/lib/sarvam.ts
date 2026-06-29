@@ -62,6 +62,38 @@ function mimeToBlobType(mimeType?: string): string {
   return "audio/webm";
 }
 
+export function getSttMode(languageCode?: string): "transcribe" | "codemix" {
+  if (!languageCode || languageCode === "en") return "transcribe";
+  return "codemix";
+}
+
+export async function sarvamTransliterateToNative(text: string, languageCode: string): Promise<string> {
+  const target = appLangToSarvam(languageCode);
+  if (!target || languageCode === "en") return text;
+
+  const res = await fetch("https://api.sarvam.ai/transliterate", {
+    method: "POST",
+    headers: {
+      "api-subscription-key": getSarvamApiKey(),
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      input: text,
+      source_language_code: "en-IN",
+      target_language_code: target,
+      numerals_format: "international",
+    }),
+  });
+
+  if (!res.ok) {
+    const detail = await res.text().catch(() => "");
+    throw new Error(detail || `Sarvam transliterate error ${res.status}`);
+  }
+
+  const data = await res.json() as { transliterated_text?: string };
+  return (data.transliterated_text || text).trim();
+}
+
 export async function sarvamTranscribe(
   audioBytes: Uint8Array,
   mimeType?: string,
@@ -70,7 +102,7 @@ export async function sarvamTranscribe(
   const form = new FormData();
   form.append("file", new Blob([audioBytes], { type: mimeToBlobType(mimeType) }), mimeToFilename(mimeType));
   form.append("model", getSarvamSttModel());
-  form.append("mode", "transcribe");
+  form.append("mode", getSttMode(languageCode));
   const sarvamLang = appLangToSarvam(languageCode);
   if (sarvamLang) form.append("language_code", sarvamLang);
 
