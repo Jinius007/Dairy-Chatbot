@@ -30,7 +30,10 @@ const DEFAULT_MATERIAL_DIR = path.join(
   "Downloads",
   "Material for AI Chatbot",
 );
-const MATERIAL_DIR = process.env.KNOWLEDGE_MATERIAL_DIR || DEFAULT_MATERIAL_DIR;
+const PROJECT_MATERIAL_DIR = path.join(ROOT, "Material for AI Chatbot");
+const MATERIAL_DIR =
+  process.env.KNOWLEDGE_MATERIAL_DIR ||
+  (fs.existsSync(PROJECT_MATERIAL_DIR) ? PROJECT_MATERIAL_DIR : DEFAULT_MATERIAL_DIR);
 
 const MAX_CHARS_PER_DOC = 12_000;
 const MAX_TOTAL_CHARS = 450_000;

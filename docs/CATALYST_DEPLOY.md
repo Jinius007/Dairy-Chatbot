@@ -4,12 +4,16 @@
 
 | Piece | Location |
 |-------|----------|
-| Knowledge repo | `catalyst/functions/pashumitra_api/lib/knowledge/` |
-| RAG retrieval | `catalyst/functions/pashumitra_api/lib/rag-retrieval.ts` |
-| Chat handler | `catalyst/functions/pashumitra_api/src/handlers/chat.ts` |
+| Material PDFs | `Material for AI Chatbot/` (project root) |
+| Ingest script | `npm run ingest:sarvam-rag` → bundled corpus |
+| RAG retrieval | `lib/sarvam-rag.ts` + `lib/rag-retrieval.ts` (keyword sections) |
+| Vision OCR (optional) | Sarvam Document Digitization for Indic PDFs |
+| Keyword fallback | same corpus — no external vector DB |
+| Unified entry | `lib/sarvam-rag.ts` → used by `chat.ts` |
 | LLM / STT | Sarvam (`lib/sarvam.ts`) |
 
-Keyword match over knowledge sections → top chunks injected into Sarvam prompt. No vector DB or external wiki grounding.
+**Production:** Sarvam RAG — keyword retrieval over NDDB material + DAHD schemes + ICAR health + DKP index, with Sarvam chat generation.  
+**Optional:** `--vision` ingest for full Hindi/Gujarati PDF text via Sarvam Document Digitization.
 
 ## Architecture
 

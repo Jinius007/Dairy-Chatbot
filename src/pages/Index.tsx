@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { ChatView } from "@/components/ChatView";
 import { BrandAvatar } from "@/components/BrandAvatar";
-import { MessageSquarePlus, MessagesSquare, Search, Trash2 } from "lucide-react";
+import { MessageSquarePlus, MessagesSquare, Search, Stethoscope, Trash2 } from "lucide-react";
+import { Link } from "react-router-dom";
 
 interface Conversation {
   id: string; title: string; last_message: string | null; language: string | null; updated_at: string;
@@ -72,6 +73,9 @@ const Index = () => {
             </div>
           </div>
           <div className="flex gap-1">
+            <Link to="/vet" className="p-2 hover:bg-white/10 rounded-lg" title="Vet / Paravet registration">
+              <Stethoscope className="w-5 h-5" strokeWidth={1.75} />
+            </Link>
             <button type="button" onClick={newChat} className="p-2 hover:bg-white/10 rounded-lg" title="New chat">
               <MessageSquarePlus className="w-5 h-5" strokeWidth={1.75} />
             </button>

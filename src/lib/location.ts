@@ -9,6 +9,24 @@ export interface DetectedLocation {
   label: string;
 }
 
+export interface GeoCoords {
+  lat: number;
+  lng: number;
+}
+
+export async function getGeoCoords(timeoutMs = 12000): Promise<GeoCoords | null> {
+  if (typeof navigator === "undefined" || !navigator.geolocation) return null;
+  const pos = await new Promise<GeolocationPosition | null>((resolve) => {
+    navigator.geolocation.getCurrentPosition(
+      (p) => resolve(p),
+      () => resolve(null),
+      { enableHighAccuracy: true, timeout: timeoutMs, maximumAge: 120000 },
+    );
+  });
+  if (!pos) return null;
+  return { lat: pos.coords.latitude, lng: pos.coords.longitude };
+}
+
 export async function detectLocation(timeoutMs = 12000): Promise<DetectedLocation | null> {
   if (typeof navigator === "undefined" || !navigator.geolocation) return null;
 

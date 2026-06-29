@@ -6,6 +6,11 @@ import { handleLogTurn } from "./routes/log-turn.mts";
 import { handleTts } from "./routes/tts.mts";
 import { handleYoutubeSearch } from "./routes/youtube-search.mts";
 import {
+  handleVetsNearby,
+  handleVetsRegister,
+  handleVetsStats,
+} from "./routes/vets.mts";
+import {
   handleVobizAnswer,
   handleVobizAudio,
   handleVobizError,
@@ -102,6 +107,23 @@ app.post("/youtube-search", (req, res) => void handleYoutubeSearch(req, res).cat
   res.status(500).json({ error: e instanceof Error ? e.message : "Server error" });
 }));
 
+app.get("/vets/nearby", (req, res) => void relayWebHandler(handleVetsNearby, req, res).catch((e) => {
+  console.error("vets/nearby error:", e);
+  res.status(500).json({ error: e instanceof Error ? e.message : "Server error" });
+}));
+app.post("/vets/nearby", (req, res) => void relayWebHandler(handleVetsNearby, req, res).catch((e) => {
+  console.error("vets/nearby error:", e);
+  res.status(500).json({ error: e instanceof Error ? e.message : "Server error" });
+}));
+app.post("/vets/register", (req, res) => void relayWebHandler(handleVetsRegister, req, res).catch((e) => {
+  console.error("vets/register error:", e);
+  res.status(500).json({ error: e instanceof Error ? e.message : "Server error" });
+}));
+app.get("/vets/stats", (req, res) => void relayWebHandler(handleVetsStats, req, res).catch((e) => {
+  console.error("vets/stats error:", e);
+  res.status(500).json({ error: e instanceof Error ? e.message : "Server error" });
+}));
+
 // Vobiz voice — must return XML in ~1–2 s or error 7012 (Error Reaching Action URL).
 app.all("/vobiz/answer", (req, res) => handleVobizAnswer(req, res));
 app.all("/vobiz/listen", (req, res) => handleVobizListen(req, res));
@@ -142,7 +164,13 @@ app.all("/vobiz/hangup", (req, res) => handleVobizHangup(req, res));
 app.all("/vobiz/webhook", (req, res) => handleVobizWebhook(req, res));
 
 app.get("/", (_req, res) => {
-  res.json({ ok: true, service: "pashumitra_api", llm: "sarvam", rag: "catalyst-keyword", knowledge: "catalyst/lib/knowledge" });
+  res.json({
+    ok: true,
+    service: "pashumitra_api",
+    llm: "sarvam",
+    rag: "sarvam-keyword",
+    knowledge: "Material for AI Chatbot + DAHD + NDDB DKP + ICAR",
+  });
 });
 
 module.exports = app;

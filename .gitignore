@@ -32,3 +32,6 @@ terminals/
 *.sw?
 
 .vercel
+
+# Runtime vet registrations (generated on server / local dev)
+catalyst/functions/pashumitra_api/data/vets/registrations.json

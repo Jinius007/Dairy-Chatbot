@@ -22,8 +22,9 @@ import {
   filterAbusiveLanguage,
 } from "../../lib/content-safety.ts";
 import { tryYoutubeVideoHint } from "../../lib/youtube-search.ts";
-import { retrieveRagContext } from "../../lib/rag-retrieval.ts";
+import { retrieveRagContext } from "../../lib/sarvam-rag.ts";
 import { getSarvamChatModel, sarvamChatCompletion } from "../../lib/sarvam.ts";
+import { isDiseaseRelatedQuery, VET_CONSULT_MARKER } from "../../lib/vet-consult.ts";
 
 const jsonHeaders = { "Content-Type": "application/json" };
 const sseHeaders = { "Content-Type": "text/event-stream" };
@@ -266,6 +267,8 @@ export async function handleChat(req: Request): Promise<Response> {
     const youtubeHint = mode === "call" ? null : await tryYoutubeVideoHint(safeMessages);
 
     const userCtx = safeMessages.filter((m: { role: string }) => m.role === "user").map((m: { content: string }) => m.content).join("\n");
+    const lastUserText = lastUser?.content || "";
+    const diseaseQuery = mode === "chat" && isDiseaseRelatedQuery(userCtx || lastUserText);
     const ragChunks = mode === "call" ? 2 : isRationAdvisory ? 7 : 4;
     const ragContext = retrieveRagContext(userCtx || lastUser?.content || "", ragChunks);
     const detectedUserLang = userCtx.trim() ? detectLangForRefusal(userCtx) : null;
@@ -291,11 +294,15 @@ export async function handleChat(req: Request): Promise<Response> {
       max_tokens: maxTokens,
       messages: [
         { role: "system", content: mode === "call" ? CALL_SYSTEM_PROMPT : SYSTEM_PROMPT },
-        { role: "system", content: `RETRIEVED KNOWLEDGE (Catalyst RAG — authoritative facts for this question; use selectively, do not dump all of it in one reply):\n${ragContext}` },
+        { role: "system", content: `RETRIEVED KNOWLEDGE (Sarvam RAG — NDDB/DAHD/ICAR curated corpus; authoritative facts; use selectively, do not dump all in one reply):\n${ragContext}` },
         ...(isRationAdvisory ? [{ role: "system", content: RATION_ADVISORY_MODE_PROMPT }] : []),
         ...(advisoryHint ? [{ role: "system", content: advisoryHint }] : []),
         ...(rationHint ? [{ role: "system", content: rationHint }] : []),
         ...(youtubeHint ? [{ role: "system", content: youtubeHint }] : []),
+        ...(diseaseQuery ? [{ role: "system", content: `ANIMAL HEALTH / DISEASE QUERY DETECTED:
+After giving a SHORT practical answer (symptoms, first aid, when to call vet — no full drug doses unless from retrieved knowledge):
+Ask the farmer in their language: "Would you like to consult a nearby veterinarian or paravet?"
+End your reply with exactly ${VET_CONSULT_MARKER} on its own line (required — app will show nearest doctors).` }] : []),
         ...(!isRationAdvisory && mode !== "call" ? [{ role: "system", content: `INTERACTIVE CHAT TURN (CRITICAL):
 This is regular chat — NOT a report. Max ~500 words this turn.
 1) Answer the farmer's latest question only — short and practical.

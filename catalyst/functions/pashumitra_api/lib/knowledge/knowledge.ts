@@ -5,7 +5,9 @@ import { BALANCED_RATION_GUIDE } from "./balanced-ration-guide.ts";
 import { RATION_KNOWLEDGE } from "./ration-knowledge.ts";
 import { COOPERATIVE_MILK_POLICY } from "./cooperative-policy.ts";
 import { DAHD_SCHEMES } from "./dahd-schemes.ts";
+import { ICAR_LIVESTOCK_HEALTH } from "./icar-livestock-health.ts";
 import { EXTENSION_MATERIAL } from "./extension-material.generated.ts";
+import { SARVAM_RAG_CORPUS } from "./sarvam-rag.generated.ts";
 
 export const KNOWLEDGE_BASE = `
 # DAIRY FARMING & ANIMAL HUSBANDRY KNOWLEDGE BASE
@@ -121,5 +123,9 @@ ${BALANCED_RATION_GUIDE}
 
 ${COOPERATIVE_MILK_POLICY}
 
+${ICAR_LIVESTOCK_HEALTH}
+
 ${EXTENSION_MATERIAL}
+
+${SARVAM_RAG_CORPUS}
 `;

@@ -62,8 +62,8 @@ function mergeUnique(primary: KnowledgeChunk[], extra: KnowledgeChunk[]): Knowle
 }
 
 /**
- * Keyword RAG over the Catalyst-hosted NDDB knowledge repo.
- * No vector DB, embeddings, or external wiki grounding — section retrieval only.
+ * Keyword RAG over the Catalyst-hosted NDDB knowledge repo (Sarvam RAG corpus).
+ * No vector DB — section retrieval over bundled knowledge, context injected into Sarvam chat.
  */
 export function retrieveRagContext(query: string, topK = 7): string {
   const chunks = buildChunks();
@@ -92,8 +92,8 @@ export function retrieveRagContext(query: string, topK = 7): string {
   if (/extension|pamphlet|booklet|poster|nddb|dairy knowledge|youtube|trifold|pashupalan|nirdeshika/i.test(query)) {
     selected = mergeUnique(selected, pickByTitle(chunks, /EXTENSION|NDDB|Pamphlet|Booklet|Poster|YouTube|Dairy Knowledge/i, 3));
   }
-  if (/mastitis|fever|disease|vaccin|evm|ethno|breed|heat|calv|pregnan/i.test(query)) {
-    selected = mergeUnique(selected, pickByTitle(chunks, /HEALTH|EVM|BREEDING|BOVINE/i, 3));
+  if (/mastitis|fever|disease|vaccin|evm|ethno|breed|heat|calv|pregnan|fmd|hs |black quarter|blackleg|anthrax|lumpy|brucellosis|bloat|tympany|milk fever|hypocal|diarr|scour|lameness|foot and mouth|galghotu/i.test(query)) {
+    selected = mergeUnique(selected, pickByTitle(chunks, /HEALTH|EVM|BREEDING|BOVINE|ICAR|DAHD|SVTG|Central Health|CaDDES|Mastitis|FMD|HS |Vaccin/i, 4));
   }
 
   if (selected.length === 0) {

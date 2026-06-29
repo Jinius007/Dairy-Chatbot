@@ -1,45 +1,38 @@
 # Catalyst knowledge repository
 
-All farmer-facing facts for RAG live in this folder (Catalyst-hosted).
+Farmer-facing facts for **Sarvam RAG** live here as a bundled markdown corpus.
 
-| File | Content |
-|------|---------|
-| `knowledge.ts` | Core NDDB dairy knowledge + imports below |
-| `dahd-schemes.ts` | Curated DAHD / GoI schemes (dahd.gov.in) |
-| `extension-material.generated.ts` | **Auto-generated** from extension PDFs + DKP + DAHD |
-| `sources/manifest.json` | Build manifest (titles, sources, char counts) |
-| `ration-knowledge.ts` | NDDB RBP / LCF ration programme |
-| `balanced-ration-guide.ts` | Balanced ration formulation guide |
-| `cooperative-policy.ts` | Cooperative-only milk marketing policy |
+## Sources
 
-## Rebuild extension knowledge
+| Source | Location |
+|--------|----------|
+| NDDB extension PDFs | `Material for AI Chatbot/` (project root) |
+| DAHD schemes | dahd.gov.in (scraped at ingest) |
+| NDDB Dairy Knowledge Portal | dairyknowledge.in section indexes |
+| ICAR animal health | [Central Health Key](https://www.icar.org/guidelines/icar-central-health-key/), [DAHD SVTG 2024](https://dahd.gov.in/sites/default/files/2024-10/StandardVeterinaryTreatment.pdf), [CaDDES](https://nivedi.res.in/nicra/CaDDES/), Gaushala manual |
+| Hindi/Gujarati PDFs (optional) | Sarvam Document Digitization (Vision OCR) |
+| Curated bundles | `knowledge.ts`, `icar-livestock-health.ts`, `dahd-schemes.ts`, ration guides |
 
-Place NDDB extension PDFs in (default):
+## Sarvam RAG pipeline
 
-`%USERPROFILE%\Downloads\Material for AI Chatbot`
+1. **Ingest** — extract text (web scrape + ICAR/DAHD PDFs + optional Sarvam Vision for Indic PDFs)
+2. **Retrieve** — keyword section match over bundled corpus (`rag-retrieval.ts`)
+3. **Generate** — Sarvam chat with retrieved context in the system prompt (`chat.ts`)
 
-Or set `KNOWLEDGE_MATERIAL_DIR` to your folder path.
+```bash
+npm run build:knowledge          # NDDB material + DAHD → extension-material.generated.ts
+npm run ingest:sarvam-rag        # ICAR/DAHD health PDFs + web → sarvam-rag.generated.ts
+npm run ingest:sarvam-rag -- --vision   # also OCR Hindi/Gujarati PDFs (needs SARVAM_API_KEY)
+npm run build:catalyst-api
+npm run deploy:catalyst
+```
+
+Runtime: `lib/sarvam-rag.ts` → `lib/rag-retrieval.ts`
+
+## Rebuild keyword bundle only
 
 ```bash
 npm run build:knowledge
 ```
 
-This ingests:
-
-- All PDFs in Booklets / Pamphlets / Poster / Trifold subfolders
-- `List of Extension Material & Youtube.xlsx` (DKP + YouTube links)
-- DAHD scheme pages (dahd.gov.in)
-- Dairy Knowledge Portal section indexes (dairyknowledge.in)
-
-Hindi/Gujarati PDFs with custom fonts become **catalog entries** with DKP links; English PDFs are full-text extracted.
-
-Then deploy:
-
-```bash
-npm run build:catalyst-api
-cd catalyst && catalyst deploy --only functions
-```
-
-Or: `npm run build:catalyst && npm run deploy:catalyst`
-
-RAG retrieval: `../rag-retrieval.ts` — keyword section matching (no vector DB).
+Uses `Material for AI Chatbot` via `scripts/build-knowledge-repo.mjs`.

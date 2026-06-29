@@ -41,6 +41,15 @@ import {
   waitTrafficMessage,
   waitTranscribingMessage,
 } from "@/lib/wait-messages";
+import { VetNearbyPanel } from "@/components/VetNearbyPanel";
+import { fetchNearbyVets } from "@/lib/vet-api";
+import { getGeoCoords } from "@/lib/location";
+import type { VetProfessional } from "@/lib/vet-types";
+import {
+  hasVetConsultMarker,
+  isAffirmativeConsultReply,
+  stripVetConsultMarker,
+} from "@/lib/vet-consult";
 
 interface Message {
   id: string;
@@ -92,6 +101,9 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
   const [paused, setPaused] = useState(false);
   const [slowWaitByMsg, setSlowWaitByMsg] = useState<Record<string, string>>({});
   const [activeUserLang, setActiveUserLang] = useState("hi");
+  const [vetOfferForMsg, setVetOfferForMsg] = useState<string | null>(null);
+  const [vetResultsByMsg, setVetResultsByMsg] = useState<Record<string, VetProfessional[]>>({});
+  const [loadingVetsFor, setLoadingVetsFor] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const abortRef = useRef<AbortController | null>(null);
   const messagesRef = useRef<Message[]>([]);
@@ -159,6 +171,31 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
   useEffect(() => { scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" }); }, [messages]);
 
   useEffect(() => () => { abortRef.current?.abort(); }, []);
+
+  const loadNearbyVets = useCallback(async (anchorMsgId: string, userLang: string) => {
+    if (!isBackendConfigured()) {
+      toast.error("Backend not configured");
+      return;
+    }
+    setLoadingVetsFor(anchorMsgId);
+    try {
+      const coords = await getGeoCoords();
+      if (!coords) {
+        toast.error("Allow location access to find nearby vets / paravets");
+        return;
+      }
+      const vets = await fetchNearbyVets(coords.lat, coords.lng, "all", 5);
+      setVetResultsByMsg((prev) => ({ ...prev, [anchorMsgId]: vets }));
+      setVetOfferForMsg(null);
+      if (!vets.length) {
+        toast.message(userLang === "en" ? "No vets found nearby" : "पास में कोई डॉक्टर नहीं मिला");
+      }
+    } catch (e: unknown) {
+      toast.error(e instanceof Error ? e.message : "Could not load nearby vets");
+    } finally {
+      setLoadingVetsFor(null);
+    }
+  }, []);
 
   const streamReply = async (
     history: Message[],
@@ -267,6 +304,10 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
 
     let { lang, body } = splitLangHeader(full);
     body = filterAbusiveLanguage(body);
+    if (hasVetConsultMarker(body)) {
+      body = stripVetConsultMarker(body);
+      setVetOfferForMsg(assistantId);
+    }
 
     let videos: Awaited<ReturnType<typeof fetchVerifiedVideos>> = [];
     if (wantsVideo) {
@@ -299,6 +340,26 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
 
   const send = async (text: string, isVoice = false, voiceStartedAt?: number) => {
     if (!text.trim() || sending) return;
+
+    const userLang = resolveUserLang(text, detectLanguageFromMessages(messages) || "hi");
+
+    if (isAffirmativeConsultReply(text) && vetOfferForMsg) {
+      const userMsg: Message = {
+        id: crypto.randomUUID(),
+        role: "user",
+        content: text,
+        is_voice: isVoice,
+        created_at: new Date().toISOString(),
+      };
+      const updated = [...messagesRef.current, userMsg];
+      messagesRef.current = updated;
+      setMessages(updated);
+      persist(updated);
+      setActiveUserLang(userLang);
+      await loadNearbyVets(vetOfferForMsg, userLang);
+      return;
+    }
+
     if (containsAbusiveLanguage(text)) {
       const refusal = abuseRefusalMessage(detectLangForRefusal(text));
       const { lang, body } = splitLangHeader(refusal);
@@ -313,7 +374,6 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
     setSending(true);
     setInput("");
     const startedAt = voiceStartedAt ?? Date.now();
-    const userLang = resolveUserLang(text, detectLanguageFromMessages(messages) || "hi");
     setActiveUserLang(userLang);
     const userMsg: Message = { id: crypto.randomUUID(), role: "user", content: text, is_voice: isVoice, created_at: new Date().toISOString() };
     const assistantMsg: Message = { id: crypto.randomUUID(), role: "assistant", content: "", created_at: new Date().toISOString() };
@@ -409,6 +469,35 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
                   </span>
                 )}
                 </div>
+                {!out && vetOfferForMsg === m.id && !vetResultsByMsg[m.id] && (
+                  <div className="flex flex-wrap gap-2 mt-3 pt-2 border-t border-border/50">
+                    <button
+                      type="button"
+                      disabled={loadingVetsFor === m.id}
+                      onClick={() => void loadNearbyVets(m.id, m.language || activeUserLang)}
+                      className="rounded-lg bg-primary text-primary-foreground px-3 py-1.5 text-xs font-medium hover:opacity-90 disabled:opacity-50"
+                    >
+                      {activeUserLang === "en" ? "Yes — show nearby vets" : "हाँ — पास के डॉक्टर दिखाएँ"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setVetOfferForMsg(null)}
+                      className="rounded-lg border border-border px-3 py-1.5 text-xs hover:bg-muted"
+                    >
+                      {activeUserLang === "en" ? "No thanks" : "नहीं, धन्यवाद"}
+                    </button>
+                  </div>
+                )}
+                {!out && (vetResultsByMsg[m.id] || loadingVetsFor === m.id) && (
+                  <div className="mt-3">
+                    <VetNearbyPanel
+                      vets={vetResultsByMsg[m.id] || []}
+                      loading={loadingVetsFor === m.id}
+                      lang={m.language || activeUserLang}
+                      onRetry={() => void loadNearbyVets(m.id, m.language || activeUserLang)}
+                    />
+                  </div>
+                )}
                 <div className={`flex items-center gap-1 mt-1 ${out ? "justify-end" : "justify-start"}`}>
                   {!out && m.content && (
                     speakingId === m.id ? (
