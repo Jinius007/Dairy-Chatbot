@@ -3,7 +3,7 @@ import { PhoneOff, Mic, Loader2, PhoneCall, Volume2, X } from "lucide-react";
 import { toast } from "sonner";
 import { isBackendConfigured } from "@/lib/backend-config";
 import { transcribeAudio } from "@/lib/transcribe-api";
-import { LANG_NAMES, detectLanguageCode, resolveTtsLanguage } from "@/lib/languages";
+import { LANG_NAMES, detectUserLanguage, resolveTtsLanguage } from "@/lib/languages";
 import { getChatCompletionsUrl, getChatRequestHeaders } from "@/lib/chat-api";
 import { fetchChatCompletionText, splitLangHeader } from "@/lib/chat-response";
 import { speakText, stopSpeech, unlockAudioPlayback, waitUntilPlaybackFullyIdle, isCallPlaybackActive } from "@/lib/speech";
@@ -231,7 +231,7 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
         resumeListening(500);
         return;
       }
-      const detectedLang = detectLanguageCode(userText);
+      const detectedLang = detectUserLanguage(userText, userLangRef.current || "hi");
       setUserLang(detectedLang);
       userLangRef.current = detectedLang;
       const userTurn: CallTurn = {

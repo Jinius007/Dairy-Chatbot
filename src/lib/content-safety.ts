@@ -93,6 +93,21 @@ export function detectLangForRefusal(text: string): string {
   }
   const best = Object.entries(counts).sort((a, b) => b[1] - a[1])[0]?.[0];
   if (best) return best;
-  if (/^[a-z0-9\s.,!?'"()-]+$/i.test(text)) return "en";
+
+  const romanizedHints: [RegExp, string][] = [
+    [/\b(kya|kaise|hai|meri|gaay|bhains|doodh|bimar|daktar|pashu|haan|nahi|batao|chahiye|vet|doctor|paas|najdeek)\b/i, "hi"],
+    [/\b(ki|dudh|goru|daktar|kemon|bhalo)\b/i, "bn"],
+    [/\b(enna|paal|pasu|maruthuvam)\b/i, "ta"],
+    [/\b(elaa|paalu|pashuvu|doctor)\b/i, "te"],
+  ];
+  for (const [re, code] of romanizedHints) {
+    if (re.test(text)) return code;
+  }
+
+  const t = text.trim();
+  if (/^[a-z0-9\s.,!?'"()-]+$/i.test(t)) {
+    if (/\b(the|what|how|please|help|disease|milk|cattle|vet|doctor|scheme|feed|ration)\b/i.test(t)) return "en";
+    return "hi";
+  }
   return "hi";
 }

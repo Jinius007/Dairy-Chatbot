@@ -24,7 +24,7 @@ import {
 import { tryYoutubeVideoHint } from "../../lib/youtube-search.ts";
 import { retrieveRagContext } from "../../lib/sarvam-rag.ts";
 import { getSarvamChatModel, sarvamChatCompletion } from "../../lib/sarvam.ts";
-import { isDiseaseRelatedQuery, VET_CONSULT_MARKER } from "../../lib/vet-consult.ts";
+import { isVetConsultQuery, isVetContactRequest, VET_CONSULT_MARKER } from "../../lib/vet-consult.ts";
 
 const jsonHeaders = { "Content-Type": "application/json" };
 const sseHeaders = { "Content-Type": "text/event-stream" };
@@ -268,12 +268,18 @@ export async function handleChat(req: Request): Promise<Response> {
 
     const userCtx = safeMessages.filter((m: { role: string }) => m.role === "user").map((m: { content: string }) => m.content).join("\n");
     const lastUserText = lastUser?.content || "";
-    const diseaseQuery = mode === "chat" && isDiseaseRelatedQuery(userCtx || lastUserText);
+    const vetConsultQuery = mode === "chat" && isVetConsultQuery(userCtx || lastUserText);
+    const vetContactDirect = mode === "chat" && isVetContactRequest(lastUserText || userCtx);
     const ragChunks = mode === "call" ? 2 : isRationAdvisory ? 7 : 4;
-    const ragContext = retrieveRagContext(userCtx || lastUser?.content || "", ragChunks);
+    const ragContext = await retrieveRagContext(userCtx || lastUser?.content || "", ragChunks);
+    const lastUserLang = lastUserText.trim() ? detectLangForRefusal(lastUserText) : null;
     const detectedUserLang = userCtx.trim() ? detectLangForRefusal(userCtx) : null;
-    const effectiveForceLang = (typeof forceLanguage === "string" ? forceLanguage : null)
-      ?? (isRationAdvisory && detectedUserLang ? detectedUserLang : null);
+    const clientLang = typeof forceLanguage === "string" ? forceLanguage : null;
+    const effectiveForceLang =
+      lastUserLang
+      ?? clientLang
+      ?? (mode === "chat" || mode === "call" ? detectedUserLang : null)
+      ?? (isRationAdvisory ? detectedUserLang : null);
     const effectiveForcedLabel = effectiveForceLang ? LANGUAGE_LABELS[effectiveForceLang] : null;
 
     if (isRationAdvisory) {
@@ -299,7 +305,11 @@ export async function handleChat(req: Request): Promise<Response> {
         ...(advisoryHint ? [{ role: "system", content: advisoryHint }] : []),
         ...(rationHint ? [{ role: "system", content: rationHint }] : []),
         ...(youtubeHint ? [{ role: "system", content: youtubeHint }] : []),
-        ...(diseaseQuery ? [{ role: "system", content: `ANIMAL HEALTH / DISEASE QUERY DETECTED:
+        ...(vetConsultQuery ? [{ role: "system", content: vetContactDirect
+          ? `VET / DOCTOR CONTACT REQUEST DETECTED:
+Give a SHORT reply in the farmer's language (1–2 lines) saying nearby vets/paravets are listed below with WhatsApp call and video options.
+End your reply with exactly ${VET_CONSULT_MARKER} on its own line (required — app shows 4–5 nearest doctors automatically).`
+          : `ANIMAL HEALTH / DISEASE QUERY DETECTED:
 After giving a SHORT practical answer (symptoms, first aid, when to call vet — no full drug doses unless from retrieved knowledge):
 Ask the farmer in their language: "Would you like to consult a nearby veterinarian or paravet?"
 End your reply with exactly ${VET_CONSULT_MARKER} on its own line (required — app will show nearest doctors).` }] : []),

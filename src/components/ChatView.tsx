@@ -43,11 +43,12 @@ import {
 } from "@/lib/wait-messages";
 import { VetNearbyPanel } from "@/components/VetNearbyPanel";
 import { fetchNearbyVets } from "@/lib/vet-api";
-import { getGeoCoords } from "@/lib/location";
+import { FALLBACK_GEO_COORDS, getGeoCoords } from "@/lib/location";
 import type { VetProfessional } from "@/lib/vet-types";
 import {
   hasVetConsultMarker,
   isAffirmativeConsultReply,
+  isVetContactRequest,
   stripVetConsultMarker,
 } from "@/lib/vet-consult";
 
@@ -114,13 +115,13 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
     setPaused(false);
   }, []);
 
-  const speak = useCallback(async (text: string, lang?: string | null, id?: string) => {
+  const speak = useCallback(async (text: string, lang?: string | null, id?: string, forceLang = false) => {
     if (!text.trim()) return;
     setSpeakingId(id ?? null);
     setPaused(false);
     try {
       await unlockAudioPlayback();
-      await speakText(text, { lang });
+      await speakText(text, { lang, forceLang: forceLang || !!lang });
     } finally {
       setSpeakingId((cur) => (cur === id ? null : cur));
       setPaused(false);
@@ -179,11 +180,7 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
     }
     setLoadingVetsFor(anchorMsgId);
     try {
-      const coords = await getGeoCoords();
-      if (!coords) {
-        toast.error("Allow location access to find nearby vets / paravets");
-        return;
-      }
+      const coords = (await getGeoCoords()) ?? FALLBACK_GEO_COORDS;
       const vets = await fetchNearbyVets(coords.lat, coords.lng, "all", 5);
       setVetResultsByMsg((prev) => ({ ...prev, [anchorMsgId]: vets }));
       setVetOfferForMsg(null);
@@ -304,7 +301,8 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
 
     let { lang, body } = splitLangHeader(full);
     body = filterAbusiveLanguage(body);
-    if (hasVetConsultMarker(body)) {
+    const wantsVets = hasVetConsultMarker(body);
+    if (wantsVets) {
       body = stripVetConsultMarker(body);
       setVetOfferForMsg(assistantId);
     }
@@ -335,13 +333,13 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
       is_voice: isVoice,
       mode: isVoice ? "voice" : "chat",
     });
-    return { text: body, lang };
+    return { text: body, lang, wantsVets };
   };
 
   const send = async (text: string, isVoice = false, voiceStartedAt?: number) => {
     if (!text.trim() || sending) return;
 
-    const userLang = resolveUserLang(text, detectLanguageFromMessages(messages) || "hi");
+    const userLang = resolveUserLang(text, detectLanguageFromMessages(messages) || activeUserLang || "hi");
 
     if (isAffirmativeConsultReply(text) && vetOfferForMsg) {
       const userMsg: Message = {
@@ -383,8 +381,13 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
     setMessages(visibleMessages);
 
     try {
-      const { text: reply, lang } = await streamReply(nextHistory, assistantMsg.id, text, isVoice, startedAt, userLang);
-      if (isVoice && reply) void speak(reply, lang, assistantMsg.id);
+      const wantsVetsDirect = isVetContactRequest(text);
+      const { text: reply, lang, wantsVets } = await streamReply(nextHistory, assistantMsg.id, text, isVoice, startedAt, userLang);
+      const replyLang = lang ?? userLang;
+      if (wantsVetsDirect || wantsVets) {
+        void loadNearbyVets(assistantMsg.id, replyLang);
+      }
+      if (isVoice && reply) void speak(reply, replyLang, assistantMsg.id, true);
     } catch (e: any) {
       console.error(e);
       toast.error(e?.message || "Failed to get reply");
@@ -469,7 +472,7 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
                   </span>
                 )}
                 </div>
-                {!out && vetOfferForMsg === m.id && !vetResultsByMsg[m.id] && (
+                {!out && vetOfferForMsg === m.id && !vetResultsByMsg[m.id] && loadingVetsFor !== m.id && (
                   <div className="flex flex-wrap gap-2 mt-3 pt-2 border-t border-border/50">
                     <button
                       type="button"

@@ -13,7 +13,8 @@
 | LLM / STT | Sarvam (`lib/sarvam.ts`) |
 
 **Production:** Sarvam RAG — keyword retrieval over NDDB material + DAHD schemes + ICAR health + DKP index, with Sarvam chat generation.  
-**Optional:** `--vision` ingest for full Hindi/Gujarati PDF text via Sarvam Document Digitization.
+**Optional:** `--vision` ingest for full Hindi/Gujarati PDF text via Sarvam Document Digitization.  
+**Optional:** Catalyst **QuickML RAG** — upload the same docs to QuickML Knowledge Base; set `QUICKML_RAG_URL` + `QUICKML_OAUTH_TOKEN` on the function for semantic retrieval (Sarvam still generates multilingual answers).
 
 ## Architecture
 

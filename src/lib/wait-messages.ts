@@ -1,6 +1,6 @@
 /** Localized “please wait” / status strings for chat and voice call. */
 
-import { detectLanguageCode } from "@/lib/languages";
+import { detectUserLanguage } from "@/lib/languages";
 
 type Lang = string;
 
@@ -147,7 +147,7 @@ export function callSpeakingMessage(lang?: Lang | null): string {
 }
 
 export function resolveUserLang(text: string, fallback: Lang = FALLBACK): Lang {
-  return detectLanguageCode(text) || fallback;
+  return detectUserLanguage(text, fallback);
 }
 
 /** Delay before showing slow-response hint (ms). */

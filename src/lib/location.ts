@@ -14,6 +14,9 @@ export interface GeoCoords {
   lng: number;
 }
 
+/** NDDB Anand — fallback when GPS is denied so dummy vet directory still works. */
+export const FALLBACK_GEO_COORDS: GeoCoords = { lat: 22.5645, lng: 72.9289 };
+
 export async function getGeoCoords(timeoutMs = 12000): Promise<GeoCoords | null> {
   if (typeof navigator === "undefined" || !navigator.geolocation) return null;
   const pos = await new Promise<GeolocationPosition | null>((resolve) => {

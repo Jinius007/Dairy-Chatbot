@@ -65,7 +65,7 @@ function mergeUnique(primary: KnowledgeChunk[], extra: KnowledgeChunk[]): Knowle
  * Keyword RAG over the Catalyst-hosted NDDB knowledge repo (Sarvam RAG corpus).
  * No vector DB — section retrieval over bundled knowledge, context injected into Sarvam chat.
  */
-export function retrieveRagContext(query: string, topK = 7): string {
+export function retrieveKeywordRagContext(query: string, topK = 7): string {
   const chunks = buildChunks();
   const queryTokens = tokenize(query);
 

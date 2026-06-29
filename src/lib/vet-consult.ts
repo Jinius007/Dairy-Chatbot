@@ -12,6 +12,14 @@ export function isAffirmativeConsultReply(text: string): boolean {
     || /\b(haan|yes|ji haan|consult karo|vet chahiye|doctor chahiye|dikhado|bhejo)\b/i.test(t);
 }
 
+export function isVetContactRequest(text: string): boolean {
+  return /vet|veterinar|doctor|daktar|pashu\s*chikits|paravet|vaid|consult|contact|number|phone|call|video|whatsapp|nearby|najdeek|paas|ka\s*number|dua|de\s*do|bhej|dikhao|connect|doctor\s*ka/i.test(text);
+}
+
+export function isVetConsultQuery(text: string): boolean {
+  return isDiseaseRelatedQuery(text) || isVetContactRequest(text);
+}
+
 export function isNegativeConsultReply(text: string): boolean {
   const t = text.trim().toLowerCase();
   return /^(nahi|nahin|no|n|mat|cancel|skip|baad mein|later)\b/i.test(t)

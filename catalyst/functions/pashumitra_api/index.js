@@ -17925,7 +17925,7 @@ var require_finalhandler = __commonJS({
     module2.exports = finalhandler;
     function finalhandler(req, res, options) {
       var opts = options || {};
-      var env2 = opts.env || process.env.NODE_ENV || "development";
+      var env3 = opts.env || process.env.NODE_ENV || "development";
       var onerror = opts.onerror;
       return function(err) {
         var headers;
@@ -17942,7 +17942,7 @@ var require_finalhandler = __commonJS({
           } else {
             headers = getErrorHeaders(err);
           }
-          msg = getErrorMessage(err, status, env2);
+          msg = getErrorMessage(err, status, env3);
         } else {
           status = 404;
           msg = "Cannot " + req.method + " " + encodeUrl(getResourceName(req));
@@ -17973,9 +17973,9 @@ var require_finalhandler = __commonJS({
       }
       return headers;
     }
-    function getErrorMessage(err, status, env2) {
+    function getErrorMessage(err, status, env3) {
       var msg;
-      if (env2 !== "production") {
+      if (env3 !== "production") {
         msg = err.stack;
         if (!msg && typeof err.toString === "function") {
           msg = err.toString();
@@ -21956,10 +21956,10 @@ var require_application = __commonJS({
       this.defaultConfiguration();
     };
     app2.defaultConfiguration = function defaultConfiguration() {
-      var env2 = process.env.NODE_ENV || "development";
+      var env3 = process.env.NODE_ENV || "development";
       this.enable("x-powered-by");
       this.set("etag", "weak");
-      this.set("env", env2);
+      this.set("env", env3);
       this.set("query parser", "extended");
       this.set("subdomain offset", 2);
       this.set("trust proxy", false);
@@ -21967,7 +21967,7 @@ var require_application = __commonJS({
         configurable: true,
         value: true
       });
-      debug("booting in %s mode", env2);
+      debug("booting in %s mode", env3);
       this.on("mount", function onmount(parent) {
         if (this.settings[trustProxyDefaultSymbol] === true && typeof parent.settings["trust proxy fn"] === "function") {
           delete this.settings["trust proxy"];
@@ -21984,7 +21984,7 @@ var require_application = __commonJS({
       this.set("view", View);
       this.set("views", resolve("views"));
       this.set("jsonp callback name", "callback");
-      if (env2 === "production") {
+      if (env3 === "production") {
         this.enable("view cache");
       }
       Object.defineProperty(this, "router", {
@@ -24877,7 +24877,20 @@ function detectLangForRefusal(text) {
   }
   const best = Object.entries(counts).sort((a, b) => b[1] - a[1])[0]?.[0];
   if (best) return best;
-  if (/^[a-z0-9\s.,!?'"()-]+$/i.test(text)) return "en";
+  const romanizedHints = [
+    [/\b(kya|kaise|hai|meri|gaay|bhains|doodh|bimar|daktar|pashu|haan|nahi|batao|chahiye|vet|doctor|paas|najdeek)\b/i, "hi"],
+    [/\b(ki|dudh|goru|daktar|kemon|bhalo)\b/i, "bn"],
+    [/\b(enna|paal|pasu|maruthuvam)\b/i, "ta"],
+    [/\b(elaa|paalu|pashuvu|doctor)\b/i, "te"]
+  ];
+  for (const [re, code] of romanizedHints) {
+    if (re.test(text)) return code;
+  }
+  const t = text.trim();
+  if (/^[a-z0-9\s.,!?'"()-]+$/i.test(t)) {
+    if (/\b(the|what|how|please|help|disease|milk|cattle|vet|doctor|scheme|feed|ration)\b/i.test(t)) return "en";
+    return "hi";
+  }
   return "hi";
 }
 
@@ -35040,7 +35053,7 @@ function mergeUnique(primary, extra) {
   }
   return out;
 }
-function retrieveRagContext(query, topK = 7) {
+function retrieveKeywordRagContext(query, topK = 7) {
   const chunks = buildChunks();
   const queryTokens = tokenize(query);
   if (queryTokens.size === 0) {
@@ -35069,28 +35082,120 @@ function retrieveRagContext(query, topK = 7) {
   return formatChunks(selected.slice(0, topK + 2));
 }
 
+// catalyst/functions/pashumitra_api/lib/quickml-rag.ts
+function env(key) {
+  if (typeof process !== "undefined" && process.env?.[key]) return process.env[key];
+  return void 0;
+}
+function extractQuickMlText(data) {
+  if (!data || typeof data !== "object") return null;
+  const o = data;
+  for (const key of ["text", "answer", "response", "output", "content", "message"]) {
+    const v = o[key];
+    if (typeof v === "string" && v.trim()) return v.trim();
+  }
+  const choices = o.choices;
+  if (Array.isArray(choices) && choices[0] && typeof choices[0] === "object") {
+    const msg = choices[0].message;
+    if (msg && typeof msg === "object") {
+      const content = msg.content;
+      if (typeof content === "string" && content.trim()) return content.trim();
+    }
+  }
+  const citations = o.citations ?? o.retrieved_documents ?? o.documents;
+  if (Array.isArray(citations) && citations.length) {
+    const parts = citations.map((c) => {
+      if (typeof c === "string") return c;
+      if (c && typeof c === "object") {
+        const item = c;
+        const text = item.text ?? item.content ?? item.snippet ?? item.passage;
+        const source = item.source ?? item.document_name ?? item.name ?? item.id;
+        if (typeof text === "string" && text.trim()) {
+          return source ? `[${source}] ${text.trim()}` : text.trim();
+        }
+      }
+      return "";
+    }).filter(Boolean);
+    if (parts.length) return parts.join("\n\n");
+  }
+  return null;
+}
+async function retrieveQuickMlRagContext(query) {
+  const url = env("QUICKML_RAG_URL");
+  const oauthToken = env("QUICKML_OAUTH_TOKEN");
+  if (!url || !oauthToken || !query.trim()) return null;
+  const headers = {
+    "Content-Type": "application/json",
+    Authorization: `Zoho-oauthtoken ${oauthToken}`
+  };
+  const orgId = env("CATALYST_ORG_ID");
+  const endpointKey = env("QUICKML_ENDPOINT_KEY");
+  const environment = env("QUICKML_ENVIRONMENT");
+  if (orgId) headers["CATALYST-ORG"] = orgId;
+  if (endpointKey) headers["X-QUICKML-ENDPOINT-KEY"] = endpointKey;
+  if (environment) headers.Environment = environment;
+  const documentIds = env("QUICKML_RAG_DOCUMENT_IDS");
+  const body = {
+    query: query.trim(),
+    prompt: query.trim()
+  };
+  if (documentIds) {
+    body.document_ids = documentIds.split(",").map((s) => s.trim()).filter(Boolean);
+  }
+  try {
+    const resp = await fetch(url, {
+      method: "POST",
+      headers,
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout(12e3)
+    });
+    if (!resp.ok) {
+      console.warn("QuickML RAG HTTP", resp.status, await resp.text().catch(() => ""));
+      return null;
+    }
+    const data = await resp.json();
+    return extractQuickMlText(data);
+  } catch (e) {
+    console.warn("QuickML RAG error:", e instanceof Error ? e.message : e);
+    return null;
+  }
+}
+
+// catalyst/functions/pashumitra_api/lib/sarvam-rag.ts
+async function retrieveRagContext(query, topK = 7) {
+  const local = retrieveKeywordRagContext(query, topK);
+  const quickMl = await retrieveQuickMlRagContext(query);
+  if (quickMl) {
+    return `${local}
+
+--- QuickML semantic retrieval (Catalyst knowledge base) ---
+${quickMl}`;
+  }
+  return local;
+}
+
 // catalyst/functions/pashumitra_api/lib/sarvam.ts
 var SARVAM_CHAT_URL = "https://api.sarvam.ai/v1/chat/completions";
 var SARVAM_STT_URL = "https://api.sarvam.ai/speech-to-text";
 var SARVAM_TTS_URL = "https://api.sarvam.ai/text-to-speech";
-function env(key) {
+function env2(key) {
   if (typeof process !== "undefined" && process.env?.[key]) return process.env[key];
   if (typeof Deno !== "undefined") return Deno.env.get(key);
   return void 0;
 }
 function getSarvamApiKey() {
-  const key = env("SARVAM_API_KEY");
+  const key = env2("SARVAM_API_KEY");
   if (!key) throw new Error("SARVAM_API_KEY not configured");
   return key;
 }
 function hasSarvamApiKey() {
-  return Boolean(env("SARVAM_API_KEY"));
+  return Boolean(env2("SARVAM_API_KEY"));
 }
 function getSarvamChatModel() {
-  return env("SARVAM_CHAT_MODEL") || "sarvam-30b";
+  return env2("SARVAM_CHAT_MODEL") || "sarvam-30b";
 }
 function getSarvamSttModel() {
-  return env("SARVAM_STT_MODEL") || "saaras:v3";
+  return env2("SARVAM_STT_MODEL") || "saaras:v3";
 }
 async function sarvamChatCompletion(body) {
   return fetch(SARVAM_CHAT_URL, {
@@ -35154,13 +35259,13 @@ async function sarvamTranscribe(audioBytes, mimeType, languageCode) {
   return (data.transcript || "").trim();
 }
 function getSarvamTtsSpeaker() {
-  return env("SARVAM_TTS_SPEAKER") || "suhani";
+  return env2("SARVAM_TTS_SPEAKER") || "suhani";
 }
 function getSarvamCallSpeaker() {
-  return env("SARVAM_TTS_CALL_SPEAKER") || "suhani";
+  return env2("SARVAM_TTS_CALL_SPEAKER") || "suhani";
 }
 function getSarvamTtsPace(callMode = false) {
-  const raw = env(callMode ? "SARVAM_TTS_CALL_PACE" : "SARVAM_TTS_PACE");
+  const raw = env2(callMode ? "SARVAM_TTS_CALL_PACE" : "SARVAM_TTS_PACE");
   const n = raw ? Number(raw) : callMode ? 0.8 : 0.84;
   if (!Number.isFinite(n)) return callMode ? 0.8 : 0.84;
   return Math.min(2, Math.max(0.5, n));
@@ -35203,9 +35308,16 @@ async function sarvamSynthesizeSpeech(text, languageCode, opts) {
 
 // catalyst/functions/pashumitra_api/lib/vet-consult.ts
 var DISEASE_PATTERNS = /mastitis|fever|bimar|bimari|rogi|disease|symptom|lakshan|chhale|chale|blister|diarr|dast|lumpy|lsd|fmd|lameness|langda|bloat|afara|udder|than|vaccin|tika|ilaj|treatment|infection|anthrax|galghotu|brucellosis|repeat breed|pashu.*(bimar|problem)|gaay.*(bimar|problem)|bhains.*(bimar|problem)/i;
+var VET_CONTACT_PATTERNS = /vet|veterinar|doctor|daktar|pashu\s*chikits|paravet|vaid|consult|contact|number|phone|call|video|whatsapp|nearby|najdeek|paas|ka\s*number|dua|de\s*do|bhej|dikhao|connect|doctor\s*ka/i;
 var VET_CONSULT_MARKER = "[[VET_CONSULT_OFFER]]";
 function isDiseaseRelatedQuery(text) {
   return DISEASE_PATTERNS.test(text);
+}
+function isVetContactRequest(text) {
+  return VET_CONTACT_PATTERNS.test(text);
+}
+function isVetConsultQuery(text) {
+  return isDiseaseRelatedQuery(text) || isVetContactRequest(text);
 }
 
 // catalyst/functions/pashumitra_api/src/handlers/chat.ts
@@ -35443,11 +35555,14 @@ async function handleChat(req) {
     const youtubeHint = mode === "call" ? null : await tryYoutubeVideoHint(safeMessages);
     const userCtx = safeMessages.filter((m) => m.role === "user").map((m) => m.content).join("\n");
     const lastUserText = lastUser?.content || "";
-    const diseaseQuery = mode === "chat" && isDiseaseRelatedQuery(userCtx || lastUserText);
+    const vetConsultQuery = mode === "chat" && isVetConsultQuery(userCtx || lastUserText);
+    const vetContactDirect = mode === "chat" && isVetContactRequest(lastUserText || userCtx);
     const ragChunks = mode === "call" ? 2 : isRationAdvisory ? 7 : 4;
-    const ragContext = retrieveRagContext(userCtx || lastUser?.content || "", ragChunks);
+    const ragContext = await retrieveRagContext(userCtx || lastUser?.content || "", ragChunks);
+    const lastUserLang = lastUserText.trim() ? detectLangForRefusal(lastUserText) : null;
     const detectedUserLang = userCtx.trim() ? detectLangForRefusal(userCtx) : null;
-    const effectiveForceLang = (typeof forceLanguage === "string" ? forceLanguage : null) ?? (isRationAdvisory && detectedUserLang ? detectedUserLang : null);
+    const clientLang = typeof forceLanguage === "string" ? forceLanguage : null;
+    const effectiveForceLang = lastUserLang ?? clientLang ?? (mode === "chat" || mode === "call" ? detectedUserLang : null) ?? (isRationAdvisory ? detectedUserLang : null);
     const effectiveForcedLabel = effectiveForceLang ? LANGUAGE_LABELS[effectiveForceLang] : null;
     if (isRationAdvisory) {
       const directReply = getRationAdvisoryDirectReply(safeMessages, effectiveForceLang);
@@ -35471,7 +35586,9 @@ ${ragContext}` },
         ...advisoryHint ? [{ role: "system", content: advisoryHint }] : [],
         ...rationHint ? [{ role: "system", content: rationHint }] : [],
         ...youtubeHint ? [{ role: "system", content: youtubeHint }] : [],
-        ...diseaseQuery ? [{ role: "system", content: `ANIMAL HEALTH / DISEASE QUERY DETECTED:
+        ...vetConsultQuery ? [{ role: "system", content: vetContactDirect ? `VET / DOCTOR CONTACT REQUEST DETECTED:
+Give a SHORT reply in the farmer's language (1\u20132 lines) saying nearby vets/paravets are listed below with WhatsApp call and video options.
+End your reply with exactly ${VET_CONSULT_MARKER} on its own line (required \u2014 app shows 4\u20135 nearest doctors automatically).` : `ANIMAL HEALTH / DISEASE QUERY DETECTED:
 After giving a SHORT practical answer (symptoms, first aid, when to call vet \u2014 no full drug doses unless from retrieved knowledge):
 Ask the farmer in their language: "Would you like to consult a nearby veterinarian or paravet?"
 End your reply with exactly ${VET_CONSULT_MARKER} on its own line (required \u2014 app will show nearest doctors).` }] : [],

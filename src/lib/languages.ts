@@ -23,6 +23,35 @@ export const TTS_LANG: Record<string, string> = {
 
 export const LANG_CODES = Object.keys(LANG_NAMES);
 
+/** Romanized / code-mixed Indian language cues (Hinglish, Banglish, etc.). */
+const ROMANIZED_LANG_HINTS: [RegExp, string][] = [
+  [/\b(kya|kaise|kaisa|hai|hain|meri|mera|mere|gaay|gai|bhains|doodh|bimar|bimari|ilaj|daktar|pashu|kisan|nahi|haan|batao|bataiye|madad|sujan|dard|chara|poshan|yojana|sarkar|gaon|mahine|sal|din|ji|chahiye|dikhao|bhejo|paas|najdeek|vet|doctor)\b/i, "hi"],
+  [/\b(ki|ache|kemon|bhalo|dudh|goru|bhais|chikitsa|daktar|kisan|amake|bolun|hobe|na)\b/i, "bn"],
+  [/\b(enna|epdi|paal|pasu|maruthuvam|vaidhyan|sollunga|illai|aama)\b/i, "ta"],
+  [/\b(elaa|em|paalu|pashuvu|doctor|cheppandi|ledu|avunu)\b/i, "te"],
+  [/\b(kasa|kay|dudh|gai|mhashi|doctor|sanga|nahi|ho)\b/i, "mr"],
+  [/\b(shu|kem|dudh|gai|bhains|doctor|kaho|nathi|ha)\b/i, "gu"],
+  [/\b(yaav|hege|halu|pasu|doctor|heli|illa|howdu)\b/i, "kn"],
+  [/\b(engane|ente|paal|pashu|doctor|parayu|illa|athe)\b/i, "ml"],
+  [/\b(ki|kive|dudh|gaan|doctor|daso|nahi|haan)\b/i, "pa"],
+  [/\b(kana|kemiti|khir|pashu|daktar|kaha|nahi|haan)\b/i, "or"],
+  [/\b(ki|kenekoi|dudh|goru|daktar|kobo|nai|hoi)\b/i, "as"],
+  [/\b(kya|kaise|hai|doodh|janwar|doctor|batao|nahi|ji)\b/i, "ur"],
+];
+
+function detectRomanizedLang(text: string): string | null {
+  for (const [re, code] of ROMANIZED_LANG_HINTS) {
+    if (re.test(text)) return code;
+  }
+  return null;
+}
+
+function isClearlyEnglish(text: string): boolean {
+  const t = text.trim();
+  if (!/^[a-z0-9\s.,!?'"()-]+$/i.test(t)) return false;
+  return /\b(the|what|how|when|where|why|please|help|disease|milk|cattle|cow|buffalo|vet|doctor|scheme|feed|ration|can you|could you|would you|my|your|is|are|was|were)\b/i.test(t);
+}
+
 export function detectLanguageCode(text: string): string | null {
   const counts: Record<string, number> = {};
   const add = (code: string) => { counts[code] = (counts[code] || 0) + 1; };
@@ -43,8 +72,18 @@ export function detectLanguageCode(text: string): string | null {
 
   const best = Object.entries(counts).sort((a, b) => b[1] - a[1])[0]?.[0];
   if (best) return best;
-  if (/[a-z]/i.test(text)) return "en";
+
+  const romanized = detectRomanizedLang(text);
+  if (romanized) return romanized;
+
+  if (isClearlyEnglish(text)) return "en";
+  if (/[a-z]/i.test(text)) return "hi";
   return null;
+}
+
+/** Best-effort language for a user turn; never returns null. */
+export function detectUserLanguage(text: string, fallback = "hi"): string {
+  return detectLanguageCode(text) ?? fallback;
 }
 
 /** Scan all user turns — strongest signal for ration advisory language lock. */
