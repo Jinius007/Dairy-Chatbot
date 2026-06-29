@@ -18,26 +18,114 @@ export const NATIVE_SCRIPT_LABELS: Record<string, string> = {
   en: "Latin (English)",
 };
 
-const ROMANIZED_LANG_HINTS: [RegExp, string][] = [
-  [/\b(kya|kaise|kaisa|hai|hain|meri|mera|mere|gaay|gai|bhains|doodh|bimar|bimari|ilaj|daktar|pashu|kisan|nahi|haan|batao|bataiye|madad|dard|chara|poshan|yojana|sarkar|gaon|mahine|sal|din|ji|chahiye|dikhao|bhejo|paas|najdeek|vet|doctor|kahan|kaha)\b/i, "hi"],
-  [/\b(ki|ache|kemon|bhalo|dudh|goru|bhais|chikitsa|daktar|kisan|amake|bolun|hobe|na|lagbe|dorkar)\b/i, "bn"],
-  [/\b(enna|epdi|eppadi|paal|pasu|maruthuvam|vaidhyan|sollunga|illai|aama|venum|kodu)\b/i, "ta"],
-  [/\b(elaa|em|eppudu|paalu|pashuvu|doctor|cheppandi|ledu|avunu|kavali|ivvu)\b/i, "te"],
-  [/\b(kasa|kay|dudh|gai|mhashi|doctor|sanga|nahi|ho|pahije|de)\b/i, "mr"],
-  [/\b(shu|kem|dudh|gai|bhains|doctor|kaho|nathi|ha|joiye|aapo)\b/i, "gu"],
-  [/\b(yaav|hege|halu|pasu|doctor|heli|illa|howdu|beku|kodi)\b/i, "kn"],
-  [/\b(engane|ente|eppozha|paal|pashu|doctor|parayu|illa|athe|venam|tharu)\b/i, "ml"],
-  [/\b(ki|kive|dudh|gaan|doctor|daso|nahi|haan|chahida|deyo)\b/i, "pa"],
-  [/\b(kana|kemiti|khir|pashu|daktar|kaha|nahi|haan|diya|pathao)\b/i, "or"],
-  [/\b(ki|kenekoi|dudh|goru|daktar|kobo|nai|hoi|lagibo)\b/i, "as"],
-  [/\b(kya|kaise|hai|doodh|janwar|doctor|batao|nahi|ji|chahiye)\b/i, "ur"],
+interface RomanizedProfile {
+  lang: string;
+  strong: string[];
+  common: string[];
+}
+
+const ROMANIZED_PROFILES: RomanizedProfile[] = [
+  {
+    lang: "bn",
+    strong: [
+      "ekti", "ekjon", "ekta", "duti", "tin", "char", "kotota", "koto", "khabar", "khawa", "khavar",
+      "uchit", "hobe", "habe", "lagbe", "dorkar", "bolun", "bolben", "bolen", "amake", "apnake", "tomake",
+      "kemon", "keno", "kothay", "nei", "korbo", "korbe", "korle", "korte", "korun", "deowa", "debe",
+      "dichchi", "ghash", "poshu", "gorur", "valo", "ekhon", "sheta", "eta", "egulo", "kivabe", "somoy",
+      "bhalo", "byadhi", "chikitsha", "matro", "shudhu", "onek", "kom", "beshi", "shob", "taar",
+    ],
+    common: ["goru", "gaay", "gai", "dudh", "daktar", "kisan", "na", "ki", "ke", "dewa", "deya"],
+  },
+  {
+    lang: "hi",
+    strong: [
+      "kya", "kaise", "kaisa", "kaun", "kitna", "kitne", "kyun", "kab", "hai", "hain", "hoon", "hoga",
+      "chahiye", "chahie", "meri", "mera", "mere", "aapka", "aapki", "apka", "tumhara", "nahi", "nahin",
+      "haan", "han", "batao", "bataiye", "bata", "kahan", "kaha", "dijiye", "karna", "karte", "karo",
+      "ji", "mahine", "sal", "gaon", "yojana", "sarkar", "wala", "wali", "hogi", "tha", "thi", "rahe",
+      "raha", "kripya", "krpya", "krupa", "bataiye", "bataye", "batana", "dena", "dete", "deti",
+    ],
+    common: ["gaay", "gai", "bhains", "doodh", "daktar", "pashu", "kisan", "chara", "doctor", "vet", "dewa"],
+  },
+  {
+    lang: "ta",
+    strong: ["enna", "epdi", "eppadi", "enga", "yen", "illai", "venum", "irukku", "sollunga", "aama", "eppo", "eppadi", "seiyungal", "vandhu", "pannunga", "theriyuma", "sari", "romba", "konjam"],
+    common: ["paal", "pasu", "maruthuvam", "vaidhyan", "kodu", "doctor"],
+  },
+  {
+    lang: "te",
+    strong: ["elaa", "emi", "ekkada", "eppudu", "ledu", "kavali", "undi", "cheppandi", "ivvu", "avunu", "ela", "enduku", "chala", "koncham", "sare", "cheyandi"],
+    common: ["paalu", "pashuvu", "doctor"],
+  },
+  {
+    lang: "mr",
+    strong: ["kasa", "kay", "ahe", "ahet", "naahi", "pahije", "sanga", "deto", "hoto", "hoti", "mala", "tula", "tumhala", "kay", "kiti", "kuthun", "kuthun"],
+    common: ["dudh", "gai", "mhashi", "doctor", "de", "ho", "nahi"],
+  },
+  {
+    lang: "gu",
+    strong: ["shu", "kem", "chhe", "nathi", "joiye", "aapo", "kaho", "saru", "khabar", "kem", "kyare", "kyathi", "tame", "maru", "tamne", "amne"],
+    common: ["dudh", "gai", "bhains", "doctor", "ha"],
+  },
+  {
+    lang: "kn",
+    strong: ["yaav", "hege", "illa", "howdu", "beku", "kodi", "heli", "yenu", "elli", "yaake", "idhu", "adu", "nanna", "nimma", "sari"],
+    common: ["halu", "pasu", "doctor"],
+  },
+  {
+    lang: "ml",
+    strong: ["engane", "ente", "eppozha", "illa", "venam", "parayu", "athe", "tharu", "entha", "evide", "njan", "ningal", "sheri", "kurachu"],
+    common: ["paal", "pashu", "doctor"],
+  },
+  {
+    lang: "pa",
+    strong: ["kive", "daso", "chahida", "deyo", "karda", "hunda", "nahi", "haan", "ki", "kithhe", "kado", "mera", "tera", "tusi", "asi"],
+    common: ["dudh", "gaan", "doctor"],
+  },
+  {
+    lang: "or",
+    strong: ["kana", "kemiti", "kahinki", "diya", "pathao", "kaha", "nahi", "haan", "mote", "tume", "se", "ebe", "kete"],
+    common: ["khir", "pashu", "daktar"],
+  },
+  {
+    lang: "as",
+    strong: ["kenekoi", "kobo", "lagibo", "hoi", "nai", "kene", "kio", "moi", "tumi", "eibur", "hetu", "bhal"],
+    common: ["dudh", "goru", "daktar", "ki"],
+  },
+  {
+    lang: "ur",
+    strong: ["kyun", "kab", "kahan", "ap", "aap", "mera", "meri", "bataiye", "bataye", "chahiye", "nahin", "nahi", "ji", "kripya"],
+    common: ["kya", "kaise", "hai", "doodh", "janwar", "doctor", "batao"],
+  },
 ];
 
-function detectRomanizedLang(text: string): string | null {
-  for (const [re, code] of ROMANIZED_LANG_HINTS) {
-    if (re.test(text)) return code;
+function wordBoundaryRe(word: string): RegExp {
+  return new RegExp(`\\b${word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`, "i");
+}
+
+function scoreRomanizedProfile(text: string, profile: RomanizedProfile): number {
+  let score = 0;
+  for (const w of profile.strong) {
+    if (wordBoundaryRe(w).test(text)) score += 2;
   }
-  return null;
+  for (const w of profile.common) {
+    if (wordBoundaryRe(w).test(text)) score += 1;
+  }
+  return score;
+}
+
+function detectRomanizedLang(text: string): string | null {
+  const scores = ROMANIZED_PROFILES
+    .map((p) => ({ lang: p.lang, score: scoreRomanizedProfile(text, p) }))
+    .filter((x) => x.score > 0)
+    .sort((a, b) => b.score - a.score);
+
+  if (!scores.length) return null;
+  if (scores.length >= 2 && scores[0].score === scores[1].score) {
+    const nonHi = scores.find((x) => x.lang !== "hi");
+    return nonHi?.lang ?? scores[0].lang;
+  }
+  return scores[0].lang;
 }
 
 function isClearlyEnglish(text: string): boolean {
@@ -71,7 +159,6 @@ export function detectLanguageCode(text: string): string | null {
   if (romanized) return romanized;
 
   if (isClearlyEnglish(text)) return "en";
-  if (/[a-z]/i.test(text)) return "hi";
   return null;
 }
 

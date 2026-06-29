@@ -1,5 +1,36 @@
 import { describe, expect, it } from "vitest";
-import { prepareTextForSpeech, splitForTts, ttsPauseMsAfterChunk, ttsPauseTierFromChunk } from "../languages";
+import { detectLanguageCode, prepareTextForSpeech, splitForTts, ttsPauseMsAfterChunk, ttsPauseTierFromChunk } from "../languages";
+
+describe("detectLanguageCode — romanized Indic", () => {
+  it("detects Banglish (Bengali in Roman script)", () => {
+    expect(detectLanguageCode("ekti gaay ke kotota khabar dewa uchit")).toBe("bn");
+    expect(detectLanguageCode("gorur kemon khabar lagbe")).toBe("bn");
+  });
+
+  it("detects Hinglish (Hindi in Roman script)", () => {
+    expect(detectLanguageCode("meri gaay bimar hai kya karna chahiye")).toBe("hi");
+    expect(detectLanguageCode("kitna doodh deti hai")).toBe("hi");
+  });
+
+  it("detects Tanglish (Tamil in Roman script)", () => {
+    expect(detectLanguageCode("enna pasu ku enna khabar venum")).toBe("ta");
+    expect(detectLanguageCode("epdi paal yield improve pannunga")).toBe("ta");
+  });
+
+  it("detects Telugu in Roman script", () => {
+    expect(detectLanguageCode("emi kavali pasuvu ki elaa cheppandi")).toBe("te");
+  });
+
+  it("detects native script languages", () => {
+    expect(detectLanguageCode("আমার গoru")).toBe("bn");
+    expect(detectLanguageCode("मेरी गाय")).toBe("hi");
+    expect(detectLanguageCode("என் பசு")).toBe("ta");
+  });
+
+  it("detects English dairy questions", () => {
+    expect(detectLanguageCode("How much feed should I give my cow?")).toBe("en");
+  });
+});
 
 describe("prepareTextForSpeech", () => {
   it("expands Hindi number ranges with se", () => {

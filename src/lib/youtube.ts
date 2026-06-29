@@ -17,16 +17,10 @@ export function isYoutubeRequest(text: string): boolean {
   return YOUTUBE_REQUEST.test(text);
 }
 
+import { detectLanguageCode } from "@/lib/languages";
+
 export function detectLangFromText(text: string): string {
-  if (/[\u0980-\u09FF]/.test(text)) return "bn";
-  if (/[\u0B80-\u0BFF]/.test(text)) return "ta";
-  if (/[\u0C00-\u0C7F]/.test(text)) return "te";
-  if (/[\u0A80-\u0AFF]/.test(text)) return "gu";
-  if (/[\u0C80-\u0CFF]/.test(text)) return "kn";
-  if (/[\u0D00-\u0D7F]/.test(text)) return "ml";
-  if (/[\u0900-\u097F]/.test(text)) return "hi";
-  if (/[a-zA-Z]/.test(text)) return "en";
-  return "hi";
+  return detectLanguageCode(text) ?? "hi";
 }
 
 /** Build a rich search string from user message + recent chat + optional AI answer */
