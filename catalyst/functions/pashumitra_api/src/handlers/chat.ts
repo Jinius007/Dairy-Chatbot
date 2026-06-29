@@ -28,6 +28,8 @@ import { buildCooperativeMarketingPrompt, MILK_MARKETING_SYSTEM_RULES } from "..
 import { NATIVE_SCRIPT_RULES, nativeScriptLockPrompt } from "../../lib/languages.ts";
 import { ensureNativeScriptText } from "../../lib/native-script.ts";
 import { getVetContactDirectReply, isVetConsultQuery, isVetContactRequest, VET_CONSULT_MARKER } from "../../lib/vet-consult.ts";
+import { trimChatMessages } from "../../lib/chat-history.ts";
+import { createSsePassthroughStream } from "../../lib/sse-passthrough.ts";
 
 const jsonHeaders = { "Content-Type": "application/json" };
 const sseHeaders = { "Content-Type": "text/event-stream" };
@@ -68,6 +70,7 @@ ANSWER STYLE (WhatsApp-style, farmer-friendly — INTERACTIVE, NOT A LECTURE):
 - Use very simple words that a farmer can understand easily. Avoid difficult medical, legal, or technical words unless needed.
 - If you must use a hard term, add a simple explanation in brackets.
 - Warm, simple, practical. Short paragraphs and bullet points.
+- COMPLETION (CRITICAL): Always finish every sentence completely. Never stop mid-word or mid-sentence — if you start a point, finish it.
 - Give direct steps: what to check, what to do now, when to call a vet/officer.
 - Emojis sparingly (🐄 🥛 💉 🌾 ✅ ⚠️) where helpful.
 - For medical/disease questions ALWAYS end with: "⚠️ Please consult your local veterinarian for serious cases." (translated to the user's language).
@@ -265,14 +268,16 @@ export async function handleChat(req: Request): Promise<Response> {
       });
     }
 
-    const safeMessages = messages.map((m: { role: string; content: string }) =>
-      m.role === "user" ? { ...m, content: filterAbusiveLanguage(m.content) } : m,
+    const safeMessages = trimChatMessages(
+      messages.map((m: { role: string; content: string }) =>
+        m.role === "user" ? { ...m, content: filterAbusiveLanguage(m.content) } : m,
+      ),
+      14,
     );
 
     const isRationAdvisory = mode === "ration_advisory";
     const advisoryHint = isRationAdvisory ? tryRationAdvisoryHint(safeMessages) : null;
     const rationHint = isRationAdvisory || mode === "call" ? null : tryComputeRationHint(safeMessages);
-    const youtubeHint = mode === "call" ? null : await tryYoutubeVideoHint(safeMessages);
 
     const userCtx = safeMessages.filter((m: { role: string }) => m.role === "user").map((m: { content: string }) => m.content).join("\n");
     const lastUserText = lastUser?.content || "";
@@ -280,7 +285,6 @@ export async function handleChat(req: Request): Promise<Response> {
     const vetContactDirect = (mode === "chat" || mode === "call") && isVetContactRequest(lastUserText || userCtx);
     const cooperativeHint = buildCooperativeMarketingPrompt(userCtx || lastUserText);
     const ragChunks = mode === "call" ? 2 : isRationAdvisory ? 7 : 4;
-    const ragContext = await retrieveRagContext(userCtx || lastUser?.content || "", ragChunks);
     const lastUserLang = lastUserText.trim() ? detectLangForRefusal(lastUserText) : null;
     const detectedUserLang = userCtx.trim() ? detectLangForRefusal(userCtx) : null;
     const clientLang = typeof forceLanguage === "string" ? forceLanguage : null;
@@ -307,45 +311,67 @@ export async function handleChat(req: Request): Promise<Response> {
       return new Response(JSON.stringify({ text: directReply }), { headers: jsonHeaders });
     }
 
-    const maxTokens = mode === "call" ? 420 : isRationAdvisory ? 2048 : 900;
+    const maxTokens = mode === "call" ? 420 : isRationAdvisory ? 2048 : 1200;
+
+    const buildSarvamMessages = (youtubeHint: string | null, ragContext: string) => [
+      { role: "system", content: mode === "call" ? CALL_SYSTEM_PROMPT : SYSTEM_PROMPT },
+      { role: "system", content: `RETRIEVED KNOWLEDGE (Sarvam RAG — NDDB/DAHD/ICAR curated corpus; authoritative facts; use selectively, do not dump all in one reply):\n${ragContext}` },
+      ...(isRationAdvisory ? [{ role: "system", content: RATION_ADVISORY_MODE_PROMPT }] : []),
+      ...(advisoryHint ? [{ role: "system", content: advisoryHint }] : []),
+      ...(rationHint ? [{ role: "system", content: rationHint }] : []),
+      ...(youtubeHint ? [{ role: "system", content: youtubeHint }] : []),
+      ...(cooperativeHint ? [{ role: "system", content: cooperativeHint }] : []),
+      ...(vetConsultQuery ? [{ role: "system", content: vetContactDirect
+        ? `VET / DOCTOR CONTACT REQUEST DETECTED:
+Give a SHORT reply in the farmer's language (1–2 lines) saying nearby vets/paravets are listed below with WhatsApp call and video options.
+End your reply with exactly ${VET_CONSULT_MARKER} on its own line (required — app shows 4–5 nearest doctors automatically).`
+        : `ANIMAL HEALTH / DISEASE QUERY DETECTED:
+After giving a SHORT practical answer (symptoms, first aid, when to call vet — no full drug doses unless from retrieved knowledge):
+Ask the farmer in their language: "Would you like to consult a nearby veterinarian or paravet?"
+End your reply with exactly ${VET_CONSULT_MARKER} on its own line (required — app will show nearest doctors).` }] : []),
+      ...(!isRationAdvisory && mode !== "call" ? [{ role: "system", content: `INTERACTIVE CHAT TURN (CRITICAL):
+This is regular chat — NOT a report. Max ~500 words this turn.
+1) Answer the farmer's latest question only — short and practical.
+2) Do NOT list every scheme, disease, feed, or step from retrieved knowledge.
+3) End with 1–2 easy follow-up questions so the farmer can reply and get more detail next message.
+4) If they already answered earlier in the thread, do not repeat those questions — go one level deeper.
+5) NEVER stop mid-sentence — complete every sentence you start.` }] : []),
+      ...(mode === "call" ? [{ role: "system", content: `LIVE CALL — speak naturally in short sentences with clear pauses at commas and full stops. Feminine voice.` }] : []),
+      ...(isRationAdvisory && isHerdGathering(advisoryHint) ? [{ role: "system", content: "RATION DATA COLLECTION MODE: The main prompt's RATION BALANCING rules are DISABLED this turn. Do NOT give generic ration advice, kg amounts, or feed plans. ONLY ask questions or read back summary for confirmation." }] : []),
+      ...(effectiveForceLang && effectiveForcedLabel ? [{ role: "system", content: `CRITICAL LANGUAGE LOCK: The next answer MUST be written only in ${effectiveForcedLabel}. The first line MUST be [[LANG:${effectiveForceLang}]]. Do not use Hindi unless the locked language is Hindi. Do not mix scripts.` }] : []),
+      ...(effectiveForceLang && effectiveForcedLabel && effectiveForceLang !== "en" ? [{ role: "system", content: nativeScriptLockPrompt(effectiveForceLang, effectiveForcedLabel) }] : []),
+      ...safeMessages,
+      ...(isRationAdvisory && isHerdGathering(advisoryHint) && !isVerificationStep(advisoryHint) ? [{ role: "system", content: "FINAL INSTRUCTION: Reply with ONLY 2–4 simple questions for the farmer in the LOCKED language. Acknowledge herd size if stated. Ask about the next animal. NO ration advice, NO kg, NO ₹. First line must still be [[LANG:xx]]." }] : []),
+      ...(isRationAdvisory && isVerificationStep(advisoryHint) ? [{ role: "system", content: "FINAL INSTRUCTION: Read back ALL animal details from PARSED SUMMARY in farmer's language. Confirm total count matches. Ask 'Kya sab sahi hai?' NO ration kg amounts yet. First line [[LANG:xx]]." }] : []),
+      ...(isRationAdvisory && isRationComputed(advisoryHint) ? [{ role: "system", content: "FINAL INSTRUCTION: Present COMPUTED RESULTS in farmer's language. ORDER: (1) HERD PREP — total kg to mix/prepare for whole herd today; (2) PER ANIMAL — each animal's daily share with breed and status. Use exact kg from system block." }] : []),
+      ...(effectiveForceLang && effectiveForcedLabel ? [{ role: "system", content: `FINAL CHECK BEFORE ANSWERING: Reply in ${effectiveForcedLabel} only, with [[LANG:${effectiveForceLang}]] as the first line. Keep it simple enough for a farmer.${effectiveForceLang !== "en" ? " Use native script — NOT Roman transliteration." : ""}` }] : []),
+    ];
+
+    if (stream) {
+      return createSsePassthroughStream(async () => {
+        const [youtubeHint, ragContext] = await Promise.all([
+          mode === "call" ? Promise.resolve(null) : tryYoutubeVideoHint(safeMessages),
+          retrieveRagContext(userCtx || lastUser?.content || "", ragChunks),
+        ]);
+        return sarvamChatCompletion({
+          model: getSarvamChatModel(),
+          temperature: 0.4,
+          max_tokens: maxTokens,
+          messages: buildSarvamMessages(youtubeHint, ragContext),
+          stream: true,
+        });
+      });
+    }
+
+    const youtubeHint = mode === "call" ? null : await tryYoutubeVideoHint(safeMessages);
+    const ragContext = await retrieveRagContext(userCtx || lastUser?.content || "", ragChunks);
 
     const response = await sarvamChatCompletion({
       model: getSarvamChatModel(),
       temperature: 0.4,
       max_tokens: maxTokens,
-      messages: [
-        { role: "system", content: mode === "call" ? CALL_SYSTEM_PROMPT : SYSTEM_PROMPT },
-        { role: "system", content: `RETRIEVED KNOWLEDGE (Sarvam RAG — NDDB/DAHD/ICAR curated corpus; authoritative facts; use selectively, do not dump all in one reply):\n${ragContext}` },
-        ...(isRationAdvisory ? [{ role: "system", content: RATION_ADVISORY_MODE_PROMPT }] : []),
-        ...(advisoryHint ? [{ role: "system", content: advisoryHint }] : []),
-        ...(rationHint ? [{ role: "system", content: rationHint }] : []),
-        ...(youtubeHint ? [{ role: "system", content: youtubeHint }] : []),
-        ...(cooperativeHint ? [{ role: "system", content: cooperativeHint }] : []),
-        ...(vetConsultQuery ? [{ role: "system", content: vetContactDirect
-          ? `VET / DOCTOR CONTACT REQUEST DETECTED:
-Give a SHORT reply in the farmer's language (1–2 lines) saying nearby vets/paravets are listed below with WhatsApp call and video options.
-End your reply with exactly ${VET_CONSULT_MARKER} on its own line (required — app shows 4–5 nearest doctors automatically).`
-          : `ANIMAL HEALTH / DISEASE QUERY DETECTED:
-After giving a SHORT practical answer (symptoms, first aid, when to call vet — no full drug doses unless from retrieved knowledge):
-Ask the farmer in their language: "Would you like to consult a nearby veterinarian or paravet?"
-End your reply with exactly ${VET_CONSULT_MARKER} on its own line (required — app will show nearest doctors).` }] : []),
-        ...(!isRationAdvisory && mode !== "call" ? [{ role: "system", content: `INTERACTIVE CHAT TURN (CRITICAL):
-This is regular chat — NOT a report. Max ~500 words this turn.
-1) Answer the farmer's latest question only — short and practical.
-2) Do NOT list every scheme, disease, feed, or step from retrieved knowledge.
-3) End with 1–2 easy follow-up questions so the farmer can reply and get more detail next message.
-4) If they already answered earlier in the thread, do not repeat those questions — go one level deeper.` }] : []),
-        ...(mode === "call" ? [{ role: "system", content: `LIVE CALL — speak naturally in short sentences with clear pauses at commas and full stops. Feminine voice.` }] : []),
-        ...(isRationAdvisory && isHerdGathering(advisoryHint) ? [{ role: "system", content: "RATION DATA COLLECTION MODE: The main prompt's RATION BALANCING rules are DISABLED this turn. Do NOT give generic ration advice, kg amounts, or feed plans. ONLY ask questions or read back summary for confirmation." }] : []),
-        ...(effectiveForceLang && effectiveForcedLabel ? [{ role: "system", content: `CRITICAL LANGUAGE LOCK: The next answer MUST be written only in ${effectiveForcedLabel}. The first line MUST be [[LANG:${effectiveForceLang}]]. Do not use Hindi unless the locked language is Hindi. Do not mix scripts.` }] : []),
-        ...(effectiveForceLang && effectiveForcedLabel && effectiveForceLang !== "en" ? [{ role: "system", content: nativeScriptLockPrompt(effectiveForceLang, effectiveForcedLabel) }] : []),
-        ...safeMessages,
-        ...(isRationAdvisory && isHerdGathering(advisoryHint) && !isVerificationStep(advisoryHint) ? [{ role: "system", content: "FINAL INSTRUCTION: Reply with ONLY 2–4 simple questions for the farmer in the LOCKED language. Acknowledge herd size if stated. Ask about the next animal. NO ration advice, NO kg, NO ₹. First line must still be [[LANG:xx]]." }] : []),
-        ...(isRationAdvisory && isVerificationStep(advisoryHint) ? [{ role: "system", content: "FINAL INSTRUCTION: Read back ALL animal details from PARSED SUMMARY in farmer's language. Confirm total count matches. Ask 'Kya sab sahi hai?' NO ration kg amounts yet. First line [[LANG:xx]]." }] : []),
-        ...(isRationAdvisory && isRationComputed(advisoryHint) ? [{ role: "system", content: "FINAL INSTRUCTION: Present COMPUTED RESULTS in farmer's language. ORDER: (1) HERD PREP — total kg to mix/prepare for whole herd today; (2) PER ANIMAL — each animal's daily share with breed and status. Use exact kg from system block." }] : []),
-        ...(effectiveForceLang && effectiveForcedLabel ? [{ role: "system", content: `FINAL CHECK BEFORE ANSWERING: Reply in ${effectiveForcedLabel} only, with [[LANG:${effectiveForceLang}]] as the first line. Keep it simple enough for a farmer.${effectiveForceLang !== "en" ? " Use native script — NOT Roman transliteration." : ""}` }] : []),
-      ],
-      stream,
+      messages: buildSarvamMessages(youtubeHint, ragContext),
+      stream: false,
     });
 
     if (response.status === 429) {
@@ -367,9 +393,7 @@ This is regular chat — NOT a report. Max ~500 words this turn.
     }
 
     if (stream) {
-      return new Response(response.body, {
-        headers: sseHeaders,
-      });
+      return new Response(response.body, { headers: sseHeaders });
     }
 
     const data = await response.json();

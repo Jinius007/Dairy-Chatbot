@@ -7,6 +7,8 @@ import { LANG_NAMES, detectUserLanguage, resolveTtsLanguage } from "@/lib/langua
 import { ensureNativeScriptText } from "@/lib/native-script-api";
 import { getChatCompletionsUrl, getChatRequestHeaders } from "@/lib/chat-api";
 import { fetchChatCompletionText, splitLangHeader } from "@/lib/chat-response";
+import { trimChatHistory } from "@/lib/chat-history";
+import { fetchChatContinuation, looksIncompleteReply } from "@/lib/chat-continuation";
 import { speakText, stopSpeech, unlockAudioPlayback, waitForCallPlaybackIdle } from "@/lib/speech";
 import { startCallBargeInWithStream, type CallBargeInHandle } from "@/lib/call-barge-in";
 import { getSessionId } from "@/lib/session";
@@ -281,7 +283,7 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
       const chatCtrl = new AbortController();
       chatAbortRef.current = chatCtrl;
       const raw = await fetchChatCompletionText({
-        messages: historyRef.current,
+        messages: trimChatHistory(historyRef.current),
         mode: "call",
         forceLanguage: detectedLang,
         signal: chatCtrl.signal,
@@ -290,11 +292,25 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
       });
       if (chatAbortRef.current === chatCtrl) chatAbortRef.current = null;
       if (chatCtrl.signal.aborted || closedRef.current) return;
-      const parsed = splitLangHeader(raw);
+
+      let fullRaw = raw;
+      if (looksIncompleteReply(fullRaw)) {
+        const extra = await fetchChatContinuation({
+          history: trimChatHistory(historyRef.current),
+          partialAssistant: fullRaw,
+          userLang: detectedLang,
+          signal: chatCtrl.signal,
+          url: getChatCompletionsUrl(),
+          headers: getChatRequestHeaders(),
+        });
+        if (extra) fullRaw = `${fullRaw.replace(/\s+$/, "")} ${extra}`.trim();
+      }
+
+      const parsed = splitLangHeader(fullRaw);
       let body = filterAbusiveLanguage(parsed.body);
       const replyLang = parsed.lang || detectedLang;
       if (replyLang && replyLang !== "en") {
-        body = await ensureNativeScriptText(body, replyLang);
+        body = await ensureNativeScriptText(body, replyLang, chatCtrl.signal);
       }
       const lang = resolveTtsLanguage(body, replyLang);
       const answer = body.trim();

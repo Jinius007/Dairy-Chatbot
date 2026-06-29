@@ -35,6 +35,10 @@ import {
 import { detectLanguageFromMessages } from "@/lib/languages";
 import { ensureNativeScriptText } from "@/lib/native-script-api";
 import { getChatCompletionsUrl, getChatRequestHeaders } from "@/lib/chat-api";
+import { trimChatHistory, incompleteReplyFallback } from "@/lib/chat-history";
+import { fetchChatContinuation, looksIncompleteReply } from "@/lib/chat-continuation";
+import { readSseChatStream } from "@/lib/chat-stream";
+import { createTimeoutSignal, anyAbortSignal, isAbortError } from "@/lib/abort-utils";
 import { transcribeAudio } from "@/lib/transcribe-api";
 import {
   SLOW_RESPONSE_MS,
@@ -71,6 +75,7 @@ interface Props {
 
 const msgKey = (id: string) => `pashumitra_msgs_${id}`;
 const CONV_KEY = "pashumitra_convs_v1";
+const CHAT_STREAM_TIMEOUT_MS = 120_000;
 
 // Extract optional [[LANG:xx]] header from streamed text
 function splitLangHeader(text: string): { lang: string | null; body: string } {
@@ -138,10 +143,11 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
   }, []);
 
   const persist = useCallback((msgs: Message[]) => {
-    localStorage.setItem(msgKey(conversationId), JSON.stringify(msgs));
-    const lastUser = [...msgs].reverse().find((m) => m.role === "user")?.content || "";
-    const lastAssistant = [...msgs].reverse().find((m) => m.role === "assistant")?.content || "";
-    const lang = [...msgs].reverse().find((m) => m.language)?.language ?? null;
+    const cleaned = msgs.filter((m) => !(m.role === "assistant" && !m.content?.trim()));
+    localStorage.setItem(msgKey(conversationId), JSON.stringify(cleaned));
+    const lastUser = [...cleaned].reverse().find((m) => m.role === "user")?.content || "";
+    const lastAssistant = [...cleaned].reverse().find((m) => m.role === "assistant")?.content || "";
+    const lang = [...cleaned].reverse().find((m) => m.language)?.language ?? null;
     try {
       const convs = JSON.parse(localStorage.getItem(CONV_KEY) || "[]");
       const idx = convs.findIndex((c: any) => c.id === conversationId);
@@ -161,7 +167,8 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
 
   useEffect(() => {
     try {
-      const stored = JSON.parse(localStorage.getItem(msgKey(conversationId)) || "[]");
+      const stored = (JSON.parse(localStorage.getItem(msgKey(conversationId)) || "[]") as Message[])
+        .filter((m) => !(m.role === "assistant" && !m.content?.trim()));
       messagesRef.current = stored;
       setMessages(stored);
     }
@@ -208,10 +215,15 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
     abortRef.current?.abort();
     const ctrl = new AbortController();
     abortRef.current = ctrl;
+    const combinedSignal = anyAbortSignal([
+      ctrl.signal,
+      createTimeoutSignal(CHAT_STREAM_TIMEOUT_MS),
+    ]);
 
     const wantsVideo = isYoutubeRequest(latestUserText);
     const recentUser = history.filter((m) => m.role === "user").slice(-4).map((m) => m.content).join(" ");
     const videoLang = detectLangFromText(latestUserText + recentUser);
+    const apiHistory = trimChatHistory(history);
 
     let slowTimer: ReturnType<typeof setTimeout> | null = setTimeout(() => {
       setSlowWaitByMsg((prev) => ({
@@ -227,119 +239,143 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
       }
     };
 
-    const resp = await fetch(getChatCompletionsUrl(), {
-      method: "POST",
-      headers: getChatRequestHeaders(),
-      body: JSON.stringify({
-        messages: history.map((m) => ({ role: m.role, content: m.content })),
-        forceLanguage: userLang,
-      }),
-      signal: ctrl.signal,
-    });
+    const clearSlowWait = () => {
+      setSlowWaitByMsg((prev) => {
+        const next = { ...prev };
+        delete next[assistantId];
+        return next;
+      });
+    };
 
-    if (resp.status === 429) throw new Error("Too many requests, please wait a moment.");
-    if (resp.status === 402) throw new Error("AI credits exhausted. Add credits in workspace settings.");
-    if (!resp.ok || !resp.body) throw new Error(`Failed to get reply (${resp.status})`);
+    try {
+      const resp = await fetch(getChatCompletionsUrl(), {
+        method: "POST",
+        headers: getChatRequestHeaders(),
+        body: JSON.stringify({
+          messages: apiHistory.map((m) => ({ role: m.role, content: m.content })),
+          stream: true,
+          forceLanguage: userLang,
+        }),
+        signal: combinedSignal,
+      });
 
-    const reader = resp.body.getReader();
-    const decoder = new TextDecoder();
-    let buffer = "";
-    let full = "";
-    let done = false;
-    let allowedVideoIds = new Set<string>();
-    let gotFirstToken = false;
+      if (resp.status === 429) throw new Error("Too many requests, please wait a moment.");
+      if (resp.status === 402) throw new Error("AI credits exhausted. Add credits in workspace settings.");
+      if (!resp.ok || !resp.body) throw new Error(`Failed to get reply (${resp.status})`);
 
-    while (!done) {
-      const { done: rd, value } = await reader.read();
-      if (rd) break;
-      buffer += decoder.decode(value, { stream: true });
-      let nl: number;
-      while ((nl = buffer.indexOf("\n")) !== -1) {
-        let line = buffer.slice(0, nl);
-        buffer = buffer.slice(nl + 1);
-        if (line.endsWith("\r")) line = line.slice(0, -1);
-        if (!line.startsWith("data: ")) continue;
-        const json = line.slice(6).trim();
-        if (json === "[DONE]") { done = true; break; }
-        try {
-          const parsed = JSON.parse(json);
-          const delta = parsed.choices?.[0]?.delta?.content as string | undefined;
-          if (delta) {
-            if (!gotFirstToken) {
-              gotFirstToken = true;
-              clearSlowTimer();
-              setSlowWaitByMsg((prev) => {
-                const next = { ...prev };
-                delete next[assistantId];
-                return next;
-              });
-            }
-            full += delta;
-            let { lang, body } = splitLangHeader(full);
-            if (wantsVideo && allowedVideoIds.size > 0) {
-              body = stripUnverifiedYoutubeUrls(body, allowedVideoIds);
-            }
-            setMessages((prev) => {
-              const updated = prev.map((m) =>
-                m.id === assistantId ? { ...m, content: body, language: lang ?? m.language } : m
-              );
-              messagesRef.current = updated;
-              return updated;
-            });
-          }
-        } catch {
-          buffer = line + "\n" + buffer;
-          break;
+      setSlowWaitByMsg((prev) => ({
+        ...prev,
+        [assistantId]: waitTrafficMessage(userLang),
+      }));
+
+      let allowedVideoIds = new Set<string>();
+
+      const applyStreamChunk = (chunkFull: string) => {
+        let { lang, body } = splitLangHeader(chunkFull);
+        if (wantsVideo && allowedVideoIds.size > 0) {
+          body = stripUnverifiedYoutubeUrls(body, allowedVideoIds);
+        }
+        setMessages((prev) => {
+          const updated = prev.map((m) =>
+            m.id === assistantId ? { ...m, content: body, language: lang ?? m.language } : m
+          );
+          messagesRef.current = updated;
+          return updated;
+        });
+      };
+
+      let gotFirstToken = false;
+      const { text: streamed, finishReason } = await readSseChatStream(resp.body, combinedSignal, (chunkFull) => {
+        if (!gotFirstToken && chunkFull.trim()) {
+          gotFirstToken = true;
+          clearSlowTimer();
+          clearSlowWait();
+        }
+        applyStreamChunk(chunkFull);
+      });
+
+      let full = streamed;
+
+      if (ctrl.signal.aborted) throw new DOMException("Aborted", "AbortError");
+
+      let { lang, body } = splitLangHeader(full);
+      const needsContinue =
+        finishReason === "length"
+        || (finishReason !== "stop" && body.trim() && looksIncompleteReply(full));
+      if (needsContinue && body.trim()) {
+        const contSignal = anyAbortSignal([
+          ctrl.signal,
+          createTimeoutSignal(45_000),
+        ]);
+        const extra = await fetchChatContinuation({
+          history: apiHistory.map((m) => ({ role: m.role, content: m.content })),
+          partialAssistant: full,
+          userLang,
+          signal: contSignal,
+          url: getChatCompletionsUrl(),
+          headers: getChatRequestHeaders(),
+        });
+        if (extra) {
+          full = `${full.replace(/\s+$/, "")} ${extra}`.trim();
+          applyStreamChunk(full);
+          ({ lang, body } = splitLangHeader(full));
         }
       }
-    }
+      if (!body.trim()) {
+        const fallback = incompleteReplyFallback(userLang);
+        ({ lang, body } = splitLangHeader(fallback));
+        full = fallback;
+      }
 
-    clearSlowTimer();
-    setSlowWaitByMsg((prev) => {
-      const next = { ...prev };
-      delete next[assistantId];
-      return next;
-    });
+      body = filterAbusiveLanguage(body);
+      const replyLang = lang ?? userLang;
+      if (replyLang && replyLang !== "en") {
+        body = await ensureNativeScriptText(body, replyLang, ctrl.signal);
+      }
+      if (ctrl.signal.aborted) throw new DOMException("Aborted", "AbortError");
 
-    let { lang, body } = splitLangHeader(full);
-    body = filterAbusiveLanguage(body);
-    const replyLang = lang ?? userLang;
-    if (replyLang && replyLang !== "en") {
-      body = await ensureNativeScriptText(body, replyLang);
-    }
-    const wantsVets = hasVetConsultMarker(body);
-    if (wantsVets) {
-      body = stripVetConsultMarker(body);
-      setVetOfferForMsg(assistantId);
-    }
+      const wantsVets = hasVetConsultMarker(body);
+      if (wantsVets) {
+        body = stripVetConsultMarker(body);
+        setVetOfferForMsg(assistantId);
+      }
 
-    let videos: Awaited<ReturnType<typeof fetchVerifiedVideos>> = [];
-    if (wantsVideo) {
-      // Search after AI reply so topic comes from full conversation + answer text
-      const videoQuery = buildVideoQuery(latestUserText, recentUser, body);
-      videos = await fetchVerifiedVideos(videoQuery, videoLang);
-      allowedVideoIds = new Set(videos.map((v) => v.id));
-      body = stripUnverifiedYoutubeUrls(body, allowedVideoIds);
-      body = appendVerifiedVideoBlock(body, videos, videoLang);
-      lang = splitLangHeader(full).lang ?? lang;
+      let videos: Awaited<ReturnType<typeof fetchVerifiedVideos>> = [];
+      if (wantsVideo) {
+        const videoQuery = buildVideoQuery(latestUserText, recentUser, body);
+        videos = await fetchVerifiedVideos(videoQuery, videoLang);
+        allowedVideoIds = new Set(videos.map((v) => v.id));
+        body = stripUnverifiedYoutubeUrls(body, allowedVideoIds);
+        body = appendVerifiedVideoBlock(body, videos, videoLang);
+        lang = splitLangHeader(full).lang ?? lang;
+      }
+
+      if (!body.trim()) {
+        const fallback = incompleteReplyFallback(replyLang);
+        ({ lang, body } = splitLangHeader(fallback));
+      }
+
+      const updated = messagesRef.current.map((m) =>
+        m.id === assistantId ? { ...m, content: body, language: lang ?? m.language ?? null } : m
+      );
+      messagesRef.current = updated;
+      setMessages(updated);
+      persist(updated);
+      void logConversationTurn({
+        session_id: getSessionId(),
+        conversation_id: conversationId,
+        question: latestUserText,
+        answer: body,
+        duration_ms: startedAt != null ? Date.now() - startedAt : null,
+        language: lang,
+        is_voice: isVoice,
+        mode: isVoice ? "voice" : "chat",
+      });
+      return { text: body, lang, wantsVets };
+    } finally {
+      clearSlowTimer();
+      clearSlowWait();
     }
-    const updated = messagesRef.current.map((m) =>
-      m.id === assistantId ? { ...m, content: body, language: lang ?? m.language ?? null } : m
-    );
-    messagesRef.current = updated;
-    setMessages(updated);
-    persist(updated);
-    void logConversationTurn({
-      session_id: getSessionId(),
-      conversation_id: conversationId,
-      question: latestUserText,
-      answer: body,
-      duration_ms: startedAt != null ? Date.now() - startedAt : null,
-      language: lang,
-      is_voice: isVoice,
-      mode: isVoice ? "voice" : "chat",
-    });
-    return { text: body, lang, wantsVets };
   };
 
   const send = async (text: string, isVoice = false, voiceStartedAt?: number) => {
@@ -381,7 +417,7 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
     setActiveUserLang(userLang);
     const userMsg: Message = { id: crypto.randomUUID(), role: "user", content: text, is_voice: isVoice, created_at: new Date().toISOString() };
     const assistantMsg: Message = { id: crypto.randomUUID(), role: "assistant", content: "", created_at: new Date().toISOString() };
-    const nextHistory = [...messages, userMsg];
+    const nextHistory = [...messagesRef.current, userMsg];
     const visibleMessages = [...nextHistory, assistantMsg];
     messagesRef.current = visibleMessages;
     setMessages(visibleMessages);
@@ -407,15 +443,34 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
         void loadNearbyVets(assistantMsg.id, replyLang);
       }
       if (isVoice && reply) void speak(reply, replyLang, assistantMsg.id, true);
-    } catch (e: any) {
+    } catch (e: unknown) {
+      const err = e as { name?: string; message?: string };
+      const partial = messagesRef.current.find((m) => m.id === assistantMsg.id);
+      const applyFallback = (fbLang: string) => {
+        const fallback = incompleteReplyFallback(fbLang);
+        const { lang: fbL, body: fbBody } = splitLangHeader(fallback);
+        const updated = messagesRef.current.map((m) =>
+          m.id === assistantMsg.id ? { ...m, content: fbBody, language: fbL ?? fbLang } : m,
+        );
+        messagesRef.current = updated;
+        setMessages(updated);
+        persist(updated);
+      };
+
+      if (isAbortError(e)) {
+        if (!partial?.content?.trim()) {
+          applyFallback(userLang);
+          toast.message("Response timed out — please try again.");
+        }
+        return;
+      }
       console.error(e);
-      toast.error(e?.message || "Failed to get reply");
-      setSlowWaitByMsg((prev) => {
-        const next = { ...prev };
-        delete next[assistantMsg.id];
-        return next;
-      });
-      setMessages((m) => m.filter((x) => x.id !== assistantMsg.id));
+      if (!partial?.content?.trim()) {
+        toast.error(err?.message || "Failed to get reply");
+        setMessages((m) => m.filter((x) => x.id !== assistantMsg.id));
+      } else {
+        toast.message("Reply may be incomplete — you can ask again.");
+      }
     } finally {
       setSending(false);
     }
@@ -481,8 +536,10 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
               }`}>
                 {!out && m.language && <div className="text-[10px] uppercase tracking-wide text-primary mb-0.5">{LANG_NAMES[m.language] || m.language}</div>}
                 <div className="whitespace-pre-wrap break-words text-sm leading-relaxed">
-                  {m.content ? linkifyText(m.content) : slowWaitByMsg[m.id] ? (
-                    <span className="text-muted-foreground italic">{slowWaitByMsg[m.id]}</span>
+                  {m.content ? linkifyText(m.content) : slowWaitByMsg[m.id] || (!out && sending) ? (
+                    <span className="text-muted-foreground italic">
+                      {slowWaitByMsg[m.id] || waitTrafficMessage(m.language || activeUserLang)}
+                    </span>
                   ) : (
                   <span className="inline-flex gap-1">
                     <span className="w-1.5 h-1.5 bg-muted-foreground rounded-full typing-dot" style={{ animationDelay: "0ms" }} />

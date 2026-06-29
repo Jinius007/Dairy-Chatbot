@@ -34601,6 +34601,26 @@ function getSttMode(languageCode) {
 async function sarvamTransliterateToNative(text, languageCode) {
   const target = appLangToSarvam(languageCode);
   if (!target || languageCode === "en") return text;
+  const MAX = 900;
+  if (text.length <= MAX) return sarvamTransliterateChunk(text, target);
+  const chunks = [];
+  let rest = text.trim();
+  while (rest.length > MAX) {
+    let cut = rest.lastIndexOf("\u0964 ", MAX);
+    if (cut < MAX * 0.4) cut = rest.lastIndexOf(". ", MAX);
+    if (cut < MAX * 0.4) cut = rest.lastIndexOf(" ", MAX);
+    if (cut < 1) cut = MAX;
+    chunks.push(rest.slice(0, cut).trim());
+    rest = rest.slice(cut).trimStart();
+  }
+  if (rest) chunks.push(rest);
+  let out = "";
+  for (const chunk of chunks) {
+    out += await sarvamTransliterateChunk(chunk, target);
+  }
+  return out.trim();
+}
+async function sarvamTransliterateChunk(input, target) {
   const res = await fetch("https://api.sarvam.ai/transliterate", {
     method: "POST",
     headers: {
@@ -34608,7 +34628,7 @@ async function sarvamTransliterateToNative(text, languageCode) {
       "Content-Type": "application/json"
     },
     body: JSON.stringify({
-      input: text,
+      input,
       source_language_code: "en-IN",
       target_language_code: target,
       numerals_format: "international"
@@ -34619,7 +34639,7 @@ async function sarvamTransliterateToNative(text, languageCode) {
     throw new Error(detail || `Sarvam transliterate error ${res.status}`);
   }
   const data = await res.json();
-  return (data.transliterated_text || text).trim();
+  return (data.transliterated_text || input).trim();
 }
 async function sarvamTranscribe(audioBytes, mimeType, languageCode) {
   const form = new FormData();
@@ -34944,9 +34964,63 @@ function getVetContactDirectReply(lang, mode = "chat") {
   return VET_CONTACT_REPLIES.hi;
 }
 
+// catalyst/functions/pashumitra_api/lib/chat-history.ts
+function trimChatMessages(messages, maxMessages = 14) {
+  if (messages.length <= maxMessages) return messages;
+  return messages.slice(-maxMessages);
+}
+
+// catalyst/functions/pashumitra_api/lib/sse-passthrough.ts
+var sseHeaders = { "Content-Type": "text/event-stream" };
+function createSsePassthroughStream(prepare) {
+  const ts = new TransformStream();
+  const enc = new TextEncoder();
+  void (async () => {
+    const writer = ts.writable.getWriter();
+    const heartbeat = setInterval(() => {
+      void writer.write(enc.encode(": ping\n\n")).catch(() => clearInterval(heartbeat));
+    }, 4e3);
+    try {
+      await writer.write(enc.encode(": ok\n\n"));
+      const upstream = await prepare();
+      if (!upstream.ok || !upstream.body) {
+        const detail = await upstream.text().catch(() => "AI service error");
+        const msg = upstream.status === 429 ? "[[LANG:hi]]\nBahut requests aa rahe hain \u2014 thodi der baad try karein." : `[[LANG:hi]]
+Maaf kijiye, jawab nahi aa paya (${upstream.status}). Dubara koshish karein.`;
+        console.error("chat upstream error:", upstream.status, detail.slice(0, 200));
+        await writer.write(enc.encode(`data: ${JSON.stringify({ choices: [{ delta: { content: msg } }] })}
+
+`));
+        await writer.write(enc.encode("data: [DONE]\n\n"));
+        return;
+      }
+      const reader = upstream.body.getReader();
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        await writer.write(value);
+      }
+    } catch (e) {
+      console.error("sse passthrough error:", e);
+      const errMsg = "[[LANG:hi]]\nMaaf kijiye, server mein samasya hai. Kripya dubara koshish karein.";
+      await writer.write(enc.encode(`data: ${JSON.stringify({ choices: [{ delta: { content: errMsg } }] })}
+
+`));
+      await writer.write(enc.encode("data: [DONE]\n\n"));
+    } finally {
+      clearInterval(heartbeat);
+      try {
+        await writer.close();
+      } catch {
+      }
+    }
+  })();
+  return new Response(ts.readable, { headers: sseHeaders });
+}
+
 // catalyst/functions/pashumitra_api/src/handlers/chat.ts
 var jsonHeaders = { "Content-Type": "application/json" };
-var sseHeaders = { "Content-Type": "text/event-stream" };
+var sseHeaders2 = { "Content-Type": "text/event-stream" };
 var SYSTEM_PROMPT = `You are PashuMitra, a friendly WhatsApp-style assistant for Indian livestock farmers and dairy entrepreneurs.
 
 OUTPUT FORMAT (STRICT \u2014 NON-NEGOTIABLE):
@@ -34983,6 +35057,7 @@ ANSWER STYLE (WhatsApp-style, farmer-friendly \u2014 INTERACTIVE, NOT A LECTURE)
 - Use very simple words that a farmer can understand easily. Avoid difficult medical, legal, or technical words unless needed.
 - If you must use a hard term, add a simple explanation in brackets.
 - Warm, simple, practical. Short paragraphs and bullet points.
+- COMPLETION (CRITICAL): Always finish every sentence completely. Never stop mid-word or mid-sentence \u2014 if you start a point, finish it.
 - Give direct steps: what to check, what to do now, when to call a vet/officer.
 - Emojis sparingly (\u{1F404} \u{1F95B} \u{1F489} \u{1F33E} \u2705 \u26A0\uFE0F) where helpful.
 - For medical/disease questions ALWAYS end with: "\u26A0\uFE0F Please consult your local veterinarian for serious cases." (translated to the user's language).
@@ -35160,7 +35235,7 @@ function streamStaticText(text) {
   return new Response(`${chunk}data: [DONE]
 
 `, {
-    headers: sseHeaders
+    headers: sseHeaders2
   });
 }
 async function handleChat(req) {
@@ -35175,20 +35250,21 @@ async function handleChat(req) {
         headers: jsonHeaders
       });
     }
-    const safeMessages = messages.map(
-      (m) => m.role === "user" ? { ...m, content: filterAbusiveLanguage(m.content) } : m
+    const safeMessages = trimChatMessages(
+      messages.map(
+        (m) => m.role === "user" ? { ...m, content: filterAbusiveLanguage(m.content) } : m
+      ),
+      14
     );
     const isRationAdvisory = mode === "ration_advisory";
     const advisoryHint = isRationAdvisory ? tryRationAdvisoryHint(safeMessages) : null;
     const rationHint = isRationAdvisory || mode === "call" ? null : tryComputeRationHint(safeMessages);
-    const youtubeHint = mode === "call" ? null : await tryYoutubeVideoHint(safeMessages);
     const userCtx = safeMessages.filter((m) => m.role === "user").map((m) => m.content).join("\n");
     const lastUserText = lastUser?.content || "";
     const vetConsultQuery = mode === "chat" && isVetConsultQuery(userCtx || lastUserText);
     const vetContactDirect = (mode === "chat" || mode === "call") && isVetContactRequest(lastUserText || userCtx);
     const cooperativeHint = buildCooperativeMarketingPrompt(userCtx || lastUserText);
     const ragChunks = mode === "call" ? 2 : isRationAdvisory ? 7 : 4;
-    const ragContext = await retrieveRagContext(userCtx || lastUser?.content || "", ragChunks);
     const lastUserLang = lastUserText.trim() ? detectLangForRefusal(lastUserText) : null;
     const detectedUserLang = userCtx.trim() ? detectLangForRefusal(userCtx) : null;
     const clientLang = typeof forceLanguage === "string" ? forceLanguage : null;
@@ -35208,43 +35284,62 @@ async function handleChat(req) {
       if (stream) return streamStaticText(directReply);
       return new Response(JSON.stringify({ text: directReply }), { headers: jsonHeaders });
     }
-    const maxTokens = mode === "call" ? 420 : isRationAdvisory ? 2048 : 900;
-    const response = await sarvamChatCompletion({
-      model: getSarvamChatModel(),
-      temperature: 0.4,
-      max_tokens: maxTokens,
-      messages: [
-        { role: "system", content: mode === "call" ? CALL_SYSTEM_PROMPT : SYSTEM_PROMPT },
-        { role: "system", content: `RETRIEVED KNOWLEDGE (Sarvam RAG \u2014 NDDB/DAHD/ICAR curated corpus; authoritative facts; use selectively, do not dump all in one reply):
-${ragContext}` },
-        ...isRationAdvisory ? [{ role: "system", content: RATION_ADVISORY_MODE_PROMPT }] : [],
-        ...advisoryHint ? [{ role: "system", content: advisoryHint }] : [],
-        ...rationHint ? [{ role: "system", content: rationHint }] : [],
-        ...youtubeHint ? [{ role: "system", content: youtubeHint }] : [],
-        ...cooperativeHint ? [{ role: "system", content: cooperativeHint }] : [],
-        ...vetConsultQuery ? [{ role: "system", content: vetContactDirect ? `VET / DOCTOR CONTACT REQUEST DETECTED:
+    const maxTokens = mode === "call" ? 420 : isRationAdvisory ? 2048 : 1200;
+    const buildSarvamMessages = (youtubeHint2, ragContext2) => [
+      { role: "system", content: mode === "call" ? CALL_SYSTEM_PROMPT : SYSTEM_PROMPT },
+      { role: "system", content: `RETRIEVED KNOWLEDGE (Sarvam RAG \u2014 NDDB/DAHD/ICAR curated corpus; authoritative facts; use selectively, do not dump all in one reply):
+${ragContext2}` },
+      ...isRationAdvisory ? [{ role: "system", content: RATION_ADVISORY_MODE_PROMPT }] : [],
+      ...advisoryHint ? [{ role: "system", content: advisoryHint }] : [],
+      ...rationHint ? [{ role: "system", content: rationHint }] : [],
+      ...youtubeHint2 ? [{ role: "system", content: youtubeHint2 }] : [],
+      ...cooperativeHint ? [{ role: "system", content: cooperativeHint }] : [],
+      ...vetConsultQuery ? [{ role: "system", content: vetContactDirect ? `VET / DOCTOR CONTACT REQUEST DETECTED:
 Give a SHORT reply in the farmer's language (1\u20132 lines) saying nearby vets/paravets are listed below with WhatsApp call and video options.
 End your reply with exactly ${VET_CONSULT_MARKER} on its own line (required \u2014 app shows 4\u20135 nearest doctors automatically).` : `ANIMAL HEALTH / DISEASE QUERY DETECTED:
 After giving a SHORT practical answer (symptoms, first aid, when to call vet \u2014 no full drug doses unless from retrieved knowledge):
 Ask the farmer in their language: "Would you like to consult a nearby veterinarian or paravet?"
 End your reply with exactly ${VET_CONSULT_MARKER} on its own line (required \u2014 app will show nearest doctors).` }] : [],
-        ...!isRationAdvisory && mode !== "call" ? [{ role: "system", content: `INTERACTIVE CHAT TURN (CRITICAL):
+      ...!isRationAdvisory && mode !== "call" ? [{ role: "system", content: `INTERACTIVE CHAT TURN (CRITICAL):
 This is regular chat \u2014 NOT a report. Max ~500 words this turn.
 1) Answer the farmer's latest question only \u2014 short and practical.
 2) Do NOT list every scheme, disease, feed, or step from retrieved knowledge.
 3) End with 1\u20132 easy follow-up questions so the farmer can reply and get more detail next message.
-4) If they already answered earlier in the thread, do not repeat those questions \u2014 go one level deeper.` }] : [],
-        ...mode === "call" ? [{ role: "system", content: `LIVE CALL \u2014 speak naturally in short sentences with clear pauses at commas and full stops. Feminine voice.` }] : [],
-        ...isRationAdvisory && isHerdGathering(advisoryHint) ? [{ role: "system", content: "RATION DATA COLLECTION MODE: The main prompt's RATION BALANCING rules are DISABLED this turn. Do NOT give generic ration advice, kg amounts, or feed plans. ONLY ask questions or read back summary for confirmation." }] : [],
-        ...effectiveForceLang && effectiveForcedLabel ? [{ role: "system", content: `CRITICAL LANGUAGE LOCK: The next answer MUST be written only in ${effectiveForcedLabel}. The first line MUST be [[LANG:${effectiveForceLang}]]. Do not use Hindi unless the locked language is Hindi. Do not mix scripts.` }] : [],
-        ...effectiveForceLang && effectiveForcedLabel && effectiveForceLang !== "en" ? [{ role: "system", content: nativeScriptLockPrompt(effectiveForceLang, effectiveForcedLabel) }] : [],
-        ...safeMessages,
-        ...isRationAdvisory && isHerdGathering(advisoryHint) && !isVerificationStep(advisoryHint) ? [{ role: "system", content: "FINAL INSTRUCTION: Reply with ONLY 2\u20134 simple questions for the farmer in the LOCKED language. Acknowledge herd size if stated. Ask about the next animal. NO ration advice, NO kg, NO \u20B9. First line must still be [[LANG:xx]]." }] : [],
-        ...isRationAdvisory && isVerificationStep(advisoryHint) ? [{ role: "system", content: "FINAL INSTRUCTION: Read back ALL animal details from PARSED SUMMARY in farmer's language. Confirm total count matches. Ask 'Kya sab sahi hai?' NO ration kg amounts yet. First line [[LANG:xx]]." }] : [],
-        ...isRationAdvisory && isRationComputed(advisoryHint) ? [{ role: "system", content: "FINAL INSTRUCTION: Present COMPUTED RESULTS in farmer's language. ORDER: (1) HERD PREP \u2014 total kg to mix/prepare for whole herd today; (2) PER ANIMAL \u2014 each animal's daily share with breed and status. Use exact kg from system block." }] : [],
-        ...effectiveForceLang && effectiveForcedLabel ? [{ role: "system", content: `FINAL CHECK BEFORE ANSWERING: Reply in ${effectiveForcedLabel} only, with [[LANG:${effectiveForceLang}]] as the first line. Keep it simple enough for a farmer.${effectiveForceLang !== "en" ? " Use native script \u2014 NOT Roman transliteration." : ""}` }] : []
-      ],
-      stream
+4) If they already answered earlier in the thread, do not repeat those questions \u2014 go one level deeper.
+5) NEVER stop mid-sentence \u2014 complete every sentence you start.` }] : [],
+      ...mode === "call" ? [{ role: "system", content: `LIVE CALL \u2014 speak naturally in short sentences with clear pauses at commas and full stops. Feminine voice.` }] : [],
+      ...isRationAdvisory && isHerdGathering(advisoryHint) ? [{ role: "system", content: "RATION DATA COLLECTION MODE: The main prompt's RATION BALANCING rules are DISABLED this turn. Do NOT give generic ration advice, kg amounts, or feed plans. ONLY ask questions or read back summary for confirmation." }] : [],
+      ...effectiveForceLang && effectiveForcedLabel ? [{ role: "system", content: `CRITICAL LANGUAGE LOCK: The next answer MUST be written only in ${effectiveForcedLabel}. The first line MUST be [[LANG:${effectiveForceLang}]]. Do not use Hindi unless the locked language is Hindi. Do not mix scripts.` }] : [],
+      ...effectiveForceLang && effectiveForcedLabel && effectiveForceLang !== "en" ? [{ role: "system", content: nativeScriptLockPrompt(effectiveForceLang, effectiveForcedLabel) }] : [],
+      ...safeMessages,
+      ...isRationAdvisory && isHerdGathering(advisoryHint) && !isVerificationStep(advisoryHint) ? [{ role: "system", content: "FINAL INSTRUCTION: Reply with ONLY 2\u20134 simple questions for the farmer in the LOCKED language. Acknowledge herd size if stated. Ask about the next animal. NO ration advice, NO kg, NO \u20B9. First line must still be [[LANG:xx]]." }] : [],
+      ...isRationAdvisory && isVerificationStep(advisoryHint) ? [{ role: "system", content: "FINAL INSTRUCTION: Read back ALL animal details from PARSED SUMMARY in farmer's language. Confirm total count matches. Ask 'Kya sab sahi hai?' NO ration kg amounts yet. First line [[LANG:xx]]." }] : [],
+      ...isRationAdvisory && isRationComputed(advisoryHint) ? [{ role: "system", content: "FINAL INSTRUCTION: Present COMPUTED RESULTS in farmer's language. ORDER: (1) HERD PREP \u2014 total kg to mix/prepare for whole herd today; (2) PER ANIMAL \u2014 each animal's daily share with breed and status. Use exact kg from system block." }] : [],
+      ...effectiveForceLang && effectiveForcedLabel ? [{ role: "system", content: `FINAL CHECK BEFORE ANSWERING: Reply in ${effectiveForcedLabel} only, with [[LANG:${effectiveForceLang}]] as the first line. Keep it simple enough for a farmer.${effectiveForceLang !== "en" ? " Use native script \u2014 NOT Roman transliteration." : ""}` }] : []
+    ];
+    if (stream) {
+      return createSsePassthroughStream(async () => {
+        const [youtubeHint2, ragContext2] = await Promise.all([
+          mode === "call" ? Promise.resolve(null) : tryYoutubeVideoHint(safeMessages),
+          retrieveRagContext(userCtx || lastUser?.content || "", ragChunks)
+        ]);
+        return sarvamChatCompletion({
+          model: getSarvamChatModel(),
+          temperature: 0.4,
+          max_tokens: maxTokens,
+          messages: buildSarvamMessages(youtubeHint2, ragContext2),
+          stream: true
+        });
+      });
+    }
+    const youtubeHint = mode === "call" ? null : await tryYoutubeVideoHint(safeMessages);
+    const ragContext = await retrieveRagContext(userCtx || lastUser?.content || "", ragChunks);
+    const response = await sarvamChatCompletion({
+      model: getSarvamChatModel(),
+      temperature: 0.4,
+      max_tokens: maxTokens,
+      messages: buildSarvamMessages(youtubeHint, ragContext),
+      stream: false
     });
     if (response.status === 429) {
       return new Response(JSON.stringify({ error: "Too many requests, please wait." }), {
@@ -35267,9 +35362,7 @@ This is regular chat \u2014 NOT a report. Max ~500 words this turn.
       });
     }
     if (stream) {
-      return new Response(response.body, {
-        headers: sseHeaders
-      });
+      return new Response(response.body, { headers: sseHeaders2 });
     }
     const data = await response.json();
     let text = filterAbusiveLanguage(extractSarvamChatText(data));

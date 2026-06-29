@@ -48,6 +48,7 @@ export async function fetchVerifiedVideos(query: string, lang: string): Promise<
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ query, lang, max: 3 }),
+      signal: AbortSignal.timeout(15_000),
     });
     if (!resp.ok) return [];
     const data = await resp.json();

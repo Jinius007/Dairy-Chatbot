@@ -71,6 +71,29 @@ export async function sarvamTransliterateToNative(text: string, languageCode: st
   const target = appLangToSarvam(languageCode);
   if (!target || languageCode === "en") return text;
 
+  const MAX = 900;
+  if (text.length <= MAX) return sarvamTransliterateChunk(text, target);
+
+  const chunks: string[] = [];
+  let rest = text.trim();
+  while (rest.length > MAX) {
+    let cut = rest.lastIndexOf("। ", MAX);
+    if (cut < MAX * 0.4) cut = rest.lastIndexOf(". ", MAX);
+    if (cut < MAX * 0.4) cut = rest.lastIndexOf(" ", MAX);
+    if (cut < 1) cut = MAX;
+    chunks.push(rest.slice(0, cut).trim());
+    rest = rest.slice(cut).trimStart();
+  }
+  if (rest) chunks.push(rest);
+
+  let out = "";
+  for (const chunk of chunks) {
+    out += await sarvamTransliterateChunk(chunk, target);
+  }
+  return out.trim();
+}
+
+async function sarvamTransliterateChunk(input: string, target: string): Promise<string> {
   const res = await fetch("https://api.sarvam.ai/transliterate", {
     method: "POST",
     headers: {
@@ -78,7 +101,7 @@ export async function sarvamTransliterateToNative(text: string, languageCode: st
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      input: text,
+      input,
       source_language_code: "en-IN",
       target_language_code: target,
       numerals_format: "international",
@@ -91,7 +114,7 @@ export async function sarvamTransliterateToNative(text: string, languageCode: st
   }
 
   const data = await res.json() as { transliterated_text?: string };
-  return (data.transliterated_text || text).trim();
+  return (data.transliterated_text || input).trim();
 }
 
 export async function sarvamTranscribe(

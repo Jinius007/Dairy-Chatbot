@@ -1,5 +1,8 @@
 /** Parse [[LANG:xx]] header and stream chat completions from Catalyst. */
 
+import { readSseChatStream } from "@/lib/chat-stream";
+import { createTimeoutSignal, anyAbortSignal } from "@/lib/abort-utils";
+
 export function splitLangHeader(text: string): { lang: string | null; body: string } {
   let source = String(text || "");
   let lang: string | null = null;
@@ -24,45 +27,7 @@ function extractNonStreamText(payload: unknown): string {
   return typeof fromChoice === "string" ? fromChoice : "";
 }
 
-async function readSseChatStream(
-  body: ReadableStream<Uint8Array>,
-  signal?: AbortSignal,
-): Promise<string> {
-  const reader = body.getReader();
-  const decoder = new TextDecoder();
-  let buffer = "";
-  let full = "";
-
-  while (true) {
-    if (signal?.aborted) throw new DOMException("Aborted", "AbortError");
-    const { done, value } = await reader.read();
-    if (done) break;
-    buffer += decoder.decode(value, { stream: true });
-    let nl: number;
-    while ((nl = buffer.indexOf("\n")) !== -1) {
-      let line = buffer.slice(0, nl);
-      buffer = buffer.slice(nl + 1);
-      if (line.endsWith("\r")) line = line.slice(0, -1);
-      if (!line.startsWith("data: ")) continue;
-      const json = line.slice(6).trim();
-      if (json === "[DONE]") return full;
-      try {
-        const parsed = JSON.parse(json) as {
-          choices?: { delta?: { content?: string }; message?: { content?: string } }[];
-        };
-        const delta = parsed.choices?.[0]?.delta?.content;
-        const message = parsed.choices?.[0]?.message?.content;
-        if (typeof delta === "string") full += delta;
-        else if (typeof message === "string") full += message;
-      } catch {
-        buffer = line + "\n" + buffer;
-        break;
-      }
-    }
-  }
-
-  return full;
-}
+const CHAT_STREAM_TIMEOUT_MS = 120_000;
 
 export type ChatCompletionOptions = {
   messages: { role: string; content: string }[];
@@ -84,6 +49,10 @@ export async function fetchChatCompletionText(options: ChatCompletionOptions): P
     headers = { "Content-Type": "application/json" },
   } = options;
 
+  const combinedSignal = signal
+    ? anyAbortSignal([signal, createTimeoutSignal(CHAT_STREAM_TIMEOUT_MS)])
+    : createTimeoutSignal(CHAT_STREAM_TIMEOUT_MS);
+
   const resp = await fetch(url, {
     method: "POST",
     headers,
@@ -93,7 +62,7 @@ export async function fetchChatCompletionText(options: ChatCompletionOptions): P
       mode,
       forceLanguage,
     }),
-    signal,
+    signal: combinedSignal,
   });
 
   if (!resp.ok) {
@@ -103,8 +72,8 @@ export async function fetchChatCompletionText(options: ChatCompletionOptions): P
   }
 
   if (resp.body) {
-    const streamed = await readSseChatStream(resp.body, signal);
-    if (streamed.trim()) return streamed;
+    const { text } = await readSseChatStream(resp.body, combinedSignal);
+    if (text.trim()) return text;
   }
 
   const payload = await resp.json().catch(() => ({}));
