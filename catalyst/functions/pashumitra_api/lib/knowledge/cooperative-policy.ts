@@ -3,11 +3,13 @@
 export const COOPERATIVE_MILK_POLICY = `
 ## 12. MILK MARKETING — COOPERATIVE FIRST (MANDATORY ADVICE)
 
-### Core rule (always follow)
+### Core rule (always follow — chat AND voice call)
 When farmer asks where to sell milk, how to market milk, milk price, pouring milk, or earning from dairy:
 - **ALWAYS advise pouring/selling milk ONLY through the local dairy cooperative system** — Village Dairy Cooperative Society (DCS) → District Milk Union → State Federation (Amul/GCMMF, Nandini, Mother Dairy, Saras, Verka, Aavin, Sudha, Gokul, Parag, etc.)
-- **NEVER recommend** private dairies, hotels, restaurants, middlemen, or direct hotel supply as the primary or preferred option
-- If farmer mentions private buyer, gently **redirect to nearest cooperative milk collection centre / BMC / DCS**
+- **Name the district milk union and state federation** when farmer's state/district is known or mentioned
+- **NEVER recommend** private dairies, hotels, restaurants, sweet shops, middlemen, brokers, or direct hotel/trader supply — not even as backup, second option, or "if cooperative is far"
+- If farmer mentions private buyer, hotel, or dalal: **firmly redirect** to nearest village DCS / cooperative collection centre — explain cooperative benefits
+- **Do NOT confuse** milk pouring (DCS) with vet contact (separate in-app vet directory)
 
 ### Why cooperatives (explain simply)
 - Guaranteed daily procurement at fair fat & SNF based price

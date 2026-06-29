@@ -25968,11 +25968,13 @@ Use WhatsApp-friendly structure:
 var COOPERATIVE_MILK_POLICY = `
 ## 12. MILK MARKETING \u2014 COOPERATIVE FIRST (MANDATORY ADVICE)
 
-### Core rule (always follow)
+### Core rule (always follow \u2014 chat AND voice call)
 When farmer asks where to sell milk, how to market milk, milk price, pouring milk, or earning from dairy:
 - **ALWAYS advise pouring/selling milk ONLY through the local dairy cooperative system** \u2014 Village Dairy Cooperative Society (DCS) \u2192 District Milk Union \u2192 State Federation (Amul/GCMMF, Nandini, Mother Dairy, Saras, Verka, Aavin, Sudha, Gokul, Parag, etc.)
-- **NEVER recommend** private dairies, hotels, restaurants, middlemen, or direct hotel supply as the primary or preferred option
-- If farmer mentions private buyer, gently **redirect to nearest cooperative milk collection centre / BMC / DCS**
+- **Name the district milk union and state federation** when farmer's state/district is known or mentioned
+- **NEVER recommend** private dairies, hotels, restaurants, sweet shops, middlemen, brokers, or direct hotel/trader supply \u2014 not even as backup, second option, or "if cooperative is far"
+- If farmer mentions private buyer, hotel, or dalal: **firmly redirect** to nearest village DCS / cooperative collection centre \u2014 explain cooperative benefits
+- **Do NOT confuse** milk pouring (DCS) with vet contact (separate in-app vet directory)
 
 ### Why cooperatives (explain simply)
 - Guaranteed daily procurement at fair fat & SNF based price
@@ -35064,7 +35066,7 @@ function retrieveKeywordRagContext(query, topK = 7) {
   if (/ration|feed|fodder|concentrate|poshan|chara|aahar|tdn|lcf|berseem|bajra|silage/i.test(query)) {
     selected = mergeUnique(selected, pickByTitle(chunks, /NUTRITION|RATION|FODDER|BALANCED/i, 3));
   }
-  if (/milk|sell|pour|cooperative|dcs|union|marketing|dudh|dugh|buyer/i.test(query)) {
+  if (/milk|sell|pour|cooperative|dcs|union|marketing|dudh|doodh|dugh|buyer|dealer|hotel|middleman|dalal|bech|bechna|दूध|बेच|डाल|होटल|दलाल|sahakari/i.test(query)) {
     selected = mergeUnique(selected, pickByTitle(chunks, /COOPERATIVE|MILK MARKETING|ECONOMICS/i, 2));
   }
   if (/scheme|subsidy|loan|kcc|ahidf|rgm|npdd|nlm|government|yojana|dahd|gokul|livestock mission/i.test(query)) {
@@ -35306,15 +35308,208 @@ async function sarvamSynthesizeSpeech(text, languageCode, opts) {
   return decodeBase64Audio(b64);
 }
 
+// catalyst/functions/pashumitra_api/lib/cooperative-location.ts
+var MILK_MARKETING_SYSTEM_RULES = `MILK MARKETING \u2014 COOPERATIVE ONLY (ABSOLUTE \u2014 CHAT AND VOICE):
+- When farmer asks where to sell/pour/market milk, milk price, buyers, or earning from milk: advise ONLY the village-level **Dairy Cooperative Society (DCS)** / village milk collection centre.
+- Chain: Village DCS \u2192 District Milk Union \u2192 State Milk Federation. Name the local union and federation when location/state is known.
+- NEVER recommend private dairies, hotels, restaurants, sweet shops, middlemen, brokers, or direct sale to traders \u2014 not even as a "second option" or "if cooperative is far".
+- If farmer asks about private buyer / hotel / dalal: firmly redirect to nearest DCS Secretary or milk union field officer \u2014 explain fair fat/SNF price, bonus, feed, AI, vet support.
+- Do NOT tell farmers to ask DCS for veterinarian phone numbers (vet directory is separate). DCS is for milk pouring only.`;
+var MILK_MARKETING_QUERY = /milk|dudh|doodh|dugh|दूध|sell|bech|bechna|bechne|pour|dalna|dalne|marketing|buyer|dealer|hotel|middleman|dalal|commission|private|niji|rate|price|litre|liter|procurement|dcs|cooperative|sahakari|sahakar|union|federation|बेच|डाल|खरीद|होटल|निजी|दलाल|कहाँ\s*बेच|कहां\s*बेच|कहाँ\s*डाल|कहां\s*डाल|doodh\s*kaha|dudh\s*kaha/i;
+var STATE_COOPERATIVES = [
+  {
+    pattern: /gujarat|गुजरात|anand|mehsana|surat|vadodara|rajkot|banaskantha|kaira|sabarkantha|junagadh|bhavnagar/i,
+    hint: {
+      state: "Gujarat",
+      villageLevel: "Village DCS (Dairy Cooperative Society)",
+      districtUnion: "your district milk union (e.g. Kaira, Banas, Mehsana, Surat, Rajkot)",
+      stateFederation: "Gujarat Cooperative Milk Marketing Federation \u2014 GCMMF (Amul)"
+    }
+  },
+  {
+    pattern: /karnataka|कर्नाटक|bangalore|bengaluru|mandya|hassan|mysore|mysuru|dharwad|belgaum|belagavi|nandini/i,
+    hint: {
+      state: "Karnataka",
+      villageLevel: "Village DCS",
+      districtUnion: "your district cooperative milk union",
+      stateFederation: "Karnataka Milk Federation (Nandini)"
+    }
+  },
+  {
+    pattern: /rajasthan|राजस्थान|jaipur|jodhpur|udaipur|bikaner|ajmer|alwar|saras/i,
+    hint: {
+      state: "Rajasthan",
+      villageLevel: "Village DCS / milk collection centre",
+      districtUnion: "district milk producers union (e.g. Jaipur, Jodhpur, Udaipur, Ajmer)",
+      stateFederation: "Rajasthan Cooperative Dairy Federation (Saras)"
+    }
+  },
+  {
+    pattern: /punjab|पंजाब|amritsar|ludhiana|verka|milkfed/i,
+    hint: {
+      state: "Punjab",
+      villageLevel: "Village DCS",
+      districtUnion: "district milk producers cooperative union",
+      stateFederation: "Punjab State Cooperative Milk Producers Federation (Verka / Milkfed Punjab)"
+    }
+  },
+  {
+    pattern: /haryana|हरियाण|karnal|hisar|vitthal|vita/i,
+    hint: {
+      state: "Haryana",
+      villageLevel: "Village DCS",
+      districtUnion: "district milk union (e.g. Karnal, Hisar, Rohtak)",
+      stateFederation: "Haryana Dairy Development Cooperative Federation (Vita)"
+    }
+  },
+  {
+    pattern: /uttar pradesh|uttarpradesh|\bup\b|उत्तर प्रदेश|lucknow|kanpur|meerut|agra|parag|pccf/i,
+    hint: {
+      state: "Uttar Pradesh",
+      villageLevel: "Village DCS",
+      districtUnion: "district cooperative milk union (e.g. Lucknow, Kanpur, Meerut, Varanasi)",
+      stateFederation: " Pradeshik Cooperative Dairy Federation (Parag)"
+    }
+  },
+  {
+    pattern: /madhya pradesh|\bmp\b|मध्य प्रदेश|bhopal|indore|gwalior|sanchi|sagar/i,
+    hint: {
+      state: "Madhya Pradesh",
+      villageLevel: "Village DCS",
+      districtUnion: "district milk union",
+      stateFederation: "Madhya Pradesh State Cooperative Dairy Federation (Sanchi / Gwalior / Indore unions)"
+    }
+  },
+  {
+    pattern: /maharashtra|महाराष्ट्र|mumbai|pune|nagpur|kolhapur|amul|gokul|warna|krishna/i,
+    hint: {
+      state: "Maharashtra",
+      villageLevel: "Village DCS",
+      districtUnion: "district milk union (e.g. Kolhapur, Pune, Nagpur, Warna, Gokul)",
+      stateFederation: "Maharashtra state dairy cooperative federations (district unions under NDDB pattern)"
+    }
+  },
+  {
+    pattern: /tamil nadu|tamilnadu|तमिल|chennai|coimbatore|madurai|aavin/i,
+    hint: {
+      state: "Tamil Nadu",
+      villageLevel: "Village DCS",
+      districtUnion: "district cooperative milk producers union",
+      stateFederation: "Tamil Nadu Cooperative Milk Producers Federation (Aavin)"
+    }
+  },
+  {
+    pattern: /andhra|telangana|hyderabad|vijaya|visakha|telugu|प्रजा/i,
+    hint: {
+      state: "Andhra Pradesh / Telangana",
+      villageLevel: "Village DCS",
+      districtUnion: "district milk union (e.g. Vijayawada, Visakhapatnam, Hyderabad)",
+      stateFederation: "Vijaya / Telangana or A.P. dairy development cooperative federations"
+    }
+  },
+  {
+    pattern: /kerala|केरल|kochi|trivandrum|thiruvananthapuram|milma|milkco/i,
+    hint: {
+      state: "Kerala",
+      villageLevel: "Village DCS / MPCS",
+      districtUnion: "regional milk union (Milma)",
+      stateFederation: "Kerala Cooperative Milk Marketing Federation (Milma)"
+    }
+  },
+  {
+    pattern: /bihar|बिहार|patna|sudha|comfed/i,
+    hint: {
+      state: "Bihar",
+      villageLevel: "Village DCS",
+      districtUnion: "district milk union",
+      stateFederation: "Bihar State Cooperative Milk Producers Federation (Sudha / COMFED)"
+    }
+  },
+  {
+    pattern: /odisha|orissa|ओडिशा|bhubaneswar|omfed/i,
+    hint: {
+      state: "Odisha",
+      villageLevel: "Village DCS",
+      districtUnion: "district milk union",
+      stateFederation: "Odisha State Cooperative Milk Producers Federation (OMFED)"
+    }
+  },
+  {
+    pattern: /west bengal|bengal|पश्चिम बंगाल|kolkata|calcutta|sugam/i,
+    hint: {
+      state: "West Bengal",
+      villageLevel: "Village DCS",
+      districtUnion: "district milk union",
+      stateFederation: "West Bengal Cooperative Milk Producers Federation (Sugam / Co-operative Milk Union)"
+    }
+  },
+  {
+    pattern: /assam|असम|guwahati|purabi/i,
+    hint: {
+      state: "Assam",
+      villageLevel: "Village DCS",
+      districtUnion: "district milk union",
+      stateFederation: "Assam Cooperative Milk Producers Union (Purabi)"
+    }
+  },
+  {
+    pattern: /delhi|ncr|mother dairy|नई दिल्ली/i,
+    hint: {
+      state: "Delhi NCR",
+      villageLevel: "linked village DCS / milk collection route",
+      districtUnion: "area milk union supplying Mother Dairy",
+      stateFederation: "Mother Dairy (NDDB subsidiary) \u2014 pour via cooperative collection network"
+    }
+  }
+];
+function isMilkMarketingQuery(text) {
+  return MILK_MARKETING_QUERY.test(text || "");
+}
+function detectCooperativeLocation(text) {
+  for (const { pattern, hint } of STATE_COOPERATIVES) {
+    if (pattern.test(text)) return hint;
+  }
+  return null;
+}
+function buildCooperativeMarketingPrompt(userText2) {
+  if (!isMilkMarketingQuery(userText2)) return null;
+  const loc = detectCooperativeLocation(userText2);
+  if (!loc) {
+    return `${MILK_MARKETING_SYSTEM_RULES}
+
+LOCATION: State not clear from message \u2014 ask which district/state they are in, then name the local DCS, district milk union, and state federation. Still NEVER mention private buyers.`;
+  }
+  return `${MILK_MARKETING_SYSTEM_RULES}
+
+LOCATION CONTEXT (${loc.state}):
+- Village level: pour milk ONLY at nearest ${loc.villageLevel}.
+- District: ${loc.districtUnion}.
+- State federation: ${loc.stateFederation}.
+Mention these names naturally in the farmer's language. NEVER suggest hotel/private dealer/middleman even as backup.`;
+}
+
 // catalyst/functions/pashumitra_api/lib/vet-consult.ts
-var DISEASE_PATTERNS = /mastitis|fever|bimar|bimari|rogi|disease|symptom|lakshan|chhale|chale|blister|diarr|dast|lumpy|lsd|fmd|lameness|langda|bloat|afara|udder|than|vaccin|tika|ilaj|treatment|infection|anthrax|galghotu|brucellosis|repeat breed|pashu.*(bimar|problem)|gaay.*(bimar|problem)|bhains.*(bimar|problem)/i;
-var VET_CONTACT_PATTERNS = /vet|veterinar|doctor|daktar|pashu\s*chikits|chikitsak|paravet|vaid|consult|contact|sampark|sanpark|number|phone|mobile|call|video|whatsapp|nearby|najdeek|paas|ka\s*number|number\s*do|de\s*do|bhej|dikhao|connect|doctor\s*ka|vet\s*ka|give\s*me|share|list|details/i;
+var DISEASE_PATTERNS = /mastitis|fever|bimar|bimari|rogi|disease|symptom|lakshan|chhale|chale|blister|diarr|dast|lumpy|lsd|fmd|lameness|langda|bloat|afara|udder|than|vaccin|tika|ilaj|treatment|infection|anthrax|galghotu|brucellosis|repeat breed|pashu.*(bimar|problem)|gaay.*(bimar|problem)|bhains.*(bimar|problem)|बीमार|रोग|लक्षण|इलाज|बुखार|दस्त|রোগ|জ্বর|நோய|مرض/i;
+var VET_ROLE = /(?:\bvet\b|paravet|veterinar|veterinary|vaid|daktar|doctor|chikitsak|chikits|pashu\s*chikits|veterin|vaidya|marut|pashu\s*doctor|animal\s*doctor|livestock\s*doctor|पशु\s*चिकित्स|चिकित्सक|डॉक्ट|डाक्ट|वैद|पैरावेट|पशु\s*डॉक्ट|পশু\s*চিকিৎস|চিকিৎসক|ডাক্তার|ভেট|மருத்துவ|வைத்திய|వెట్|పశు\s*వైద|પશુ\s*ડોક્ટ|पशुवैद|जनावर\s*डॉक|ಪಶು\s*ವೈದ|പശു\s*ഡോക്ട|ਜਾਨਵਰ\s*ਡਾਕਟ|ପଶୁ\s*ଡାକ୍ତ|পশু\s*চিকিৎস|پشو\s*ڈاکٹر|ویٹ)/i;
+var CONTACT_INTENT = /(?:contact|sampark|sanpark|number|phone|mobile|whatsapp|watsapp|call|video|nearby|najdeek|paas|connect|share|list|details|dial|reach|bhej|dikhao|de\s*do|number\s*do|ka\s*number|vet\s*ka|doctor\s*ka|give\s*me|send|show|find|kahan|kaha|kaun|idhar|yahan|chahiye|chahie|batao|bataye|bhejiye|bhejo|dijiye|dijie|mila|milao|jod|link|संपर्क|सम्पर्क|नंबर|नम्बर|मोबाइल|फोन|भेज|दो|दें|दीज|दिख|पास|नजदीक|चाहिए|बताओ|बताइ|कॉल|व्हाट्स|वीडियो|যোগাযোগ|নম্বর|ফোন|মোবাইল|দাও|পাঠাও|দেখাও|কাছে|নিকট|লাগবে|চাই|দরকার|தொடர்ப|எண்|போன|அழை|அனுப்ப|கொடு|காட்ட|அருக|வேணும்|வேண்டும்|సంప్రద|నంబర|ఫోન|పంప|ఇవ్వ|చూప|దగ్గర|కావాల|અંબર|સંપર્ક|નંબર|ફોન|મોકલ|આપ|જોઈ|નજી|संपर्क|नंबर|फोन|पाठव|जवळ|हव|सांग|ಸಂಪರ್ಕ|ನಂಬರ|ಫೋನ|ಕಳುಹಿಸ|ಕೊ|ಹತ್ತಿರ|ಬೇಕ|ബന്ധ|നമ്പ|ഫോ|അയയ|താ|അടുത്ത|വേണ|ਸੰਪਰਕ|ਨੰਬਰ|ਫੋਨ|ਭੇਜ|ਦੇ|ਨੇੜ|ਚਾਹੀ|ସମ୍ପର୍କ|ନମ୍ବର|ଫୋନ|ଦିଅ|ପାଠ|ନିକଟ|যোগাযোগ|নম্বৰ|ফোন|পঠ|নিকট|رابطہ|نمبر|فون|بھیج|دو|قریب|چاہی)/iu;
+var REQUEST_INTENT = /(?:please|plz|need|want|help|where|how\s*to|can\s*you|could\s*you|will\s*you|get\s*me|arrange|lagbe|dorkar|darkar|venum|venaam|venam|kavali|kavali|buddhi|joiye|pahije|chahiye|chahie|chahida|chahida|zaroor|zarurat|mujhe|mala|enakku|naku|nanage|nange|mujko|\?)/iu;
+var UNIVERSAL_VET = /\b(?:vet|paravet|veterinar|veterinary)\b/i;
+var VET_NARRATIVE = /(?:\bvet\b|paravet|veterinar).{0,35}(?:said|told|recommended|prescribed|advised|gave|visited|checked|diagnosed|ne\s+(?:kaha|bola|diya|di)|कह[ाी]|बोल[ाी]|द(?:िया|ी)|prescribed|treatment\s+from)/iu;
+var STRONG_VET_CONTACT = /(?:vet|veterinar|doctor|daktar|chikitsak|paravet|पशु\s*चिकित्स|ডাক্তার|மருத்துவ|వైద|ડોક્ટ|डॉक्ट|वैद).{0,48}(?:contact|sampark|sanpark|number|phone|mobile|whatsapp|bhej|dikhao|de\s*do|chahiye|venum|lagbe|যোগাযোগ|নম্বর|தொடர்ப|எண்|సంప్రద|నంబర|સંપર્ક|नंबर|phone|call|send|show|give\s*me|dijie|दो|भेज|চাই|कॉल)|(?:contact|sampark|sanpark|number|phone|যোগাযোগ|নম্বর|தொடர்ப|எண்|సంప్రద|નંબર|संपर्क|नंबर|رابطہ|نمبر).{0,48}(?:vet|veterinar|doctor|daktar|chikitsak|paravet|paravet|पशु\s*चिकित्स|ডাক্তার|மருத்துவ|వైద)/iu;
 var VET_CONSULT_MARKER = "[[VET_CONSULT_OFFER]]";
 function isDiseaseRelatedQuery(text) {
   return DISEASE_PATTERNS.test(text);
 }
+function isVetNarrativeOnly(text) {
+  return VET_NARRATIVE.test(text) && !CONTACT_INTENT.test(text) && !REQUEST_INTENT.test(text);
+}
 function isVetContactRequest(text) {
-  return VET_CONTACT_PATTERNS.test(text);
+  const t = (text || "").trim();
+  if (!t) return false;
+  if (STRONG_VET_CONTACT.test(t)) return true;
+  if (VET_ROLE.test(t) && (CONTACT_INTENT.test(t) || REQUEST_INTENT.test(t))) return true;
+  if (UNIVERSAL_VET.test(t) && !isVetNarrativeOnly(t)) return true;
+  return false;
 }
 function isVetConsultQuery(text) {
   return isDiseaseRelatedQuery(text) || isVetContactRequest(text);
@@ -35342,7 +35537,15 @@ ${VET_CONSULT_MARKER}`,
 Here are nearby veterinarians and paravets \u2014 use WhatsApp call or video below.
 ${VET_CONSULT_MARKER}`
 };
-function getVetContactDirectReply(lang) {
+var VET_CONTACT_CALL_REPLIES = {
+  hi: "[[LANG:hi]]\n\u0928\u091C\u0926\u0940\u0915\u0940 \u092A\u0936\u0941 \u091A\u093F\u0915\u093F\u0924\u094D\u0938\u0915 \u0915\u0940 \u0938\u0942\u091A\u0940 \u0910pp \u0915\u0940 \u091A\u0948\u091F \u092E\u0947\u0902 WhatsApp \u0915\u0949\u0932 \u0914\u0930 \u0935\u0940\u0921\u093F\u092F\u094B \u0915\u0947 \u0938\u093E\u0925 \u0926\u093F\u0916\u0947\u0917\u0940 \u2014 \u0915\u0943\u092A\u092F\u093E \u0915\u0949\u0932 \u0915\u0947 \u092C\u093E\u0926 \u091A\u0948\u091F \u0916\u094B\u0932\u0947\u0902\u0964",
+  en: "[[LANG:en]]\nNearby vet contacts with WhatsApp call and video are in the app chat \u2014 please open chat after this call."
+};
+function getVetContactDirectReply(lang, mode = "chat") {
+  if (mode === "call") {
+    if (lang && VET_CONTACT_CALL_REPLIES[lang]) return VET_CONTACT_CALL_REPLIES[lang];
+    return VET_CONTACT_CALL_REPLIES.hi;
+  }
   if (lang && VET_CONTACT_REPLIES[lang]) return VET_CONTACT_REPLIES[lang];
   return VET_CONTACT_REPLIES.hi;
 }
@@ -35399,12 +35602,9 @@ When the farmer asks about ration, balanced feed, least-cost feed, what to feed,
 - End with note to verify local prices and consult Pashu Poshan app / NDDB LRP for fine-tuning.
 - For generic ration questions without full details, give practical guidance from the knowledge base \u2014 do NOT force a long interview unless the farmer opened Ration Advisory mode.
 
-MILK MARKETING \u2014 COOPERATIVE ONLY (CRITICAL):
-- When discussing selling/pouring/marketing milk: ALWAYS advise farmers to pour milk ONLY at their local **dairy cooperative** collection centre (DCS/village society \u2192 district milk union).
-- NEVER recommend private dairies, hotels, restaurants, or middlemen as primary milk buyers.
-- EXCEPTION \u2014 VET / DOCTOR CONTACT: When farmer asks for veterinarian, paravet, doctor phone, or consultation \u2014 use the in-app vet directory (NOT DCS). Never tell them to ask DCS for vet contacts.
+${MILK_MARKETING_SYSTEM_RULES}
 - Explain cooperative benefits: fair fat/SNF price, timely payment, bonus, cattle feed, AI, vet services.
-- Redirect any private-buyer question to nearest cooperative centre / DCS Secretary / milk union field officer.
+- EXCEPTION \u2014 VET / DOCTOR CONTACT: When farmer asks for veterinarian, paravet, doctor phone, or consultation \u2014 use the in-app vet directory (NOT DCS). Never tell them to ask DCS for vet contacts.
 
 YOUTUBE / VIDEO LINKS (CRITICAL \u2014 NO FAKE URLS):
 - NEVER invent, guess, or fabricate YouTube URLs or video IDs. Broken links harm farmers.
@@ -35449,6 +35649,8 @@ VOICE CALL RULES:
 - Simple village words. Give the next practical step first.
 - Use ONLY facts from RETRIEVED KNOWLEDGE below. If unsure, say what to check or ask the vet.
 - For disease topics, end with a brief vet-consult reminder in the farmer's language.
+
+${MILK_MARKETING_SYSTEM_RULES}
 
 ${CONTENT_SAFETY_RULES}`;
 function extractSarvamChatText(data) {
@@ -35584,7 +35786,8 @@ async function handleChat(req) {
     const userCtx = safeMessages.filter((m) => m.role === "user").map((m) => m.content).join("\n");
     const lastUserText = lastUser?.content || "";
     const vetConsultQuery = mode === "chat" && isVetConsultQuery(userCtx || lastUserText);
-    const vetContactDirect = mode === "chat" && isVetContactRequest(lastUserText || userCtx);
+    const vetContactDirect = (mode === "chat" || mode === "call") && isVetContactRequest(lastUserText || userCtx);
+    const cooperativeHint = buildCooperativeMarketingPrompt(userCtx || lastUserText);
     const ragChunks = mode === "call" ? 2 : isRationAdvisory ? 7 : 4;
     const ragContext = await retrieveRagContext(userCtx || lastUser?.content || "", ragChunks);
     const lastUserLang = lastUserText.trim() ? detectLangForRefusal(lastUserText) : null;
@@ -35601,8 +35804,8 @@ async function handleChat(req) {
         });
       }
     }
-    if (vetContactDirect && mode === "chat") {
-      const directReply = getVetContactDirectReply(effectiveForceLang || lastUserLang);
+    if (vetContactDirect && (mode === "chat" || mode === "call")) {
+      const directReply = getVetContactDirectReply(effectiveForceLang || lastUserLang, mode === "call" ? "call" : "chat");
       if (stream) return streamStaticText(directReply);
       return new Response(JSON.stringify({ text: directReply }), { headers: jsonHeaders });
     }
@@ -35619,6 +35822,7 @@ ${ragContext}` },
         ...advisoryHint ? [{ role: "system", content: advisoryHint }] : [],
         ...rationHint ? [{ role: "system", content: rationHint }] : [],
         ...youtubeHint ? [{ role: "system", content: youtubeHint }] : [],
+        ...cooperativeHint ? [{ role: "system", content: cooperativeHint }] : [],
         ...vetConsultQuery ? [{ role: "system", content: vetContactDirect ? `VET / DOCTOR CONTACT REQUEST DETECTED:
 Give a SHORT reply in the farmer's language (1\u20132 lines) saying nearby vets/paravets are listed below with WhatsApp call and video options.
 End your reply with exactly ${VET_CONSULT_MARKER} on its own line (required \u2014 app shows 4\u20135 nearest doctors automatically).` : `ANIMAL HEALTH / DISEASE QUERY DETECTED:

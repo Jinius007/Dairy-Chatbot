@@ -83,7 +83,7 @@ export function retrieveKeywordRagContext(query: string, topK = 7): string {
   if (/ration|feed|fodder|concentrate|poshan|chara|aahar|tdn|lcf|berseem|bajra|silage/i.test(query)) {
     selected = mergeUnique(selected, pickByTitle(chunks, /NUTRITION|RATION|FODDER|BALANCED/i, 3));
   }
-  if (/milk|sell|pour|cooperative|dcs|union|marketing|dudh|dugh|buyer/i.test(query)) {
+  if (/milk|sell|pour|cooperative|dcs|union|marketing|dudh|doodh|dugh|buyer|dealer|hotel|middleman|dalal|bech|bechna|दूध|बेच|डाल|होटल|दलाल|sahakari/i.test(query)) {
     selected = mergeUnique(selected, pickByTitle(chunks, /COOPERATIVE|MILK MARKETING|ECONOMICS/i, 2));
   }
   if (/scheme|subsidy|loan|kcc|ahidf|rgm|npdd|nlm|government|yojana|dahd|gokul|livestock mission/i.test(query)) {

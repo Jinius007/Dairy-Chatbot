@@ -24,6 +24,7 @@ import {
 import { tryYoutubeVideoHint } from "../../lib/youtube-search.ts";
 import { retrieveRagContext } from "../../lib/sarvam-rag.ts";
 import { getSarvamChatModel, sarvamChatCompletion } from "../../lib/sarvam.ts";
+import { buildCooperativeMarketingPrompt, MILK_MARKETING_SYSTEM_RULES } from "../../lib/cooperative-location.ts";
 import { getVetContactDirectReply, isVetConsultQuery, isVetContactRequest, VET_CONSULT_MARKER } from "../../lib/vet-consult.ts";
 
 const jsonHeaders = { "Content-Type": "application/json" };
@@ -78,12 +79,9 @@ When the farmer asks about ration, balanced feed, least-cost feed, what to feed,
 - End with note to verify local prices and consult Pashu Poshan app / NDDB LRP for fine-tuning.
 - For generic ration questions without full details, give practical guidance from the knowledge base — do NOT force a long interview unless the farmer opened Ration Advisory mode.
 
-MILK MARKETING — COOPERATIVE ONLY (CRITICAL):
-- When discussing selling/pouring/marketing milk: ALWAYS advise farmers to pour milk ONLY at their local **dairy cooperative** collection centre (DCS/village society → district milk union).
-- NEVER recommend private dairies, hotels, restaurants, or middlemen as primary milk buyers.
-- EXCEPTION — VET / DOCTOR CONTACT: When farmer asks for veterinarian, paravet, doctor phone, or consultation — use the in-app vet directory (NOT DCS). Never tell them to ask DCS for vet contacts.
+${MILK_MARKETING_SYSTEM_RULES}
 - Explain cooperative benefits: fair fat/SNF price, timely payment, bonus, cattle feed, AI, vet services.
-- Redirect any private-buyer question to nearest cooperative centre / DCS Secretary / milk union field officer.
+- EXCEPTION — VET / DOCTOR CONTACT: When farmer asks for veterinarian, paravet, doctor phone, or consultation — use the in-app vet directory (NOT DCS). Never tell them to ask DCS for vet contacts.
 
 YOUTUBE / VIDEO LINKS (CRITICAL — NO FAKE URLS):
 - NEVER invent, guess, or fabricate YouTube URLs or video IDs. Broken links harm farmers.
@@ -130,6 +128,8 @@ VOICE CALL RULES:
 - Simple village words. Give the next practical step first.
 - Use ONLY facts from RETRIEVED KNOWLEDGE below. If unsure, say what to check or ask the vet.
 - For disease topics, end with a brief vet-consult reminder in the farmer's language.
+
+${MILK_MARKETING_SYSTEM_RULES}
 
 ${CONTENT_SAFETY_RULES}`;
 
@@ -270,7 +270,8 @@ export async function handleChat(req: Request): Promise<Response> {
     const userCtx = safeMessages.filter((m: { role: string }) => m.role === "user").map((m: { content: string }) => m.content).join("\n");
     const lastUserText = lastUser?.content || "";
     const vetConsultQuery = mode === "chat" && isVetConsultQuery(userCtx || lastUserText);
-    const vetContactDirect = mode === "chat" && isVetContactRequest(lastUserText || userCtx);
+    const vetContactDirect = (mode === "chat" || mode === "call") && isVetContactRequest(lastUserText || userCtx);
+    const cooperativeHint = buildCooperativeMarketingPrompt(userCtx || lastUserText);
     const ragChunks = mode === "call" ? 2 : isRationAdvisory ? 7 : 4;
     const ragContext = await retrieveRagContext(userCtx || lastUser?.content || "", ragChunks);
     const lastUserLang = lastUserText.trim() ? detectLangForRefusal(lastUserText) : null;
@@ -293,8 +294,8 @@ export async function handleChat(req: Request): Promise<Response> {
       }
     }
 
-    if (vetContactDirect && mode === "chat") {
-      const directReply = getVetContactDirectReply(effectiveForceLang || lastUserLang);
+    if (vetContactDirect && (mode === "chat" || mode === "call")) {
+      const directReply = getVetContactDirectReply(effectiveForceLang || lastUserLang, mode === "call" ? "call" : "chat");
       if (stream) return streamStaticText(directReply);
       return new Response(JSON.stringify({ text: directReply }), { headers: jsonHeaders });
     }
@@ -312,6 +313,7 @@ export async function handleChat(req: Request): Promise<Response> {
         ...(advisoryHint ? [{ role: "system", content: advisoryHint }] : []),
         ...(rationHint ? [{ role: "system", content: rationHint }] : []),
         ...(youtubeHint ? [{ role: "system", content: youtubeHint }] : []),
+        ...(cooperativeHint ? [{ role: "system", content: cooperativeHint }] : []),
         ...(vetConsultQuery ? [{ role: "system", content: vetContactDirect
           ? `VET / DOCTOR CONTACT REQUEST DETECTED:
 Give a SHORT reply in the farmer's language (1–2 lines) saying nearby vets/paravets are listed below with WhatsApp call and video options.
