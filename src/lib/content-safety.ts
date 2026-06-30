@@ -1,6 +1,7 @@
 /** Block abusive language in transcripts, chat input/output (all supported languages). */
 
 import { detectUserLanguage } from "@/lib/languages";
+import { APP_DISPLAY_NAME } from "@/lib/app-brand";
 
 const DEVANAGARI_DIGITS = "०१२३४५६७८९";
 
@@ -66,13 +67,13 @@ export function filterAbusiveLanguage(text: string): string {
 
 export function abuseRefusalMessage(lang = "hi"): string {
   const messages: Record<string, string> = {
-    hi: "[[LANG:hi]]\nकृपया शालीन भाषा में पूछें। PashuMitra डेयरी और पशुपालन में मदद के लिए है। आपका सवाल दोबारा लिखें या बोलें।",
-    gu: "[[LANG:gu]]\nકૃપા કરીને સભ્ય ભાષામાં પૂછો. PashuMitra ડેરી અને પશુપાલન માટે છે. તમારો પ્રશ્ન ફરી લખો અથવા બોલો.",
-    mr: "[[LANG:mr]]\nकृपया शिस्त भाषेत विचारा. PashuMitra डेअरी व पशुपालनासाठी आहे.",
-    bn: "[[LANG:bn]]\nদয়া করে ভদ্র ভাষায় জিজ্ঞাসা করুন। PashuMitra দুগ্ধ ও পশুপালনে সাহায্য করে।",
-    ta: "[[LANG:ta]]\nதயவுசெய்து மரியாதையான மொழியில் கேளுங்கள். PashuMitra பண்ணை வளர்ப்புக்கு உதவுகிறது.",
-    te: "[[LANG:te]]\nదయచేసి మర్యాదగా అడగండి. PashuMitra పాల పశు సహాయకుడు.",
-    en: "[[LANG:en]]\nPlease use respectful language. PashuMitra helps with dairy and livestock — ask your question again politely.",
+    hi: `[[LANG:hi]]\nकृपया शालीन भाषा में पूछें। ${APP_DISPLAY_NAME} डेयरी और पशुपालन में मदद के लिए है। आपका सवाल दोबारा लिखें या बोलें।`,
+    gu: `[[LANG:gu]]\nકૃપા કરીને સભ્ય ભાષામાં પૂછો. ${APP_DISPLAY_NAME} ડેરી અને પશુપાલન માટે છે. તમારો પ્રશ્ન ફરી લખો અથવા બોલો.`,
+    mr: `[[LANG:mr]]\nकृपया शिस्त भाषेत विचारा. ${APP_DISPLAY_NAME} डेअरी व पशुपालनासाठी आहे.`,
+    bn: `[[LANG:bn]]\nদয়া করে ভদ্র ভাষায় জিজ্ঞাসা করুন। ${APP_DISPLAY_NAME} দুগ্ধ ও পশুপালনে সাহায্য করে।`,
+    ta: `[[LANG:ta]]\nதயவுசெய்து மரியாதையான மொழியில் கேளுங்கள். ${APP_DISPLAY_NAME} பண்ணை வளர்ப்புக்கு உதவுகிறது.`,
+    te: `[[LANG:te]]\nదయచేసి మర్యాదగా అడగండి. ${APP_DISPLAY_NAME} పాల పశు సహాయకుడు.`,
+    en: `[[LANG:en]]\nPlease use respectful language. ${APP_DISPLAY_NAME} helps with dairy and livestock — ask your question again politely.`,
   };
   return messages[lang] || messages.hi;
 }

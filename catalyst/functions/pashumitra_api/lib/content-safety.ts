@@ -2,7 +2,7 @@
 
 export const CONTENT_SAFETY_RULES =
   "CONTENT SAFETY (NON-NEGOTIABLE): Never use profanity, slurs, sexual abuse, hate speech, or insults in ANY language (Hindi, English, Hinglish, Gujarati, etc.). " +
-  "If the farmer uses abusive words, respond calmly in their language: ask them to rephrase politely and say PashuMitra helps with dairy and livestock only. " +
+  "If the farmer uses abusive words, respond calmly in their language: ask them to rephrase politely and say Bharat Pashudhan AI helps with dairy and livestock only. " +
   "Do NOT repeat, quote, or spell out abusive words. Do NOT transcribe abusive speech verbatim.";
 
 export { detectLangForRefusal } from "./languages.ts";
@@ -72,13 +72,13 @@ export function filterAbusiveLanguage(text: string): string {
 
 export function abuseRefusalMessage(lang = "hi"): string {
   const messages: Record<string, string> = {
-    hi: "[[LANG:hi]]\nकृपया शालीन भाषा में पूछें। PashuMitra डेयरी और पशुपालन में मदद के लिए है। आपका सवाल दोबारा लिखें या बोलें।",
-    gu: "[[LANG:gu]]\nકૃપા કરીને સભ્ય ભાષામાં પૂછો. PashuMitra ડેરી અને પશુપાલન માટે છે. તમારો પ્રશ્ન ફરી લખો અથવા બોલો.",
-    mr: "[[LANG:mr]]\nकृपया शिस्त भाषेत विचारा. PashuMitra डेअरी व पशुपालनासाठी आहे.",
-    bn: "[[LANG:bn]]\nদয়া করে ভদ্র ভাষায় জিজ্ঞাসা করুন। PashuMitra দুগ্ধ ও পশুপালনে সাহায্য করে।",
-    ta: "[[LANG:ta]]\nதயவுசெய்து மரியாதையான மொழியில் கேளுங்கள். PashuMitra பண்ணை வளர்ப்புக்கு உதவுகிறது.",
-    te: "[[LANG:te]]\nదయచేసి మర్యాదగా అడగండి. PashuMitra పాల పశు సహాయకుడు.",
-    en: "[[LANG:en]]\nPlease use respectful language. PashuMitra helps with dairy and livestock — ask your question again politely.",
+    hi: "[[LANG:hi]]\nकृपया शालीन भाषा में पूछें। Bharat Pashudhan AI डेयरी और पशुपालन में मदद के लिए है। आपका सवाल दोबारा लिखें या बोलें।",
+    gu: "[[LANG:gu]]\nકૃપા કરીને સભ્ય ભાષામાં પૂછો. Bharat Pashudhan AI ડેરી અને પશુપાલન માટે છે. તમારો પ્રશ્ન ફરી લખો અથવા બોલો.",
+    mr: "[[LANG:mr]]\nकृपया शिस्त भाषेत विचारा. Bharat Pashudhan AI डेअरी व पशुपालनासाठी आहे.",
+    bn: "[[LANG:bn]]\nদয়া করে ভদ্র ভাষায় জিজ্ঞাসা করুন। Bharat Pashudhan AI দুগ্ধ ও পশুপালনে সাহায্য করে।",
+    ta: "[[LANG:ta]]\nதயவுசெய்து மரியாதையான மொழியில் கேளுங்கள். Bharat Pashudhan AI பண்ணை வளர்ப்புக்கு உதவுகிறது.",
+    te: "[[LANG:te]]\nదయచేసి మర్యాదగా అడగండి. Bharat Pashudhan AI పాల పశు సహాయకుడు.",
+    en: "[[LANG:en]]\nPlease use respectful language. Bharat Pashudhan AI helps with dairy and livestock — ask your question again politely.",
   };
   return messages[lang] || messages.hi;
 }

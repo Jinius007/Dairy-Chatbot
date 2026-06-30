@@ -11,7 +11,7 @@ import { trimChatHistory } from "@/lib/chat-history";
 import { fetchChatContinuation, looksIncompleteReply } from "@/lib/chat-continuation";
 import { speakText, stopSpeech, unlockAudioPlayback, waitForCallPlaybackIdle } from "@/lib/speech";
 import { startCallBargeInWithStream, type CallBargeInHandle } from "@/lib/call-barge-in";
-import { getSessionId } from "@/lib/session";
+import { APP_DISPLAY_NAME } from "@/lib/app-brand";
 import { logConversationTurn } from "@/lib/log-turn";
 import {
   containsAbusiveLanguage,
@@ -557,7 +557,7 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
         </button>
 
         <p className="pashu-call-title">
-          PashuMitra live advisor
+          {APP_DISPLAY_NAME} live advisor
           <span className="ml-2 font-mono text-xs opacity-70">{mm}:{ss}</span>
         </p>
 
@@ -574,7 +574,7 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
             <div className="pashu-advisor-glow" aria-hidden="true" />
             <div className="pashu-advisor-ring" aria-hidden="true" />
             <div className="pashu-advisor-ring pashu-advisor-ring--outer" aria-hidden="true" />
-            <img src={ADVISOR_AVATAR_PATH} alt="PashuMitra advisor" className="pashu-advisor-image" />
+            <img src={ADVISOR_AVATAR_PATH} alt={`${APP_DISPLAY_NAME} advisor`} className="pashu-advisor-image" />
             <div className="pashu-advisor-mouth-sync" aria-hidden="true">
               <span className="pashu-advisor-mouth-sync-inner" />
             </div>

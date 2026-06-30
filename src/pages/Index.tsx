@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { ChatView } from "@/components/ChatView";
 import { BrandAvatar } from "@/components/BrandAvatar";
+import { APP_DISPLAY_NAME } from "@/lib/app-brand";
 import { MessageSquarePlus, MessagesSquare, Search, Stethoscope, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -68,7 +69,7 @@ const Index = () => {
           <div className="flex items-center gap-2.5">
             <BrandAvatar size="sm" variant="header" />
             <div>
-              <div className="font-semibold tracking-tight">PashuMitra</div>
+              <div className="font-semibold tracking-tight">{APP_DISPLAY_NAME}</div>
               <div className="text-[11px] opacity-85 font-medium">Dairy & livestock assistant</div>
             </div>
           </div>
@@ -128,7 +129,7 @@ const Index = () => {
             <div className="w-32 h-32 rounded-2xl bg-accent flex items-center justify-center mb-6 border border-primary/15 shadow-sm">
               <MessagesSquare className="w-16 h-16 text-primary" strokeWidth={1.25} />
             </div>
-            <h2 className="text-2xl font-semibold mb-2 tracking-tight text-foreground">PashuMitra</h2>
+            <h2 className="text-2xl font-semibold mb-2 tracking-tight text-foreground">{APP_DISPLAY_NAME}</h2>
             <p className="text-muted-foreground max-w-md font-medium leading-relaxed">Your AI companion for livestock care, dairy farming, and government schemes — in Indian languages with text and voice.</p>
             <button type="button" onClick={newChat} className="mt-6 px-6 py-2.5 bg-primary text-primary-foreground rounded-xl hover:bg-primary-dark font-semibold shadow-sm">
               Start a new chat

@@ -3,6 +3,7 @@ import { isBackendConfigured } from "@/lib/backend-config";
 import { VoiceRecorder } from "@/components/VoiceRecorder";
 import { Tick } from "@/components/Tick";
 import { BrandAvatar } from "@/components/BrandAvatar";
+import { APP_DISPLAY_NAME } from "@/lib/app-brand";
 import { CallButton } from "@/components/CallView";
 import {
   ArrowLeft,
@@ -335,10 +336,13 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
       }
       if (ctrl.signal.aborted) throw new DOMException("Aborted", "AbortError");
 
+      const directVetContact = isVetContactRequest(latestUserText);
       const wantsVets = hasVetConsultMarker(body);
       if (wantsVets) {
         body = stripVetConsultMarker(body);
-        setVetOfferForMsg(assistantId);
+        if (!directVetContact) {
+          setVetOfferForMsg(assistantId);
+        }
       }
 
       let videos: Awaited<ReturnType<typeof fetchVerifiedVideos>> = [];
@@ -514,7 +518,7 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
         )}
         <BrandAvatar size="md" variant="header" />
         <div className="flex-1 min-w-0">
-          <div className="font-semibold truncate tracking-tight">PashuMitra</div>
+          <div className="font-semibold truncate tracking-tight">{APP_DISPLAY_NAME}</div>
           <div className="text-xs opacity-85 font-medium">Online · Live voice available</div>
         </div>
         <CallButton />

@@ -25095,7 +25095,7 @@ function nativeScriptLockPrompt(lang, languageLabel) {
 }
 
 // catalyst/functions/pashumitra_api/lib/content-safety.ts
-var CONTENT_SAFETY_RULES = "CONTENT SAFETY (NON-NEGOTIABLE): Never use profanity, slurs, sexual abuse, hate speech, or insults in ANY language (Hindi, English, Hinglish, Gujarati, etc.). If the farmer uses abusive words, respond calmly in their language: ask them to rephrase politely and say PashuMitra helps with dairy and livestock only. Do NOT repeat, quote, or spell out abusive words. Do NOT transcribe abusive speech verbatim.";
+var CONTENT_SAFETY_RULES = "CONTENT SAFETY (NON-NEGOTIABLE): Never use profanity, slurs, sexual abuse, hate speech, or insults in ANY language (Hindi, English, Hinglish, Gujarati, etc.). If the farmer uses abusive words, respond calmly in their language: ask them to rephrase politely and say Bharat Pashudhan AI helps with dairy and livestock only. Do NOT repeat, quote, or spell out abusive words. Do NOT transcribe abusive speech verbatim.";
 var DEVANAGARI_DIGITS2 = "\u0966\u0967\u0968\u0969\u096A\u096B\u096C\u096D\u096E\u096F";
 var ABUSE_PATTERNS = [
   /\bm(?:adarchod|aderchod|c)\b/i,
@@ -25144,13 +25144,13 @@ function filterAbusiveLanguage(text) {
 }
 function abuseRefusalMessage(lang = "hi") {
   const messages = {
-    hi: "[[LANG:hi]]\n\u0915\u0943\u092A\u092F\u093E \u0936\u093E\u0932\u0940\u0928 \u092D\u093E\u0937\u093E \u092E\u0947\u0902 \u092A\u0942\u091B\u0947\u0902\u0964 PashuMitra \u0921\u0947\u092F\u0930\u0940 \u0914\u0930 \u092A\u0936\u0941\u092A\u093E\u0932\u0928 \u092E\u0947\u0902 \u092E\u0926\u0926 \u0915\u0947 \u0932\u093F\u090F \u0939\u0948\u0964 \u0906\u092A\u0915\u093E \u0938\u0935\u093E\u0932 \u0926\u094B\u092C\u093E\u0930\u093E \u0932\u093F\u0916\u0947\u0902 \u092F\u093E \u092C\u094B\u0932\u0947\u0902\u0964",
-    gu: "[[LANG:gu]]\n\u0A95\u0AC3\u0AAA\u0ABE \u0A95\u0AB0\u0AC0\u0AA8\u0AC7 \u0AB8\u0AAD\u0ACD\u0AAF \u0AAD\u0ABE\u0AB7\u0ABE\u0AAE\u0ABE\u0A82 \u0AAA\u0AC2\u0A9B\u0ACB. PashuMitra \u0AA1\u0AC7\u0AB0\u0AC0 \u0A85\u0AA8\u0AC7 \u0AAA\u0AB6\u0AC1\u0AAA\u0ABE\u0AB2\u0AA8 \u0AAE\u0ABE\u0A9F\u0AC7 \u0A9B\u0AC7. \u0AA4\u0AAE\u0ABE\u0AB0\u0ACB \u0AAA\u0ACD\u0AB0\u0AB6\u0ACD\u0AA8 \u0AAB\u0AB0\u0AC0 \u0AB2\u0A96\u0ACB \u0A85\u0AA5\u0AB5\u0ABE \u0AAC\u0ACB\u0AB2\u0ACB.",
-    mr: "[[LANG:mr]]\n\u0915\u0943\u092A\u092F\u093E \u0936\u093F\u0938\u094D\u0924 \u092D\u093E\u0937\u0947\u0924 \u0935\u093F\u091A\u093E\u0930\u093E. PashuMitra \u0921\u0947\u0905\u0930\u0940 \u0935 \u092A\u0936\u0941\u092A\u093E\u0932\u0928\u093E\u0938\u093E\u0920\u0940 \u0906\u0939\u0947.",
-    bn: "[[LANG:bn]]\n\u09A6\u09AF\u09BC\u09BE \u0995\u09B0\u09C7 \u09AD\u09A6\u09CD\u09B0 \u09AD\u09BE\u09B7\u09BE\u09AF\u09BC \u099C\u09BF\u099C\u09CD\u099E\u09BE\u09B8\u09BE \u0995\u09B0\u09C1\u09A8\u0964 PashuMitra \u09A6\u09C1\u0997\u09CD\u09A7 \u0993 \u09AA\u09B6\u09C1\u09AA\u09BE\u09B2\u09A8\u09C7 \u09B8\u09BE\u09B9\u09BE\u09AF\u09CD\u09AF \u0995\u09B0\u09C7\u0964",
-    ta: "[[LANG:ta]]\n\u0BA4\u0BAF\u0BB5\u0BC1\u0B9A\u0BC6\u0BAF\u0BCD\u0BA4\u0BC1 \u0BAE\u0BB0\u0BBF\u0BAF\u0BBE\u0BA4\u0BC8\u0BAF\u0BBE\u0BA9 \u0BAE\u0BCA\u0BB4\u0BBF\u0BAF\u0BBF\u0BB2\u0BCD \u0B95\u0BC7\u0BB3\u0BC1\u0B99\u0BCD\u0B95\u0BB3\u0BCD. PashuMitra \u0BAA\u0BA3\u0BCD\u0BA3\u0BC8 \u0BB5\u0BB3\u0BB0\u0BCD\u0BAA\u0BCD\u0BAA\u0BC1\u0B95\u0BCD\u0B95\u0BC1 \u0B89\u0BA4\u0BB5\u0BC1\u0B95\u0BBF\u0BB1\u0BA4\u0BC1.",
-    te: "[[LANG:te]]\n\u0C26\u0C2F\u0C1A\u0C47\u0C38\u0C3F \u0C2E\u0C30\u0C4D\u0C2F\u0C3E\u0C26\u0C17\u0C3E \u0C05\u0C21\u0C17\u0C02\u0C21\u0C3F. PashuMitra \u0C2A\u0C3E\u0C32 \u0C2A\u0C36\u0C41 \u0C38\u0C39\u0C3E\u0C2F\u0C15\u0C41\u0C21\u0C41.",
-    en: "[[LANG:en]]\nPlease use respectful language. PashuMitra helps with dairy and livestock \u2014 ask your question again politely."
+    hi: "[[LANG:hi]]\n\u0915\u0943\u092A\u092F\u093E \u0936\u093E\u0932\u0940\u0928 \u092D\u093E\u0937\u093E \u092E\u0947\u0902 \u092A\u0942\u091B\u0947\u0902\u0964 Bharat Pashudhan AI \u0921\u0947\u092F\u0930\u0940 \u0914\u0930 \u092A\u0936\u0941\u092A\u093E\u0932\u0928 \u092E\u0947\u0902 \u092E\u0926\u0926 \u0915\u0947 \u0932\u093F\u090F \u0939\u0948\u0964 \u0906\u092A\u0915\u093E \u0938\u0935\u093E\u0932 \u0926\u094B\u092C\u093E\u0930\u093E \u0932\u093F\u0916\u0947\u0902 \u092F\u093E \u092C\u094B\u0932\u0947\u0902\u0964",
+    gu: "[[LANG:gu]]\n\u0A95\u0AC3\u0AAA\u0ABE \u0A95\u0AB0\u0AC0\u0AA8\u0AC7 \u0AB8\u0AAD\u0ACD\u0AAF \u0AAD\u0ABE\u0AB7\u0ABE\u0AAE\u0ABE\u0A82 \u0AAA\u0AC2\u0A9B\u0ACB. Bharat Pashudhan AI \u0AA1\u0AC7\u0AB0\u0AC0 \u0A85\u0AA8\u0AC7 \u0AAA\u0AB6\u0AC1\u0AAA\u0ABE\u0AB2\u0AA8 \u0AAE\u0ABE\u0A9F\u0AC7 \u0A9B\u0AC7. \u0AA4\u0AAE\u0ABE\u0AB0\u0ACB \u0AAA\u0ACD\u0AB0\u0AB6\u0ACD\u0AA8 \u0AAB\u0AB0\u0AC0 \u0AB2\u0A96\u0ACB \u0A85\u0AA5\u0AB5\u0ABE \u0AAC\u0ACB\u0AB2\u0ACB.",
+    mr: "[[LANG:mr]]\n\u0915\u0943\u092A\u092F\u093E \u0936\u093F\u0938\u094D\u0924 \u092D\u093E\u0937\u0947\u0924 \u0935\u093F\u091A\u093E\u0930\u093E. Bharat Pashudhan AI \u0921\u0947\u0905\u0930\u0940 \u0935 \u092A\u0936\u0941\u092A\u093E\u0932\u0928\u093E\u0938\u093E\u0920\u0940 \u0906\u0939\u0947.",
+    bn: "[[LANG:bn]]\n\u09A6\u09AF\u09BC\u09BE \u0995\u09B0\u09C7 \u09AD\u09A6\u09CD\u09B0 \u09AD\u09BE\u09B7\u09BE\u09AF\u09BC \u099C\u09BF\u099C\u09CD\u099E\u09BE\u09B8\u09BE \u0995\u09B0\u09C1\u09A8\u0964 Bharat Pashudhan AI \u09A6\u09C1\u0997\u09CD\u09A7 \u0993 \u09AA\u09B6\u09C1\u09AA\u09BE\u09B2\u09A8\u09C7 \u09B8\u09BE\u09B9\u09BE\u09AF\u09CD\u09AF \u0995\u09B0\u09C7\u0964",
+    ta: "[[LANG:ta]]\n\u0BA4\u0BAF\u0BB5\u0BC1\u0B9A\u0BC6\u0BAF\u0BCD\u0BA4\u0BC1 \u0BAE\u0BB0\u0BBF\u0BAF\u0BBE\u0BA4\u0BC8\u0BAF\u0BBE\u0BA9 \u0BAE\u0BCA\u0BB4\u0BBF\u0BAF\u0BBF\u0BB2\u0BCD \u0B95\u0BC7\u0BB3\u0BC1\u0B99\u0BCD\u0B95\u0BB3\u0BCD. Bharat Pashudhan AI \u0BAA\u0BA3\u0BCD\u0BA3\u0BC8 \u0BB5\u0BB3\u0BB0\u0BCD\u0BAA\u0BCD\u0BAA\u0BC1\u0B95\u0BCD\u0B95\u0BC1 \u0B89\u0BA4\u0BB5\u0BC1\u0B95\u0BBF\u0BB1\u0BA4\u0BC1.",
+    te: "[[LANG:te]]\n\u0C26\u0C2F\u0C1A\u0C47\u0C38\u0C3F \u0C2E\u0C30\u0C4D\u0C2F\u0C3E\u0C26\u0C17\u0C3E \u0C05\u0C21\u0C17\u0C02\u0C21\u0C3F. Bharat Pashudhan AI \u0C2A\u0C3E\u0C32 \u0C2A\u0C36\u0C41 \u0C38\u0C39\u0C3E\u0C2F\u0C15\u0C41\u0C21\u0C41.",
+    en: "[[LANG:en]]\nPlease use respectful language. Bharat Pashudhan AI helps with dairy and livestock \u2014 ask your question again politely."
   };
   return messages[lang] || messages.hi;
 }
@@ -46687,8 +46687,11 @@ function retrieveKeywordRagContext(query, topK = 7) {
   if (/consultancy|farm management|sustainable dairy|body condition|reproductive efficiency|colostrum quality|production trait|key indicator|insemination timing|heat sign/i.test(query)) {
     selected = mergeUnique(selected, pickByTitle(chunks, /CONSULTANCY|Farm Consultancy|Consultancy Manual|krepo-/i, 3));
   }
-  if (/1962|bharat pashudhan|ndlm|e-gopala|egopala|pashu poshan|pashu aadhaar|inaph|farmer app|mobile veterinary|mvu|helpline/i.test(query)) {
+  if (/1962|bharat pashudhan|ndlm|e-gopala|egopala|pashu poshan|pashu aadhaar|inaph|farmer app|mobile veterinary|mvu|helpline/i.test(query) && !/vet|paravet|doctor|\bdr\.?\b|chikitsak|contact|number|phone|sampark|whatsapp/i.test(query)) {
     selected = mergeUnique(selected, pickByTitle(chunks, /NDLM|1962|Bharat Pashudhan|DIGITAL PLATFORMS|krepo-bharat/i, 3));
+  }
+  if (/vet|paravet|doctor|\bdr\.?\b|chikitsak|veterinar|pashu\s*chikits|contact.*doctor|doctor.*contact|number.*doctor|doctor.*number/i.test(query)) {
+    selected = mergeUnique(selected, pickByTitle(chunks, /VET|DOCTOR|paravet|chikitsak|1962 Farmer App.*buy\/sell/i, 2));
   }
   if (selected.length === 0) {
     selected = chunks.slice(0, Math.min(5, chunks.length));
@@ -47165,13 +47168,16 @@ async function ensureNativeScriptText(text, language) {
 }
 
 // catalyst/functions/pashumitra_api/lib/vet-consult.ts
+function normalizeVetQueryText(text) {
+  return (text || "").replace(/\bdr\.(?=\s|$|[?!,;:])/gi, "doctor ").replace(/\bdr\b(?=\s|$|[?!,;:])/gi, "doctor");
+}
 var DISEASE_PATTERNS = /mastitis|fever|bimar|bimari|rogi|disease|symptom|lakshan|chhale|chale|blister|diarr|dast|lumpy|lsd|fmd|lameness|langda|bloat|afara|udder|than|vaccin|tika|ilaj|treatment|infection|anthrax|galghotu|brucellosis|repeat breed|pashu.*(bimar|problem)|gaay.*(bimar|problem)|bhains.*(bimar|problem)|बीमार|रोग|लक्षण|इलाज|बुखार|दस्त|রোগ|জ্বর|நோய|مرض/i;
-var VET_ROLE = /(?:\bvet\b|paravet|veterinar|veterinary|vaid|daktar|doctor|chikitsak|chikits|pashu\s*chikits|veterin|vaidya|marut|pashu\s*doctor|animal\s*doctor|livestock\s*doctor|पशु\s*चिकित्स|चिकित्सक|डॉक्ट|डाक्ट|वैद|पैरावेट|पशु\s*डॉक्ट|পশু\s*চিকিৎস|চিকিৎসক|ডাক্তার|ভেট|மருத்துவ|வைத்திய|వెట్|పశు\s*వైద|પશુ\s*ડોક્ટ|पशुवैद|जनावर\s*डॉक|ಪಶು\s*ವೈದ|പശു\s*ഡോക്ട|ਜਾਨਵਰ\s*ਡਾਕਟ|ପଶୁ\s*ଡାକ୍ତ|পশু\s*চিকিৎস|پشو\s*ڈاکٹر|ویٹ)/i;
+var VET_ROLE = /(?:\bvet\b|paravet|veterinar|veterinary|vaid|daktar|doctor|\bdr\.?\b|chikitsak|chikits|pashu\s*chikits|veterin|vaidya|marut|pashu\s*doctor|animal\s*doctor|livestock\s*doctor|पशु\s*चिकित्स|चिकित्सक|डॉक्ट|डाक्ट|वैद|पैरावेट|पशु\s*डॉक्ट|পশু\s*চিকিৎস|চিকিৎসক|ডাক্তার|ভেট|மருத்துவ|வைத்திய|వెట్|పశు\s*వైద|પશુ\s*ડોક્ટ|पशुवैद|जनावर\s*डॉक|ಪಶು\s*ವೈದ|പശു\s*ഡോക്ട|ਜਾਨਵਰ\s*ਡਾਕਟ|ପଶୁ\s*ଡାକ୍ତ|পশু\s*চিকিৎস|پشو\s*ڈاکٹر|ویٹ)/i;
 var CONTACT_INTENT = /(?:contact|sampark|sanpark|number|phone|mobile|whatsapp|watsapp|call|video|nearby|najdeek|paas|connect|share|list|details|dial|reach|bhej|dikhao|de\s*do|number\s*do|ka\s*number|vet\s*ka|doctor\s*ka|give\s*me|send|show|find|kahan|kaha|kaun|idhar|yahan|chahiye|chahie|batao|bataye|bhejiye|bhejo|dijiye|dijie|mila|milao|jod|link|संपर्क|सम्पर्क|नंबर|नम्बर|मोबाइल|फोन|भेज|दो|दें|दीज|दिख|पास|नजदीक|चाहिए|बताओ|बताइ|कॉल|व्हाट्स|वीडियो|যোগাযোগ|নম্বর|ফোন|মোবাইল|দাও|পাঠাও|দেখাও|কাছে|নিকট|লাগবে|চাই|দরকার|தொடர்ப|எண்|போன|அழை|அனுப்ப|கொடு|காட்ட|அருக|வேணும்|வேண்டும்|సంప్రద|నంబర|ఫోન|పంప|ఇవ్వ|చూప|దగ్గర|కావాల|અંબર|સંપર્ક|નંબર|ફોન|મોકલ|આપ|જોઈ|નજી|संपर्क|नंबर|फोन|पाठव|जवळ|हव|सांग|ಸಂಪರ್ಕ|ನಂಬರ|ಫೋನ|ಕಳುಹಿಸ|ಕೊ|ಹತ್ತಿರ|ಬೇಕ|ബന്ധ|നമ്പ|ഫോ|അയയ|താ|അടുത്ത|വേണ|ਸੰਪਰਕ|ਨੰਬਰ|ਫੋਨ|ਭੇਜ|ਦੇ|ਨੇੜ|ਚਾਹੀ|ସମ୍ପର୍କ|ନମ୍ବର|ଫୋନ|ଦିଅ|ପାଠ|ନିକଟ|যোগাযোগ|নম্বৰ|ফোন|পঠ|নিকট|رابطہ|نمبر|فون|بھیج|دو|قریب|چاہی)/iu;
 var REQUEST_INTENT = /(?:please|plz|need|want|help|where|how\s*to|can\s*you|could\s*you|will\s*you|get\s*me|arrange|lagbe|dorkar|darkar|venum|venaam|venam|kavali|kavali|buddhi|joiye|pahije|chahiye|chahie|chahida|chahida|zaroor|zarurat|mujhe|mala|enakku|naku|nanage|nange|mujko|\?)/iu;
 var UNIVERSAL_VET = /\b(?:vet|paravet|veterinar|veterinary)\b/i;
 var VET_NARRATIVE = /(?:\bvet\b|paravet|veterinar).{0,35}(?:said|told|recommended|prescribed|advised|gave|visited|checked|diagnosed|ne\s+(?:kaha|bola|diya|di)|कह[ाी]|बोल[ाी]|द(?:िया|ी)|prescribed|treatment\s+from)/iu;
-var STRONG_VET_CONTACT = /(?:vet|veterinar|doctor|daktar|chikitsak|paravet|पशु\s*चिकित्स|ডাক্তার|மருத்துவ|వైద|ડોક્ટ|डॉक्ट|वैद).{0,48}(?:contact|sampark|sanpark|number|phone|mobile|whatsapp|bhej|dikhao|de\s*do|chahiye|venum|lagbe|যোগাযোগ|নম্বর|தொடர்ப|எண்|సంప్రద|నంబర|સંપર્ક|नंबर|phone|call|send|show|give\s*me|dijie|दो|भेज|চাই|कॉल)|(?:contact|sampark|sanpark|number|phone|যোগাযোগ|নম্বর|தொடர்ப|எண்|సంప్రద|નંબર|संपर्क|नंबर|رابطہ|نمبر).{0,48}(?:vet|veterinar|doctor|daktar|chikitsak|paravet|paravet|पशु\s*चिकित्स|ডাক্তার|மருத்துவ|వైద)/iu;
+var STRONG_VET_CONTACT = /(?:vet|veterinar|doctor|\bdr\.?\b|daktar|chikitsak|paravet|पशु\s*चिकित्स|ডাক্তার|மருத்துவ|వైద|ડોક્ટ|डॉक्ट|वैद).{0,48}(?:contact|sampark|sanpark|number|phone|mobile|whatsapp|bhej|dikhao|de\s*do|chahiye|venum|lagbe|যোগাযোগ|নম্বর|தொடர்ப|எண்|సంప్రద|નંબર|संपर्क|नंबर|phone|call|send|show|give\s*me|dijie|दो|भेज|চাই|कॉल)|(?:contact|sampark|sanpark|number|phone|give\s*me|some|যোগাযোগ|নম্বর|தொடர்ப|எண்|సంప్రద|નંબર|संपर्क|नंबर|رابطہ|نمبر).{0,48}(?:vet|veterinar|doctor|\bdr\.?\b|daktar|chikitsak|paravet|पशु\s*चिकित्स|ডাক্তার|மருத்துவ|వైద)/iu;
 var VET_CONSULT_MARKER = "[[VET_CONSULT_OFFER]]";
 function isDiseaseRelatedQuery(text) {
   return DISEASE_PATTERNS.test(text);
@@ -47180,7 +47186,7 @@ function isVetNarrativeOnly(text) {
   return VET_NARRATIVE.test(text) && !CONTACT_INTENT.test(text) && !REQUEST_INTENT.test(text);
 }
 function isVetContactRequest(text) {
-  const t = (text || "").trim();
+  const t = normalizeVetQueryText((text || "").trim());
   if (!t) return false;
   if (STRONG_VET_CONTACT.test(t)) return true;
   if (VET_ROLE.test(t) && (CONTACT_INTENT.test(t) || REQUEST_INTENT.test(t))) return true;
@@ -47602,7 +47608,7 @@ function filterToAllowedUrls(text) {
 // catalyst/functions/pashumitra_api/src/handlers/chat.ts
 var jsonHeaders = { "Content-Type": "application/json" };
 var sseHeaders2 = { "Content-Type": "text/event-stream" };
-var SYSTEM_PROMPT = `You are PashuMitra, a friendly WhatsApp-style assistant for Indian livestock farmers and dairy entrepreneurs.
+var SYSTEM_PROMPT = `You are Bharat Pashudhan AI, a friendly WhatsApp-style assistant for Indian livestock farmers and dairy entrepreneurs.
 
 OUTPUT FORMAT (STRICT \u2014 NON-NEGOTIABLE):
 The VERY FIRST characters of your response MUST be exactly: [[LANG:xx]]
@@ -47661,7 +47667,7 @@ ${MILK_MARKETING_SYSTEM_RULES}
 - Explain cooperative benefits: fair fat/SNF price, timely payment, bonus, cattle feed, AI, vet services.
 - **Buying live animals:** milk cooperatives do NOT sell cows/buffaloes \u2014 see cattle purchase rules below.
 ${CATTLE_PURCHASE_RULES}
-- EXCEPTION \u2014 VET / DOCTOR CONTACT: When farmer asks for veterinarian, paravet, doctor phone, or consultation \u2014 use the in-app vet directory (NOT DCS). Never tell them to ask DCS for vet contacts.
+- EXCEPTION \u2014 VET / DOCTOR CONTACT: When farmer asks for veterinarian, paravet, doctor, or Dr. phone/contact \u2014 the app shows nearby vets automatically. Say contacts are listed below. NEVER redirect to 1962 helpline or 1962 app instead of the in-app vet directory. Never tell them to ask DCS for vet contacts.
 
 YOUTUBE / VIDEO LINKS (CRITICAL \u2014 NO FAKE URLS):
 - NEVER invent, guess, or fabricate YouTube URLs or video IDs. Broken links harm farmers.
@@ -47694,7 +47700,7 @@ WHEN "COMPUTED RESULTS" in system message \u2014 present in this ORDER:
 1. HERD PREP FIRST: total kg to prepare/mix for the whole herd today (green fodder + dry + concentrate + mineral).
 2. PER ANIMAL SECOND: each animal's daily share (breed, doodh/sukhi/garbh, milk litres, kg of each feed).
 Use exact numbers from COMPUTED RESULTS. Simple words only.`;
-var CALL_SYSTEM_PROMPT = `You are PashuMitra, a warm female dairy advisor on a live phone call with an Indian farmer.
+var CALL_SYSTEM_PROMPT = `You are Bharat Pashudhan AI, a warm female dairy advisor on a live phone call with an Indian farmer.
 
 OUTPUT FORMAT (STRICT):
 First line MUST be exactly [[LANG:xx]] then one newline then your spoken answer.
@@ -47846,15 +47852,16 @@ async function handleChat(req) {
     const rationHint = isRationAdvisory || mode === "call" ? null : tryComputeRationHint(safeMessages);
     const userCtx = safeMessages.filter((m) => m.role === "user").map((m) => m.content).join("\n");
     const lastUserText = (lastUser?.content || safeMessages.filter((m) => m.role === "user").slice(-1)[0]?.content || "").trim();
-    if (mode !== "ration_advisory" && !isVetContactRequest(lastUserText || userCtx) && !isDairyRelatedQuery(safeMessages, lastUserText)) {
+    const normalizedUserText = normalizeVetQueryText(lastUserText || userCtx);
+    if (mode !== "ration_advisory" && !isVetContactRequest(normalizedUserText) && !isDairyRelatedQuery(safeMessages, lastUserText)) {
       const refusal = offTopicRefusalMessage(
         detectOffTopicLang(lastUserText, typeof forceLanguage === "string" ? forceLanguage : null)
       );
       if (stream) return streamStaticText(refusal);
       return new Response(JSON.stringify({ text: refusal }), { headers: jsonHeaders });
     }
-    const vetConsultQuery = mode === "chat" && isVetConsultQuery(userCtx || lastUserText);
-    const vetContactDirect = (mode === "chat" || mode === "call") && isVetContactRequest(lastUserText || userCtx);
+    const vetConsultQuery = mode === "chat" && isVetConsultQuery(normalizedUserText);
+    const vetContactDirect = (mode === "chat" || mode === "call") && isVetContactRequest(normalizedUserText);
     const cooperativeHint = buildCooperativeMarketingPrompt(userCtx || lastUserText);
     const cattlePurchaseHint = buildCattlePurchasePrompt(userCtx || lastUserText);
     const ragChunks = mode === "call" ? 2 : isRationAdvisory ? 7 : 4;

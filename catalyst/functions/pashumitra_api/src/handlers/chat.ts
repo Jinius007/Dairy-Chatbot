@@ -28,7 +28,7 @@ import { buildCooperativeMarketingPrompt, MILK_MARKETING_SYSTEM_RULES } from "..
 import { buildCattlePurchasePrompt, CATTLE_PURCHASE_RULES } from "../../lib/knowledge/cattle-purchase-policy.ts";
 import { NATIVE_SCRIPT_RULES, nativeScriptLockPrompt } from "../../lib/languages.ts";
 import { ensureNativeScriptText } from "../../lib/native-script.ts";
-import { getVetContactDirectReply, isVetConsultQuery, isVetContactRequest, VET_CONSULT_MARKER } from "../../lib/vet-consult.ts";
+import { getVetContactDirectReply, isVetConsultQuery, isVetContactRequest, normalizeVetQueryText, VET_CONSULT_MARKER } from "../../lib/vet-consult.ts";
 import { trimChatMessages } from "../../lib/chat-history.ts";
 import { createSsePassthroughStream } from "../../lib/sse-passthrough.ts";
 import { NDLM_DIGITAL_RULES } from "../../lib/knowledge/ndlm-digital-platforms.ts";
@@ -44,7 +44,7 @@ import { filterToAllowedUrls } from "../../lib/allowed-urls.ts";
 const jsonHeaders = { "Content-Type": "application/json" };
 const sseHeaders = { "Content-Type": "text/event-stream" };
 
-const SYSTEM_PROMPT = `You are PashuMitra, a friendly WhatsApp-style assistant for Indian livestock farmers and dairy entrepreneurs.
+const SYSTEM_PROMPT = `You are Bharat Pashudhan AI, a friendly WhatsApp-style assistant for Indian livestock farmers and dairy entrepreneurs.
 
 OUTPUT FORMAT (STRICT — NON-NEGOTIABLE):
 The VERY FIRST characters of your response MUST be exactly: [[LANG:xx]]
@@ -103,7 +103,7 @@ ${MILK_MARKETING_SYSTEM_RULES}
 - Explain cooperative benefits: fair fat/SNF price, timely payment, bonus, cattle feed, AI, vet services.
 - **Buying live animals:** milk cooperatives do NOT sell cows/buffaloes — see cattle purchase rules below.
 ${CATTLE_PURCHASE_RULES}
-- EXCEPTION — VET / DOCTOR CONTACT: When farmer asks for veterinarian, paravet, doctor phone, or consultation — use the in-app vet directory (NOT DCS). Never tell them to ask DCS for vet contacts.
+- EXCEPTION — VET / DOCTOR CONTACT: When farmer asks for veterinarian, paravet, doctor, or Dr. phone/contact — the app shows nearby vets automatically. Say contacts are listed below. NEVER redirect to 1962 helpline or 1962 app instead of the in-app vet directory. Never tell them to ask DCS for vet contacts.
 
 YOUTUBE / VIDEO LINKS (CRITICAL — NO FAKE URLS):
 - NEVER invent, guess, or fabricate YouTube URLs or video IDs. Broken links harm farmers.
@@ -138,7 +138,7 @@ WHEN "COMPUTED RESULTS" in system message — present in this ORDER:
 2. PER ANIMAL SECOND: each animal's daily share (breed, doodh/sukhi/garbh, milk litres, kg of each feed).
 Use exact numbers from COMPUTED RESULTS. Simple words only.`;
 
-const CALL_SYSTEM_PROMPT = `You are PashuMitra, a warm female dairy advisor on a live phone call with an Indian farmer.
+const CALL_SYSTEM_PROMPT = `You are Bharat Pashudhan AI, a warm female dairy advisor on a live phone call with an Indian farmer.
 
 OUTPUT FORMAT (STRICT):
 First line MUST be exactly [[LANG:xx]] then one newline then your spoken answer.
@@ -295,10 +295,11 @@ export async function handleChat(req: Request): Promise<Response> {
 
     const userCtx = safeMessages.filter((m: { role: string }) => m.role === "user").map((m: { content: string }) => m.content).join("\n");
     const lastUserText = (lastUser?.content || safeMessages.filter((m: { role: string }) => m.role === "user").slice(-1)[0]?.content || "").trim();
+    const normalizedUserText = normalizeVetQueryText(lastUserText || userCtx);
 
     if (
       mode !== "ration_advisory"
-      && !isVetContactRequest(lastUserText || userCtx)
+      && !isVetContactRequest(normalizedUserText)
       && !isDairyRelatedQuery(safeMessages, lastUserText)
     ) {
       const refusal = offTopicRefusalMessage(
@@ -308,8 +309,8 @@ export async function handleChat(req: Request): Promise<Response> {
       return new Response(JSON.stringify({ text: refusal }), { headers: jsonHeaders });
     }
 
-    const vetConsultQuery = mode === "chat" && isVetConsultQuery(userCtx || lastUserText);
-    const vetContactDirect = (mode === "chat" || mode === "call") && isVetContactRequest(lastUserText || userCtx);
+    const vetConsultQuery = mode === "chat" && isVetConsultQuery(normalizedUserText);
+    const vetContactDirect = (mode === "chat" || mode === "call") && isVetContactRequest(normalizedUserText);
     const cooperativeHint = buildCooperativeMarketingPrompt(userCtx || lastUserText);
     const cattlePurchaseHint = buildCattlePurchasePrompt(userCtx || lastUserText);
     const ragChunks = mode === "call" ? 2 : isRationAdvisory ? 7 : 4;

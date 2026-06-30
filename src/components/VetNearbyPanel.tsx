@@ -5,6 +5,7 @@ import {
   telUrl,
   whatsAppUrl,
 } from "@/lib/vet-types";
+import { APP_DISPLAY_NAME } from "@/lib/app-brand";
 import { MapPin, Phone, Stethoscope, UserRound, Video } from "lucide-react";
 
 interface Props {
@@ -80,8 +81,8 @@ export function VetNearbyPanel({ vets, loading, lang, onRetry }: Props) {
       {vets.map((v) => {
         const waText =
           lang === "en"
-            ? `Hello ${v.name}, I need help with my animal's health via PashuMitra.`
-            : `नमस्ते ${v.name}, PashuMitra से मेरे पशु की समस्या के लिए सलाह चाहिए।`;
+            ? `Hello ${v.name}, I need help with my animal's health via ${APP_DISPLAY_NAME}.`
+            : `नमस्ते ${v.name}, ${APP_DISPLAY_NAME} से मेरे पशु की समस्या के लिए सलाह चाहिए।`;
         return (
           <div
             key={v.id}

@@ -18,6 +18,12 @@ describe("isVetContactRequest", () => {
     expect(isVetContactRequest("doctor ka number do")).toBe(true);
   });
 
+  it("matches STT shorthand Dr. for doctor contact requests", () => {
+    expect(isVetContactRequest("can you give me contact of some Dr.")).toBe(true);
+    expect(isVetContactRequest("give me Dr contact")).toBe(true);
+    expect(isVetContactRequest("Dr. number please")).toBe(true);
+  });
+
   it("matches vet/paravet loanwords with other-language contact words", () => {
     expect(isVetContactRequest("vet number vennum")).toBe(true);
     expect(isVetContactRequest("paravet contact lagbe")).toBe(true);
