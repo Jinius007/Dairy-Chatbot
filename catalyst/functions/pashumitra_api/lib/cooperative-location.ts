@@ -5,10 +5,14 @@ export const MILK_MARKETING_SYSTEM_RULES = `MILK MARKETING — COOPERATIVE ONLY 
 - Chain: Village DCS → District Milk Union → State Milk Federation. Name the local union and federation when location/state is known.
 - NEVER recommend private dairies, hotels, restaurants, sweet shops, middlemen, brokers, or direct sale to traders — not even as a "second option" or "if cooperative is far".
 - If farmer asks about private buyer / hotel / dalal: firmly redirect to nearest DCS Secretary or milk union field officer — explain fair fat/SNF price, bonus, feed, AI, vet support.
+- **Milk unions/federations (Amul, Mother Dairy, etc.) do NOT sell live cows/buffaloes** — only milk procurement and farmer services.
 - Do NOT tell farmers to ask DCS for veterinarian phone numbers (vet directory is separate). DCS is for milk pouring only.`;
 
+const CATTLE_PURCHASE_EXCLUDE =
+  /\b(buy|purchase|kharid\w*|where\s*(can|to)\s*(buy|get)|kidhar\s*mil|kahan\s*(se\s*)?mil)\b.*\b(cow|cows|cattle|buffalo|gaay|gai|bhains|goru|pashu|pasu|animal|calf|murrah|gir)\b|\b(cow|cows|cattle|buffalo|gaay|gai|bhains|goru|pashu|pasu|murrah|gir)\b.*\b(buy|purchase|kharid\w*|market|mel[ae])\b|where\s*can\s*i\s*buy\s*cow|gaay\s*kaha/i;
+
 const MILK_MARKETING_QUERY =
-  /milk|dudh|doodh|dugh|दूध|sell|bech|bechna|bechne|pour|dalna|dalne|marketing|buyer|dealer|hotel|middleman|dalal|commission|private|niji|rate|price|litre|liter|procurement|dcs|cooperative|sahakari|sahakar|union|federation|बेच|डाल|खरीद|होटल|निजी|दलाल|कहाँ\s*बेच|कहां\s*बेच|कहाँ\s*डाल|कहां\s*डाल|doodh\s*kaha|dudh\s*kaha/i;
+  /milk|dudh|doodh|dugh|दूध|sell|bech|bechna|bechne|pour|dalna|dalne|marketing|milk\s*buyer|doodh\s*.*buyer|dudh\s*.*buyer|dealer|hotel|middleman|dalal|commission|private|niji|rate|price|litre|liter|procurement|dcs|cooperative|sahakari|sahakar|union|federation|बेच|डाल|दूध.*खरीद|खरीद.*दूध|होटल|निजी|दलाल|कहाँ\s*बेच|कहां\s*बेच|कहाँ\s*डाल|कहां\s*डाल|doodh\s*kaha|dudh\s*kaha/i;
 
 export interface CooperativeLocationHint {
   state: string;
@@ -165,7 +169,9 @@ const STATE_COOPERATIVES: Array<{ pattern: RegExp; hint: CooperativeLocationHint
 ];
 
 export function isMilkMarketingQuery(text: string): boolean {
-  return MILK_MARKETING_QUERY.test(text || "");
+  const t = String(text || "");
+  if (CATTLE_PURCHASE_EXCLUDE.test(t)) return false;
+  return MILK_MARKETING_QUERY.test(t);
 }
 
 export function detectCooperativeLocation(text: string): CooperativeLocationHint | null {

@@ -26308,6 +26308,7 @@ When farmer asks where to sell milk, how to market milk, milk price, pouring mil
 - Access to cattle feed, mineral mixture, AI, veterinary care, insurance
 - Clean milk testing, chilling, and quality assurance
 - Part of India's successful Anand-pattern cooperative model (NDDB)
+- **Cooperatives do NOT sell live cows/buffaloes** \u2014 only procure milk and supply inputs (feed, AI services). Never tell farmers to buy animals from Amul, Mother Dairy, or milk unions.
 
 ### What to tell the farmer
 1. Pour milk at your **village cooperative collection point** (DCS) \u2014 same time daily
@@ -26324,6 +26325,58 @@ When farmer asks where to sell milk, how to market milk, milk price, pouring mil
 - "Private dairy ya hotel ko doodh dena \u2014 yeh salah mat dijiye; sahyakari system behtar hai"
 - "Pour milk only at your cooperative collection centre for fair price and support services"
 `;
+
+// catalyst/functions/pashumitra_api/lib/knowledge/cattle-purchase-policy.ts
+var CATTLE_PURCHASE_POLICY = `
+## 13. BUYING / SELLING LIVE CATTLE (COWS, BUFFALOES) \u2014 FACTUAL RULES
+
+### What dairy cooperatives and milk brands DO NOT do (CRITICAL \u2014 NEVER GET THIS WRONG)
+- **Amul, Mother Dairy, Nandini, Saras, Verka, Aavin, Sudha, Parag, Milma, OMFED, etc. are milk marketing federations/unions** \u2014 they **procure and process MILK** from member farmers via village DCS collection centres.
+- They **DO NOT sell live cows, buffaloes, or calves** as a retail service. **NEVER tell a farmer to buy an animal from Amul, Mother Dairy, or any milk union/federation.**
+- **KRIBHCO / IFFCO / cooperative feed plants** supply **cattle FEED, mineral mixture, fertiliser** \u2014 they **DO NOT sell live animals**. Do not list KRIBHCO as a place to buy cows.
+- **NDDB** supports breed improvement, AI, RBP, cooperatives \u2014 it is **not a cattle market**.
+
+### Where farmers CAN buy or source animals (only mention what is in retrieved knowledge or below)
+1. **Other farmers / local livestock markets (haat/mela)** \u2014 inspect health, milk records, vaccination; take a paravet/vet; check breed papers if claimed.
+2. **1962 Farmer App (Bharat Pashudhan / NDLM)** \u2014 has **buy/sell animals** features in the official ecosystem; farmer can also contact toll-free **1962** for guidance.
+3. **Rashtriya Gokul Mission (RGM)** \u2014 **Breed Multiplication Farms (BMF)** and state breed farms for indigenous breeds (Gir, Sahiwal, Murrah etc.) \u2014 apply via **State Animal Husbandry Department** / district veterinary officer \u2014 not via milk unions.
+4. **National Livestock Mission (NLM)** \u2014 entrepreneurship/support for sheep/goat/poultry units; state AH department for programmes.
+5. **Registered breeders / NDDB-linked AI network** \u2014 for **genetics (semen/AI)**, not usually whole live animals unless through approved farm schemes.
+6. **Nearest veterinary hospital / KVK / AH department** \u2014 for verified breeder contacts or government livestock fairs in the district.
+
+### Safe answer pattern when farmer asks "where can I buy cows?"
+- Say clearly: milk cooperatives (Amul/Mother Dairy etc.) are for **selling milk**, not buying animals.
+- Give 2\u20133 practical routes above (local market + vet check, 1962 app, state AH/RGM breed farm if indigenous breed wanted).
+- If district/state unknown: ask location; do **NOT** invent shop names, phone numbers, or prices.
+- If not in retrieved knowledge: say you do not have a verified local seller list \u2014 suggest **1962 helpline**, **block veterinary officer**, or **district animal husbandry office**.
+
+### Phrases to NEVER use
+- "Amul se gaay kharid sakte hain" / "Buy cows from Mother Dairy"
+- "KRIBHCO sells cattle" (wrong \u2014 feed only)
+- Any made-up dealer, NGO, or private company name not in RETRIEVED KNOWLEDGE
+`;
+var CATTLE_PURCHASE_RULES = `
+CATTLE PURCHASE / SALE (ANTI-HALLUCINATION \u2014 NON-NEGOTIABLE):
+- Milk cooperatives & federations (Amul, GCMMF, Mother Dairy, Nandini, Saras, Verka, Aavin, Sudha, Gokul, Parag, etc.) **buy MILK from farmers** \u2014 they **do NOT sell live animals**.
+- **KRIBHCO, IFFCO, feed companies** sell **feed/minerals** \u2014 **NOT live cattle**.
+- For "where to buy cow/buffalo": local farmer/market + vet health check; **1962 app**; **State AH Department** / **RGM breed farms** \u2014 only if supported by RETRIEVED KNOWLEDGE.
+- **NEVER invent** vendor lists, shop names, phone numbers, or prices. If unsure, say so and point to **1962** or **district veterinary officer**.
+`;
+var CATTLE_PURCHASE_QUERY = /\b(buy|purchase|kharid\w*|len|levu|vang|where\s*(can|to)\s*(buy|get|find)|kidhar\s*mil|kahan\s*(se\s*)?mil|kothay\s*pab|kothay\s*pao|evide\s*kit|enga\s*vaang|where.*source)\b.*\b(cow|cows|cattle|buffalo|buffaloes|gaay|gai|gay|bhains|bhainsa|goru|gorur|ghoru|pashu|pasu|animal|herd|calf|calves|murrah|gir|sahiwal|heifer)\b|\b(cow|cows|cattle|buffalo|buffaloes|gaay|gai|gay|bhains|bhainsa|goru|gorur|ghoru|pashu|pasu|murrah|gir|sahiwal|heifer)\b.*\b(buy|purchase|kharid\w*|milenge|milega|milti|paabo|paawa|pabo|pabo|source|market|mel[ae])\b|gaay\s*kaha|goru\w*\s*kothay|pasu\s*evide|buy\s*cow|buy\s*cattle|where\s*can\s*i\s*buy/i;
+var MILK_NOT_ANIMAL = /\b(milk|dudh|doodh|dugh|दूध|pour|bech|bechna|sell\s*milk|milk\s*sell|procurement|collection\s*centre|dcs)\b/i;
+function isCattlePurchaseQuery(text) {
+  const t = String(text || "");
+  if (!CATTLE_PURCHASE_QUERY.test(t)) return false;
+  if (MILK_NOT_ANIMAL.test(t) && !/\b(cow|cattle|gaay|bhains|goru|pashu|buffalo)\b/i.test(t)) return false;
+  return true;
+}
+function buildCattlePurchasePrompt(userText2) {
+  if (!isCattlePurchaseQuery(userText2)) return null;
+  return `${CATTLE_PURCHASE_RULES}
+
+ACTIVE QUERY: Farmer wants to **buy/source live cattle** \u2014 NOT milk marketing.
+Use section 13 (CATTLE PURCHASE) from RETRIEVED KNOWLEDGE. Explicitly state Amul/Mother Dairy/milk unions/KRIBHCO do **NOT** sell live animals. Give practical routes only (local market + vet, 1962 app, state AH/RGM). Do not invent dealers.`;
+}
 
 // catalyst/functions/pashumitra_api/lib/knowledge/dahd-schemes.ts
 var DAHD_SCHEMES = `
@@ -34601,6 +34654,8 @@ ${BALANCED_RATION_GUIDE}
 
 ${COOPERATIVE_MILK_POLICY}
 
+${CATTLE_PURCHASE_POLICY}
+
 ${ICAR_LIVESTOCK_HEALTH}
 
 ${EXTENSION_MATERIAL}
@@ -34662,8 +34717,11 @@ function retrieveKeywordRagContext(query, topK = 7) {
   if (/ration|feed|fodder|concentrate|poshan|chara|aahar|tdn|lcf|berseem|bajra|silage/i.test(query)) {
     selected = mergeUnique(selected, pickByTitle(chunks, /NUTRITION|RATION|FODDER|BALANCED/i, 3));
   }
-  if (/milk|sell|pour|cooperative|dcs|union|marketing|dudh|doodh|dugh|buyer|dealer|hotel|middleman|dalal|bech|bechna|दूध|बेच|डाल|होटल|दलाल|sahakari/i.test(query)) {
+  if (/milk|sell|pour|cooperative|dcs|union|marketing|dudh|doodh|dugh|milk\s*buyer|dealer|hotel|middleman|dalal|bech|bechna|दूध|बेच|डाल|होटल|दलाल|sahakari/i.test(query) && !/buy.*(cow|cattle|gaay|bhains|goru|pashu|buffalo)|where.*buy.*(cow|cattle|animal)/i.test(query)) {
     selected = mergeUnique(selected, pickByTitle(chunks, /COOPERATIVE|MILK MARKETING|ECONOMICS/i, 2));
+  }
+  if (/buy|purchase|kharid|where.*(buy|get).*cow|cow.*market|gaay.*kharid|goru.*kothay|sell.*animal|buy.*cattle|buy.*buffalo/i.test(query)) {
+    selected = mergeUnique(selected, pickByTitle(chunks, /BUYING|SELLING LIVE CATTLE|CATTLE PURCHASE|1962|GOKUL|NLM/i, 3));
   }
   if (/scheme|subsidy|loan|kcc|ahidf|rgm|npdd|nlm|government|yojana|dahd|gokul|livestock mission/i.test(query)) {
     selected = mergeUnique(selected, pickByTitle(chunks, /GOVERNMENT|SCHEME|DAHD|AHIDF|GOKUL|NPDD|NLM/i, 3));
@@ -34957,8 +35015,10 @@ var MILK_MARKETING_SYSTEM_RULES = `MILK MARKETING \u2014 COOPERATIVE ONLY (ABSOL
 - Chain: Village DCS \u2192 District Milk Union \u2192 State Milk Federation. Name the local union and federation when location/state is known.
 - NEVER recommend private dairies, hotels, restaurants, sweet shops, middlemen, brokers, or direct sale to traders \u2014 not even as a "second option" or "if cooperative is far".
 - If farmer asks about private buyer / hotel / dalal: firmly redirect to nearest DCS Secretary or milk union field officer \u2014 explain fair fat/SNF price, bonus, feed, AI, vet support.
+- **Milk unions/federations (Amul, Mother Dairy, etc.) do NOT sell live cows/buffaloes** \u2014 only milk procurement and farmer services.
 - Do NOT tell farmers to ask DCS for veterinarian phone numbers (vet directory is separate). DCS is for milk pouring only.`;
-var MILK_MARKETING_QUERY = /milk|dudh|doodh|dugh|दूध|sell|bech|bechna|bechne|pour|dalna|dalne|marketing|buyer|dealer|hotel|middleman|dalal|commission|private|niji|rate|price|litre|liter|procurement|dcs|cooperative|sahakari|sahakar|union|federation|बेच|डाल|खरीद|होटल|निजी|दलाल|कहाँ\s*बेच|कहां\s*बेच|कहाँ\s*डाल|कहां\s*डाल|doodh\s*kaha|dudh\s*kaha/i;
+var CATTLE_PURCHASE_EXCLUDE = /\b(buy|purchase|kharid\w*|where\s*(can|to)\s*(buy|get)|kidhar\s*mil|kahan\s*(se\s*)?mil)\b.*\b(cow|cows|cattle|buffalo|gaay|gai|bhains|goru|pashu|pasu|animal|calf|murrah|gir)\b|\b(cow|cows|cattle|buffalo|gaay|gai|bhains|goru|pashu|pasu|murrah|gir)\b.*\b(buy|purchase|kharid\w*|market|mel[ae])\b|where\s*can\s*i\s*buy\s*cow|gaay\s*kaha/i;
+var MILK_MARKETING_QUERY = /milk|dudh|doodh|dugh|दूध|sell|bech|bechna|bechne|pour|dalna|dalne|marketing|milk\s*buyer|doodh\s*.*buyer|dudh\s*.*buyer|dealer|hotel|middleman|dalal|commission|private|niji|rate|price|litre|liter|procurement|dcs|cooperative|sahakari|sahakar|union|federation|बेच|डाल|दूध.*खरीद|खरीद.*दूध|होटल|निजी|दलाल|कहाँ\s*बेच|कहां\s*बेच|कहाँ\s*डाल|कहां\s*डाल|doodh\s*kaha|dudh\s*kaha/i;
 var STATE_COOPERATIVES = [
   {
     pattern: /gujarat|गुजरात|anand|mehsana|surat|vadodara|rajkot|banaskantha|kaira|sabarkantha|junagadh|bhavnagar/i,
@@ -35106,7 +35166,9 @@ var STATE_COOPERATIVES = [
   }
 ];
 function isMilkMarketingQuery(text) {
-  return MILK_MARKETING_QUERY.test(text || "");
+  const t = String(text || "");
+  if (CATTLE_PURCHASE_EXCLUDE.test(t)) return false;
+  return MILK_MARKETING_QUERY.test(t);
 }
 function detectCooperativeLocation(text) {
   for (const { pattern, hint } of STATE_COOPERATIVES) {
@@ -35516,7 +35578,8 @@ var KNOWLEDGE_BOUNDARY_RULES = `
 KNOWLEDGE BOUNDARY (CRITICAL \u2014 NO OPEN WEB):
 - Your ONLY source of facts is the **RETRIEVED KNOWLEDGE** block in this conversation (NDDB/DAHD/ICAR curated corpus).
 - NEVER use general internet knowledge, news, Wikipedia, or training-data guesses.
-- NEVER invent scheme names, subsidy amounts, medicine doses, phone numbers, or statistics not present in RETRIEVED KNOWLEDGE.
+- NEVER invent scheme names, subsidy amounts, medicine doses, phone numbers, statistics, shop names, or vendor lists not present in RETRIEVED KNOWLEDGE.
+- NEVER claim milk cooperatives (Amul, Mother Dairy, Nandini, etc.) or feed companies (KRIBHCO, IFFCO) **sell live cattle** \u2014 they do not. See cattle purchase rules.
 - If RETRIEVED KNOWLEDGE does not contain enough to answer, say clearly in the farmer's language that this information is not in your records and suggest: nearest dairy cooperative / veterinarian / **1962 app** \u2014 do NOT guess or fill gaps.
 - When the farmer's question IS about dairy, livestock, milk, fodder, disease, or schemes: answer it \u2014 do NOT refuse as "out of scope".
 
@@ -35638,6 +35701,8 @@ ${NDLM_DIGITAL_RULES}
 
 ${MILK_MARKETING_SYSTEM_RULES}
 - Explain cooperative benefits: fair fat/SNF price, timely payment, bonus, cattle feed, AI, vet services.
+- **Buying live animals:** milk cooperatives do NOT sell cows/buffaloes \u2014 see cattle purchase rules below.
+${CATTLE_PURCHASE_RULES}
 - EXCEPTION \u2014 VET / DOCTOR CONTACT: When farmer asks for veterinarian, paravet, doctor phone, or consultation \u2014 use the in-app vet directory (NOT DCS). Never tell them to ask DCS for vet contacts.
 
 YOUTUBE / VIDEO LINKS (CRITICAL \u2014 NO FAKE URLS):
@@ -35833,6 +35898,7 @@ async function handleChat(req) {
     const vetConsultQuery = mode === "chat" && isVetConsultQuery(userCtx || lastUserText);
     const vetContactDirect = (mode === "chat" || mode === "call") && isVetContactRequest(lastUserText || userCtx);
     const cooperativeHint = buildCooperativeMarketingPrompt(userCtx || lastUserText);
+    const cattlePurchaseHint = buildCattlePurchasePrompt(userCtx || lastUserText);
     const ragChunks = mode === "call" ? 2 : isRationAdvisory ? 7 : 4;
     const lastUserLang = lastUserText.trim() ? detectLangForRefusal(lastUserText) : null;
     const detectedUserLang = userCtx.trim() ? detectLangForRefusal(userCtx) : null;
@@ -35863,6 +35929,7 @@ ${ragContext2}` },
       ...rationHint ? [{ role: "system", content: rationHint }] : [],
       ...youtubeHint2 ? [{ role: "system", content: youtubeHint2 }] : [],
       ...cooperativeHint ? [{ role: "system", content: cooperativeHint }] : [],
+      ...cattlePurchaseHint ? [{ role: "system", content: cattlePurchaseHint }] : [],
       ...vetConsultQuery ? [{ role: "system", content: vetContactDirect ? `VET / DOCTOR CONTACT REQUEST DETECTED:
 Give a SHORT reply in the farmer's language (1\u20132 lines) saying nearby vets/paravets are listed below with WhatsApp call and video options.
 End your reply with exactly ${VET_CONSULT_MARKER} on its own line (required \u2014 app shows 4\u20135 nearest doctors automatically).` : `ANIMAL HEALTH / DISEASE QUERY DETECTED:

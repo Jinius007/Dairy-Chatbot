@@ -17,6 +17,7 @@ When farmer asks where to sell milk, how to market milk, milk price, pouring mil
 - Access to cattle feed, mineral mixture, AI, veterinary care, insurance
 - Clean milk testing, chilling, and quality assurance
 - Part of India's successful Anand-pattern cooperative model (NDDB)
+- **Cooperatives do NOT sell live cows/buffaloes** — only procure milk and supply inputs (feed, AI services). Never tell farmers to buy animals from Amul, Mother Dairy, or milk unions.
 
 ### What to tell the farmer
 1. Pour milk at your **village cooperative collection point** (DCS) — same time daily

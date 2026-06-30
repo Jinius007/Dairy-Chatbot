@@ -5,6 +5,7 @@ import { NDLM_DIGITAL_PLATFORMS } from "./ndlm-digital-platforms.ts";
 import { BALANCED_RATION_GUIDE } from "./balanced-ration-guide.ts";
 import { RATION_KNOWLEDGE } from "./ration-knowledge.ts";
 import { COOPERATIVE_MILK_POLICY } from "./cooperative-policy.ts";
+import { CATTLE_PURCHASE_POLICY } from "./cattle-purchase-policy.ts";
 import { DAHD_SCHEMES } from "./dahd-schemes.ts";
 import { ICAR_LIVESTOCK_HEALTH } from "./icar-livestock-health.ts";
 import { EXTENSION_MATERIAL } from "./extension-material.generated.ts";
@@ -125,6 +126,8 @@ ${RATION_KNOWLEDGE}
 ${BALANCED_RATION_GUIDE}
 
 ${COOPERATIVE_MILK_POLICY}
+
+${CATTLE_PURCHASE_POLICY}
 
 ${ICAR_LIVESTOCK_HEALTH}
 

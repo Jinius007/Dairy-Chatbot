@@ -83,8 +83,11 @@ export function retrieveKeywordRagContext(query: string, topK = 7): string {
   if (/ration|feed|fodder|concentrate|poshan|chara|aahar|tdn|lcf|berseem|bajra|silage/i.test(query)) {
     selected = mergeUnique(selected, pickByTitle(chunks, /NUTRITION|RATION|FODDER|BALANCED/i, 3));
   }
-  if (/milk|sell|pour|cooperative|dcs|union|marketing|dudh|doodh|dugh|buyer|dealer|hotel|middleman|dalal|bech|bechna|दूध|बेच|डाल|होटल|दलाल|sahakari/i.test(query)) {
+  if (/milk|sell|pour|cooperative|dcs|union|marketing|dudh|doodh|dugh|milk\s*buyer|dealer|hotel|middleman|dalal|bech|bechna|दूध|बेच|डाल|होटल|दलाल|sahakari/i.test(query) && !/buy.*(cow|cattle|gaay|bhains|goru|pashu|buffalo)|where.*buy.*(cow|cattle|animal)/i.test(query)) {
     selected = mergeUnique(selected, pickByTitle(chunks, /COOPERATIVE|MILK MARKETING|ECONOMICS/i, 2));
+  }
+  if (/buy|purchase|kharid|where.*(buy|get).*cow|cow.*market|gaay.*kharid|goru.*kothay|sell.*animal|buy.*cattle|buy.*buffalo/i.test(query)) {
+    selected = mergeUnique(selected, pickByTitle(chunks, /BUYING|SELLING LIVE CATTLE|CATTLE PURCHASE|1962|GOKUL|NLM/i, 3));
   }
   if (/scheme|subsidy|loan|kcc|ahidf|rgm|npdd|nlm|government|yojana|dahd|gokul|livestock mission/i.test(query)) {
     selected = mergeUnique(selected, pickByTitle(chunks, /GOVERNMENT|SCHEME|DAHD|AHIDF|GOKUL|NPDD|NLM/i, 3));
