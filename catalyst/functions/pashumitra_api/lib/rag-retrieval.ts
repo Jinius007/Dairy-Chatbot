@@ -98,6 +98,12 @@ export function retrieveKeywordRagContext(query: string, topK = 7): string {
   if (/mastitis|fever|disease|vaccin|evm|ethno|breed|heat|calv|pregnan|fmd|hs |black quarter|blackleg|anthrax|lumpy|brucellosis|bloat|tympany|milk fever|hypocal|diarr|scour|lameness|foot and mouth|galghotu/i.test(query)) {
     selected = mergeUnique(selected, pickByTitle(chunks, /HEALTH|EVM|BREEDING|BOVINE|ICAR|DAHD|SVTG|Central Health|CaDDES|Mastitis|FMD|HS |Vaccin/i, 4));
   }
+  if (/consultancy|farm management|sustainable dairy|body condition|reproductive efficiency|colostrum quality|production trait|key indicator|insemination timing|heat sign/i.test(query)) {
+    selected = mergeUnique(selected, pickByTitle(chunks, /CONSULTANCY|Farm Consultancy|Consultancy Manual|krepo-/i, 3));
+  }
+  if (/1962|bharat pashudhan|ndlm|e-gopala|egopala|pashu poshan|pashu aadhaar|inaph|farmer app|mobile veterinary|mvu|helpline/i.test(query)) {
+    selected = mergeUnique(selected, pickByTitle(chunks, /NDLM|1962|Bharat Pashudhan|DIGITAL PLATFORMS|krepo-bharat/i, 3));
+  }
 
   if (selected.length === 0) {
     selected = chunks.slice(0, Math.min(5, chunks.length));

@@ -8,6 +8,7 @@ import { fileURLToPath } from "node:url";
 import { PDFParse } from "pdf-parse";
 import XLSX from "xlsx";
 import * as cheerio from "cheerio";
+import mammoth from "mammoth";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export const ROOT = path.join(__dirname, "..", "..");
@@ -19,11 +20,31 @@ const DOWNLOADS_MATERIAL = path.join(
   "Material for AI Chatbot",
 );
 
+/** Sibling folder: ../Knowledge Repository (NDDB consultancy manuals, etc.) */
+export const KNOWLEDGE_REPOSITORY_DIR =
+  process.env.KNOWLEDGE_REPOSITORY_DIR ||
+  path.join(ROOT, "..", "Knowledge Repository");
+
+const KREPO_MATERIAL = path.join(KNOWLEDGE_REPOSITORY_DIR, "Material for AI Chatbot");
+
 export const MATERIAL_DIR =
   process.env.KNOWLEDGE_MATERIAL_DIR ||
-  (fs.existsSync(PROJECT_MATERIAL) ? PROJECT_MATERIAL : DOWNLOADS_MATERIAL);
+  (fs.existsSync(KREPO_MATERIAL)
+    ? KREPO_MATERIAL
+    : fs.existsSync(PROJECT_MATERIAL)
+      ? PROJECT_MATERIAL
+      : DOWNLOADS_MATERIAL);
 
 const MAX_CHARS_PER_DOC = 14_000;
+const KREPO_EXTS = new Set([".pdf", ".docx", ".xlsx", ".md", ".txt"]);
+
+const NDLM_LEGACY_NOTE = `[UPDATE 2025 — NDLM / Bharat Pashudhan: The farmer app formerly known as e-Gopala is now **1962** (Google Play). Do NOT recommend Pashu Poshan or e-Gopala as current apps. Official ecosystem: **Bharat Pashudhan** — https://bharatpashudhan.ndlm.co.in/ — toll-free helpline **1962** for Mobile Veterinary Units.]`;
+
+/** When legacy app names appear in source PDFs/DOCX, prepend the current NDLM guidance. */
+export function applyNdmlAppCorrections(text) {
+  if (!text || !/e[\s-]?gopala|egopala|pashu\s*poshan/i.test(text)) return text;
+  return `${NDLM_LEGACY_NOTE}\n\n${text}`;
+}
 
 export const DKP_SECTIONS = [
   { title: "Booklets and Pamphlets", url: "https://www.dairyknowledge.in/dkp/section/booklets-pamphlets" },
@@ -140,6 +161,7 @@ function inferTopics(name) {
   if (/mastitis/.test(n)) topics.push("mastitis control", "udder health");
   if (/lumpy/.test(n)) topics.push("lumpy skin disease", "LSD");
   if (/bovine|husbandry|pashupalan|handbook/.test(n)) topics.push("dairy husbandry", "cow comfort");
+  if (/consultancy|consultancy manual|farm management|sustainable dairy/.test(n)) topics.push("dairy farm consultancy", "farm management", "production traits", "reproductive efficiency");
   if (/scheme|dahd|subsidy|mission/.test(n)) topics.push("government scheme", "subsidy");
   if (!topics.length) topics.push("dairy extension", "livestock advisory");
   return topics;
@@ -174,6 +196,7 @@ function categorize(relPath) {
   if (/evm|ethno|medicinal/.test(p)) return "EVM";
   if (/ration|feed|fodder|silage|mineral|compound|calf|nutrition/.test(p)) return "Nutrition";
   if (/mastitis|lumpy|disease|health|vaccin/.test(p)) return "Health";
+  if (/consultancy|farm management/.test(p)) return "Farm Consultancy";
   return "Extension";
 }
 
@@ -199,10 +222,62 @@ function walkPdfs(dir, base = dir) {
         abs: full,
         rel: path.relative(base, full).replace(/\\/g, "/"),
         name: entry.name.replace(/\.pdf$/i, ""),
+        ext: ".pdf",
       });
     }
   }
   return out.sort((a, b) => a.rel.localeCompare(b.rel));
+}
+
+function walkKnowledgeFiles(dir, base = dir) {
+  if (!fs.existsSync(dir)) return [];
+  const out = [];
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      out.push(...walkKnowledgeFiles(full, base));
+      continue;
+    }
+    const ext = path.extname(entry.name).toLowerCase();
+    if (!KREPO_EXTS.has(ext)) continue;
+    if (/list of extension material/i.test(entry.name) && ext === ".xlsx") continue;
+    out.push({
+      abs: full,
+      rel: path.relative(base, full).replace(/\\/g, "/"),
+      name: entry.name.replace(/\.[^.]+$/i, ""),
+      ext,
+    });
+  }
+  return out.sort((a, b) => a.rel.localeCompare(b.rel));
+}
+
+async function extractDocx(filePath) {
+  const result = await mammoth.extractRawText({ path: filePath });
+  return cleanText(result.value || "");
+}
+
+function extractXlsx(filePath, maxRows = 400) {
+  const wb = XLSX.readFile(filePath);
+  const parts = [];
+  for (const sheetName of wb.SheetNames) {
+    const json = XLSX.utils.sheet_to_json(wb.Sheets[sheetName], { defval: "" });
+    parts.push(`===== Sheet: ${sheetName} =====`);
+    let rowCount = 0;
+    for (const row of json) {
+      if (rowCount >= maxRows) {
+        parts.push("[…rows truncated…]");
+        break;
+      }
+      const vals = Object.values(row)
+        .map((v) => String(v).trim())
+        .filter(Boolean);
+      if (vals.length) {
+        parts.push(vals.join(" | "));
+        rowCount++;
+      }
+    }
+  }
+  return cleanText(parts.join("\n"));
 }
 
 function parseXlsxLinks(rows) {
@@ -505,6 +580,85 @@ async function collectMaterialPdfs(dkpLinks) {
   return docs;
 }
 
+export async function collectKnowledgeRepositoryFiles(dkpLinks) {
+  const docs = [];
+  if (!fs.existsSync(KNOWLEDGE_REPOSITORY_DIR)) {
+    console.warn("Knowledge Repository not found:", KNOWLEDGE_REPOSITORY_DIR);
+    return docs;
+  }
+  const files = walkKnowledgeFiles(KNOWLEDGE_REPOSITORY_DIR, KNOWLEDGE_REPOSITORY_DIR);
+  console.log(`Knowledge Repository files: ${files.length} from ${KNOWLEDGE_REPOSITORY_DIR}`);
+  for (const fileInfo of files) {
+    try {
+      let text = "";
+      const { ext, abs, rel, name } = fileInfo;
+
+      if (ext === ".pdf") text = await extractPdf(abs);
+      else if (ext === ".docx") text = await extractDocx(abs);
+      else if (ext === ".xlsx") {
+        const isFeedLib = /feed library/i.test(name);
+        text = extractXlsx(abs, isFeedLib ? 900 : 250);
+      } else if (ext === ".md" || ext === ".txt") {
+        text = cleanText(fs.readFileSync(abs, "utf8"));
+      }
+
+      text = applyNdmlAppCorrections(text);
+      const quality = ext === ".pdf" ? textQuality(text) : 0.92;
+      const isConsultancy = /consultancy|farm consultancy|consultancy manual/i.test(name);
+      const isBharatMoM = /bharat pashudhan|ndlm|1962|conversational ai/i.test(name);
+      const isFeedLib = /feed library|inaph|ration|rbp|constraints/i.test(name);
+      const isSchemes = /scheme|farmer.*2025|dahd|government/i.test(name);
+
+      let maxChars = MAX_CHARS_PER_DOC;
+      if (isConsultancy) maxChars = 48_000;
+      else if (isFeedLib) maxChars = 35_000;
+      else if (isBharatMoM || isSchemes) maxChars = 25_000;
+
+      if (ext === ".pdf") {
+        const dkpUrl = matchDkpUrl(name, dkpLinks);
+        const isEnglishDoc = /\beng\b|\(eng\)/i.test(name);
+        const isIndicDoc =
+          /hindi|gujarati|\bguj\b|_hi\b|\(hindi\)/i.test(name) && !isEnglishDoc;
+        if ((isIndicDoc || quality < 0.55) && dkpLinks.length) {
+          text = catalogEntry(fileInfo, dkpUrl);
+        }
+      }
+
+      if (quality < 0.55 && ext !== ".pdf") {
+        text = [
+          `Official knowledge repository document: ${name}.`,
+          `Local file: Knowledge Repository/${rel}`,
+          truncate(text, maxChars),
+        ].join("\n\n");
+      } else {
+        text = truncate(text, maxChars);
+      }
+
+      if (text.length < 80) continue;
+
+      let category = categorize(rel);
+      if (isConsultancy) category = "Farm Consultancy";
+      else if (isBharatMoM) category = "NDLM / Digital Platforms";
+      else if (isFeedLib) category = "Nutrition";
+      else if (isSchemes) category = "Government Scheme";
+
+      docs.push(
+        toDoc({
+          id: `krepo-${slugify(name)}`,
+          title: name,
+          category,
+          source: `Knowledge Repository/${rel}`,
+          text,
+        }),
+      );
+      console.log(`  KRepo ${ext} (${(quality * 100).toFixed(0)}%): ${rel} (${text.length} chars)`);
+    } catch (e) {
+      console.warn(`  KRepo fail ${fileInfo.rel}:`, e.message);
+    }
+  }
+  return docs;
+}
+
 async function fetchDkpIndex() {
   const docs = [];
   for (const sec of DKP_SECTIONS) {
@@ -552,6 +706,8 @@ function loadBundledKnowledgeDocs() {
     "ration-knowledge.ts",
     "balanced-ration-guide.ts",
     "icar-livestock-health.ts",
+    "ndlm-digital-platforms.ts",
+    "cattle-purchase-policy.ts",
   ];
   const docs = [];
   for (const file of files) {
@@ -579,12 +735,17 @@ function loadBundledKnowledgeDocs() {
  */
 export async function collectRagDocuments() {
   const docs = [];
+  const useKRepo = fs.existsSync(KNOWLEDGE_REPOSITORY_DIR);
 
   const xlsxPath = path.join(MATERIAL_DIR, "List of Extension Material & Youtube.xlsx");
   const xlsxRows = readXlsxManifest(xlsxPath);
   const { dkp: dkpLinks, youtube: youtubeLinks } = parseXlsxLinks(xlsxRows);
 
-  docs.push(...(await collectMaterialPdfs(dkpLinks)));
+  if (useKRepo) {
+    docs.push(...(await collectKnowledgeRepositoryFiles(dkpLinks)));
+  } else {
+    docs.push(...(await collectMaterialPdfs(dkpLinks)));
+  }
 
   if (youtubeLinks.length) {
     docs.push(

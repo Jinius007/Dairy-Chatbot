@@ -27823,8 +27823,11913 @@ Official NDDB Dairy Knowledge Portal resources (https://www.dairyknowledge.in/dk
 var SARVAM_RAG_CORPUS = `
 # SARVAM RAG \u2014 ICAR, NDDB WEB & VISION-DIGITIZED MATERIAL
 
+## Bharat Pashudhan Conversational AI- MoM-2306 -_
+Source: Knowledge Repository/Bharat Pashudhan Conversational AI- MoM-2306 -_.docx | Category: NDLM / Digital Platforms
+
+Date & Time
+
+:
+
+23 June 2026
+
+Venue
+
+:
+
+NDDB, Anand
+
+Subject
+
+:
+
+Review Meeting on AI-based Chatbot for Dairy Farmers \u2013 Content Enhancement and Knowledge Repository
+
+Attendees
+
+:
+
+Dr. V. Sridhar; Shri S. Chandrasekhar; Dr. R. O. Gupta; Shri Jignesh G. Shah; Dr. A. V. Harikumar; Dr. Nilesh Nayee; Dr. Sujit Saha; Dr. Rajesh Sharma; Ms. Anindita Baidya; Shri B. V. Maheshkumar; Ms. Sinjini Guha, Ms. Haripriya Koujalgi
+
+Minutes of Meeting
+
+A meeting was held on 23 June 2026 at NDDB, Anand to review the progress of the AI-based chatbot for dairy farmers and discuss enhancements to its content, conversational design, and knowledge repository. The following points were discussed:
+
+Conversational Design \u2013 It was noted that the chatbot responses are currently lengthy. It was decided that the chatbot should adopt a short, back-and-forth conversational style rather than long-form replies, making interactions more natural and user-friendly.
+
+Response Summarisation \u2013 The chatbot should present summarised, crisp responses rather than elaborate explanations, ensuring that farmers receive key information quickly and clearly.
+
+Knowledge Repository \u2013 The chatbot\u2019s knowledge base should be enriched by linking it to key dairy knowledge resources, including the Dairy Knowledge Portal, Pashu Paalan Nirdeshika, the DAHD website, and the NDDB website. As an illustrative example, the chatbot should be able to direct farmers to training resources available in states such as Punjab. The repository must cover practical advisory content for farmers.
+
+Frequently Asked Questions (FAQs) \u2013 A comprehensive FAQ bank should be compiled from all past training sessions. This FAQ repository should be used to ensure that the chatbot is capable of addressing the most commonly raised queries by farmers.
+
+Statistical Queries \u2013 For questions involving numbers and data, the chatbot should draw from the statistical section of the NDDB website to provide accurate and up-to-date figures.
+
+Dairy Farm Sustainability Handbook \u2013 Content from the Dairy Farm Sustainability Handbook, covering topics such as improving farm profitability and sustainable farm management practices, should be integrated into the chatbot\u2019s knowledge base.
+
+A chatbot for EVM is being built for 2 languages \u2013 the features and working of that app should be understood for further development of Bharat Pashudhan Conversational AI.
+
+Amul AI Content Data \u2013 The data and content inputs shared by PR for the Amul AI initiative should be incorporated into the chatbot\u2019s training corpus to enhance its advisory capabilities.
+
+Technical Manuals \u2013 Technical manuals from all relevant groups within NDDB should be collated and made available as source content for the chatbot, ensuring that advisory responses are grounded in authoritative technical guidance.
+
+Dairy Knowledge Portal \u2013 The Dairy Knowledge Portal should be integrated as a key reference source within the chatbot, enabling farmers to access structured and validated dairy knowledge through the platform.
+
+Action to be taken:
+
+S. No.
+
+Action Point
+
+Responsibility
+
+Timeline
+
+1
+
+Redesign chatbot interaction flow to adopt a short, conversational message format with summarised responses.
+
+IPMC
+
+7th July
+
+2
+
+Embed cooperative channelling advisory in all relevant chatbot responses, advising farmers to pour milk at the cooperative rather than sell privately.
+
+IPMC
+
+7th July
+
+3
+
+Link the chatbot\u2019s knowledge repository to the Dairy Knowledge Portal, Pashu Paalan Nirdeshika, DAHD website, NDDB website, and NDDB statistical data.
+
+IPMC, PR
+
+7th July
+
+4
+
+Compile a consolidated FAQ bank from all training sessions conducted to date and incorporate it into the chatbot\u2019s response framework.
+
+CT
+
+7th July
+
+5
+
+Integrate all updated domain knowledge of various departments, eg the Dairy Farm Sustainability Handbook content, data shared for Amul AI, and other technical manuals relevant for farmer\u2019s use from all technical departments.
+
+AH, AN, AB, PIM, PR
+
+1st July
+
+6
+
+Learn from features and working of EVM chatbot developed through Animeta AI in 2 languages
+
+AH, IPMC and CT
+
+1st July
+
+## PashuMitra curated \u2014 ndlm-digital-platforms
+Source: catalyst/lib/knowledge/ndlm-digital-platforms.ts | Category: Curated Knowledge
+
+## OFFICIAL DAHD / NDDB DIGITAL PLATFORMS (NDLM \u2014 LATEST ONLY, 2024\u20132025)
+
+**CRITICAL FOR AI REPLIES:** Do NOT recommend **Pashu Poshan** or **e-Gopala** as current farmer apps \u2014 they were superseded. The current official farmer app is **1962** (formerly e-Gopala, renamed under Bharat Pashudhan in 2025).
+
+### National Digital Livestock Mission (NDLM)
+
+- Joint initiative: **Department of Animal Husbandry & Dairying (DAHD)** + **National Dairy Development Board (NDDB)**.
+
+- National digital livestock ecosystem brand: **Bharat Pashudhan**.
+
+- Dedicated to the nation by Hon'ble PM (March 2024); rolled out pan-India from 2023.
+
+- Official portal / dashboard: **https://bharatpashudhan.ndlm.co.in/**
+
+- Support email: dahdndlm@gmail.com
+
+### Pashu Aadhaar (animal digital ID)
+
+- **12-digit bar-coded ear tag** for each cattle/buffalo \u2014 primary key in Bharat Pashudhan.
+
+- All field transactions (vaccination, AI, treatment, breeding, milk recording, ownership change) are logged against this tag ID.
+
+- Farmer and field workers can view the full history chain for each animal.
+
+### 1962 Farmer App (main app for farmers \u2014 USE THIS)
+
+- **Google Play:** search **"1962"** by Department of Animal Husbandry & Dairying (package: com.farmerpashudhan.production).
+
+- **Renamed from e-Gopala** to **1962** under Bharat Pashudhan (2025 update).
+
+- One-stop app for livestock farmers:
+
+ - View own animals and complete health/breeding/treatment history (mirrored from field worker entries)
+
+ - **Pashupedia** \u2014 breed & species guidebook
+
+ - Government schemes and facilities for farmers
+
+ - Buy/sell animals; access to quality breeding services (AI, semen, embryo transfer info)
+
+ - Ethnoveterinary / Ayurvedic medicine guidance (videos & printable documents)
+
+ - Unique QR code for farmer and each tagged animal
+
+ - Alerts for vaccination, pregnancy diagnosis, calving due dates
+
+- **Toll-free helpline 1962:** doorstep veterinary services via **Mobile Veterinary Units (MVUs)**.
+
+### Bharat Pashudhan Worker App (for vets / paravets / field staff \u2014 NOT for farmers)
+
+- **Google Play:** **BHARAT PASHUDHAN** (package: com.epashu.in).
+
+- Used by veterinarians, paravets, AI technicians, and extension workers to register owners, tag animals, and upload field transactions in real time.
+
+### Ration balancing & professional nutrition (separate from 1962)
+
+- **NDDB Ration Balancing Programme (RBP):** delivered by trained **Local Resource Persons (LRPs)** at village/cooperative level.
+
+- **INAPH** (Information Network for Animal Productivity & Health): professional platform for LRPs/vets \u2014 https://www.nddb.coop/resources/inaph
+
+- For exact least-cost ration optimization beyond PashuMitra's estimate: contact **nearest NDDB LRP** or **dairy cooperative extension officer** \u2014 NOT the old Pashu Poshan app.
+
+### Other NDDB digital systems (reference only \u2014 mostly for cooperatives/professionals)
+
+- **i-DIS** \u2014 Internet-based Dairy Information System for cooperatives/unions
+
+- **NDERP / iNDERP** \u2014 dairy ERP for unions and federations
+
+- **AMCS** \u2014 Automatic Milk Collection System at cooperative level
+
+- **NDDB Dairy Knowledge Portal:** https://www.dairyknowledge.in/
+
+### When farmer asks "which app should I download?"
+
+Always recommend: **1962 app** (Google Play) + **1962 helpline** for MVU vet visit + **Bharat Pashudhan portal** for scheme info.
+
+Never recommend: Pashu Poshan, e-Gopala (old names only \u2014 say "now called 1962 app").
+
+## Dairy Farm Consultancy Manual
+Source: Knowledge Repository/Dairy Farm Consultancy Manual.pdf | Category: Farm Consultancy
+
+-- 1 of 48 --
+
+Contents
+
+Executive Summary 4
+Introduction 6
+Key Indicators for a sustainable dairy farm 7
+Production traits 8
+Reproduction traits 9
+Indicators for optimum reproductive efficiency 10
+Signs of Heat and proper time of insemination 11
+Health management 12
+Care of new born calf 12
+Monitoring colostrum quality 16
+Incidence and management of Mastitis 17
+Management of mastitis in a dairy farm 17
+Treatment of mastitis 18
+Incidence of metabolic diseases 20
+Body condition score 22
+Removal of animal from the herd 22
+Annexures 24
+Common viral diseases of bovine 25
+Common bacterial diseases of bovine 26
+Common protozoal diseases of bovine 27
+Vaccination schedule for cattle and buffalo 28
+Advantages of vaccination in dairy animals 29
+Reasons for vaccine failure 29
+Principle of deworming 30
+Commonly used drugs for deworming of dairy animals 31
+Deworming schedule 32
+Advantages of deworming in dairy animals 32
+Reasons for failure of deworming 33
+Common causes of abortion in dairy animals 34
+Common infectious causes of bovine abortion 35
+Causes of drop-in milk production in dairy animals along with possible remedies 37
+Causes of a drop-in milk fat in dairy animals along with possible remedies 38
+Causes of a drop-in milk SNF in dairy animals along with possible remedies 38
+Hoof management 40
+Adaptability and disease resistance in indigenous cattle and buffalo 44
+Adaptation to challenging environments 44
+Natural disease resistance 45
+Disease resistance in indigenous cows (Bos indicus) 45
+Disease resistance in indigenous buffaloes (Bubalus bubalis) 46
+Mechanisms of resistance 48
+Estimating per litre milk cost: a practical approach 51
+Additional metrics for farm advisory 52
+Recommendations for reducing milk cost per litre 53
+Record keeping in a dairy farm 54
+
+-- 2 of 48 --
+
+Executive Summary
+This manual serves as a comprehensive guide for veterinarians, dairy farmers, farm advisors, and
+policymakers, focused on achieving sustainability, productivity, and animal welfare in dairy farming. It
+is presented as a practical and scientific resource designed to provide evidence-based strategies and
+actionable knowledge for effective farm management. The ultimate goal is to equip users to develop
+dairy operations that are productive, resilient, and economically viable.
+The manual begins by outlining the key indicators for sustainable dairy farming, specifically highlighting
+the importance of monitoring production and reproductive traits. These indicators are crucial for
+driving efficiency, profitability, and evaluating herd performance to identify areas for improvement.
+Emphasis is placed on optimizing reproductive performance, including practical guidance on detecting
+heat signs and ensuring the correct timing of artificial insemination to enhance conception rates and
+contribute to herd renewal.
+Animal health is a central and extensively covered theme. The guide provides essential practices
+starting with the care of new-born calves, stressing the critical role of monitoring colostrum quality
+for immunity and growth. It addresses the prevention, monitoring, and treatment of common health
+challenges such as mastitis, which is identified as a major cause of economic loss, and metabolic diseases,
+offering strategies to minimize losses and enhance animal welfare. Guidelines are also provided for
+body condition scoring and criteria for culling or removing unproductive animals to maintain a healthy
+and productive herd.
+Infectious disease control is detailed through annexures covering viral, bacterial, and protozoal
+diseases. Practical vaccination and deworming schedules are included, along with discussions on
+reasons for potential failures and the overall benefits of these preventive measures. Special attention
+is also given to reproductive health issues, such as the causes of abortion, and drops in milk yield and
+milk composition, providing diagnostics and remedial strategies to ensure consistent product quality.
+Other operational aspects like hoof care are also addressed.
+The manual highlights the value of leveraging the natural disease resistance and adaptive traits
+of indigenous breeds like Bos indicus and Bubalus bubalis due to their resilience in challenging
+environments, advocating for their inclusion in breeding programs.
+An economic dimension is integrated by providing a step-by-step method to estimate the per litre
+milk production cost and recommending strategies for cost reduction. The importance of thorough
+record keeping is strongly emphasized to enable data-driven and informed decisions for long-term
+farm viability.
+By integrating production optimization, reproductive management, health protocols, disease
+prevention, environmental adaptability, and economic analysis, the manual offers a holistic approach
+to dairy farm management. It aims to balance these critical elements to help farmers achieve operations
+that are productive, resilient, and economically viable.
+
+-- 3 of 48 --
+
+Introduction
+Dairy farming plays a pivotal role in rural livelihoods, food security, and the agricultural economy. As
+consumer demand for milk and dairy products continues to grow, there is an increasing need to adopt
+sustainable and scientifically-informed practices that ensure animal health, farm profitability, and
+environmental responsibility. This manual has been developed as a comprehensive, user-friendly guide
+for farmers, veterinarians, extension personnel, and other stakeholders involved in the dairy sector.
+By focusing on key indicators of herd performance, reproductive efficiency, health management,
+and cost control, the manual offers a holistic framework to enhance productivity and profitability. It
+addresses critical aspects such as heat detection, new-born calf care, disease prevention, and treatment
+protocols, while also emphasizing the importance of indigenous breeds\u2019 adaptability and natural
+disease resistance. Additionally, it provides actionable insights into managing milk quality, controlling
+production costs, and maintaining accurate records for informed decision-making.
+The goal of this manual is to empower dairy farmers with scientifically grounded, practical knowledge
+that supports sustainable, resilient, and economically viable dairy operations. Through the adoption of
+these best practices, farmers can improve animal welfare, optimize resource use, and contribute to the
+broader objectives of food security and rural development.
+By integrating scientific principles with practical approaches, this manual aims to serve as a reference
+and decision-support tool for improving dairy farm outcomes. Whether starting a new dairy unit
+or improving an existing one, users will find actionable insights throughout this manual to support
+profitable, resilient, and responsible dairy farming.
+
+-- 4 of 48 --
+
+Key Indicators for a
+sustainable dairy farm
+Production traits
+\u2022 Birth weight
+\u2022 Average daily body weight gain (ADG)
+\u2022 Heifer hood Body weight
+\u2022 Pregnancy weight gain
+\u2022 Lactation yield
+\u2022 Lactation length
+\u2022 Fat %
+\u2022 Dry period (DP)
+\u2022 Wet Average
+\u2022 Herd Average
+Health management
+\u2022 Calf mortality
+\u2022 Incidence of mastitis
+\u2022 Incidence of metabolic diseases
+\u2022 Body condition score (BCS)
+\u2022 Removal of diseased animal
+from the herd
+Reproduction traits
+\u2022 Age at puberty
+\u2022 Age at first calving (AFC)
+\u2022 Calving interval (CI)
+\u2022 Service period (SP)
+\u2022 Conception rate (CR)
+\u2022 Abnormality in Pregnancy
+\u2022 Artificial insemination (AI) with
+high genetic merit bull (HGM)
+semen/sexed semen
+
+-- 5 of 48 --
+
+Production traits
+i. Birth Weight: It is the weight of a calf at birth. Roughly it is around 1/15th- 1/20th of pregnancy
+weight of cow (Say 30 Kg)
+ii. Average daily gain (ADG): It is the average amount of weight an animal gains each day during a
+feeding period. Around (1/100th of birth weight). When birth weight is 30 Kg, ADG will be around
+300gm per day.
+iii. Heifer hood Body weight: It is around 66% of adult body weight, when the adult body weight is
+300 Kg heifer-hood body weight would be around 200kg
+iv. Pregnancy weight gain: For mature cows, weight gain during pregnancy is usually 3.8\u20138.0% of
+their initial weight. Out of that around 28\u2013 50% of weight gain occurs during the first gestation
+period. Cows typically gain most of their weight during the last 30\u201345 days of pregnancy. During
+pregnancy, a cow\u2019s weight gain decreases with each gestation period.
+v. Lactation yield: It is the amount of milk produced by a cow during a lactation period.
+a. Zebu cattle: 1000-1200Kg
+b. HF:8000-10000 Kg
+c. Jersey: 5000-6000Kg
+vi. Lactation period: The lactation period is the time after calving when a cow produces milk, and
+the optimal period is 305 days.
+vii. Fat %: Varies as per breed, feed, management etc.
+a. Zebu cattle: 4.5-5.5%
+b. HF: 3-4%
+c. Jersey: 3.5-4.5%
+viii. DP (Dry period): is the time between when milk production stops and subsequent calving.
+Ideally it should be around 60 days.
+ix. Ratio of milch to dry animal: Ideally it should be 70:30
+x. Wet Average= Per day per milch animal yield= Total milk yield per day/Total no. of milch animals
+xi. Herd Average= Per day per animal yield= Total milk yield per day/Total no. of animals in the farm
+
+-- 6 of 48 --
+
+Reproduction traits
+i. Age at Puberty: the age when first ovulation occurs and the animal experience oestrus, or
+heat period.
+a. Zebu cattle: 25 months
+b. HF: 15-18 months
+c. Jersey: 15-18 months
+ii. Age at first calving (AFC): It is the time it takes for a female calf to reach puberty and
+reproduce for the first time. Varies with respect to breed of animal.
+a. Zebu cattle: 36-42 months
+b. HF: 25-27 months
+c. Jersey: 27-30 months
+iii. CI (Calving interval): Time period between two successful calving = 14 months in cattle
+(roughly estimated as one calf per year), in buffalo 18 months
+iv. SP (service period): The service period in cattle is the time between the date of calving and
+the date of successful conception. The optimum service period for cattle is 60\u201390 days.
+v. CR (Conception rate): 40% (should conceive within third successive artificial insemination)
+vi. Abnormality in Pregnancy: Dystocia, abortion and still birth are considered as abnormality
+in pregnancy.
+vii. AI with HGM semen: Will ensure higher milk production in progeny
+
+-- 7 of 48 --
+
+Indicators for optimum
+reproductive efficiency
+i. Proportion of milch cow and dry cow in a herd should be > 70:30
+ii. 80% of the total cattle which calved should have come into oestrus within two months of calving
+iii. Cases of repeat breeding, anoestrus and silent heat should not exceed 10%
+iv. 80% of the heifers should be in regular heat
+v. Still birth, abortion etc should not exceed 3%
+vi. Service (AI) to conception ratio
+a. 1:1 (Very ideal)
+b. 1.3: 1.6 (Good)
+c. 2:1 (Poor)
+vii. Difference between wet average and herd average is an indicator of both herd reproductive and
+production performance. The minimum the value, the better the farm is managed.
+viii. Conception rate (CR): It is the percentage of cows that become pregnant divided by the total
+number of cows inseminated during a 21-day period. It\u2019s an important measure of fertility because
+it indicates how many services are needed for a cow to become pregnant. Conception of 80% of
+cows after 2 months of parturition or, all the cows within 85 days of parturition is considered
+good. If the range is between 86-116 days, it decreases the production of the farm.
+ix. Calving interval: It is the number of days between successive calving. Usually 365 days is ideal.
+Calving interval > 420 days needs serious review.
+x. Non-return rate (NRR): It is the percentage of animals that don\u2019t return to heat after insemination
+within a specific time period. Ideally 70% animals must not come to heat within 60 days after
+insemination.
+
+-- 8 of 48 --
+
+Signs of heat and proper time
+of insemination
+Signs of heat
+\u2022 Repeated bellowing.
+\u2022 Lifting of tail.
+\u2022 Swollen vulvar lips and redness of vaginal passage due to congestion.
+\u2022 Thick, sticky and transparent vaginal discharge. It is the best sign of heat. Artificial insemination
+can be done at this stage.
+\u2022 Frequent urination (Micturition).
+\u2022 Reduced feed intake and decreased milk yield.
+\u2022 Restlessness, smells other animals and mounts on them.
+Proper time of insemination
+\u2022 Artificial Insemination (AI) should be given ideally after 10-12 hours, or maximum of 18 hours of
+first sign of heat, that is, if heat is seen in the evening, inseminate in the following morning. If heat
+persists in the following morning, another AI may be required on the same evening.
+\u2022 If the animal does not become pregnant, it will come into heat after 18-21 days.
+\u2022 After 21 days of insemination the animal should be observed for symptoms of heat, especially
+during early morning and late evening hours.
+\u2022 Special care should be taken in case of buffaloes, as symptoms of heat are not very prominent.
+
+-- 9 of 48 --
+
+Health management
+Care of new born calf
+i. It is better to manage and take care of newly born calf and raise it to become a milch cow rather
+than purchasing a calf from an unknown source.
+ii. Before birth: care of pregnant cows should be proper with respect to feeding, housing and
+management in general. Specific care during last 3 months of pregnancy directly helps for better
+nourishment of calf. Negligence during this period may adversely affect the growth of the calf.
+iii. At the time of birth: Animals with normal calf presentation usually deliver within 30 minutes to
+one hour after the water bag bursts. Both the fore limbs and head of the calf are seen in normal
+delivery. Observe carefully, in case of any difficulty in parturition take the support and advice
+from veterinarian.
+iv. After birth: Check/facilitate for respiration.
+Clean nostrils and mouth which helps the calf breathe better and help prevent future breathing
+problems. Sometimes respiratory passage may be blocked with mucous and interfere with calf\u2019s
+respiration. Hold the calf upside down so that the phlegm may flow off. A handful of straw can be
+used to have a grip while lifting to prevent slipping. The calf can also made to sneeze by inserting a
+blade of hay or grass inside the nostril. In case the calf is not breathing, apply his mouth respiration
+through the calf\u2019s nostril by closing its mouth. Carbon dioxide in the expired air which has been
+blown in the lungs of the calf will act as respiratory stimulant to initiate respiration. This should
+be followed with intermittent pressing and releasing of pressure on the chest wall of the calf to
+give artificial respiration. First seven days of life of calf is highly critical, hence careful monitoring
+is required.
+v. The calf should be massaged vigorously for some time with a handful of straw rolled into a ball.
+vi. The strength of calf for standing must be checked. Usually the calf should stand within 15-20
+minutes after birth.
+vii. Licking of cow: Allow the cow to lick the calf clean which promotes circulation within the calf\u2019s
+body and prepares the calf to stand up and walk. If the cow fails to do it, it can be stimulated to
+lick by sprinkling handful of bran or salt over the body of the calf. When the cows do not lick or in
+cold climate, dry the calf with a dry cloth or gunny bag.
+viii. Cutting of naval cord: The naval cord should be tied about 2.5-3cm away from the body and cut 1.5
+cm below the ligature. Tincture iodine (~7% and above) must be applied with minimum contact
+time of at least 30 seconds. Repeat navel dipping after 12 hours. A poorly maintained navel is the
+gateway to serious infections.
+
+-- 10 of 48 --
+
+ix. Colostrum feeding/suckling: A new born calf should be given 2 litres of colostrum within the first 2
+hours of birth and 1-2 litres (based on size) within 12 hours of birth. Colostrum provides nutrition
+and adequate immunity. Hand-feeding new-born calves ensures the amount of colostrum an
+individual calf receives. Colostrum contains large amount of gamma globulins which are the
+antibodies produced by the cow against antigens (bacteria/virus/protozoa etc) encountered
+during her life. Absorption of antibodies provides the calf with an umbrella of passive immunity.
+Colostrum contains higher amount of Vitamin A and minerals essential to combat disease.
+Colostrum can be fed up to 1/10th of the body weight. When the calf is unable to suckle, hand
+feeding of colostrum using a bottle should be done.
+x. New born calf should void meconium (first stool) within 4-6 hours of first colostrum feeding and
+the first faeces is tarry in colour. If first stool is not expelled with this period feed half tea spoon full
+of castor oil. Other congenital problems like atresia ani or atresia recti (absence of anus or rectum)
+may be checked.
+xi. Deworming: De-worming should be done within 10-14 days of age and subsequently on a
+monthly basis up to the 6th month.
+xii. Weaning of calf: As per the farm\u2019s practice weaning may be carried out. If early weaning is practiced,
+it should be adopted on the first day itself. In early weaning, calf is not allowed to suckle the cow.
+Calf can be provided with milk replacer. The cow is completely milked and required quantity of
+colostrum, whole milk or skimmed milk is fed to the calf. Weaning is problematic where strong
+maternal instinct is seen example: Bos indicus and buffaloes. So careful consideration should be
+made. In case early weaning is not feasible, weaning may be done at 3-4 months.
+xiii. Calf starter: Provide calf starter from 2-8 weeks for better growth and early maturity. Example of
+calf starter is provided below
+Sl No Component Percentage
+1 Maize 52
+2 Oat 20
+3 Soyabean meal 20
+4 Molasses 5
+5 Salt 0.5
+6 Minerals (Macro and Micro) 1.5
+7 Vitamin 1.0
+xiv. Managing calf diarrhoea: Calves are prone to calf diarrhoea due to various reasons such as drinking
+excess milk, infection etc. Because of diarrhoea there is loss of water and electrolytes leading to
+death of calves. In case of calf diarrhoea feed 2-4 litres of electrolyte solution when the calf is able
+to drink. Refer the table below for preparation of electrolyte solution
+
+-- 11 of 48 --
+
+Sl no Component Quantity
+1 Glucose 25 gm (5 tsf )
+2 Sodium bicarbonate 5 gm (1 tsf )
+3 Common salt 5 gm (1 tsf )
+4 Water 1litre
+The electrolyte solution provided should be over and above the normal feeding. Consult a
+veterinarian at the earliest to determine
+the cause of diarrhoea and to provide appropriate treatment.
+xv. Identification: Permanent marking must be planned for easy identification; ear tagging is a
+suitable alternative. Tagging should be completed within 1-2 week of age.
+xvi. Vaccination: No vaccine should be administered before 3 months of since passive immunity from
+colostrum would be present. FMD vaccine is given at the age of 4-6 months and it is to be repeated
+at every six-month interval. Calf hood vaccination against brucella is to be given only to female
+calves at the age of 4-8 months. After six month of age other vaccines can be given following
+vaccination schedule.
+xvii. Castration: Removal of both the testicle or to make it dysfunctional is called castration. Burdizzo
+method is also called as closed method, planned during 2-3 months of age. Surgical method also
+called as open method and castration can be extended up to one year.
+xviii. Removal of extra teat: In female calf extra teat (if any) must be removed surgically within 2-3
+months of age.
+xix. Dehorning: Process of removal of horn of an animal by rooting out the horn or horn bud.
+If dehorning is practiced, it should be done within 10 days of birth by any of the suitable method.
+Chemical: By using caustic soda (NaOH), Caustic potash (KOH) or silver nitrate (AgNO3)
+Mechanical: By applying clipper saw or rubber band
+Electrical: Temperature of 1000oF /540oC for 10 second
+xx. Body weight recording: The birth weight of the calf should be recorded. Ideally the birth weight
+should be 1/15th to 1/20th of adult body weight. Subsequently, the weight of the calf should be
+recorded at interval of 7, 14, 21, 30, 60, 90, 120, 150 and 180 days.
+xxi. Minimising calf mortality: Mortality in calves can be significantly reduced by properly managing
+a. Calf diarrhoea
+b. Calf pneumonia
+c. Joint ill/ Navel ill
+
+-- 12 of 48 --
+
+Monitoring colostrum quality
+Before feeding colostrum, ideally colostrum quality should be measured using a Brix refractometer to
+know the levels of colostral antibodies.
+\u2022 Colostrum with a Brix value \u2265 22% should be used (to ensure that the concentration of IgG is at least
+50 g/L)
+\u2022 Colostrum with a Brix value of < 18% should be discarded
+\u2022 If colostrum has a Brix value of \u2265 18% but < 22%, supplementation should be considered
+\u2022 Supplementation should be done in consultation with consulting veterinarian. Frequently used
+options for supplementing colostrum are:
+a. Colostrum from another dam:
+If available, colostrum from another healthy dam with a Brix value greater than 22% can be used
+to supplement the calf\u2019s feeding. This ensures the calf receives enough antibodies for proper
+immunity development.
+b. Commercial colostrum products:
+Several commercially available colostrum replacers or supplements exist. These products are
+typically derived from bovine colostrum and concentrated to provide a high level of antibodies.
+SL No Body weight of calf Recommended IgG (in gram)
+1 \u226535 kg 300
+2 <35 Kg 225
+SL No Time Equivalent
+IgG (in gram)
+Volume of colostrum required
+(Brix value \u2265 22%)
+1 Within 2 hours of birth 150-200 3-4 litre
+2 6-12 hour after first feeding 75-100 1.5- 2 litre
+
+-- 13 of 48 --
+
+Incidence and management of Mastitis
+\u2022 Pure exotic breeds like HF, Jersey have the highest susceptibility to mastitis followed by crossbreds
+as the milk production is high.
+\u2022 Local breeds are less susceptible as the milk production is less.
+\u2022 Buffaloes are the least susceptible to mastitis.
+Sub clinical mastitis (SCM):
+\u2022 SCM causes about 70% of the loss due to mastitis.
+\u2022 For detection of subclinical mastitis California mastitis test (CMT) should be done periodically (at
+least once per week)
+California mastitis test (CMT):
+\u2022 Milk from each quarter to be taken separately. Equal quantities of milk and CMT reagent to be mixed
+by rotating. The reaction is read at around 20-30 seconds. Sub clinical mastitis milk forms a gel.
+\u2022 SCM positive animals should always be milked at the end.
+\u2022 Newly purchased animals should always be tested for mastitis/sub clinical mastitis before being
+added to the herd.
+Clinical mastitis:
+\u2022 It is the severe inflammation of the udder in which visible changes are observed in udder or milk or
+in both.
+\u2022 It is mostly caused by bacteria.
+\u2022 Other agents can also cause mastitis like fungi, virus or algae.
+\u2022 Before milking, clean the udder well with clean water and wipe dry with clean towel.
+\u2022 Repeated use of unclean towel may itself predispose to mastitis.
+\u2022 Carry out teat dipping or spray immediately after milking.
+\u2022 Prevent the animal from sitting for at least 30-45 minutes after milking.
+\u2022 Mastitis positive animals should always be milked at the end.
+Chronic mastitis:
+\u2022 It is the persistent infection of the udder.
+\u2022 Neglected subclinical mastitis leads to chronic mastitis.
+\u2022 Separate the affected cow from rest of the herd.
+\u2022 Consider removing such animals from the herd.
+
+-- 14 of 48 --
+
+Management of mastitis in a dairy farm
+i. Record the milk from all the lactating animals on daily basis. Grade the animals as per their milk
+yield, low yielder (say 5 litre or less milk per day), medium yielder (5-10 litres of milk per day), high
+yielder (15 litres and above). Animals with higher milk yield to be monitored more rigorously.
+Observe the teat orifice, teat, udder size and milk, any abnormality requires more attention.
+ii. For detection of sub clinical mastitis CMT can be conducted. Initial phase conduct CMT on daily
+basis. Subsequently, this frequency in the farm can be modified based on incidence of mastitis
+such as high incidence (CMT-everyday), Medium incidence (CMT-alternate day), low incidence
+(CMT- weekly)
+iii. Send CMT positive samples/Clinical mastitis milk samples for bacteria culture and antibiotic
+sensitivity test.
+iv. Ideally some of the CMT positive samples should be tested on monthly basis to know the
+prevalent microbes in the farm and drug resistance pattern. This data is very helpful in deciding
+the treatment regimen.
+v. Before milking, clean the udder well with clean water and wipe dry with clean towel. Avoid
+repeated use of unclean towel.
+vi. Once started, complete the milking as soon as possible but not exceeding 8 minutes.
+vii. Allow calves to suckle after milking to remove the residual milk that is retained in the udder.
+viii. Carry out teat dipping or spray immediately after milking. This is the most critical step in mastitis
+prevention.
+ix. Prevent the animal from sitting for at least 30-45 minutes after milking by providing some feed/
+fodder.
+x. Keep the floor clean, dry and without holes.
+xi. Mastitis positive animals should always be milked at the end.
+xii. Cows that suffer from chronic or recurrent form of mastitis may be removed from the herd if they
+don\u2019t respond to treatment.
+
+-- 15 of 48 --
+
+Treatment of mastitis
+i. Send milk sample to laboratory for bacteria culture and antibiotic sensitivity test (ABST) before
+initiation of treatment.
+ii. CMT positive animals can be given 10 grams of trisodium citrate orally for 10 days. At the end
+of 10th day CMT test can be done to check for the status. Any time during testing if the animal
+is again found to be CMT positive then another round of trisodium citrate can be given. Animal
+found CMT positive even after two trisodium citrate oral regimens may be treated in consultation
+with the veterinarian.
+iii. Mastitis can be treated by topical application of ethnoveterinary medicine, homoeopathy,
+parenteral antibiotic, intra-mammary applications. Seek advice from veterinarian for treatment of
+mastitis.
+iv. Dry cow therapy: Dry cow therapy is an essential management practice in dairy farming aimed
+at treating cows during their non-lactating period, known as the dry period. The main goals of
+dry cow therapy are to cure existing infections in the udder and to prevent new infections from
+developing during this dry period. Animals frequently found positive in CMT can be given dry cow
+therapy in consultation with the veterinarian.
+
+-- 16 of 48 --
+
+Incidence of metabolic diseases
+\u2022 Metabolic diseases/conditions are caused by productivity practices that prevent the body from
+meeting its metabolic needs due to low reserves of calcium, magnesium, or energy.
+Sl.
+No
+Striking clinical sign Condition Reason Control and Preventive
+measure
+1 Animal unable to stand up
+within 72 hours of calving,
+recumbent and neck turned
+to one side, sub normal
+body temperature
+Milk fever Low calcium Calcium therapy in
+consultation with
+veterinarian. When there is
+history of milk fever in earlier
+lactations, oral calcium
+supplementation can be
+given just before calving
+and continued further
+in consultation with the
+veterinarian.
+2 Animal throws up head, falls
+down, paddling convulsion
+Hypomagnesemia Low
+magnesium
+Magnesium therapy in
+consultation with the
+veterinarian.
+3 Decrease in feed intake,
+drop in milk production,
+nervous dysfunction, such
+as abnormal gait, bellowing,
+aggression, pica, and
+abnormal licking, low blood
+glucose level, seen usually
+in first 2 months of lactation
+Ketosis Energy deficit Treatment is aimed to restore
+lack of glucose. Proper
+feeding of the animal based
+on the stage of lactation.
+Treatment should be done
+in consultation with the
+veterinarian.
+4 Recent calving,
+haemoglobinuria, (red/
+coffee coloured urine),
+anaemia
+Post parturient
+haemoglobinuria
+Phosphorus
+and copper
+deficiency
+Other causes of
+haemoglobinuria to be
+ruled out. Phosphorous
+supplementation in
+consultation with
+veterinarian.
+5 Fatty animal, lower milk
+yield, incidences of milk
+fever, ketosis, mastitis,
+retained fetal membrane.
+Blood tests show elevated
+levels of nonesterified fatty
+acids (NEFA) and increased
+ketones.
+Fatty liver
+syndrome
+Excessive
+negative
+energy
+balance at
+the start of
+lactation
+Maintain the ideal body
+condition score between
+3-3.5 during calving by
+proper feeding. Consultation
+with the veterinarian.
+6 Accumulation of excess
+fluid in udder and
+sometimes in the belly
+around calving time
+Udder oedema Lymphatic
+fluid builds up
+in the udder,
+causing
+swelling
+Rule out clinical mastitis,
+if the udder is not painful
+or hot. Consult with
+veterinarian if the oedema
+interferes with milking.
+
+-- 17 of 48 --
+
+Body condition score
+\u2022 Body scoring is done to assess health status of an animal.
+\u2022 Usually body scoring ranges from (1-5).
+\u2022 Body score 1 indicates extremely thin cow whereas 5 indicates an obese animal
+\u2022 For cattle in milk, a body score 3 is optimum.
+\u2022 Cattle with body score 5 will have high probability of metabolic and breeding problems.
+Removal of animal from the herd
+Removal from the herd (culling) is a crucial management practice in dairy farming, involving the
+removal of cows from the herd for various reasons, such as health, production, or reproductive issues.
+The decision to cull an animal is influenced by multiple factors aimed at maintaining herd health,
+productivity, and economic efficiency. Here are some common culling criteria in dairy farming:
+1. Health and disease
+Animals suffering from chronic diseases like Johne\u2019s disease, tuberculosis, brucellosis etc, should be
+removed from the herd to maintain overall herd health. Animals with chronic or recurrent mastitis,
+especially those not responding to treatment, may be removed to prevent the spread of infection and
+maintain milk quality. Animals with persistent lameness or severe foot and leg issues may be removed.
+2. Reproductive efficiency
+Animals that fail to conceive after multiple breeding attempts or have prolonged calving intervals may
+be culled due to their impact on herd reproductive performance. Animals with a history of dystocia
+(difficult calving) or other calving-related issues (eg. uterine prolapse) may be removed from the herd
+to prevent future complications. Animals that take longer than expected show oestrus after calving and
+show signs of silent oestrus may be considered for removal from the herd.
+3. Age and productive life span
+Animals that have reached the end of their productive lifespan, based on their overall health and lifetime
+milk production, may be moved to a Gaushala/Panjrapole or, maintained at the farmers\u2019 homestead if
+she/he has the wherewithal to keep unproductive animals.
+4. Genetic improvement
+If an animal\u2019s offspring consistently underperform in terms of health, production, or reproduction, the
+cow may be removed to improve herd genetics.
+5. Economic considerations
+The economic viability of treating an animal versus removing from the herd is an important factor. High
+veterinary costs for chronic conditions may justify removing from the herd.
+6. Behavioural issues
+Animals displaying aggressive behaviour that endangers other cows or farm workers may be removed
+to ensure safety. Animals those are difficult-to-handle, particularly during milking or veterinary
+procedures, may be removed for easier herd management.
+
+-- 18 of 48 --
+
+Annexures
+
+-- 19 of 48 --
+
+Common viral diseases of bovine
+SL
+No Striking clinical sign Disease Control and Preventive measure
+Availability
+of vaccines in
+India
+1. Fever, vesicle in
+foot and mouth
+(tongue, dental
+pad, lips and
+gums), foamy/
+ropy salivation
+Foot and mouth
+Disease (FMD)
+Inform the veterinarian/authority.
+Separate the infected animals from
+healthy animals. Destroy the feed and
+fodder that has come in contact with
+secretion and excretion of diseased
+animal. The equipment and farm
+premises should be disinfected with 4%
+sodium carbonate solution. Preventive
+vaccination of cattle and buffaloes in
+the farm. Since more than one species
+of animal can be infected, preventive
+vaccination should be extended to
+sheep, goat and pigs.
+Yes
+2. Rhinitis, nasal
+discharge,
+pustular vulva,
+abortion
+Infectious bovine
+Rhinotracheitis
+(IBR)
+Only IBR negative animals to be
+introduced into the herd. Purchase new
+animals when IBR test result is negative.
+Vaccination may be practiced.
+Yes
+3. History of dog
+bite, drooling of
+saliva, aggression
+or paralysis
+Rabies Avoid direct contact with saliva or bite
+wound. Wear gloves and gum boot
+while handling such cases. Wash the
+bite wound in running water for 5-10
+minutes. Clean the wound with bath
+soap. Post bite vaccination to be carried
+out in consultation with veterinarian.
+Domestic dogs and cats can be
+protected from the disease by annual
+vaccination
+4. Fever, stiffness,
+sudden drop in
+milk yield.
+Ephemeral fever Fly and mosquito control in the farm.
+Prevent biting of flies and mosquitoes.
+No
+5. Cutaneous
+nodules (2-5
+cm), enlarged
+lymphnode.
+Lumpy skin
+disease (LSD)
+Tick, fly and mosquito control in the
+farm. Prevent biting of tick, flies and
+mosquitoes. Vaccination may be
+practiced.
+Yes
+
+-- 20 of 48 --
+
+Common viral diseases of bovine
+SL
+No Striking clinical sign Disease Control and Preventive measure
+Availability
+of vaccines in
+India
+6. Swelling of throat/
+neck region,
+salivation, fever,
+respiratory sound.
+Haemorrhagic
+septicaemia (HS)
+Segregate the sick animal from healthy
+ones and don\u2019t give contaminated feed,
+fodder and water to healthy animals.
+Yes
+7. High fever, muscle
+swelling, crackling
+sound because of
+gas accumulation.
+Black quarter (BQ) Sprinkle lime over carcass at the time of
+burial.
+Yes
+8. Abortion after
+5th month of
+pregnancy,
+retention of
+placenta, joint
+swelling
+Brucellosis Avoid direct contact with aborted
+materials and discharges of cow. Wear
+gloves and gum boot for handling the
+aborted foetus, placenta, contaminated
+bedding, feed etc. The aborted materials
+should be buried (at least 4 feet deep)
+and sprinkle lime over it. Disinfect the
+shed with 1-2%NaOH or 5% sodium
+hypochlorite after taking out the
+aborted materials. Disinfect the lochial
+discharge from the cow daily till it
+ceases (around 10-15 days)
+No
+9. Sudden death,
+bleeding from
+nose, mouth, anus
+Anthrax Annual vaccination of animals in
+endemic areas. Never open a carcass of
+an animal suspected to have died from
+Anthrax.
+No
+10. Long lasting
+diarrhoea, stunted
+growth
+JD Only JD negative animals to be
+introduced into the herd. Purchase new
+animals when JD test result is negative.
+JD positive animals should be culled
+immediately to prevent the infection
+spreading to healthy animals. Carry
+out regular testing of herd at 6-month
+interval.
+No
+11. Weakness,
+coughing, weight
+loss
+TB Only TB negative animals to be
+introduced into the herd. Purchase new
+animals when TB test result is negative.
+TB positive animals should be culled
+immediately to prevent the infection
+spreading to healthy animals. Carry
+out regular testing of herd at 6- month
+interval.
+No
+12. Swelling of inter
+digital space, foul
+smell discharge,
+lameness
+Foot rot Remove the sources of injury and keep
+the feet clean and dry. Use footbath
+copper sulphate 5% and zinc sulphate
+10%
+
+-- 21 of 48 --
+
+Vaccination schedule for cattle and buffalo
+Sl no Disease Age at first dose Booster dose Subsequent dose(s)
+1 Foot and mouth
+disease (FMD)
+4 months and above 1 month after
+first dose
+Six monthly
+2 Haemorrhagic
+septicaemia (HS)
+6 months and above - Annually in endemic area
+3 Black quarter (BQ) 6 months and above - Annually in endemic area
+4 Brucellosis 4-8months of age (Only in
+female calves)
+- Once in a life time
+5 Theileriosis 3 months of age or above Once in a life time. Only
+required for crossbred and
+exotic cattle.
+6 Anthrax 4 months and above Annually in endemic areas
+7 IBR 3 months and above 1 month after
+first dose
+Six monthly
+8 Rabies Immediately after
+suspected bite
+4th day 7,14,28, and 90 (optional)
+days after first dose.
+Animals should be dewormed two weeks before the vaccination for better vaccine response.
+Common viral diseases of bovine
+SL
+No Striking clinical sign Disease Control and Preventive measure
+Availability
+of vaccines in
+India
+13. Fever, swollen
+lymph node, fever,
+nervous sign, tick
+infestation
+Theileriosis Tick control in the farm Yes
+14. Fever, red/coffee
+coloured urine,
+nervous sign, tick
+infestation
+Babesiosis Tick control in the farm No
+15. Nervous sign,
+tilting of head and
+circling
+Trypanosomiasis
+(Surra)
+Biting flies transmit the disease. Control
+biting flies in the shed and surrounding
+area.
+No
+
+-- 22 of 48 --
+
+Reasons for vaccine failure
+i. Poor immune response in weak and immunocompromised animals.
+ii. Ideally 80% animal should be vaccinated, to have the herd immunity; when only few animals
+are vaccinated the purpose is not fulfilled.
+iii. Lack of maintenance of adequate storage temperature as indicated by the vaccine manufacturer.
+iv. Repeated freezing and thawing of vaccine
+v. Ineffective vaccine
+Advantages of vaccination in dairy animals
+1. Vaccines help prevent many infectious diseases that can affect dairy animals, thus ensures the
+health and longevity of dairy animals.
+2. Vaccinating a significant portion of the dairy herd helps to establish herd immunity, reducing the
+overall prevalence of diseases within the herd.
+3. Vaccination helps to maintain optimal health and reproductive health (example: Brucellosis)
+thereby supporting consistent and higher milk production levels.
+4. Preventing diseases through vaccination reduces the need for expensive veterinary treatments,
+medications, and labour costs associated with treating sick animals. This leads to significant cost
+savings for dairy farmers.
+5. Vaccinated dairy animals are less likely to suffer from painful and debilitating diseases, leading to
+improved overall welfare and better quality of life for the animals.
+6. Vaccination programmes are essential for the eradication of certain diseases.
+7. Vaccination helps control zoonotic disease (Example: Brucellosis), protecting the health of farm
+workers and consumers.
+8. Vaccination contributes to the production of safe and high-quality milk by preventing diseases in
+dairy animals. This is crucial for public health and for maintaining consumer confidence in dairy
+products.
+8. Vaccination contributes to the production of safe and high-quality milk by preventing diseases in
+dairy animals. This is crucial for public health and for maintaining consumer confidence in dairy
+products.
+
+-- 23 of 48 --
+
+Principle of deworming
+After colostrum feeding healthy calves should be planned for deworming. In cow calves the first dose
+can be given in 7-14 days of age. In buffalo calves the first dose may be given in 3-7 days of age. The drug
+used for deworming is to be repeated after 7-15 days. In first deworming piperazine group of drugs, can
+be given. Subsequent deworming can be done after examination of faecal sample, in finding clinical
+signs of diarrhoea, pot-bellied condition, ruffled skin (hair), reduced body weight gain, debility and
+anaemic conditions. After faecal sample examination worm specific deworming should be done. The
+same drug can be repeated 7-15 days post initial administration. Ideally 1-month gap may be given for
+any change in compound used for deworming in consultation with veterinarian.
+Commonly used drugs for deworming of dairy animals
+SL
+No
+Worm/Parasite Drug Dose (mg/Kg
+body weight)
+Indication/Contra-
+indication
+i. Nematode Piperazine 200-300 Used in calf
+ii. Nematode Albendazole 5-10 Should not be used in first
+trimester of pregnancy as
+it is embryotoxic
+iii. Trematode Albendazole 15-20
+iv. Nematode, trematode, Cestode Fenbendazole 5-7.5 Non embryotoxic and
+safe in pregnancy
+v. Nematode Levamisole 7.5 Also acts as immune
+stimulant
+vi. Nematode, cestode and
+trematode
+Oxfendazole 5 Non embryotoxic
+vii. Fasciola, amphistome, monezia Oxyclozanide 10-15
+viii. Fasciola Rafoxanide 7.5
+ix. Fasciola Triclabendazole 12
+x. Gastro-intestinal nematode and
+ectoparasite (tick, mite, lice)
+Ivermectin 200
+microgram/
+Kg
+For sub cutaneous or oral
+administration only
+Deworming schedule
+In cow calves deworming should be done within 10-14 days of age. In buffalo calves the first dose may
+be given in 3-7 days of age. Subsequently on a monthly basis up to 6th month of age. In adult cattle
+deworming is recommended annually twice (every 6 month) interval. In adult cattle deworming can be
+done once before rainy season and once after the rainy season. Deworming can be done after clinically
+examination, faecal examination and advice from veterinarian.
+
+-- 24 of 48 --
+
+Advantages of deworming in dairy animals
+1. Deworming helps to eliminate internal parasites such as roundworms, flukes, and tapeworms that
+can cause a variety of health issues, discomfort, mortality in dairy animals. This leads to healthier
+animals with improved vitality and reduced disease susceptibility.
+2. Young dairy animals, such as calves and heifers, are particularly vulnerable to the parasitic
+infections. Regular deworming supports their growth and development, ensuring they reach their
+full genetic potential for size, strength, and productivity.
+3. By regularly deworming all animals in the herd, the overall parasitic load in the herd is reduced.
+This helps protect even those animals that might be more susceptible to infections, such as young
+calves.
+4. Parasites can interfere with nutrient absorption in the digestive tract, leading to poor feed
+efficiency. Parasitic infections can significantly reduce milk production due to the stress and
+nutrient depletion in the affected animals. Deworming helps maintain optimal health and body
+condition, thereby resulting in better growth, maintenance, and milk production.
+5. Deworming helps improve reproductive performance, ensuring better calving rates and healthier
+offspring.
+6. Regular deworming helps to prevent the health complications associated with parasitic burdens,
+thereby reducing the need for costly veterinary treatments and interventions. This leads to
+significant cost savings for dairy farmers.
+Reasons for failure of deworming
+i. Usage of low dose than the recommended dose.
+ii. When drug is administered without proper animal examination and faecal sample examination.
+iii. Carrying out deworming in stressed animals (stress due to transit; extreme weather condition etc.)
+iv. When deworming is carried out in only a few animals in the herd.
+
+-- 25 of 48 --
+
+Common causes of abortion in dairy animals
+Sl
+no Cause of Abortion Distinguishing Feature
+1. Infectious diseases \u2022 Often accompanied by fever, weakness, and other signs of illness
+in the animal.
+\u2022 Common infectious causes include Brucellosis, Bovine Viral
+Diarrhea (BVD), Campylobacter, Trichomonosis
+2. Uterine infection \u2022 Infections of the uterus, such as metritis or pyometra, can lead to
+abortion.
+\u2022 Animals may exhibit signs of uterine inflammation, including
+vaginal discharge, fever, and discomfort.
+3. Nutritional
+deficiencies
+Inadequate intake of essential nutrients such as Vitamin A, Vitamin E,
+selenium, or copper etc.
+4. Toxic Plants/chemicals \u2022 Exposure to toxic plants or chemicals (e.g., pesticides, lead) can
+lead to abortion.
+\u2022 Symptoms may include sudden illness, gastrointestinal distress,
+or neurological signs in affected animals.
+5. Trauma/injury \u2022 Physical trauma or injury to the pregnant animal can lead to
+abortion.
+\u2022 This can occur due to accidents, aggressive behaviour from other
+animals, or improper handling.
+6. Genetic abnormalities \u2022 Genetic defects or abnormalities in the foetus can result in
+abortion at any stage of gestation.
+\u2022 These may be spontaneous or inherited from one or both
+parents.
+7. Metabolic disorders \u2022 Metabolic disorders such as ketosis or hypocalcemia can increase
+the risk of abortion, especially as the cow approaches parturition.
+\u2022 Signs may include lethargy, poor appetite, and neurologic
+abnormalities
+8. Heat stress \u2022 Excessive heat can cause heat stress in pregnant animals, leading
+to abortion, especially during the hottest months of the year.
+\u2022 Signs of heat stress include panting, increased respiration rate,
+and decreased feed intake.
+
+-- 26 of 48 --
+
+Common infectious causes of bovine abortion
+SL
+No
+Infectious
+agent
+Type of
+agent
+Specific time of
+abortion (if any) Control and Preventive measure
+1. Trichomonosis Protozoa 2nd -4th month
+of gestation
+Bulls are the main source of infection. Test
+and cull bulls positive for trichomonosis.
+Bulls should be tested periodically for
+trichomonosis (yearly once). Avoid natural
+service by the bull. Encourage artificial
+insemination.
+2. Neospora
+caninum
+Protozoa Typically mid-
+gestation (5-6
+months), but
+can occur at any
+stage
+Prevent canine fecal contamination of feed,
+removal of persistently infected cows, avoid
+keeping offspring of seropositive dams as
+replacements
+3. Campylobacter Bacteria 4th-5th month
+of gestation.
+Bulls are the main source of infection.
+Bulls should be tested periodically for
+Campylobacter (yearly once). Avoid natural
+service by the bull. Encourage artificial
+insemination.
+4. Brucella Bacteria 6th- 9th month
+of gestation.
+Retention
+of foetal
+membrane is
+often observed.
+Avoid direct contact with aborted materials
+and discharges of cow. Wear gloves and
+gum boot for handling the aborted foetus,
+placenta, contaminated bedding, feed etc. The
+aborted materials should be buried (at least 4
+feet deep) and sprinkle lime over it. Disinfect
+the shed with 1-2%NaOH or 5% sodium
+hypochlorite after taking out the aborted
+materials. Disinfect the lochial discharge from
+the cow daily till it ceases (around 10-15 days)
+5. Chlamydia Bacteria Variable, but
+often mid to
+late gestation
+Biosecurity, isolation of aborting animals,
+proper disposal of aborted materials,
+minimizing stress
+6. Coxiella
+burnetii
+Bacteria Most often late
+gestation, but
+can be variable
+Isolation of aborting animals, proper disposal
+of aborted materials, control of ticks,
+biosecurity, minimize dust, PPE for handlers
+7. Leptospira spp. Bacteria Usually last
+trimester (third
+trimester), 2-6
+weeks after
+infection
+Vaccination, rodent control, prevent access to
+contaminated water, isolate affected animals,
+biosecurity
+
+-- 27 of 48 --
+
+Causes of drop-in milk production in dairy animals along
+with possible remedies
+SL No Probable cause Remedy
+1 Nutritional
+imbalance
+\u2022 Provide adequate nutrition as per the breed of animal (cattle, buffalo)
+for maintenance and milk production. For maintenance irrespective of
+breed per 100 kg body weight 0.5kg concentrate feeding is required.
+Additionally, 400 g concentrate feeding to cows and 500 g concentrate
+feeding to buffaloes is required for every litre of milk produced. In
+pregnant animals in 2nd trimester, (3rd -6th month of gestation) month
+additional 0.5 kg concentrate is required whereas in 3rd trimester
+(6th -9th month of gestation) additional 1 kg concentrate feeding is
+required.
+\u2022 Ensure adequate nutrition, including proper levels of protein, energy,
+vitamins, and minerals.
+\u2022 Provide access to high-quality green fodder, forage, balanced feed and
+clean water.
+\u2022 Carry out ration balancing.
+\u2022 Ensure proper body condition score during every stage of lactation,
+pregnancy and drying off.
+2 Health issues Consult a veterinarian to diagnose and treat specific health issues affecting
+milk production, such as mastitis (sub clinical/clinical mastitis), worm
+infestation, metabolic disorders etc.
+3 Age of cow
+and stage of
+lactation
+\u2022 Milk production decreases as the cow becomes older.
+\u2022 The lactation period can broadly be divided into three phases Early
+lactation (0-100 days): Milk production increases rapidly. Mid lactation
+(100-200 days): In this phase there is sustained milk production Late
+lactation (200-305 days): Milk yield continues to decline
+4 Genetic factors \u2022 Milk yield in dairy cows is influenced by breed-specific potential.
+Different breeds have been developed and optimized for various traits,
+including milk production, fat content, SNF and adaptability to different
+environments.
+\u2022 Implement genetic improvement programs, such as artificial
+insemination (AI) or embryo transfer, to introduce superior genetics into
+the herd. Monitor and record milk yield in progeny.
+5 Environmental
+stress
+\u2022 Provide a comfortable and well-
+
+[\u2026truncated\u2026]
+
+## Dairy_Farmer_Schemes_India_2025-26
+Source: Knowledge Repository/Dairy_Farmer_Schemes_India_2025-26.docx | Category: Government Scheme
+
+DAIRY FARMER SCHEMES IN INDIA
+
+A Comprehensive Reference Guide
+
+Central Government \u2022 State Governments \u2022 NDDB \u2022 NABARD \u2022 Private Sector
+
+Updated: June 2026 | Sources: DAHD, NDDB, NABARD, PIB, State Dairy Departments
+
+Introduction
+
+India is the world's largest milk producer, accounting for over 24% of global milk output. The dairy sector supports the livelihoods of over 80 million rural households, making it one of the most critical agricultural sub-sectors. To support dairy farmers, multiple tiers of government, autonomous bodies, and institutions have designed and implemented a wide range of schemes covering subsidies, credit, infrastructure, breed improvement, insurance, and market linkages.
+
+This document consolidates all major active schemes available to dairy farmers as of 2025-26, organized by implementing authority:
+
+Central Government schemes under DAHD (Dept. of Animal Husbandry & Dairying)
+
+Schemes implemented through NDDB (National Dairy Development Board)
+
+NABARD-backed credit and subsidy schemes
+
+State Government schemes (key dairy states)
+
+Private and allied sector support
+
+SECTION 1: CENTRAL GOVERNMENT SCHEMES (DAHD)
+
+1. Central Government Schemes (DAHD)
+
+The Department of Animal Husbandry and Dairying (DAHD) under the Ministry of Fisheries, Animal Husbandry and Dairying (FAHD) is the nodal ministry for dairy sector schemes at the national level.
+
+1.1 Rashtriya Gokul Mission (RGM)
+
+Implementing Body
+
+DAHD / State Animal Husbandry Departments
+
+Status
+
+Active \u2014 Revised scheme launched March 2025
+
+Period
+
+2014 onwards; revised 2025\u201326 and beyond
+
+Outlay
+
+Over \u20B93,400 crore (cumulative including revised 2025 allocation)
+
+Beneficiaries
+
+Individual dairy farmers, Gokul Gram centres, cooperatives
+
+Objective
+
+Development and conservation of indigenous cattle and buffalo breeds; genetic upgradation of bovine population; enhancement of milk production and productivity.
+
+Key Benefits for Farmers
+
+Setup of Gokul Grams (integrated cattle development centres) providing veterinary care, fodder, and AI services
+
+Free artificial insemination services using high-genetic-merit bulls
+
+Distribution of improved indigenous breed bulls to Gaushalas and cooperative societies
+
+Progeny testing and pedigree selection programmes
+
+Farmer training and capacity building in modern dairy practices
+
+1.2 National Programme for Dairy Development (NPDD)
+
+Implementing Body
+
+DAHD / NDDB / State Cooperative Dairy Federations
+
+Status
+
+Active \u2014 Revised NPDD (Component A continued to 2027-28; Component B with JICA)
+
+Period
+
+2014 onwards; restructured 2021-22 to 2025-26; Component A extended to 2027-28
+
+Outlay
+
+\u20B91,000 crore (Union Cabinet 2025 grant); earlier outlay \u20B91,568+ crore with JICA loan
+
+Beneficiaries
+
+State Cooperative Dairy Federations, District Milk Unions, FPOs, SHGs, Milk Producer Companies
+
+Objective
+
+Creating/strengthening infrastructure for quality milk production, procurement, processing, and marketing of milk and milk products.
+
+Components
+
+Component A: Strengthening milk testing equipment and primary chilling facilities for dairy cooperatives, SHGs, FPOs, and Milk Producer Companies nationwide
+
+Component B: Externally aided (JICA) \u2014 creating dairy infrastructure for market linkages in UP and Bihar; training and capacity building of dairy institutions from village to state level
+
+Key Benefits for Farmers
+
+Installation of Bulk Milk Coolers (BMCs) at village level
+
+Electronic milk quality testing (fat, SNF) equipment at procurement points
+
+Mobile Veterinary Units (MVUs) providing doorstep veterinary services
+
+17.63 lakh additional milk producers enrolled under organized procurement as of 2025
+
+1.3 Animal Husbandry & Dairy Processing Infrastructure Development Fund (AHIDF + DIDF \u2014 Merged)
+
+Implementing Body
+
+DAHD / NABARD / NDDB / NCDC
+
+Status
+
+Active \u2014 AHIDF and DIDF merged on 01.02.2024; extended 2024-26
+
+Period
+
+2021-22 to 2025-26 (extended 3 more years)
+
+Outlay
+
+Combined \u20B929,110.25 crore (post-merger); original AHIDF \u20B915,000 crore + DIDF \u20B911,184 crore
+
+Interest Subvention
+
+3% for AHIDF components; 2.5% for DIDF components (borne by DAHD to NABARD)
+
+Beneficiaries
+
+Individual entrepreneurs, Private Companies, FPOs, Dairy Cooperatives, SHGs
+
+Objective
+
+Incentivise investments in dairy processing and value addition infrastructure, milk chilling, feed manufacturing, vaccine/drug production, breed improvement, and animal waste management.
+
+Key Benefits for Farmers / Entrepreneurs
+
+Subsidized loans at 6.5% effective rate for capital-stressed dairy cooperatives
+
+3% interest subvention on loans for setting up dairy processing and value-addition facilities
+
+50% capex subsidy (ceiling \u20B92 crore) for breed multiplication farms
+
+Loan repayment tenure extended to ease debt burden on cooperatives
+
+NDDB can directly provide funds to eligible end borrowers from its own resources
+
+1.4 National Livestock Mission (NLM)
+
+Implementing Body
+
+DAHD / State Animal Husbandry Departments
+
+Status
+
+Active \u2014 Re-aligned NLM 2021-22
+
+Period
+
+2021-22 to 2025-26
+
+Beneficiaries
+
+Individual farmers, FPOs, cooperatives, SHGs, entrepreneurs
+
+Objective
+
+Promote entrepreneurship and breed improvement in livestock including dairy cattle. Three sub-missions: (a) Development of Breed and Feed, (b) Livestock Health & Disease Control, (c) Skill Development & Technology Transfer.
+
+Key Benefits for Dairy Farmers
+
+Subsidy support for establishing dairy units (small, medium, and large)
+
+Support for fodder and feed development, including silage-making units
+
+Breed improvement through AI and embryo transfer programmes
+
+Skill training and entrepreneurship development for dairy farmers
+
+1.5 Livestock Health and Disease Control Programme (LHDCP)
+
+Implementing Body
+
+DAHD / State Animal Husbandry Departments
+
+Status
+
+Active
+
+Key Sub-components
+
+FMD-CP (Foot & Mouth Disease Control), PPR Control, Brucellosis Control
+
+Key Benefits for Dairy Farmers
+
+Free prophylactic vaccination for Foot and Mouth Disease (FMD) \u2014 all bovines across India
+
+Brucellosis control programme for cows and buffaloes
+
+Mobile Veterinary Units for emergency and routine animal healthcare at doorstep
+
+Significant reduction in economic losses due to disease outbreaks
+
+1.6 Supporting Dairy Cooperatives and FPOs (SDC&FPO)
+
+Implementing Body
+
+DAHD / NDDB
+
+Status
+
+Active (part of Infrastructure Development Fund umbrella)
+
+Period
+
+2021-22 to 2025-26
+
+Outlay
+
+\u20B9500 crore (\u20B9100 crore/year)
+
+Beneficiaries
+
+Dairy cooperatives, milk unions, Producer Owned Institutions (POIs), FPOs
+
+Key Benefits
+
+Interest subvention on working capital loans to dairy cooperatives and FPOs
+
+Ensures timely milk payment to farmers even during adverse economic conditions (post-COVID relief measure made permanent)
+
+Implemented through NDDB for cooperatives and FPOs
+
+1.7 Kisan Credit Card (KCC) \u2014 Extended to Animal Husbandry Farmers
+
+Implementing Body
+
+Ministry of Finance / RBI / Banks / DAHD
+
+Status
+
+Active
+
+Beneficiaries
+
+Dairy farmers (individual, joint, JLG, SHG), including tenant farmers with rented sheds
+
+Key Benefits
+
+Short-term working capital credit at concessional interest rates (7% p.a., with 2% interest subvention for timely repayment = effective 5%)
+
+Covers purchase of feed, fodder, veterinary medicines, and daily operational expenses
+
+Flexible revolving credit \u2014 withdraw and repay as needed within credit limit
+
+Available to dairy farmers even without land ownership \u2014 shed/barn suffices as collateral
+
+SECTION 2: NDDB SCHEMES & PROGRAMMES
+
+2. National Dairy Development Board (NDDB) Schemes
+
+NDDB (headquartered in Anand, Gujarat) is an autonomous institution that designs and implements programmes to strengthen farmer-owned cooperative dairy institutions and promote sustainable dairy development.
+
+2.1 White Revolution 2.0 (Cooperative Expansion Programme)
+
+Implementing Body
+
+Ministry of Cooperation / NDDB
+
+Status
+
+Active \u2014 SOP launched 19 September 2024
+
+Target Period
+
+2024-25 to 2028-29
+
+Beneficiaries
+
+Uncovered/underserved dairy farmers, women farmers, marginal producers
+
+Target
+
+Increase milk procurement by cooperatives from 660 lakh kg/day (2023-24) to 1,007 lakh kg/day by 2028-29
+
+Key Benefits
+
+Establishment of 75,000 new Multipurpose Dairy Cooperative Societies (MDCS) in uncovered panchayats
+
+Strengthening of 46,422 existing village-level DCS/PACS with better milk procurement and testing infrastructure
+
+Installation of Bulk Milk Coolers and milk testing equipment at village level
+
+Special emphasis on women-led cooperatives (women form ~70% of India's dairy workforce)
+
+Employment generation and financial inclusion in rural areas
+
+Funded through NPDD 2.0 allocations
+
+2.2 National Dairy Plan Phase II (NDP-II) / National Dairy Support Project Phase II (NDSP-II)
+
+Implementing Body
+
+NDDB / World Bank (proposed external support)
+
+Status
+
+Active / Under development for World Bank funding
+
+Focus
+
+Less dairy-developed states with low cooperative coverage
+
+Objective
+
+Enhance competitiveness, foster inclusion, improve resilience, reduce carbon footprint of milk value chains
+
+Key Benefits
+
+Strengthening milk procurement infrastructure in underserved states
+
+Support for ICT infrastructure for transparent farmer payments
+
+Climate-smart rearing practices (targeting 25,000 milk producers)
+
+Value-added product manufacturing capacity building
+
+Training for clean milk production standards
+
+2.3 NDDB Financial Support Services
+
+Who can access
+
+Dairy cooperatives, milk unions, state federations, milk producer companies
+
+Status
+
+Ongoing
+
+Services Available
+
+Direct loans to end borrowers from NDDB's own resources (under DIDF/AHIDF framework)
+
+Technical project report formats and guidance for accessing central scheme funds
+
+Advisory services for dairy plant modernization and energy efficiency
+
+Support for setting up and strengthening Village Dairy Cooperative Societies
+
+SECTION 3: NABARD-BACKED SCHEMES
+
+3. NABARD-Backed Dairy Schemes
+
+NABARD (National Bank for Agriculture and Rural Development) operates as the apex refinancing body for agricultural and rural credit, including dairy sector loans. NABARD also directly implements subsidy-linked schemes.
+
+3.1 Dairy Entrepreneurship Development Scheme (DEDS)
+
+Implementing Body
+
+NABARD / Commercial Banks / RRBs / Cooperative Banks
+
+Status
+
+Active
+
+Subsidy
+
+25% of outlay for general category; 33.33% for SC/ST farmers
+
+Subsidy Ceiling
+
+\u20B925,000 to \u20B94.87 lakh depending on unit size
+
+Beneficiaries
+
+Individual farmers, NGOs, companies, unorganized sector groups, farmers' groups
+
+Objective
+
+Promote self-employment and dairy enterprise among rural youth, women, and marginal farmers by providing back-ended capital subsidy.
+
+Eligible Activities & Subsidy
+
+Establishing small dairy units of 2 to 10 animals \u2014 back-ended subsidy disbursed via bank
+
+Purchase of milch animals (crossbred cows, improved buffaloes)
+
+Setting up milk processing equipment (pasteurizers, packaging machines)
+
+Infrastructure for clean milk production (milking machines, storage tanks)
+
+Purchase of heifer calves for replacement stock
+
+3.2 NABARD Refinance for Dairy Loans
+
+Implementing Body
+
+NABARD / SBI / PNB / Bank of Baroda / RRBs and other commercial banks
+
+Status
+
+Ongoing
+
+Interest Subvention
+
+3% for dairy cooperatives (Budget 2024)
+
+Loan Products
+
+Term loans for dairy farm setup, equipment purchase, infrastructure
+
+Key Features
+
+NABARD refinances banks at subsidized rates to pass on lower interest to farmers
+
+3% interest subvention to dairy cooperatives for modernizing plants (Budget 2024 announcement)
+
+SBI, Bank of Baroda, PNB offer specific dairy farming loan products backed by NABARD refinance
+
+Mini Dairy Unit Scheme (2\u201310 animals) available through most public sector banks
+
+Repayment periods up to 7\u201310 years for larger dairy infrastructure projects
+
+SECTION 4: STATE GOVERNMENT SCHEMES
+
+4. State Government Schemes
+
+Most major dairy states have their own dedicated schemes supplementing central programmes. Below are key active schemes across states.
+
+4.1 Rajasthan
+
+Mukhyamantri Dugdh Utpadak Sambal Yojana (Chief Minister Milk Producer Incentive Scheme)
+
+Status
+
+Active \u2014 \u20B9650 crore budgeted for 2025-26
+
+Benefit
+
+\u20B95 per litre subsidy on milk sold to Saras Dairy / cooperative milk societies
+
+Payment Method
+
+Direct Benefit Transfer (DBT) to farmer bank accounts
+
+Coverage
+
+~5 lakh dairy farmers registered
+
+Disbursed
+
+\u20B9468 crore transferred as of September 2025
+
+Farmers selling milk to Saras Dairy-affiliated cooperative milk societies receive \u20B95/litre directly into their accounts. Rajasthan is targeting to become India's largest dairy hub.
+
+Mukhyamantri Swadesh Gau Samvardhan Yojana (under Nand Baba Milk Mission, also adopted by UP)
+
+Note: This scheme originated in UP but similar indigenous breed promotion schemes exist in Rajasthan. See UP section below.
+
+4.2 Uttar Pradesh
+
+Nand Baba Milk Mission
+
+Status
+
+Active \u2014 launched June 2023
+
+Outlay
+
+\u20B91,000 crore over 5 years
+
+Implementing Body
+
+UP Livestock & Dairy Development Department
+
+Aims to make UP a leading state in dairy development. Key components:
+
+Setting up Dairy Farmer Producer Organizations (Dairy FPOs) to sell milk within villages
+
+Women's participation emphasized as a core component
+
+5 Dairy FPOs set up as pilots in 2023-24; scaling to more districts
+
+Mukhyamantri Swadesh Gau Samvardhan Yojana (2024-2026)
+
+Status
+
+Active \u2014 implemented across 57 districts
+
+Subsidy
+
+Up to \u20B980,000 (40% of cost) for a unit of 2 indigenous milch cows
+
+Eligible Breeds
+
+Sahiwal, Tharparkar, Haryana
+
+Priority
+
+Women farmers, SC/ST, and backward classes
+
+Nandini Krishak Samriddhi Yojana
+
+Dairy cooperative societies facilitate arrangements for livestock owners to sell milk within their own villages, ensuring fair procurement prices and reducing dependence on middlemen.
+
+UP Dairy Development & Milk Products Promotion Policy 2022
+
+Industry-facing policy aligned with Nand Baba Milk Mission, encouraging investment in new dairy processing, cold chain, and value-addition enterprises in Uttar Pradesh.
+
+4.3 Maharashtra
+
+Dairy Development Programme \u2014 Vidarbha & Marathwada (Phase II)
+
+Status
+
+Active \u2014 Phase II approved August 2024
+
+Outlay
+
+\u20B9149 crore for Phase II
+
+Coverage
+
+All 19 districts of Vidarbha and Marathwada (expanded from 11 districts in Phase I)
+
+Implementing Body
+
+Maharashtra Dept. of Animal Husbandry & Dairy Development
+
+Distribution of Milch Animals Scheme (District Level)
+
+Status
+
+Active \u2014 initiated 2011, updated 27.04.2023
+
+Subsidy
+
+50% for general; 75% for SC/ST farmers
+
+Unit Cost
+
+\u20B91,56,850 for 2 indigenous/crossbred cows; \u20B91,79,258 for 2 buffaloes
+
+Beneficiaries
+
+BPL households, marginal landholders, educated unemployed youth, women SHGs
+
+Farmers receive 2 milch cows (indigenous/crossbred) or 2 buffaloes with subsidy; application through online portal www.ah.mahabms.com.
+
+4.4 Kerala
+
+Milk Shed Development Programme (MSDP)
+
+Status
+
+Active \u2014 Annual Plan 2024-25 approved
+
+Implementing Body
+
+Kerala Dairy Development Department / Milma (Kerala Cooperative Milk Marketing Federation)
+
+Subsidy Delivery
+
+DBT mode directly to beneficiary bank accounts via NIC portal
+
+Key Components
+
+Commercial dairy unit establishment support \u2014 subsidy for new milch animal units
+
+Infrastructure for clean milk production at village level
+
+Support for bio-gas plants linked to dairy units
+
+Breed improvement through AI and quality bull semen
+
+Milk chilling and quality testing equipment for cooperative societies
+
+4.5 Karnataka
+
+Karnataka has 10 DIDF/NDDB projects (the highest among all states) valued at \u20B92,479 crore, reflecting strong state-cooperative dairy infrastructure investment.
+
+KMF (Karnataka Milk Federation) Farmer Support Programmes
+
+Status
+
+Active
+
+Coverage
+
+10 dairy cooperative districts under KMF (Nandini brand)
+
+Remunerative milk procurement prices through KMF cooperative network
+
+Subsidized veterinary services and AI at village DCS level
+
+Feed supplements and mineral mixture supply at cooperative price
+
+Cattle insurance coverage facilitated through cooperative societies
+
+Scheme for Establishment of Hi-Tech and Mini Dairy Units (2025-26)
+
+Status
+
+Active 2025-26
+
+Target
+
+Women farmers and unemployed youth
+
+Goal
+
+Promote self-employment; commercialization of dairy units
+
+4.6 Tamil Nadu
+
+Aavin Mini Dairy Scheme
+
+Status
+
+Active
+
+Implementing Body
+
+Tamil Nadu Cooperative Milk Producers' Federation (Aavin)
+
+Benefit
+
+Financial assistance with interest subsidy for sustainable dairy farming
+
+Aavin procures milk from indigenous farmers and provides market access
+
+Technical guidance and training on dairy management practices
+
+Subsidized AI services and veterinary support through district cooperative societies
+
+4.7 Gujarat
+
+Gujarat is home to the Amul cooperative model (GCMMF) \u2014 the world's largest dairy cooperative. State dairy farmers benefit through:
+
+GCMMF/Amul procurement network: guaranteed milk purchase at competitive prices through 3.6 million farmer-members across 18,600 village societies
+
+Breed improvement through Semen Production Units (Anand, Rajkot) \u2014 high-quality frozen semen supply to farmer cooperative societies
+
+5 major NDDB/DIDF projects approved in Gujarat worth \u20B91,879 crore \u2014 modernization of processing capacity
+
+Gujarat government supplements DAHD schemes with state animal husbandry department subsidies for cattle purchase and infrastructure
+
+4.8 Punjab & Haryana
+
+Punjab
+
+4 NDDB projects worth \u20B9318 crore; highest per capita milk availability in India (1,283 g/day)
+
+Haryana
+
+4 NDDB projects worth \u20B9420 crore; strong Murrah buffalo breeding programmes
+
+Punjab State Dairy Schemes
+
+Subsidy on dairy equipment purchase through Punjab Agricultural Development Bank (PADB)
+
+Punjab Dairy Development Board supports farmer training and cooperative strengthening
+
+Clean Milk Production programmes in Ludhiana, Amritsar, and other districts
+
+Haryana State Dairy Schemes
+
+Murrah Buffalo breed conservation and promotion \u2014 Haryana Animal Husbandry Department
+
+Subsidy on purchase of Murrah buffaloes from recognized breeders
+
+Hi-tech dairy unit support for milk cooling and testing equipment
+
+4.9 Assam & North-Eastern States
+
+Key Schemes
+
+GoI Schemes implemented by Directorate of Dairy Development, Assam
+
+NE-specific Support
+
+Higher subsidy component for infrastructure projects in NE states under NPDD/NLM
+
+NPDD Component B (JICA-funded) supports dairy cooperative infrastructure in Assam
+
+NLM and RGM provide enhanced central funding share for NE states
+
+State schemes for distribution of improved cattle breeds to tribal and BPL farmers
+
+SECTION 5: INSURANCE & RISK PROTECTION
+
+5. Livestock Insurance Schemes
+
+5.1 Pradhan Mantri Fasal Bima Yojana (PMFBY) \u2014 Extended Components
+
+Status
+
+Active \u2014 extended to 2025-26 by Cabinet (January 2025)
+
+While primarily a crop insurance scheme, related livestock insurance provisions are being developed under broader agricultural risk management frameworks.
+
+5.2 Livestock Insurance Scheme (under NLM)
+
+Implementing Body
+
+State Animal Husbandry Departments / DAHD
+
+Status
+
+Active under NLM sub-mission
+
+Premium Subsidy
+
+50% of premium for general farmers; 70% for SC/ST farmers
+
+Beneficiaries
+
+Dairy farmers who have taken loans or own improved breed cattle
+
+Coverage
+
+Cattle and buffalo insured against mortality from disease, accident, natural disasters
+
+Insurance value equal to market value / loan value of animal
+
+Implemented through empanelled insurance companies (National, New India, Oriental, United)
+
+Tag-based identification system to prevent fraud
+
+5.3 State Livestock Insurance Schemes
+
+Several states (Rajasthan, UP, Gujarat, Maharashtra, Tamil Nadu) operate supplementary livestock insurance schemes with additional state subsidies. Farmers should check with their State Animal Husbandry Department for state-specific premium subsidies.
+
+SECTION 6: PRIVATE, COOPERATIVE & ALLIED SUPPORT
+
+6. Private Sector, Cooperatives & Allied Support
+
+6.1 Amul / GCMMF (Gujarat Cooperative Milk Marketing Federation)
+
+Guaranteed milk purchase at competitive prices for 3.6 million farmer-members
+
+Input supply \u2014 cattle feed, AI services, veterinary medicines at subsidized prices through cooperative network
+
+Milk quality testing and bonus payment for high-quality (low-SCC, low-bacteria) milk
+
+Amul's farmer linkage programme provides market access for cooperatives in non-Gujarat states too
+
+6.2 Mother Dairy / NDDB Subsidiary
+
+Milk procurement from cooperatives across Delhi NCR, UP, Rajasthan, Punjab regions
+
+Provides price support to member cooperative societies, ensuring minimum procurement price
+
+Veterinary services and dairy development support through NDDB's regional offices
+
+6.3 Private Dairy Companies \u2014 Vendor Linkage Programmes
+
+Large private dairy companies (Nestl\xE9, Hatsun, Heritage, Parag Milk Foods, Prabhat Dairy) operate farmer linkage programmes in their catchment areas:
+
+Milk procurement at competitive prices with prompt payment cycles
+
+Cold chain and milk testing equipment support for tied-up farmer groups
+
+Technical assistance for feed management, animal health, and clean milk production
+
+Advance payments or input credit against milk supply agreements
+
+6.4 NCDC (National Cooperative Development Corporation)
+
+Status
+
+Active \u2014 provides lending under DIDF/AHIDF merged fund
+
+Role
+
+NCDC acts as financial intermediary alongside NDDB for cooperative dairy loans
+
+Loans to state cooperative dairy federations and district milk unions for processing plant modernization
+
+NCDC share in DIDF project funding along with NABARD and end-borrower contribution
+
+6.5 A-HELP (Accredited Agent for Health and Extension of Livestock Production)
+
+Status
+
+Active \u2014 inducted by DAHD for farmer awareness
+
+Role
+
+Grassroots agent network for dairy farmer awareness and first-aid animal healthcare
+
+DAHD has inducted A-HELP agents (typically trained women community health workers) to create awareness among farmers about schemes, animal health practices, and clean milk production, and to facilitate scheme access.
+
+SECTION 7: HOW TO ACCESS SCHEMES
+
+7. How Dairy Farmers Can Access These Schemes
+
+7.1 Key Contact Points
+
+Authority
+
+Contact / Portal
+
+For Schemes
+
+DAHD (Central)
+
+dahd.gov.in / dahd.nic.in
+
+RGM, NPDD, NLM, LHDCP, AHIDF, DIDF, SDC&FPO
+
+NDDB
+
+nddb.coop
+
+White Revolution 2.0, NDP-II, Cooperative Strengthening
+
+NABARD
+
+nabard.org
+
+DEDS subsidy, Dairy loans refinance, KCC
+
+State AHD
+
+State govt portal / district office
+
+State schemes, livestock insurance, milch animal distribution
+
+Local Dairy Cooperative / DCS
+
+Village-level cooperative society
+
+Milk procurement, AI services, feed, veterinary access
+
+Nearest Bank / RRB
+
+SBI, BOB, PNB, RRBs
+
+KCC, DEDS-linked loans, AHIDF loans
+
+7.2 General Application Process
+
+Step 1: Identify the relevant scheme through your State Animal Husbandry Department or nearest dairy cooperative
+
+Step 2: Register on the state/national portal (e.g., dahd.gov.in, state AHD website, NABARD portal)
+
+Step 3: For DEDS/KCC \u2014 approach your nearest scheduled commercial bank or regional rural bank (RRB) with project report, land/shed documents, and Aadhaar
+
+Step 4: For milch animal distribution schemes \u2014 apply online through state AHD portals; physical verification done by block-level AH officer
+
+Step 5: Subsidies are typically routed via DBT (Direct Benefit Transfer) to farmer bank accounts after verification
+
+Step 6: For cooperative-linked benefits \u2014 join or register with your local Village Dairy Cooperative Society (DCS)
+
+7.3 Documents Generally Required
+
+Aadhaar card and bank account (DBT-linked)
+
+Jan Aadhaar (for Rajasthan state schemes)
+
+Land records / shed/barn ownership proof
+
+Animal health certificate (for purchase/insurance schemes)
+
+Caste certificate (for SC/ST enhanced subsidy)
+
+Project report / business plan (for larger DEDS/AHIDF loans)
+
+Quick Reference Summary Table
+
+Scheme
+
+Authority
+
+Outlay / Benefit
+
+Key Benefit for Farmer
+
+Rashtriya Gokul Mission
+
+DAHD
+
+\u20B93,400+ crore
+
+Free AI, Gokul Grams, indigenous breed support
+
+NPDD
+
+DAHD/NDDB
+
+\u20B91,000 crore (2025)
+
+BMCs, milk quality testing, MVUs at village level
+
+AHIDF+DIDF (Merged)
+
+DAHD/NABARD
+
+\u20B929,110 crore
+
+3% interest subvention on dairy infra loans
+
+National Livestock Mission
+
+DAHD
+
+Centrally Sponsored
+
+Dairy unit subsidy, breed improvement, fodder
+
+LHDCP (FMD, Brucellosis)
+
+DAHD
+
+Centrally Sponsored
+
+Free FMD vaccination for all cattle/buffalo
+
+SDC&FPO
+
+DAHD/NDDB
+
+\u20B9500 crore
+
+Working capital interest subvention for cooperatives
+
+Kisan Credit Card (KCC)
+
+RBI/Banks
+
+Concessional credit
+
+Working capital at ~5% effective interest rate
+
+White Revolution 2.0
+
+MoC/NDDB
+
+NPDD 2.0 funds
+
+75,000 new DCS; market access for uncovered farmers
+
+DEDS (NABARD)
+
+NABARD
+
+25\u201333% subsidy
+
+Back-ended subsidy for small/mini dairy units
+
+Livestock Insurance (NLM)
+
+State AHD
+
+50\u201370% premium subsidy
+
+Animal mortality insurance at low cost
+
+Rajasthan \u2014 Sambal Yojana
+
+Rajasthan Govt
+
+\u20B9650 crore/year
+
+\u20B95/litre DBT subsidy on cooperative milk sale
+
+UP \u2014 Nand Baba Mission
+
+UP Govt
+
+\u20B91,000 crore/5 yrs
+
+Dairy FPOs, village milk sale, indigenous cow subsidy
+
+Maharashtra \u2014 Dairy Dev
+
+Maharashtra Govt
+
+\u20B9149 crore (Ph
+
+[\u2026truncated\u2026]
+
+## Draft Model Bye Laws_English_MDCS
+Source: Knowledge Repository/Draft Model Bye Laws_English_MDCS.pdf | Category: Extension
+
+Model Bye-laws for a
+Multipurpose Village/ Dairy Cooperative Society
+NATIONAL DAIRY DEVELOPMENT BOARD, ANAND
+May 2025
+
+-- 1 of 31 --
+
+Model Bye-laws for a
+Multipurpose Village/ Dairy Cooperative Society
+1. Name, Address and Jurisdiction
+1.1. The name of this society shall be \u201CThe .\u2026\u2026\u2026 Multipurpose Village/
+Dairy Cooperative Society Ltd.\u201D and its registered address shall be at
+\u2026\u2026\u2026\u2026\u2026..Post Office ........ Sub division........... Tehsil/Taluka
+...........District .............. Pin code\u2026\u2026\u2026 Any change in this address
+shall be notified to the Milk Union to which it is affiliated and Registrar
+within 30 days.
+1.2. The E-mail address of the Multipurpose Village/ Dairy Cooperative
+society shall be .........
+1.3. The area of operation for milk procurement of the society shall
+be.............. village/s \u2026\u2026\u2026\u2026. Post Office ........ Subdivision ...........
+Tehsil/Taluka ........... District .............. state \u2026\u2026\u2026\u2026 Pin code\u2026\u2026\u2026.
+2. Definitions
+2.1 \u201CAct\u201D means the \u2026\u2026 State Cooperative Societies Act under which the
+society is registered.
+2.2 \u201CAgriculture\u201D means agriculture and allied activities.
+2.3 \u201CArea of operation\u201D means the geographical area (revenue village
+(s)/Panchayat) from which the society is authorized to draw its
+membership as specified in the Bye-laws.
+2.4 \u201CAuditor\u201D means a certified auditor appointed either by the Registrar
+of the Cooperatives or by the Society, as defined in the Act, to audit the
+accounts of the society.
+2.5 \u201CBye-laws\u201D means the registered Bye-laws of the society and includes
+amendments carried out from time to time.
+2.6 \u201CChairman\u201D means the person elected in accordance with the
+provisions of the Act/Rules/Bye-laws.
+2.7 \u201CEmployee\u201D means the person appointed by the Managing Committee
+in order to maintain the day-to-day operations of the society.
+2.8 \u201CFinancial year\u201D means the period commencing from the 1st day of
+April of any year and ending with the 31st day of March of succeeding
+year.
+
+-- 2 of 31 --
+
+2.9 \u201CGeneral Body\u201D means a Body consisting of all the members of the
+society.
+2.10 \u201CGeneral Meeting\u201D means meetings of the General Body called and
+conducted in accordance with the provisions of the State Cooperative
+Societies Act and the Bye-laws.
+2.11 \u201CGovernment\u201D means the State Government/ Government of
+India/Appropriate authority in the Union Territory (U.T.) with reference
+to the context.
+2.12 \u201CManaging Committee\u201D means the governing body of the society by
+whatever name called, constituted as per the Act to which the direction,
+control and management of the affairs of the society is entrusted.
+2.13 \u201CMember\u201D means any individual admitted as member of the society in
+accordance with the Act, the Rules and Bye-laws.
+2.14 \u201CNominal member\u201D means any individual/farm/institution admitted
+to the membership of the society for a specific purpose as nominal
+member as provided in the Act, Rules and Bye-laws and shall have no
+voting right.
+2.15 \u201CPatronage\u201D means the extent to which a member participates in the
+business of the society by quantity of milk supplied and such other
+criteria as may be decided by the Managing Committee from time to
+time
+2.16 \u201CRegistrar\u201D means the Registrar of Cooperative Societies appointed by
+the State Government as per the State Cooperative Societies Act to
+perform the functions of the Registrar.
+2.17 \u201CRules\u201D means the Rules framed under the State Cooperative Societies
+Act under which the society is registered.
+2.18 \u201CSecretary\u201D means the person appointed by the Managing Committee
+to carry out the responsibilities as set out in the Bye-laws.
+2.19 \u201CSociety\u201D means the Multipurpose Village/ Dairy Cooperative Society.
+2.20 \u201CUnion\u201D means the Cooperative Milk Union to which the society is
+affiliated.
+Words imparting masculine gender shall be taken to include feminine.
+
+-- 3 of 31 --
+
+3.0 Objectives
+The objective of the society shall be to promote the economic interest of
+its members by collecting milk from them, improving quality and
+increasing quantity of milk production per milch animal and to provide
+necessary guidance and assistance to the members on cattle breeding
+and rearing. In furtherance to the above objective, the society may
+undertake following activities:
+3.1 To undertake activities necessary for the production, procurement of
+clean and quality milk and to increase the productivity of animals.
+3.2 To provide facilities for the marketing of milk through the _______ Milk
+Union.
+3.3 To provide or arrange to provide technical and managerial services in
+the areas of breeding, feed/fodder, veterinary services to increase the
+milk productivity and thereby milk production.
+With a view to enhance the financial wellbeing of its members, the
+society may also undertake the following activities:
+3.4 To carry on the business of dealing in agriculture, horticulture and
+fisheries / shrimp farming /poultry / sericulture produces/products of
+all description and carrying all kinds of allied activities including
+dealing with seeds, seedlings, chemicals/biologicals/fertilizers,
+insecticides, pesticides, fungicides, bio controllers, irrigation systems,
+energy, farm equipment, medicines, treatment and vaccination services
+for livestock as producers, traders, marketers, importers, exporters that
+are part of or incidental to any activity related thereto.
+3.5 To promote and develop backward linkages such as demonstration
+plots, manure, fertilizers, improved planting material/seed production
+and forward linkages for the allied /other activities such as field crops,
+fruits & vegetables, horticulture, apiculture, sericulture, agriculture,
+construction of warehouse/godown etc. related and other income
+generating activities.
+3.6 Take any activity for the cleanliness and promoting hygiene, sanitation
+and health care among members in the village.
+3.7 To establish or arrange to establish consumer store/provision store/gas
+agency and petrol pump etc.
+3.8 To undertake activities for promoting green energy i.e. Bio-gas, Solar,
+Wind, Hydel power, etc.
+
+-- 4 of 31 --
+
+3.9 To promote education and awareness among the members by opening
+the libraries, reading rooms, e-library and digital/smart class rooms
+and mass contact programmes.
+3.10 To undertake sports and cultural activities for the overall growth and
+development of the members and their families.
+3.11 To act as common service center for providing online/digital services to
+its members.
+3.12 To obtain financial assistance from the government, other financial
+institutions and from the affiliated Milk Union in the form of grant and
+donation for the development of the society.
+3.13 To provide or arrange credit, loan, insurance such as animal, human
+health, crop etc. to its members for their social & economic
+development.
+3.14 To promote the concept of thrift, self-help and cooperation among
+members.
+3.15 To create awareness, capacity building programmes, skill development,
+fairs and exhibitions or any extension related activities.
+3.16 To demonstrate, promote and develop the latest technologies or
+extension activities, training, related to dairy, agriculture and allied
+activities for enhancing the income of the society and its members.
+3.17 To take up all other concerned activities for carrying out the above
+objectives for the overall development of Village/ Dairy Cooperative
+Society.
+3.18 Any other activity other than milk which is not covered above for the
+welfare and benefit of the members.
+4.0 Funds
+4.1 Funds of the society may be raised by \u2013
+4.1.1 Issue of shares
+4.1.2 Entrance fees/Admission Fee
+4.1.3 Receiving deposits from members
+4.1.4 Raising loans
+4.1.5 Donations, subsidies, grants and aids etc,
+4.2 The authorised share capital of the society shall not exceed Rs. \u2026\u2026\u2026\u2026
+and the face value of the share shall be Rs. ________to be paid with the
+
+-- 5 of 31 --
+
+share application, or in instalments as may be decided by the Managing
+Committee.
+4.3 The society may from time to time decide on increase in authorized
+share capital subject to the provisions of the Act.
+4.4 The total amount of loans and deposits should not exceed ______ times
+the total of paid-up share capital, accumulated reserve fund and
+building fund less the accumulated losses.
+5.0 Membership
+5.1 A milk producer is entitled to be a member if:
+5.1.1 He is residing within the areas of operation or is having his own dairy
+farm in the area of operation and has completed 18 years of age and is
+competent to contract.
+5.1.2 He rears buffalo/cow for milk production and has supplied milk to the
+society for three consecutive months preceding the date of his
+application
+5.1.3 He agrees to fulfil the patronage criteria as may be decided by the
+society on following parameters
+\u2022 Minimum number of days of pouring to be ______ days ________
+Ltr/Kg of milk to be poured in a year.
+\u2022 Flush to Lean ratio of milk supply to be -------
+\u2022 Society may decide to implement matching share capital
+contribution in proportion to the quantity of milk poured during
+the year as one of the patronage criteria.
+5.1.4 His written application in the prescribed form for membership has been
+approved by the majority of the Managing Committee (for this see
+Schedule-A). The processing of applications for membership should be
+completed and acceptance or refusal with reasons should be
+communicated to concerned applicants within 60 days (or as decided
+by the State/ U.T.) of receipt of applications. The failure of
+communication will automatically result in deemed membership. Such
+persons will have all the rights of members.
+5.1.5 He/She or his/her family is not in the business of milk and milk
+products, however, membership can be given to the milk producer who
+wants to become the member even if his/her family member is involved
+in the business of milk but Managing Committee of society will ensure
+that the concerned is not having business relation with the family
+member involved in milk business.
+
+-- 6 of 31 --
+
+5.1.6 He should not be a paid employee of the society.
+5.1.7 He has taken at least one share or the number of shares as decided by
+the society in the patronage criteria and paid an entrance fee of Rs. \u2026...
+5.1.8 He has agreed (in writing) to supply milk only to the society.
+5.1.9 He is not bankrupt or is not legally disabled.
+5.1.10 He is not criminally convicted for moral turpitude.
+5.1.11 No other person from his/her family is a member of the society.
+5.2 Those who have signed the original application for the registration of
+the society shall be exempted from Bye-law no. 5.1.4.
+5.3 The liabilities of a member shall not exceed any unpaid amount on
+share subscribed.
+5.4 Any member \u2013
+i. If he has dues with the society
+ii. If he ceases to have any of the qualifications for membership
+prescribed in Bye-law no. 5.1
+iii. If he has sold milk to any other agency other than society
+Shall not enjoy any other right in the society other than receiving
+bonus, dividend and other monetary benefits such as getting fodder
+seeds at subsidized rates etc.
+5.5 Any member may withdraw from the society at any time by submitting
+his resignation to the Managing Committee and getting it approved. But
+such approval shall not be given while he is in debt to the society or he
+is a surety to another member. In case a member has no outstanding
+dues with the society or he is not a surety to another member, his
+resignation will be considered as accepted after one month from the
+date of his resignation even if the Managing Committee has not
+approved it.
+5.6 Members who do not fulfill the member eligibility criteria as prescribed
+in Bye-law no. 5.1 can be taken as nominal member on payment of Rs-
+----- as admission fee which is non-refundable.
+5.7 Persons involved in other allied activities shall be admitted as nominal
+members of the society.
+5.8 Nominal member shall be admitted for business purpose only, they will
+not have any right to vote in the affairs of the society and will not be
+entitled for dividend from the society.
+
+-- 7 of 31 --
+
+5.9 Nominal members cannot contest in election for the membership of
+Managing Committee.
+5.10 Every Nominal member shall have the right to receive facilities which
+may be beneficial for them on mutually decided terms and conditions
+decided by the Managing Committee.
+6.0 Expulsion of members
+6.1 A member of the society may be expelled by a resolution passed by three
+fourth majority of the members entitled to vote from among those who
+are present at a General Meeting for the following reasons:
+6.1.1 If he is a persistent defaulter
+6.1.2 If he wilfully deceives the society by making false statements
+6.1.3 If he intentionally does any act likely to injure the reputation of the
+society
+6.1.4 If he persistently dishonours the suggestions and resolutions of the
+Managing Committee
+6.1.5 If he has a buffalo or cow in milk and sells milk to some other party or
+if he deals in sale and purchase of milk and milk products.
+6.1.6 If he ceases to possess any of the qualifications for becoming a member.
+But before expelling a member he shall be given an opportunity to
+present his case before the General Meeting and the resolution of the
+General Meeting should meet with the approval as per the provision of
+the State Cooperative Societies Act.
+6.2 The membership of a person shall be treated as discontinued or he
+ceases to be a member on any one of the following reasons, but the
+concerned member or his nominee shall be informed of this decision
+within 15 days.
+- On death
+- By resignation, if his resignation is accepted by the Managing
+Committee
+- If all shares belonging to him are transferred to another member.
+- If he is expelled from the society as per Bye-law No. 6.1
+- If he is removed according to the provisions of the State
+Cooperative Societies Act or by any statutory order of competent
+authority or court.
+
+-- 8 of 31 --
+
+6.2.1 When a person ceases to be a member, the society shall refund all his
+dues including share capital within six months, except in the case of
+expulsion. However, the outgoing member must completely repay his
+dues/advances to society bef
+
+[\u2026truncated\u2026]
+
+## EVM_Brochure_Eng
+Source: Knowledge Repository/EVM_Brochure_Eng.pdf | Category: EVM
+
+ETHNOVETERINARY FORMULATIONS
+FOR IMPORTANT AILMENTS IN BOVINES
+
+-- 1 of 24 --
+
+Scan this QR code to view the
+video on YouTube
+Water based Preparation
+Mastitis (all types)
+Aloe vera
+Lemon Lime
+Turmeric
+Powder
+Ingredients: For one day
+a) Aloe vera - 250 g; b) Turmeric powder - 50 g; c)
+Calcium Hydroxide (lime)-15 g; d) Lemon - 6 nos.
+Preparation:
+(i) Cut Aloe vera whole leaf into small pieces (after
+removing the thorns).(ii) Blend along with turmeric
+powder and lime to form a reddish paste.
+Application:
+(i) Wash, clean and completely milk out all quarters
+(including unaffected).(ii) Take a handful of the
+paste and add 200ml of water to make it thin.(iii)
+Apply the paste diluted in water ten times a day for 5
+days each time after following the step (i) above.
+(iv) Last application of the day should be oil based
+preparation. (v) Feed two lemons at a time orally
+(cut into halves) thrice a day for 3 days.
+
+-- 2 of 24 --
+
+Scan this QR code to view the
+video on YouTube
+Mastitis (all types)
+Aloe vera
+Ingredients : For one day
+Aloe vera (whole leaf) - 250 g; Turmeric powder -
+50 g; Calcium hydroxide (lime) - 15 g; Lemon - 6
+no.s ; Mustard or Gingelly oil - 600 ml.
+Preparation:
+(i) Cut Aloe vera whole leaf into small pieces (after
+removing the thorns).(ii) Blend along with turmeric
+powder and lime to form a reddish paste.
+Application:
+(i) Wash, clean and completely milk out all quarters
+(including unaffected) and dry the udder.(ii) Take a
+handful of the paste and add 200ml of mustard or
+gingelly oil to make it thin.(iii) Apply the paste diluted
+in oil three times a day for 5 days each time after
+following the step (i) above. (iv) Feed two lemons
+orally at a time (cut into halves) thrice a day for 3
+days.
+Lemon Lime Turmeric Powder
+Mustard or
+Gingelly oil
+Oil based Preparation
+
+-- 3 of 24 --
+
+Teat obstruction
+Neem
+leafstalk Turmeric
+Powder
+Scan this QR code to view the
+video on YouTube
+or
+Butter Ghee
+Ingredients:
+Freshly plucked & clean neem leafstalk-1; Turmeric
+powder; Butter or Ghee
+Preparation:
+(i) Nip the neem leafstalk from the top at the
+required length based on teat length, leaving the
+base intact. (ii) Coat the turmeric powder &
+butter/ghee mixture thoroughly on the neem
+leafstalk. (iii) Clean the affected teat opening
+thoroughly.
+Application:
+(I) Insert the coated neem leafstalk with cut end up,
+base down into the affected teat in an anti-
+clockwise direction.(ii) Replace with fresh
+neemstalk after each milking.
+
+-- 4 of 24 --
+
+Sesame/
+Mustard oil
+Garlic
+Turmeric
+Powder
+Udder Oedema
+Scan this QR code to view the
+video on YouTube
+Ingredients: For one time
+Sesame or mustard oil - 200 ml; Turmeric powder- 1
+handful; Garlic-2 pearls.
+Preparation:
+(i) Heat oil, add turmeric powder and sliced garlic. (ii)
+Mix well and remove from \uF002ame just as the \uF002avour
+develops (no need to boil). (iii) Allow to cool.
+Application:
+(i) Apply in a circular manner with force over the
+entire oedematous region and udder. (ii) Apply 4
+times a day for 3 days.
+Note: Rule out mastitis before using the formulation.
+
+-- 5 of 24 --
+
+Retention of Placenta
+Scan this QR code to view the
+video on YouTube
+Radish Lady\u2019s \uF001nger
+Jaggery Salt
+Ingredients:
+White radish -1 full tuber; Lady\u2019s \uF001nger - 1.5 kg;
+Jaggery - as required; Salt - as required
+Preparation:
+(i) Cut each lady\u2019s \uF001nger into 2 pieces.
+Application:
+(i) Feed one full tuber radish within two hours of
+calving. (ii) Feed 1.5 Kg of fresh lady\u2019s \uF001nger with
+jaggery and salt if ROP persists after 8 hours of
+calving. (iii) In case ROP persists even after 12
+hours of calving, tie a knot very close to the base
+and cut 2 inches below the knot and leave it. The
+knot will go in. (iv) Do not try to remove the retained
+placenta by hand. (v) Feed one full tuber of radish
+once a week for four weeks.
+
+-- 6 of 24 --
+
+Radish
+Cissus
+Curry
+leaves
+Salt
+Turmeric Powder	Jaggery
+Repeat breeding
+Scan this QR code to view the
+video on YouTube
+Application: st nd
+(i) Start treatment on 1 or 2 day of heat.
+(ii) Feed orally in fresh form in the following order
+once a day along with jaggery and salt:
+(a)1 white radish daily for 5 days (b) 1 Aloe vera leaf
+daily for 4 days.(c) 4 handfuls of moringa leaves for
+4 days. (d) 4 handfuls of cissus stem for 4 days. (e) 4
+handfuls of curry leaves with 5 gram turmeric
+powder for 4 days. (f) Repeat the treatment once
+again if the animal has not conceived.
+Moringa
+Aloe vera
+
+-- 7 of 24 --
+
+Prolapse
+Scan this QR code to view the
+video on YouTube
+Mimosa leaves
+Aloe vera gel Turmeric
+Powder
+Ingredients:
+Aloe vera gel - from one full leaf; Turmeric powder -
+one pinch; Mimosa pudica leaves - 2 handfuls.
+Preparation:
+(i) Remove the gel from a whole leaf. (ii) Wash it
+multiple times till the sliminess is reduced. (iii) Make
+volume upto 1 litre by adding water. (iv) Add a pinch
+of turmeric powder and boil to half the original
+volume and allow to cool (v) Prepare a paste of M.
+pudica leaves separately.
+Application:
+(i) Clean the prolapsed mass (ii) Sprinkle the gel on
+the prolapsed mass. (iii) Apply M.pudica paste after
+the gel dries. (iv) Repeat the process as frequently
+as possible till the condition improves.
+
+-- 8 of 24 --
+
+Pepper
+Jaggery
+FMD mouth lesions
+Scan this QR code to view the
+video on YouTube
+Ingredients: For one dose
+Cumin seeds - 10 g; Fenugreek seeds - 10 g; Black
+pepper - 10 g; Turmeric powder - 10 g; Garlic - 4
+pearls; Coconut - 1; Jaggery- 120 g.
+Preparation:
+(i) Soak cumin, fenugreek and black pepper seeds
+in water for 20-30 mts. (ii) Blend all ingredients to a
+\uF001ne paste. (iii) Add 1 full grated coconut to the paste
+and mix by hand only. (iv) Prepare dose freshly for
+each application.
+Application:
+(i) Apply gently inside the mouth, tongue and
+palate. (ii) Give the preparation thrice a day for 3 to
+5 days.
+Cumin
+Garlic
+Coconut
+Turmeric
+Powder
+Fenugreek
+
+-- 9 of 24 --
+
+FMD foot lesions/wound
+Scan this QR code to view the
+video on YouTube
+Acalypha
+Tulsi
+Neem
+Anona
+Garlic Turmeric
+Powder
+Coconut
+oil
+Sesame
+oil
+Mehndi
+or
+Ingredients:
+Acalypha indica leaves - 1 handful; Garlic-10 pearls;
+Neem leaves - 1 handful; Coconut or Sesame oil - 500
+ml; Turmeric powder - 20 g; Mehndi leaves - 1
+handful; Tulsi leaves - 1 handful.
+Preparation:
+(i) Blend all the ingredients thoroughly. (ii) Mix with
+500 ml coconut or sesame oil and boil and bring to
+cool.
+Application:
+(i) Clean the wound and apply directly or bandage
+with a medicated cloth. (ii) Apply Anona leaf paste or
+camphorated coconut oil for the \uF001rst day only if
+maggots are present.
+
+-- 10 of 24 --
+
+Fever
+Scan this QR code to view the
+video on YouTube
+Ingredients: For one day
+Garlic - 2 pearls; Coriander- 10 g; Cumin -10 g;
+Tulsi - 1 handful; Dry cinnamon leaves - 10 g; Black
+pepper - 10 g; Betel leaves - 5 no.s; Shallots/Onion
+- 2 bulbs; Turmeric powder - 10 g; Chirata leaf
+powder - 20 g; Sweet basil - 1 handful; Neem
+leaves - 1 handful; Jaggery - 100 g.
+Preparation:
+(i) Soak cumin, pepper and coriander seeds in
+water for 15 mts. (ii) Blend and mix all ingredients to
+form a paste.
+Application:
+(i) Administer orally in small portions in the morning
+and evening.
+Shallots/
+Onion
+Bay leaves	Garlic	Coriander
+Sweet Basil
+Neem Jaggery
+Chirata	Cumin Turmeric
+Powder
+Tulsi
+Betel
+Pepper
+
+-- 11 of 24 --
+
+Diarrhoea
+Scan this QR code to view the
+video on YouTube
+Ingredients: For one day
+Fenugreek seeds - 10 g; Onion - 1 no.; Garlic - 1
+pearl; Cumin seeds - 10 g; Turmeric Powder - 10 g;
+Curry leaves - 1 handful; Poppy seeds - 5 g; Pepper-
+10 g ; Jaggery - 100 g; Asafoetida - 5 g.
+Preparation:
+(i) Dry fry cumin seeds, asafoetida, poppy seeds and
+fenugreek seeds till smoke emanates.(ii) Cool and
+powder the fried seeds.(iii) Blend it with rest of the
+ingredients to form a paste.
+Application:
+(i) Roll the paste into small balls. (ii) Administer
+orally in small portions once daily for 1-3 days till
+condition cures.
+Poppy	Onion
+Fenu greek Pepper
+Asafoetida	Jaggery
+Cumin Turmeric Powder
+Curry leaves	Garlic
+
+-- 12 of 24 --
+
+Bloat and Indigestion
+Scan this QR code to view the
+video on YouTube
+Ingredients: For one day
+Onion - 100 g; Garlic-10 pearls; Dry Chilly - 2; Cumin
+seeds - 10 g; Turmeric Powder -10 g; Jaggery- 100 g;
+Pepper - 10 g; Betel leaves - 10 no.s; Ginger - 100 g
+Preparation:
+(i) Soak pepper and cumin seeds for 30 mts. (ii) Blend
+along with other ingredients to form a paste.
+Application:
+(i) Roll the paste into small balls. (ii) Administer orally
+in small portions with salt 3-4 times a day for 3 days.
+Cumin
+Turmeric
+Powder
+Chilly
+Garlic Betel leaves
+Onion Pepper
+Salt
+Jaggery Ginger
+
+-- 13 of 24 --
+
+Worms
+Scan this QR code to view the
+video on YouTube
+Mustard
+Common leucas	Banana stem Bitter gourd
+Jaggery
+Turmeric Powder	Garlic
+Onion Pepper
+Neem Cumin
+Ingredients: For one day
+Onion- 1 no; Garlic-5 pearls; Mustard seeds - 10 g;
+Neem leaves - 1 handful; Cumin - 10 g; Bitter
+gourd - 50 g; Turmeric Powder - 5 g; Pepper- 5 g;
+Banana stem - 100 g; Common leucas -1 handful;
+Jaggery - 100 g.
+Preparation:
+(i) Soak pepper , cumin and mustard seeds for 30
+mts. (ii) Blend along with other ingredients to form
+a paste.
+Application:
+(i) Roll the paste into small balls. (ii) Administer in
+small portions with salt once daily for 3 days.
+
+-- 14 of 24 --
+
+Tick/Ectoparasites
+Scan this QR code to view the
+video on YouTube
+Ingredients:
+Garlic - 10 pearls; Neem leaves - 1 handful; Neem
+fruit - 1handful; Acorus rhizome - 10 g; Turmeric
+powder - 20 g; Lantana leaves - 1 handful; Tulsi
+leaves - 1 handful.
+Preparation:
+(i) Blend all the ingredients. (ii) Add one litre of
+clean water. (iii) Strain with a \uF001ne sieve or muslin
+cloth.(iv) Transfer to a bottle attached to a sprayer.
+Application:
+(i) Spray on the entire body of the animal. (ii) Also
+spray on any cracks and crevices in the cattle
+shed.(iii) Application can also be done using a cloth
+dipped in the solution.(iv) Repeat once a week till
+the condition resolves. (v) Do the application only
+during sunny part of the day.
+A.calamus rhizome
+Lantana
+Turmeric
+Powder
+Garlic
+Neem
+Neem fruit Tulsi
+
+-- 15 of 24 --
+
+Pox/wart/cracks
+Scan this QR code to view the
+video on YouTube
+Cumin Sweet basil
+Neem
+Butter	Garlic
+Turmeric
+Powder
+Ingredients:
+Garlic-5 pearls; Turmeric powder - 10 g; Cumin
+seeds - 15 g; Sweet basil - 1 handful; Neem leaves
+- 1 handful ; Butter(preferred) or ghee - 50 g.
+Preparation:
+(i) Soak cumin seeds in water for 15 mts. (ii) Blend
+all ingredients to a \uF001ne paste. (iii) Add butter and
+mix well.
+Application:
+(i) Apply on affected part as many times as possible
+till condition resolves. (ii) Apply after drying the skin
+surface.
+
+-- 16 of 24 --
+
+Allergy/Poisoning/Venomous sting/bite
+Ingredients: For one dose
+(Three Kings: as per Tamil traditional Siddha lore)
+Betel leaves -10 no.s; Black pepper - 10 g;
+Salt - 10 g; Jaggery - as required.
+Preparation:
+(i) Blend the ingredients to form a paste. (ii) Mix with
+jaggery.
+Application:
+(i) Feed the dose in small portions (ii) Administer
+3 doses daily for 2 weeks.
+Note : Alternatively 2-3 drops may be instilled in
+eye every one hour in critical conditions (without
+jaggery).
+Betel leaves Salt
+Pepper Jaggery
+Scan this QR code to view the
+video on YouTube
+
+-- 17 of 24 --
+
+Hygroma (swelling of joints)
+Ingredients:
+Aloe vera - 100 g; Lime (Calcium hydroxide) - 10 g;
+Cissus quadrangularis stem - 100g; Turmeric
+Powder - 15 g; Garlic - 5 cloves; Gingelly oil - 1litre.
+Preparation:
+(i) Blend all the ingredients to a paste (ii) Boil in 1
+litre gingelly oil and allow to cool.
+Application:
+(i) Apply four or five times a day on affected part.
+(ii) Give hot water fomentation twice daily.
+Aloe vera
+Lime
+Cissus
+Turmeric
+Powder
+Garlic
+Gingelly oil
+Scan this QR code to view the
+video on YouTube
+
+-- 18 of 24 --
+
+Cough
+Ingredients: For one day
+Adhathoda (Adusa) - 1 leaf; Tulsi - 1 handful; Garlic -
+5 cloves; Turmeric Powder - 10 g; Pepper - 10 g;
+Jaggery - as required.
+Preparation:
+(i) Soak pepper for 15-20 minutes and grind
+separately (ii) Blend all the ingredients together to
+form a paste with jaggery.
+Application:
+Feed orally 2-3 times daily till the condition resolves.
+Adhathoda
+(Adusa)
+Tulsi Garlic Turmeric
+Powder
+Pepper
+Jaggery
+Scan this QR code to view the
+video on YouTube
+
+-- 19 of 24 --
+
+Downer (not able to get up)
+Ingredients: For one dose
+Desi chicken eggs - 2; Moringa leaves - 4 handfuls;
+Cissus quadrangularis - 4 handfuls; Jaggery - as
+required.
+Preparation:
+(I) Take fresh unboiled eggs (ii) Make a paste of
+Moringa and Cissus stem separately with jaggery.
+Application:
+(i) Feed 2 eggs (including shell) at a time, three
+times a day (make a small hole in the shell before
+feeding the egg). (ii) Feed moringa and cissus
+stem paste alternatively every 2 hours (four
+handfuls at a time) (iii) Do not attempt to lift the
+th
+animal till the 4 day.
+Desi chicken
+eggs
+Cissus
+Moringa Jaggery
+Scan this QR code to view the
+video on YouTube
+
+-- 20 of 24 --
+
+Toxicity (Pesticide/HCN/Mycotoxin)
+Betel
+Pepper Tamarind
+Moringa
+salt Jaggery
+Scan this QR code to view the
+video on YouTube
+Ingredients:
+Three kings : For one dose
+Betel leaves - 10 nos; Black pepper - 10 g; Salt - 10 g;
+Jaggery - as required.
+Other preparation: For one day
+Tamarind - 1 Kg; Water - 1 Litre; Moringa extract
+from 1 Kg leaves.
+Preparation:
+Three kings preparation
+(i) Blend Betel leaves, Black pepper and salt to form
+a paste (ii) Mix with jaggery.
+Other ingredients preparation
+(i) Soak tamarind pulp for 15 minutes. (ii) Extract
+the juice from the pulp (iii) Add water, moringa leaf
+extract and jaggery (iv) Mix it thoroughly.
+Application:
+(i) Give the first dose of three kings (ii) Feed 200 ml
+of the tamarind-moringa-jaggery as a thick slimy
+mixture every 2 hours (iii) Feed doses of three kings
+mixture in between.
+
+-- 21 of 24 --
+
+Blood in Milk
+Ingredients: For one day
+Curry leaves - 2 handfuls; Moringa leaves - 2
+handfuls; Jaggery - 100 g; Lemon - 6 no.s
+Preparation:
+Blend curry and moringa leaves to a paste along
+with jaggery. Cut the lemon in two halves.
+Application:
+(i) Feed the paste twice daily till the condition
+resolves.
+(ii) Feed two lemons at a tim
+
+[\u2026truncated\u2026]
+
+## EVM_Brochure_Hindi
+Source: Knowledge Repository/EVM_Brochure_Hindi.pdf | Category: EVM
+
+Official NDDB extension material: EVM_Brochure_Hindi.
+Topics: ethno-veterinary medicine; traditional remedies.
+Local file: EVM_Brochure_Hindi.pdf
+Hindi/Gujarati PDF may use custom fonts \u2014 see Dairy Knowledge Portal for full text.
+
+## Handbook-of-Good-Dairy-Husbandry-Practices
+Source: Knowledge Repository/Handbook-of-Good-Dairy-Husbandry-Practices.pdf | Category: Extension
+
+[UPDATE 2025 \u2014 NDLM / Bharat Pashudhan: The farmer app formerly known as e-Gopala is now **1962** (Google Play). Do NOT recommend Pashu Poshan or e-Gopala as current apps. Official ecosystem: **Bharat Pashudhan** \u2014 https://bharatpashudhan.ndlm.co.in/ \u2014 toll-free helpline **1962** for Mobile Veterinary Units.]
+
+Handbook of
+Good Dairy Husbandry Practices
+National Dairy
+Development Board
+
+-- 1 of 125 --
+
+2
+BREEDS OF INDIGENOUS DAIRY CATTLE
+BULLS COWS
+Kankrej
+Native tract: Kutch, Mehsana &
+Banaskantha districts of Gujarat
+Tharparkar
+Native tract: Jaisalmer, Barmer
+and Jodhpur districts in
+Rajasthan
+Red Sindhi
+Native tract: In Pakistan, also
+found in Punjab, Haryana &
+Rajasthan & Uttarakhand
+Rathi
+Native tract: Bikaner &
+Shri Ganganagar districts of
+Rajasthan
+Sahiwal
+Native tract: Ferozpur and
+Amritsar district of Punjab & Shri
+Ganganagar district of Rajasthan
+Hariana
+Native tract: Rohtak, Hissar,
+Sonepat, Gurgaon, Jind and
+Jhajjar districts in Haryana
+Gir
+Native tract: Junagadh, Rajkot,
+Bhavnagar and Amreli districts
+in Gujarat
+
+-- 2 of 125 --
+
+BREEDS OF BUFFALO
+BULLS COWS
+Murrah
+Native tract: Hissar, Rohtak,
+Gurgaon and Jind districts of
+Haryana
+Surti
+Native tract: Anand, Kheda
+and Baroda districts of
+Gujarat
+Mahesani
+Native tract: Mahesana,
+Banaskantha & Sabarkantha
+districts of Gujarat
+Pandharpuri
+Native tract: Solapur, Sangli
+and Kolhapur districts of
+Maharashtra
+Nili Ravi
+Native tract: Originally from
+Pakistan, found in bordering
+districts of Ferozpur and
+Amritsar in Punjab
+Jaffarabadi
+Native tract: Junagadh,
+Jamnagar, Rajkot, Bhavnagar,
+Porbandar & Amreli districts
+of Gujarat
+With an annual production of 18.77 crore metric tonnes during 2018-19, India continues to be
+ranked number one in the world in milk production since 1997. Dairying is the main source
+of livelihood for our milk producers, majority of them either landless or marginal farmers. For
+making dairying a profitable and, sustainable venture, it is important for the dairy farmer to
+adopt scientific practices that would lead to increased productivity at optimum costs. For this
+to happen, the farmer should be aware of the basic tenets of animal health, breeding and
+feeding.
+The National Dairy Plan-I (NDP-I) has been launched by the GoI with the aim to double
+milk production in the country by 2020. This would require focused efforts in the field of
+breeding, feeding and animal health, which would increase productivity and optimize costs.
+In breeding, coverage of artificial insemination (AI) needs to be increased using disease free
+semen from high genetic merit bulls. There is also an urgent need to optimize the utilization
+of feed resources in order to reduce the cost of milk production through balancing the ration
+of animals. More importantly, preventive measures to control occurrence of diseases need to
+be put in place, which is pivotal in harnessing the full production potential of the animal.
+This handbook on scientific dairy practices has been designed keeping these requirements of
+the dairy farmers in mind. The handbook attempts to provide basic information on breeding,
+healthcare, management, nutrition, fodder production etc, based on existing and new
+technologies, along with illustrations. Such information is usually not available from a single
+source to the dairy farmer.
+We sincerely hope that the handbook would be useful to the dairy farmer.
+Dilip Rath
+Chairman
+National Dairy Development Board
+FOREWORD
+
+-- 3 of 125 --
+
+-- 4 of 125 --
+
+PART-I ANIMAL HEALTH & BREEDING ...................................................1
+1 Section I General observation of an animal.............................................................................2
+2 Section II Buying & inducting a new animal ............................................................................5
+3 Section III Care of new born calf.....................................................................................................9
+4 Section IV Diseases preventable by vaccination .................................................................... 12
+5 Section V Other important diseases .......................................................................................... 21
+6 Section VI Tick & fly borne diseases............................................................................................ 29
+7 Section VII Tick, fly & worm control ............................................................................................. 32
+8 Section VIII Diseases that occur after calving............................................................................ 35
+9 Section IX Diseases that occur due to faulty feeding ......................................................... 40
+10 Section X Mastitis & diseases of teats ....................................................................................... 44
+11 Section XI Common poisoning conditions ............................................................................... 51
+12 Section XII Common zoonotic diseases ...................................................................................... 54
+13 Section XIII Breeding & related activities..................................................................................... 57
+14 Section XIV Traditional remedies for minor ailments ............................................................. 65
+PART-II ANIMAL NUTRITION AND MANAGEMENT .............................73
+1 Section I Feeding of Animals....................................................................................................... 74
+2 Section II Fodder production ........................................................................................................ 85
+3 Section III Housing of animals .....................................................................................................105
+PART-III INFORMATION NETWORK FOR BETTER PRODUCTIVITY ...109
+1 Section I Animal identification ..................................................................................................110
+2 Section II INAPH & animal health .............................................................................................111
+3 Section III INAPH & animal breeding ........................................................................................112
+4 Section IV INAPH & animal nutrition ........................................................................................113
+Frequently asked questions ...............................................................114
+S. No. Contents Description Page
+Numbers
+INDEX
+
+-- 5 of 125 --
+
+6
+
+-- 6 of 125 --
+
+1
+ANIMAL HEALTH AND BREEDING
+PART I
+Animal health plays an important role in harnessing the expected production potential
+of dairy animals. A diseased animal cannot perform to the expected level. Timely
+intervention is therefore pivotal in reducing the economic losses due to diseases.
+Improvement of breeds is also the need of the hour and the farmer needs to be made
+aware of various aspects of breeding to be an active participant of breed improvement
+programmes. With this aim, the Part I of this booklet is divided into XIV sections which
+are as under:
+Section I General observation of an animal
+Section II Buying and inducting a new animal
+Section III Care of new born calf
+Section IV Diseases preventable by vaccination
+Section V Other important diseases
+Section VI Tick and fly borne diseases
+Section VII Tick, Fly and worm control
+Section VIII Diseases that occur after calving
+Section IX Diseases that occur due to faulty feeding
+Section X Mastitis and diseases of teats
+Section XI Common poisoning conditions
+Section XII Common zoonotic diseases
+Section XIII Breeding and related activities
+Section XIV Traditional remedies for minor ailments
+
+-- 7 of 125 --
+
+2
+SECTION I
+GENERAL OBSERVATION OF AN ANIMAL
+General observation of certain parameters will
+guide you in assessing the health status of your
+animal which will in turn help you in seeking
+timely advice from a veterinarian.
+Timely intervention can prevent or drastically
+reduce the losses due to diseases or other
+conditions. This section has therefore the
+following chapters:
+A. Seven questions for a healthy animal.
+B. Observing basic health parameters.
+C. Body scoring.
+
+-- 8 of 125 --
+
+3
+A. SEVEN QUESTIONS FOR A HEALTHY ANIMAL
+1. Does the animal react normally to its environment and in the herd or is it acting strangely?
+(Behaviour)
+2. Does it carry its head, ears, body and tail as usual? Does it walk normally? (Attitude)
+3. Is the animal in good condition and is it well muscled, neither too thin or too fat? (Condition)
+4. Does it eat, drink and ruminate properly?
+5. Does it urinate and defaecate normally?
+6. If a cow is in milk, is there a sudden drop in milk production?
+7. Any other abnormal signs?
+Consult a veterinarian in case any change is noticed
+B. OBSERVING BASIC HEALTH PARAMETERS
+\u2022 Breathing frequency - (Breathing in + breathing out) is 10-30 times per minute in normal
+adults and 30-50 times per minute in calves. Observed best from the animal\u2019s right flank,
+seen from behind.
+\u2022 Rumination - Not less than 40 times per minute and 7-10 hours per day.
+\u2022 Rumen movement - Two to three per minute, can be felt by pressing lightly on the
+upper part of the left flank.
+\u2022 Appearance - A healthy animal has a shining, smooth and even coat as well as shiny horns
+and hoofs. Eyes should also be normal without discharge or tears and muzzle moist.
+\u2022 Fever - Usually accompanied by rapid breathing, shivering and occasionally diarrhoea.
+Ears, horns and legs are usually cold to touch while body is too warm.
+If any change is observed in the above parameters or fever seen, consult a veterinarian.
+Body condition scoring
+Scoring Interpretation
+Vertebrae at
+middle of the
+back
+Rear view of
+the hook bone
+(cross-section)
+Side view of the
+line between hook
+and pin bones
+Cavity between tail
+head and pin bone
+(rear and side view)
+Score 1 -
+Severe under-conditioning
+Score 2 -
+Frame obvious
+Score 3 -
+Frame and covering well
+Score 4 -
+Frame not very visible
+Score 5 -
+Severe over-conditioning
+Not in good health.
+Will not milk well or
+reproduce.
+Health may be OK. But
+milk production low and
+poor reproduction.
+High producing, but fat
+may not be enough for
+peak production.
+May have more metabolic
+problems at calving.
+Extremely fat and will
+have metabolic and
+breeding problems.
+Dry cows and calving cows should have a body condition score of 3.5 (See chapter on body scoring)
+Observe your animals closely to help diagnose diseases early
+
+-- 9 of 125 --
+
+4
+C. BODY SCORING
+BODY SCORE-1
+BODY SCORE-2
+BODY SCORE-3
+BODY SCORE-4
+BODY SCORE-5
+\u2022 Body scoring is very important in assessing the health status of an animal.
+\u2022 A low score may indicate diseases or improper feeding while a high score may indicate a
+high probability of breeding and metabolic problems.
+\u2022 Extremely thin. No fat in brisket or
+tail docks.
+\u2022 All skeletal structures are visible.
+\u2022 Dull hair
+\u2022 May be diseased and survival
+during stress is doubtful
+\u2022 Thin. Vertebrae, hips and pin bone
+prominent.
+\u2022 Some tissue cover around tail
+dock, hip bones and the flank.
+\u2022 Muscle tissue evident but not
+abundant, health may be OK.
+\u2022 Ribcage only slightly visible.
+\u2022 Fat deposit behind shoulder
+obvious, ideal condition for calving.
+\u2022 Fat deposit in brisket area.
+\u2022 Hook and pin bone visible, but not
+prominent.
+\u2022 Skeletal structure difficult to
+identify.
+\u2022 Obvious fat deposits behind
+shoulder and tail head.
+\u2022 Flat appearance to the top line.
+\u2022 Folds of fat starting to develop
+over ribs and thighs.
+\u2022 Animal is obese, flat appearance
+dominates.
+\u2022 Brisket is heavy and bone
+structure not noticeable.
+\u2022 Tail head and hip bones completely
+buried in folds of fat.
+\u2022 Back is flat and completely
+covered by fat.
+\u2022 Mobility impaired by large fat
+deposits.
+Body scoring would be a helpful yardstick to monitor health
+Body score 1 Cattle with body score 1
+Cattle with body score 2
+Cattle with body score 3
+Cattle with body score 4 may have
+metabolic problems at calving.
+Body score 2
+Body score 3
+Body score 4
+Body score 5 Cattle with body score 5 and above
+have high probability of metabolic and
+breeding problems.
+
+-- 10 of 125 --
+
+5
+SECTION II
+BUYING & INDUCTING A NEW ANIMAL
+Newly purchased animals are one of the major
+sources of infection and may introduce new
+diseases into your herd. Once you decide
+on what type of animals you want to rear
+based on your resources, purchasing healthy
+animals and implementing strict protocols for
+introduction into your herd is one of the most
+important components to prevent diseases
+occurring in your herd due to introduction of
+a newly purchased animal. Determining the
+age of the newly purchased animal will also
+be a helpful tool. This section consists of the
+following sections:
+A. Purchasing a new animal.
+B. Inducting a newly purchased animal into
+the herd.
+C. Determining the age of an animal.
+
+-- 11 of 125 --
+
+6
+A. PURCHASING A NEW ANIMAL
+Breed
+y A decision on what breed one wants to keep depends on the resources available with
+the farmer and the suitability of the breed to the locale. A decision on the breed should
+be taken only after detailed discussions with your local veterinarian/Krishi Vigyan Kendras
+(KVKs)/Kisan Call Centres.
+Source
+y Known disease free farms (either govt or private ) where regular testing for diseases like TB,
+JD and brucellosis are done and positive animals removed would be ideal sources to procure
+your animals.
+y It is better to buy animals from the owners\u2019 premises rather than from cattle markets/shanties
+since chances of the animal being exposed to diseases is high at these locations.
+General signs to observe for in healthy animals during purchase
+y Eyes: bright, clear and not runny (no discharge), crusty or bloodshot.
+y Nose: cool, moist muzzle, with frequent licking; breathing should be regular and not laboured;
+beware of discharge, coughing, wheezing or irregular breathing.
+y Coat: Glossy, clean and un-matted, free of ticks/lice, other parasites or eruptions.
+y Weight
+
+[\u2026truncated\u2026]
+
+## INAPH Nutrition masters for RBP Revised
+Source: Knowledge Repository/INAPH Nutrition masters for RBP Revised.pdf | Category: Nutrition
+
+AN/RBP/INAPH/NUTRITION MASTERS/ September 17, 2015
+Revised nutrient requirement Tables for Ration Balancing Programme (RBP)
+for Nutrition Masters, values adopted from NRC (1989), NRC (2001), Kearl,
+L.C. (1982) & ICAR (2013). Considering the suitability to Indian conditions,
+feeding and management, these values have been adopted.
+Table 1: Nutrient requirement for maintenance of growing non-
+pregnant cattle
+Species
+Name
+Sex Adult Pregnancy
+status
+Weight
+(kg)
+TDN (g) CP (g) Ca(g) P (g)
+Cattle F N N 100 1840 421 17 9
+Cattle F N N 150 2410 562 19 11
+Cattle F N N 200 2950 699 20 14
+Cattle F N N 250 3480 718 22 16
+Cattle F N N 300 4010 752 23 17
+Cattle F N N 350 4560 874 24 18
+Cattle F N N 400 5120 1007 25 19
+Cattle F N N 450 5710 1151 28 19
+Cattle F N N 500 6340 1311 28 20
+Table 2: Nutrient requirement for maintenance of growing pregnant
+cattle
+Spp. Sex Adult Pregnancy
+status
+Weight
+(kg)
+TDN (g) CP (g) Ca(
+g)
+P
+(g)
+Cattle F N Y 250 4176 862 26 19
+Cattle F N Y 300 4812 902 28 20
+Cattle F N Y 350 5472 1049 29 23
+Cattle F N Y 400 6144 1208 30 23
+Cattle F N Y 450 6852 1381 34 23
+Cattle F N Y 500 7608 1573 34 24
+Table 3: Nutrient requirement for maintenance of adult non-pregnant
+cattle
+Spp.
+Name
+Sex Adult Pregnancy
+status
+Weight
+(kg)
+TDN (g) CP
+(g)
+Ca
+(g)
+P (g)
+Cattle F Y N 300 2620 351 14 9
+Cattle F Y N 350 2950 394 16 10
+Cattle F Y N 400 3270 436 18 11
+Cattle F Y N 450 3580 476 20 13
+Cattle F Y N 500 3880 515 23 14
+Cattle F Y N 550 4180 553 25 16
+Cattle F Y N 600 4470 591 27 17
+Cattle F Y N 650 4750 627 30 19
+Cattle F Y N 700 5030 663 32 20
+Cattle F Y N 750 5310 698 34 21
+Cattle F Y N 800 5580 733 36 23
+
+-- 1 of 6 --
+
+Table 4: Nutrient requirement for maintenance of adult pregnant cattle
+Spp.
+Name
+Sex Adult Pregnancy
+status
+Weight
+(kg)
+TDN (g) CP
+(g)
+Ca
+(g)
+P
+(g)
+Cattle F Y Y 300 3400 725 20 12
+Cattle F Y Y 350 3780 807 23 14
+Cattle F Y Y 400 4150 890 26 16
+Cattle F Y Y 450 4530 973 30 18
+Cattle F Y Y 500 4900 1053 33 20
+Cattle F Y Y 550 5270 1131 36 22
+Cattle F Y Y 600 5620 1207 39 24
+Cattle F Y Y 650 5970 1281 43 26
+Cattle F Y Y 700 6310 1355 46 28
+Cattle F Y Y 750 6650 1427 49 30
+Cattle F Y Y 800 6980 1497 53 32
+Table 5: Nutrient requirement for milk production with different level
+of fat% for cattle
+Spp. Fat (%) TDN (g) CP (g) Ca (g) P (g)
+Cattle 3.5 310 96 2.97 1.83
+Cattle 3.6 314 96 3.02 1.86
+Cattle 3.7 318 96 3.07 1.89
+Cattle 3.8 322 96 3.11 1.92
+Cattle 3.9 326 96 3.16 1.95
+Cattle 4.0 330 96 3.21 1.98
+Cattle 4.1 334 96 3.26 2.01
+Cattle 4.2 338 96 3.31 2.04
+Cattle 4.3 342 96 3.35 2.07
+Cattle 4.4 346 96 3.40 2.10
+Cattle 4.5 350 96 3.45 2.13
+Cattle 4.6 354 97 3.50 2.16
+Cattle 4.7 358 98 3.55 2.19
+Cattle 4.8 362 99 3.59 2.22
+Cattle 4.9 366 100 3.64 2.25
+Cattle 5.0 370 101 3.69 2.28
+Cattle 5.1 374 102 3.74 2.31
+Cattle 5.2 378 103 3.79 2.34
+Cattle 5.3 382 104 3.83 2.37
+Cattle 5.4 386 105 3.88 2.40
+Cattle 5.5 390 107 3.93 2.43
+Cattle 5.6 394 108 3.98 2.46
+Cattle 5.7 398 109 4.03 2.49
+Cattle 5.8 402 110 4.07 2.52
+Cattle 5.9 406 111 4.12 2.55
+Cattle 6.0 410 112 4.17 2.58
+
+-- 2 of 6 --
+
+Table 6: Nutrient requirement for maintenance for growing non-
+pregnant buffaloes
+Spp.
+Name
+Sex Adult
+status
+Pregnancy
+status
+Weight
+(kg)
+TDN
+(g)
+CP
+(g)
+Ca
+(g)
+P
+(g)
+Buffalo F N N 100 2470 487 14 11
+Buffalo F N N 150 2860 506 14 12
+Buffalo F N N 200 3220 525 14 13
+Buffalo F N N 250 3550 547 15 12
+Buffalo F N N 300 4010 569 17 16
+Buffalo F N N 350 4450 607 17 16
+Buffalo F N N 400 4880 645 18 16
+Buffalo F N N 450 5310 683 20 17
+Buffalo F N N 500 5720 721 23 18
+Table 7: Nutrient requirement for maintenance for growing pregnant
+buffaloes
+Spp.
+Name
+Sex Adult
+status
+Pregnancy
+status
+Weight
+(kg)
+TDN
+(g)
+CP
+(g)
+Ca
+(g)
+P
+(g)
+Buffalo F N Y 300 4812 683 20 19
+Buffalo F N Y 350 5340 728 21 19
+Buffalo F N Y 400 5856 774 22 19
+Buffalo F N Y 450 6372 820 24 20
+Buffalo F N Y 500 6864 865 28 22
+Table 8: Nutrient requirement for maintenance for adult non-pregnant
+buffaloes
+Spp.
+Name
+Sex Adult
+status
+Pregnancy
+status
+Weight
+(kg)
+TDN
+(g)
+CP
+(g)
+Ca
+(g)
+P
+(g)
+Buffalo F Y N 350 2950 423 16 11
+Buffalo F Y N 400 3270 469 18 13
+Buffalo F Y N 450 3580 512 20 14
+Buffalo F Y N 500 3880 553 23 15
+Buffalo F Y N 550 4180 597 25 16
+Buffalo F Y N 600 4470 633 27 17
+Buffalo F Y N 650 4750 683 30 18
+Buffalo F Y N 700 5030 714 32 19
+Buffalo F Y N 750 5310 752 34 20
+Buffalo F Y N 800 5580 788 36 21
+
+-- 3 of 6 --
+
+Table 9: Nutrient requirement for maintenance for adult pregnant
+buffaloes
+Spp.
+Name
+Sex Adult
+status
+Pregnancy
+status
+Weight
+(kg)
+TDN
+(g)
+CP (g) Ca
+(g)
+P
+(g)
+Buffalo F Y Y 400 4200 644 23 18
+Buffalo F Y Y 450 4500 720 26 20
+Buffalo F Y Y 500 4800 776 29 22
+Buffalo F Y Y 550 5000 832 31 24
+Buffalo F Y Y 600 5300 889 34 26
+Buffalo F Y Y 650 5600 944 36 28
+Buffalo F Y Y 700 5900 992 39 30
+Buffalo F Y Y 750 6100 1064 42 32
+Buffalo F Y Y 800 6400 1116 44 34
+
+-- 4 of 6 --
+
+Table 10: Nutrient requirement for milk production with different level
+of fat % for buffaloes
+Spp. Fat (%) TDN (g) CP (g) Ca (g) P (g)
+Buffalo 6.0 440 124 4.10 2.40
+Buffalo 6.1 444 124 4.15 2.42
+Buffalo 6.2 448 124 4.20 2.44
+Buffalo 6.3 452 124 4.25 2.46
+Buffalo 6.4 456 124 4.30 2.48
+Buffalo 6.5 460 124 4.35 2.50
+Buffalo 6.6 464 124 4.40 2.52
+Buffalo 6.7 468 124 4.45 2.54
+Buffalo 6.8 472 124 4.50 2.56
+Buffalo 6.9 476 124 4.55 2.58
+Buffalo 7.0 480 124 4.60 2.60
+Buffalo 7.1 484 125 4.65 2.62
+Buffalo 7.2 488 125 4.70 2.64
+Buffalo 7.3 492 125 4.75 2.66
+Buffalo 7.4 496 126 4.8 2.68
+Buffalo 7.5 500 126 4.8 2.70
+Buffalo 7.6 504 126 4.8 2.72
+Buffalo 7.7 508 127 4.8 2.74
+Buffalo 7.8 512 127 4.8 2.76
+Buffalo 7.9 516 127 4.8 2.78
+Buffalo 8.0 520 128 4.8 2.80
+Buffalo 8.1 524 129 4.8 2.82
+Buffalo 8.2 528 130 4.8 2.84
+Buffalo 8.3 532 131 4.8 2.86
+Buffalo 8.4 536 132 4.8 2.88
+Buffalo 8.5 540 133 4.8 2.90
+Buffalo 8.6 544 134 4.8 2.92
+Buffalo 8.7 548 135 4.8 2.94
+Buffalo 8.8 552 136 4.8 2.96
+Buffalo 8.9 556 137 4.8 2.98
+Buffalo 9.0 560 138 4.8 3.00
+Buffalo 9.1 564 139 4.8 3.02
+Buffalo 9.2 568 140 4.8 3.04
+Buffalo 9.3 572 141 4.8 3.06
+Buffalo 9.4 578 142 4.8 3.08
+Buffalo 9.5 582 144 4.8 3.10
+Buffalo 9.6 586 145 4.8 3.12
+Buffalo 9.7 590 146 4.8 3.14
+Buffalo 9.8 594 147 4.8 3.16
+Buffalo 9.9 596 148 4.8 3.18
+Buffalo 10.0 600 149 4.8 3.20
+
+-- 5 of 6 --
+
+Spp. Fat (%) TDN (g) CP (g) Ca (g) P (g)
+Buffalo 10.1 604 150 4.8 3.22
+Buffalo 10.2 608 151 4.8 3.24
+Buffalo 10.3 612 152 4.8 3.26
+Buffalo 10.4 616 153 4.8 3.28
+Buffalo 10.5 620 154 4.8 3.30
+Buffalo 10.6 624 155 4.8 3.32
+Buffalo 10.7 628 156 4.8 3.34
+Buffalo 10.8 632 157 4.8 3.36
+Buffalo 10.9 636 158 4.8 3.38
+Buffalo 11.0 640 159 4.8 3.40
+Buffalo 11.1 644 159 4.8 3.42
+Buffalo 11.2 648 159 4.8 3.44
+Buffalo 11.3 652 159 4.8 3.46
+Buffalo 11.4 656 159 4.8 3.48
+Buffalo 11.5 660 159 4.8 3.50
+Buffalo 11.6 664 159 4.8 3.52
+Buffalo 11.7 668 159 4.8 3.54
+Buffalo 11.8 672 159 4.8 3.56
+Buffalo 11.9 676 159 4.8 3.58
+Buffalo 12.0 680 159 4.8 3.60
+Buffalo 12.1 684 159 4.8 3.62
+Buffalo 12.2 688 159 4.8 3.64
+Buffalo 12.3 692 159 4.8 3.66
+Buffalo 12.4 696 159 4.8 3.68
+Buffalo 12.5 700 159 4.8 3.70
+Buffalo 12.6 704 159 4.8 3.72
+Buffalo 12.7 708 159 4.8 3.74
+Buffalo 12.8 712 159 4.8 3.76
+Buffalo 12.9 716 159 4.8 3.78
+Buffalo 13.0 720 159 4.8 3.80
+Buffalo 13.1 724 159 4.8 3.82
+Buffalo 13.2 728 159 4.8 3.84
+Buffalo 13.3 732 159 4.8 3.86
+Buffalo 13.4 736 159 4.8 3.88
+Buffalo 13.5 740 159 4.8 3.90
+Buffalo 13.6 744 159 4.8 3.92
+Buffalo 13.7 748 159 4.8 3.94
+Buffalo 13.8 752 159 4.8 3.96
+Buffalo 13.9 756 159 4.8 3.98
+Buffalo 14.0 800 159 4.8 4.00
+
+-- 6 of 6 --
+
+## Knowledge Repo
+Source: Knowledge Repository/Knowledge Repo.docx | Category: Extension
+
+Comprehensive Dairy Farming Knowledge Repository
+
+Based on NDDB's Dairy Knowledge Portal (www.dairyknowledge.in)
+
+1. ANIMAL NUTRITION
+
+1.1 Balanced Ration Principles
+
+A balanced ration must provide adequate amounts of energy, protein, minerals, vitamins, and water to meet the maintenance and production requirements of dairy animals.
+
+Key Components:
+
+Dry Matter (DM): Total feed excluding moisture
+
+Crude Protein (CP): 14-16% of dry matter for lactating animals
+
+Total Digestible Nutrients (TDN): Energy content of feed
+
+Calcium and Phosphorus: Essential minerals in 2:1 ratio
+
+1.2 Feed Categories
+
+Green Fodder:
+
+Maize, Sorghum (Jowar), Pearl Millet (Bajra)
+
+Napier grass, Guinea grass, Berseem, Lucerne (Alfalfa)
+
+Cowpea, Oats
+
+Target: 25-30 kg green fodder per day for lactating cattle
+
+Dry Fodder:
+
+Wheat straw, Paddy straw, Maize stover
+
+Quality hay from legumes and grasses
+
+Target: 4-6 kg per day for lactating cattle
+
+Concentrates:
+
+Cereal grains: Maize, Wheat, Barley, Sorghum
+
+Protein supplements: Cottonseed cake, Groundnut cake, Soybean meal
+
+Mineral mixtures and salt
+
+Target: 1 kg concentrate for every 2.5-3 liters of milk produced
+
+1.3 Feeding Guidelines by Production Stage
+
+Dry Period (Non-lactating):
+
+Green fodder: 15-20 kg
+
+Dry fodder: 4-5 kg
+
+Concentrate: 1-2 kg
+
+Focus on body condition maintenance
+
+Early Lactation (0-100 days):
+
+Green fodder: 30-35 kg
+
+Dry fodder: 5-6 kg
+
+Concentrate: Based on milk yield (1 kg per 2.5 liters)
+
+Supplement with bypass protein if needed
+
+Mid to Late Lactation:
+
+Green fodder: 25-30 kg
+
+Dry fodder: 4-5 kg
+
+Concentrate: Proportional to milk production
+
+Gradually reduce concentrate as lactation advances
+
+Growing Animals (Heifers):
+
+Green fodder: 10-15 kg
+
+Dry fodder: 2-3 kg
+
+Concentrate: 1-2 kg
+
+Focus on skeletal and body development
+
+1.4 Special Nutritional Considerations
+
+Mineral Supplementation:
+
+Provide mineral mixture at 50g per day
+
+Common salt at 30-50g per day
+
+Calcium and phosphorus balance critical for bone health and milk production
+
+Water Requirements:
+
+Clean, fresh water available at all times
+
+40-50 liters per day for lactating animals
+
+More during summer months
+
+Urea Treatment of Straw:
+
+Improves digestibility of poor-quality roughage
+
+Mix 4 kg urea in 100 liters water for 100 kg straw
+
+Stack and cover for 21 days before feeding
+
+2. ANIMAL HEALTH & DISEASE MANAGEMENT
+
+2.1 Preventive Healthcare Schedule
+
+Vaccination Calendar:
+
+Foot and Mouth Disease (FMD):
+
+First vaccination: 4 months of age
+
+Second vaccination: 6 months of age
+
+Booster: Every 6 months throughout life
+
+Haemorrhagic Septicaemia (HS):
+
+First vaccination: 6 months of age
+
+Booster: Annual vaccination before monsoon
+
+Black Quarter (BQ):
+
+Vaccination: 6 months of age
+
+Booster: Annual vaccination
+
+Brucellosis:
+
+Heifer calves: Between 4-8 months (S-19 vaccine)
+
+Adult vaccination as per veterinary advice
+
+2.2 Common Diseases and Management
+
+Mastitis (Udder Inflammation):
+
+Symptoms: Hot, swollen, painful udder; clots in milk; reduced milk yield
+
+Prevention:
+
+Pre and post-milking teat dipping
+
+Dry cow therapy
+
+Hygiene during milking
+
+California Mastitis Test (CMT) for subclinical detection
+
+Treatment: Antibiotics as prescribed by veterinarian; discard milk during treatment
+
+Repeat Breeding:
+
+Causes: Nutritional deficiency, hormonal imbalance, uterine infections
+
+Management:
+
+Proper heat detection
+
+Mineral supplementation (especially phosphorus)
+
+Veterinary examination for reproductive tract infections
+
+Use of hormones under veterinary supervision
+
+Milk Fever (Hypocalcemia):
+
+Symptoms: Occurs around calving; animal unable to stand; cold extremities
+
+Prevention:
+
+Avoid excess calcium during dry period
+
+Provide adequate vitamin D
+
+Treatment: Intravenous calcium borogluconate immediately; veterinary emergency
+
+Bloat (Tympany):
+
+Symptoms: Distended left abdomen; difficulty breathing; restlessness
+
+Prevention:
+
+Avoid sudden change to lush legume pasture
+
+Provide dry fodder before grazing
+
+Use anti-bloat agents
+
+Treatment: Stomach tube to release gas; trocar and cannula in severe cases; veterinary attention
+
+Diarrhea (Scours in Calves):
+
+Causes: Bacterial, viral, or protozoal infections; nutritional factors
+
+Treatment:
+
+Oral rehydration solution (ORS)
+
+Continue milk feeding
+
+Antibiotics if bacterial
+
+Maintain hygiene
+
+Foot and Mouth Disease:
+
+Symptoms: Fever, blisters in mouth and on feet, drooling, lameness
+
+Management:
+
+Isolation of affected animals
+
+Symptomatic treatment (wound care, soft feed)
+
+Strict biosecurity
+
+Vaccination of healthy animals
+
+2.3 Reproductive Health
+
+Heat Detection:
+
+Standing heat: Primary sign for breeding
+
+Mucus discharge, restlessness, reduced feed intake
+
+Best time for insemination: 12-18 hours after onset of heat
+
+Pregnancy Diagnosis:
+
+Rectal palpation: After 45-60 days
+
+Ultrasound: After 30 days
+
+Non-return to heat after 21 days (preliminary indication)
+
+Calving Management:
+
+Clean, dry calving area
+
+Minimal interference during normal calving
+
+Assist if no progress after 2 hours of labor
+
+Post-calving care: Monitor for retained placenta, milk fever
+
+2.4 Deworming and Parasite Control
+
+Internal Parasites:
+
+Deworming schedule: Every 3-4 months
+
+Use broad-spectrum anthelmintics
+
+Rotate dewormers to prevent resistance
+
+External Parasites:
+
+Regular inspection for ticks, lice, mange
+
+Use acaricides and ectoparasiticides
+
+Maintain clean housing
+
+2.5 General Health Indicators
+
+Healthy Animal Signs:
+
+Alert and active
+
+Bright eyes, moist nose
+
+Normal body temperature: 101.5\xB0F (38.5\xB0C)
+
+Rumination: 6-8 times per minute
+
+Good appetite and regular cud chewing
+
+Normal dung consistency
+
+3. BREEDING & GENETIC IMPROVEMENT
+
+3.1 Breeding Methods
+
+Artificial Insemination (AI):
+
+Most common breeding method in organized dairy farming
+
+Benefits: Access to superior bulls, disease prevention, genetic improvement
+
+Frozen semen from proven bulls available through cooperatives
+
+Cost-effective compared to bull maintenance
+
+Natural Service:
+
+Used in areas with limited AI facilities
+
+Requires maintaining breeding bull
+
+Higher disease transmission risk
+
+Limited genetic improvement potential
+
+Embryo Transfer Technology:
+
+Advanced reproductive technology
+
+Multiplies superior females
+
+Used in elite animal multiplication
+
+3.2 Selection Criteria
+
+Selecting Breeding Bulls (AI Semen):
+
+Proven bulls with high Estimated Breeding Value (EBV)
+
+Consider traits: Milk yield, fat percentage, longevity
+
+Disease-free status
+
+Good conformation
+
+Selecting Female Breeding Stock:
+
+Milk production records of dam and maternal lineage
+
+Age at first calving (24-30 months ideal)
+
+Calving interval (12-14 months optimal)
+
+Udder conformation and teat placement
+
+Body conformation and structural soundness
+
+3.3 Indigenous and Crossbred Cattle Breeds
+
+High Milk-Producing Indigenous Breeds:
+
+Gir (Gujarat):
+
+Milk yield: 1200-1800 kg per lactation
+
+Fat content: 4.5-5%
+
+Hardy, disease resistant
+
+Sahiwal (Punjab, Haryana, Rajasthan):
+
+Milk yield: 1400-2500 kg per lactation
+
+Fat content: 4.5-5%
+
+Heat tolerant
+
+Red Sindhi (Gujarat, Rajasthan):
+
+Milk yield: 1100-2000 kg per lactation
+
+Fat content: 4.5-5%
+
+Compact, suitable for small farms
+
+Tharparkar (Rajasthan):
+
+Milk yield: 1200-1800 kg per lactation
+
+Dual purpose (milk and draft)
+
+Drought resistant
+
+Crossbred Cattle:
+
+HF x Indigenous crosses (50% to 75% exotic inheritance)
+
+Jersey x Indigenous crosses
+
+Higher milk yield: 2500-4000 kg per lactation
+
+Require better management and nutrition
+
+Buffalo Breeds:
+
+Murrah (Haryana):
+
+Milk yield: 1500-2500 kg per lactation
+
+Fat content: 7-8%
+
+Best buffalo breed for milk production
+
+Surti (Gujarat):
+
+Milk yield: 1200-1800 kg per lactation
+
+Fat content: 7-8%
+
+Small to medium size
+
+Jaffarabadi (Gujarat):
+
+Milk yield: 1500-2200 kg per lactation
+
+Largest buffalo breed
+
+Fat content: 7-8%
+
+Mehsana (Gujarat):
+
+Milk yield: 1200-1800 kg per lactation
+
+Dual purpose
+
+Good for commercial dairy
+
+3.4 Breeding Management
+
+Age at First Breeding:
+
+Cattle: 15-18 months or when 60% of adult body weight achieved
+
+Buffalo: 18-24 months or when 60% of adult body weight achieved
+
+Optimal Calving Interval:
+
+Target: 12-14 months
+
+Shorter intervals increase lifetime productivity
+
+Heat Cycle:
+
+Duration: 18-24 days
+
+Heat duration: 12-18 hours
+
+Ovulation: 10-12 hours after end of heat
+
+Pregnancy Duration:
+
+Cattle: 280 days (9 months)
+
+Buffalo: 310 days (10 months)
+
+4. DAIRY MANAGEMENT PRACTICES
+
+4.1 Housing and Shelter
+
+Shed Design Requirements:
+
+Floor space: 3.0-3.5 sq.m per adult cattle; 3.5-4.0 sq.m per buffalo
+
+Roof height: 3.0-3.5 meters
+
+Open sides for ventilation
+
+Concrete flooring with slope for drainage (1:100)
+
+Manger space: 60-75 cm per animal
+
+Adequate natural light
+
+Types of Housing:
+
+Loose housing: Animals free to move; more comfortable
+
+Tied housing: Animals tied in stalls; easier management for small farms
+
+Combination system: Loose housing with milking area
+
+Calf Housing:
+
+Individual pens for calves up to 3 months
+
+Size: 1.5m x 1.0m per calf
+
+Group housing for older calves
+
+Clean, dry, well-ventilated
+
+4.2 Milking Management
+
+Milking Hygiene:
+
+Wash hands before milking
+
+Clean udder and teats with clean water
+
+Dry with individual towel
+
+Discard first few streams (strip cup examination)
+
+Post-milking teat dipping
+
+Milking Technique:
+
+Full hand method preferred
+
+Knuckling method avoided (causes teat damage)
+
+Complete milking to prevent mastitis
+
+Milking interval: 12 hours (twice daily)
+
+Milk Handling:
+
+Filter milk immediately after collection
+
+Cool milk to 4\xB0C within 2 hours
+
+Store in clean, sanitized containers
+
+Transport in insulated containers
+
+4.3 Calf Rearing
+
+Birth to Weaning (0-3 months):
+
+Colostrum feeding: 1/10th of body weight within 2 hours of birth
+
+Continue colostrum for 3-4 days
+
+Milk feeding: 10% of body weight per day
+
+Calf starter from 10 days of age (50-100g initially)
+
+Green fodder and water from 2 weeks
+
+Weaning: 3 months (when consuming 1-1.5 kg concentrate)
+
+Weaning to Breeding (3-15 months):
+
+Gradual increase in concentrate (1.5-2.5 kg per day)
+
+Green fodder: 8-12 kg per day
+
+Dry fodder: ad libitum
+
+Focus on growth rate: 500-600g per day for cattle
+
+Heifer Management (15 months to calving):
+
+Breeding at appropriate age and weight
+
+Adequate nutrition for pregnancy
+
+Monitor for timely calving
+
+Avoid over-fattening or under-nutrition
+
+4.4 Record Keeping
+
+Essential Records:
+
+Individual animal identification (ear tag/tattoo)
+
+Birth records (date, sex, parentage, birth weight)
+
+Breeding records (heat dates, AI/service dates, pregnancy status)
+
+Calving records (date, calf sex and weight, calving ease)
+
+Milk production records (daily/weekly yield)
+
+Health records (vaccinations, treatments, diseases)
+
+Feed and fodder consumption
+
+Financial records (income and expenses)
+
+Benefits of Record Keeping:
+
+Identify high and low producers
+
+Make culling decisions
+
+Plan breeding programs
+
+Monitor herd health
+
+Financial management and profitability analysis
+
+5. FODDER PRODUCTION & MANAGEMENT
+
+5.1 Green Fodder Cultivation
+
+Perennial Fodder Crops:
+
+Napier Grass (Pennisetum purpureum):
+
+Duration: 3-4 years
+
+Cuttings: 5-6 per year
+
+Yield: 200-300 tonnes per hectare per year
+
+Planting: Root slips at 60 x 60 cm spacing
+
+Hybrid Napier (Napier x Bajra):
+
+High yielding hybrid
+
+Yield: 300-350 tonnes per hectare per year
+
+Protein content: 10-12%
+
+Resistant to pests and diseases
+
+Guinea Grass (Panicum maximum):
+
+Duration: 3-4 years
+
+Yield: 150-200 tonnes per hectare per year
+
+Cuttings: 4-5 per year
+
+Para Grass (Brachiaria mutica):
+
+Suitable for waterlogged areas
+
+Yield: 100-150 tonnes per hectare per year
+
+Good for silage
+
+Annual Fodder Crops:
+
+Maize (Zea mays):
+
+Duration: 60-70 days
+
+Yield: 350-400 quintals per hectare
+
+Ideal for silage making
+
+Sowing: February-March and July-August
+
+Sorghum/Jowar (Sorghum bicolor):
+
+Duration: 70-80 days
+
+Yield: 300-400 quintals per hectare
+
+Multi-cut varieties available
+
+Drought tolerant
+
+Bajra/Pearl Millet (Pennisetum glaucum):
+
+Duration: 50-60 days
+
+Yield: 250-300 quintals per hectare
+
+Suitable for rainfed conditions
+
+Oats (Avena sativa):
+
+Winter crop (Rabi season)
+
+Duration: 60-70 days
+
+Yield: 250-300 quintals per hectare
+
+Excellent palatability
+
+Leguminous Fodder:
+
+Berseem (Trifolium alexandrinum):
+
+Winter crop
+
+Cuttings: 4-6 per season
+
+Yield: 500-600 quintals per hectare
+
+Protein content: 18-20%
+
+Lucerne/Alfalfa (Medicago sativa):
+
+Duration: 3-5 years
+
+Cuttings: 8-10 per year
+
+Yield: 800-1000 quintals per hectare per year
+
+Protein content: 18-22%
+
+Cowpea (Vigna unguiculata):
+
+Short duration: 45-50 days
+
+Yield: 200-250 quintals per hectare
+
+Good for mixed cropping with cereals
+
+5.2 Fodder Conservation
+
+Hay Making:
+
+Harvest legumes at 10% flowering stage
+
+Harvest grasses before flowering
+
+Dry in sun for 2-3 days (moisture content <15%)
+
+Store in covered area to prevent mold
+
+Baling helps in storage and transportation
+
+Silage Making:
+
+Crop stage: Maize at milky to dough stage; Sorghum at 50% flowering
+
+Chop fodder to 2-3 cm pieces
+
+Fill in silo, compact to remove air
+
+Moisture content: 65-70% optimal
+
+Seal completely to ensure anaerobic fermentation
+
+Ready after 45-60 days
+
+Good silage: Pleasant acidic smell, green-brown color
+
+Urea Treatment of Straw:
+
+Improves nutritive value of poor-quality roughage
+
+Method: 4 kg urea dissolved in 100 liters water per 100 kg straw
+
+Stack and cover with polythene for 21 days
+
+Increases digestibility by 15-20%
+
+5.3 Azolla Cultivation
+
+Benefits:
+
+Protein-rich (25-30%)
+
+Fast growing (doubles in 2-3 days)
+
+Low-cost supplement
+
+Can partially replace concentrate
+
+Cultivation Method:
+
+Pit size: 2m x 1.5m x 0.3m deep
+
+Line with polythene sheet
+
+Fill with 10-15 cm water
+
+Add soil and cow dung
+
+Inoculate with Azolla
+
+Harvest after 7-10 days
+
+Daily yield: 1-2 kg fresh Azolla per square meter
+
+6. GOVERNMENT SCHEMES & SUPPORT
+
+6.1 National Dairy Development Schemes
+
+National Programme for Dairy Development (NPDD):
+
+Objective: Create/strengthen infrastructure for procurement, processing, and marketing of milk
+
+Components:
+
+Ration Balancing Program
+
+Vill
+
+[\u2026truncated\u2026]
+
+## Main Feed library 
+Source: Knowledge Repository/Main Feed library .xlsx | Category: Nutrition
+
+===== Sheet: Feed library =====
+Maize Bran | Bran | No | 7 | 900 | 540 | 99 | 1.728 | 2.268
+Bengal Gram Bran | Bran | No | 4 | 900 | 495 | 36 | 0.864 | 1.944
+Wheat Bran | Bran | No | 11 | 900 | 585 | 144 | 1.08 | 3.996
+Maize Bran (HM) | Bran | No | 4 | 310 | 186 | 34.1 | 0.595 | 0.673
+Rice Bran- 16% oil | Bran | No | 10 | 900 | 765 | 126 | 0.432 | 6.804
+Rice Bran Deoiled | Bran | No | 9 | 900 | 540 | 153 | 0.432 | 5.724
+Blackgram Chunni | Chunni | No | 7 | 900 | 540 | 153 | 1.944 | 1.296
+Red gram chunni | Chunni | No | 11 | 900 | 540 | 153 | 2.16 | 1.26
+Tur Chunni | Chunni | No | 18 | 900 | 540 | 165 | 1.776 | 0.648
+Babul seed chunni | Chunni | No | 6 | 900 | 495 | 144 | 3.888 | 0.864
+Masoor Chunni | Chunni | No | 8 | 900 | 540 | 171 | 2.16 | 1.296
+Mung Chunni | Chunni | No | 9 | 900 | 540 | 177 | 2.376 | 1.944
+Urd Chunni | Chunni | No | 18 | 900 | 540 | 180 | 0.78 | 0.384
+Greengram chunni | Chunni | No | 8 | 900 | 540 | 153 | 2.64 | 0.9
+Bengalgram chunni | Chunni | No | 9 | 900 | 594 | 135 | 1.632 | 0.9
+Banas Hyprodaan | Compound Feed | No | 17 | 900 | 650 | 198 | 3.6 | 2.16
+KMF Bypass protein feed | Compound Feed | No | 12 | 900 | 648 | 225 | 3.6 | 2.7
+Cattle feed BIS-II | Compound Feed | No | 15 | 900 | 585 | 180 | 3.6 | 2.7
+Cattle feed BIS-I | Compound Feed | No | 16 | 900 | 648 | 198 | 3.6 | 2.7
+Bypass protein feed | Compound Feed | No | 17 | 900 | 648 | 225 | 3.6 | 2.7
+Buffalo feed | Compound Feed | No | 12 | 900 | 675 | 198 | 6.3 | 6.3
+Samrudhi Dan( Cattle feed)\xA0Mehsana | Compound Feed | No | 13.5 | 900 | 675 | 198 | 2.88 | 1.35
+KMF Cattle feed | Compound Feed | No | 11 | 900 | 585 | 180 | 3.6 | 2.7
+Calf feed | Compound Feed | No | 20 | 900 | 675 | 207 | 7.2 | 6.3
+Cattle feed below BIS | Compound Feed | No | 10 | 900 | 495 | 162 | 3.6 | 2.7
+Cattle Feed High Protein | Compound Feed | No | 22 | 900 | 720 | 225 | 3.6 | 2.7
+Soyabean meal | DOC/Meal | No | 19 | 900 | 720 | 477 | 1.404 | 2.7
+Kardi Meal | DOC/Meal | No | 7 | 900 | 495 | 207 | 1.296 | 2.592
+Sunflower meal | DOC/Meal | No | 14 | 900 | 594 | 279 | 2.16 | 3.996
+Coconut meal | DOC/Meal | No | 8 | 900 | 648 | 270 | 0.972 | 2.16
+Maize Gluten | DOC/Meal | No | 10 | 900 | 720 | 522 | 0.324 | 1.944
+G.nut meal | DOC/Meal | No | 12 | 900 | 702 | 396 | 1.188 | 2.592
+Rapeseed meal | DOC/Meal | No | 12 | 900 | 666 | 378 | 4.752 | 3.672
+Guar korma | DOC/Meal | No | 12 | 900 | 720 | 486 | 2.376 | 1.944
+Cottonseed meal | DOC/Meal | No | 11 | 900 | 702 | 369 | 1.296 | 2.808
+Guar Meal | DOC/Meal | No | 9 | 900 | 675 | 450 | 2.376 | 1.944
+Palm kernel meal | DOC/Meal | No | 8 | 900 | 540 | 180 | 1.512 | 1.944
+Maize Cake | DOC/Meal | No | 20 | 900 | 720 | 216 | 2.484 | 5.616
+Rice Bhardo/ Broken | Grain/Seed | No | 9 | 900 | 730 | 87 | 0.12 | 1.2
+Bengalgram grain | Grain/Seed | No | 30 | 900 | 675 | 162 | 1.128 | 1.32
+Black gram | Grain/Seed | No | 25 | 900 | 680 | 23.7 | 2.64 | 5.88
+Taramira seed | Grain/Seed | No | 23 | 950 | 880 | 280 | 1.56 | 2.7
+Dhaincha seeds (Sesbania) | Grain/Seed | No | 30 | 900 | 581 | 309 | 1.056 | 2.736
+Bajra bhardo/broken | Grain/Seed | No | 7.5 | 900 | 616 | 80 | 0.348 | 1.188
+Maize bhardo/broken | Grain/Seed | No | 10 | 900 | 713 | 85 | 0.132 | 1.068
+Wheat bhardo/broken | Grain/Seed | No | 9 | 900 | 697 | 117 | 0.348 | 1.296
+Greengram | Grain/Seed | No | 25 | 900 | 690 | 258 | 1.92 | 5.4
+Soya seeds | Grain/Seed | No | 24 | 900 | 820 | 378 | 1.596 | 2.208
+Ragi grain | Grain/Seed | No | 9 | 900 | 700 | 90 | 0.48 | 0.324
+Barley Bhardo/ Broken | Grain/Seed | No | 10 | 900 | 710 | 108 | 0.324 | 1.56
+Horse gram grain | Grain/Seed | No | 35 | 900 | 675 | 198 | 1.296 | 0.492
+Cowpea Seed | Grain/Seed | No | 20 | 900 | 594 | 240 | 0.468 | 1.8
+Methi Seeds (Fenugreek) | Grain/Seed | No | 30 | 900 | 607 | 240 | 1.056 | 1.98
+Whole Cotton Seed | Grain/Seed | No | 10 | 900 | 810 | 198 | 1.512 | 4.104
+Blackgram grain | Grain/Seed | No | 20 | 900 | 702 | 261 | 0.648 | 1.188
+Jowar grain | Grain/Seed | No | 8 | 900 | 720 | 78 | 0.216 | 1.08
+Rice grain | Grain/Seed | No | 9 | 900 | 738 | 81 | 0.108 | 1.188
+Barley Grain | Grain/Seed | No | 9 | 900 | 711 | 108 | 0.324 | 1.62
+Oat Grain | Grain/Seed | No | 8 | 900 | 657 | 99 | 0.432 | 1.296
+Wheat grain | Grain/Seed | No | 10 | 900 | 774 | 99 | 0.216 | 1.188
+Bajra grain | Grain/Seed | No | 9 | 900 | 684 | 108 | 0.54 | 1.62
+Maize grain | Grain/Seed | No | 11 | 900 | 792 | 81 | 0.108 | 1.512
+Grass Guinea | Grass | No | 0.8 | 200 | 110 | 22 | 0.624 | 0.24
+Grass Hybrid Napier | Grass | No | 0.8 | 200 | 110 | 20 | 0.648 | 0.24
+Grass Rye | Grass | No | 0.8 | 200 | 100 | 20 | 0.408 | 0.168
+Begharo Grass | Grass | No | 0.5 | 200 | 110 | 30 | 1.968 | 0.288
+Grass Elephant | Grass | No | 0.8 | 200 | 110 | 12 | 0.48 | 0.192
+Grass Para | Grass | No | 0.8 | 200 | 104 | 22 | 0.336 | 0.144
+Guar Grass | Grass | No | 0.5 | 200 | 104 | 24 | 2.736 | 0.204
+Grass- Sorg. Sudan | Grass | No | 0.5 | 300 | 165 | 24 | 1.548 | 1.476
+Dhaman Grass | Grass | No | 0.5 | 200 | 100 | 8 | 5.28 | 0.144
+Grasses | Grass | No | 0.8 | 200 | 100 | 8 | 0.384 | 0.144
+Gandhir Grass | Grass | No | 0.5 | 200 | 100 | 16 | 1.248 | 0.6
+Lano Grass | Grass | No | 0.5 | 200 | 110 | 30 | 1.512 | 0.336
+Lamp Grass | Grass | No | 0.5 | 200 | 100 | 12 | 0.504 | 0.192
+Dhrabal Grass | Grass | No | 0.5 | 200 | 100 | 16 | 1.032 | 0.144
+Puyadi Grass | Grass | No | 0.5 | 200 | 100 | 10 | 0.72 | 0.12
+Liyar Grass | Grass | No | 0.5 | 200 | 104 | 24 | 2.736 | 0.24
+Uein Grass | Grass | No | 0.5 | 200 | 110 | 32 | 3.24 | 0.36
+Liber Waker Grass | Grass | No | 0.5 | 200 | 104 | 20 | 10.992 | 0.216
+Pillipesara | Grass | No | 1 | 200 | 112.62 | 33.28 | 1.814 | 0.209
+Rhodes grass | Grass | No | 0.8 | 200 | 110 | 16 | 0.252 | 0.24
+Johnson grass | Grass | No | 0.8 | 200 | 113.94 | 16.9 | 0.48 | 0.23
+Deer Grass | Grass | No | 0.5 | 200 | 100 | 16 | 0.72 | 0.384
+Wheat Fodder | Green Fodder | No | 1.25 | 200 | 110 | 15 | 0.336 | 0.216
+Barseem Fodder | Green Fodder | No | 1.2 | 200 | 130 | 34 | 1.584 | 0.216
+Mustard Fodder | Green Fodder | No | 1.2 | 200 | 110 | 18 | 3.528 | 1.032
+Bajra Fodder | Green Fodder | No | 0.8 | 200 | 110 | 16 | 0.576 | 0.144
+Barley fodder | Green Fodder | No | 0.8 | 250 | 120 | 21 | 0.588 | 0.24
+Velvet bean fodder | Green Fodder | No | 1 | 300 | 180 | 45 | 2.376 | 0.648
+Stylosanthes fodder | Green Fodder | No | 1.2 | 200 | 115 | 24 | 1.224 | 0.276
+Sunflower Fodder | Green Fodder | No | 1.2 | 200 | 110 | 22 | 0.912 | 0.168
+Ragi fodder / leaves | Green Fodder | No | 0.8 | 200 | 104 | 13 | 0.576 | 0.492
+Napier Bajra / NB-21 | Green Fodder | No | 1.25 | 200 | 115 | 16 | 0.504 | 0.408
+Oat Fodder | Green Fodder | No | 0.8 | 200 | 120 | 22 | 0.408 | 0.192
+Cowpea Fodder | Green Fodder | No | 1.2 | 200 | 130 | 36 | 1.368 | 0.216
+Lucerne Fodder | Green Fodder | No | 1.2 | 200 | 130 | 34 | 1.872 | 0.264
+Maize Fodder | Green Fodder | No | 0.8 | 200 | 130 | 15 | 0.648 | 0.144
+Jowar Fodder | Green Fodder | No | 0.8 | 200 | 110 | 16 | 0.384 | 0.24
+Paddy Fodder | Green Fodder | No | 0.8 | 200 | 110 | 12 | 0.288 | 0.192
+Horse gram Fodder | Green Fodder | No | 1.2 | 200 | 110 | 30 | 1.296 | 0.168
+Berseem hay | Hay | No | 4.5 | 900 | 495 | 135 | 12.96 | 1.62
+Grass Hay | Hay | No | 3 | 900 | 432 | 63 | 2.7 | 1.08
+Oats Hay | Hay | No | 4.5 | 900 | 477 | 72 | 1.944 | 1.512
+Jowar Hay | Hay | No | 4 | 900 | 450 | 63 | 5.4 | 3.24
+Cowpea Hay | Hay | No | 4 | 900 | 477 | 135 | 15.12 | 3.78
+Lucerne Hay | Hay | No | 4.5 | 900 | 495 | 144 | 12.96 | 1.728
+Rhodes grass hay | Hay | No | 2.5 | 900 | 460 | 54 | 1.68 | 0.72
+Sun hemp hay | Hay | No | 5 | 900 | 497.83 | 140.18 | 5.64 | 0.744
+Jowar husk | Husk | No | 2 | 900 | 450 | 42 | 0.96 | 0.288
+Maize Husk | Husk | No | 4 | 900 | 468 | 91 | 1.8 | 2.88
+Saunf Husk | Husk | No | 2 | 900 | 405 | 81 | 1.296 | 0.216
+Ragi Husk | Husk | No | 4 | 900 | 450 | 40 | 0.96 | 0.288
+Isabgol (Jeeraru) | Husk | No | 14 | 900 | 675 | 170 | 1.2 | 2.28
+Barley Husk | Husk | No | 4 | 900 | 450 | 42 | 0.96 | 0.288
+Kodra Husk | Husk | No | 3 | 900 | 450 | 72 | 1.512 | 0.324
+Pine Apple Leaves | Leaves | No | 0.4 | 400 | 180 | 16 | 2.112 | 0.432
+Areca sheath | Leaves | No | 1 | 200 | 98.6 | 7 | 0.96 | 0.192
+Coconut Leaves | Leaves | No | 0.4 | 400 | 160 | 28 | 0.816 | 0.528
+Eucalyptus Leaves | Leaves | No | 0.5 | 300 | 150 | 48 | 2.184 | 0.396
+Areca leaves | Leaves | No | 1 | 200 | 108 | 8 | 0.96 | 0.192
+S.cane top/leaves | Leaves | No | 2 | 250 | 113 | 8 | 0.756 | 0.156
+Anjan Leaves | Leaves | No | 1 | 300 | 150 | 33 | 2.58 | 0.15
+Banana Leaves | Leaves | No | 0.4 | 200 | 100 | 24 | 1.344 | 0.072
+Palash leaves | Leaves | No | 0.4 | 400 | 450 | 54 | 10.2 | 0.3
+Glyricidia leaves | Leaves | No | 0.8 | 200 | 110 | 40 | 2.28 | 0.72
+Chinese Cabbage | Leaves | No | 1 | 150 | 75 | 27 | 1.368 | 0.144
+Tapioca leaves | Leaves | No | 0.8 | 200 | 92 | 25 | 2.4 | 1.92
+Mulbery Leaves | Leaves | No | 0.4 | 300 | 180 | 66 | 3.024 | 0.36
+Chicory Leaves | Leaves | No | 0.4 | 150 | 78 | 34.5 | 0.852 | 0.216
+Khejari Leaves | Leaves | No | 2 | 900 | 450 | 144 | 14.256 | 0.432
+Neem Leaves | Leaves | No | 0.4 | 200 | 80 | 30 | 2.4 | 0.168
+Pipal Leaves | Leaves | No | 0.4 | 200 | 80 | 14 | 3.552 | 0.12
+Anjawan Leaves | Leaves | No | 0.4 | 200 | 90 | 24 | 1.152 | 0.288
+Subabul leaves | Leaves | No | 1.5 | 200 | 120 | 44 | 2.4 | 0.408
+Babul Leaves | Leaves | No | 0.5 | 200 | 120 | 26 | 1.68 | 0.264
+Grape leaves | Leaves | No | 2 | 350 | 290 | 20 | 9.6 | 0.72
+Mango Leaves | Leaves | No | 0.4 | 200 | 80 | 6 | 2.592 | 0.048
+Shewari / Sesbania Leaves | Leaves | No | 1 | 200 | 104 | 46 | 8.64 | 0.72
+Bamboo Leaves | Leaves | No | 0.4 | 200 | 80 | 10 | 0.672 | 0.048
+Castor leaves | Leaves | No | 1 | 200 | 110 | 50 | 4.8 | 0.144
+ASMM-Mathura | Minerals | No | 30 | 980 | 0 | 0 | 205.8 | 122.5
+ASMM-Jalgaon | Minerals | No | 30 | 980 | 0 | 0 | 215.6 | 107.8
+ASMM-Etawah | Minerals | No | 30 | 980 | 0 | 0 | 205.8 | 122.5
+ASMM-Chittoor | Minerals | No | 30 | 980 | 0 | 0 | 230.3 | 122.5
+ASMM-Bihar | Minerals | No | 30 | 980 | 0 | 0 | 156.8 | 88.2
+ASMM-Bikaner | Minerals | No | 30 | 980 | 0 | 0 | 220.5 | 137.2
+ASMM-Jodhpur | Minerals | No | 30 | 980 | 0 | 0 | 220.5 | 137.2
+ASMM-Meerut | Minerals | No | 30 | 980 | 0 | 0 | 196 | 122.5
+ASMM-Kolhapur | Minerals | No | 30 | 980 | 0 | 0 | 213.64 | 122.5
+ASMM-Moradabad | Minerals | No | 30 | 980 | 0 | 0 | 215.6 | 127.4
+ASMM-Ajmer | Minerals | No | 30 | 980 | 0 | 0 | 220.5 | 137.2
+ASMM-Dhaulpur | Minerals | No | 30 | 980 | 0 | 0 | 210.7 | 146.02
+ASMM-Mehsana | Minerals | No | 30 | 980 | 0 | 0 | 215.6 | 141.12
+ASMM-Surat | Minerals | No | 30 | 980 | 0 | 0 | 225.4 | 137.2
+ASMM-Panchmahal | Minerals | No | 30 | 980 | 0 | 0 | 225.4 | 107.8
+ASMM-Anand | Minerals | No | 30 | 980 | 0 | 0 | 215.6 | 137.2
+ASMM-Kaira | Minerals | No | 30 | 980 | 0 | 0 | 215.6 | 137.2
+ASMM-Kutch | Minerals | No | 30 | 980 | 0 | 0 | 205.8 | 135.24
+ASMM-Junagadh | Minerals | No | 30 | 980 | 0 | 0 | 215.6 | 145.04
+ASMM-Udaipur | Minerals | No | 30 | 980 | 0 | 0 | 220.5 | 137.2
+ASMM-Bharatpur | Minerals | No | 30 | 980 | 0 | 0 | 210.7 | 146.02
+Mineral Mixture BIS | Minerals | No | 45 | 980 | 0 | 0 | 196 | 117.6
+ASMM - Western UP | Minerals | No | 60 | 980 | 0 | 0 | 250 | 118
+Calcite powder | Minerals | No | 3 | 900 | 0 | 0 | 370 | 0
+ASMM Madhya Pradesh | Minerals | No | 55 | 980 | 0 | 0 | 259 | 98
+ASMM Kerala | Minerals | No | 70 | 980 | 0 | 0 | 220 | 125
+MILMA MIN | Minerals | No | 56 | 980 | 0 | 0 | 220 | 125
+ASMM-Sabarkantha | Minerals | No | 50 | 980 | 0 | 0 | 220 | 140
+Liquid Calcium | Minerals | No | 150 | 450 | 0 | 0 | 15.75 | 7.87
+ASMM - Rajasthan | Minerals | No | 57 | 980 | 0 | 0 | 215.6 | 137.2
+ASMM-Bangalore | Minerals | No | 40 | 980 | 0 | 0 | 192 | 90
+Calsagar | Minerals | No | 140 | 990 | 0 | 0 | 200 | 100
+ASMM-Banaskantha | Minerals | No | 30 | 980 | 0 | 0 | 215.6 | 141.12
+ASMM-J P Nagar | Minerals | No | 30 | 980 | 0 | 0 | 215.6 | 127.4
+ASMM-Agra | Minerals | No | 30 | 980 | 0 | 0 | 205.8 | 122.5
+ASMM-Bulandshahr | Minerals | No | 30 | 980 | 0 | 0 | 215.6 | 122.5
+Cotton seed cake | Oil Cake | No | 12 | 900 | 720 | 333 | 0.756 | 1.296
+Kardi Oil Cake | Oil Cake | No | 12 | 900 | 523 | 160 | 5.4 | 4.32
+Mustard cake | Oil Cake | No | 14 | 900 | 720 | 324 | 4.644 | 3.996
+Sunflower cake | Oil Cake | No | 12 | 900 | 648 | 234 | 2.052 | 3.996
+Und. cottonseed cake | Oil Cake | No | 11 | 900 | 666 | 216 | 0.864 | 1.512
+Rapeseed Cake | Oil Cake | No | 14 | 900 | 720 | 342 | 4.644 | 3.996
+Linseed oil Cake | Oil Cake | No | 14 | 900 | 648 | 270 | 2.592 | 5.184
+Palm kernel oil Cake | Oil Cake | No | 10 | 900 | 549 | 153 | 1.512 | 1.944
+Coconut Cake | Oil Cake | No | 10 | 900 | 738 | 234 | 1.944 | 2.7
+Groundnut cake | Oil Cake | No | 17 | 900 | 765 | 360 | 0.972 | 2.16
+Til Cake | Oil Cake | No | 16 | 900 | 675 | 360 | 8.64 | 3.888
+Karanj Cake | Other conc. | No | 5 | 900 | 540 | 306 | 3.996 | 2.268
+Barley Brewery Waste | Other conc. | No | 8 | 300 | 168 | 72 | 1.32 | 0.48
+Sesame / Gingelly oil | Other conc. | No | 150 | 999 | 1940 | 0 | 0 | 0
+Whey liquid | Other conc. | No | 1 | 60 | 48 | 7.2 | 1.32 | 0.96
+Molasses | Other conc. | No | 5 | 820 | 492 | 16 | 2.364 | 0.888
+Ragi waste | Other conc. | No | 11 | 890 | 523.8 | 116.8 | 0.6 | 0.384
+Babul Pods | Other conc. | No | 5 | 900 | 495 | 108 | 5.616 | 0.864
+Brewery waste maize | Other conc. | No | 5 | 350 | 259 | 55 | 0.096 | 0.18
+Mahua Cake | Other conc. | No | 5 | 900 | 540 | 189 | 0.648 | 1.944
+Tamarind Seed Powder | Other conc. | No | 4 | 900 | 576 | 108 | 1.62 | 0.972
+Spent Pepper Waste | Other conc. | No | 3 | 900 | 405 | 117 | 1.944 | 0.54
+Tapioca Starch Waste | Other conc. | No | 4 | 900 | 576 | 108 | 1.62 | 0.972
+Ambadi Cake | Other conc. | No | 7 | 900 | 540 | 211 | 1.728 | 2.484
+Brewery waste wheat | Other conc. | No | 4 | 250 | 137 | 18 | 0.24 | 0.324
+Brewery waste tapioca | Other conc. | No | 5 | 200 | 148 | 10 | 0.624 | 0.036
+Mustard oil | Other conc. | No | 80 | 999 | 1940 | 0 | 0 | 0
+Whole pomegranate | Other conc. | No | 4 | 200 | 133 | 83.4 | 0.336 | 0.18
+Vaal Bean | Other conc. | No | 4 | 900 | 585 | 231 | 1.344 | 1.476
+TMR | Other conc. | No | 10 | 900 | 585 | 140 | 3.12 | 1.2
+Niger Seed Cake | Other conc. | No | 7 | 900 | 450 | 306 | 1.08 | 1.296
+Soybean flakes | Other conc. | No | 12 | 900 | 566 | 120 | 3.84 | 0.96
+Casia Tora Seeds | Other conc. | No | 4 | 900 | 495 | 144 | 3.24 | 1.188
+Rubber Seed Cake | Other conc. | No | 4 | 900 | 495 | 315 | 4.212 | 2.7
+Bypass Fat | Other conc. | No | 120 | 990 | 1855 | 0 | 96 | 0
+Tapioca Meal | Other conc. | No | 5 | 200 | 144.8 | 1 | 0.144 | 0.007
+Neem Seed Cake | Other conc. | No | 9 | 900 | 495 | 135 | 2.916 | 0.756
+Isabgol (Lali) | Other conc. | No | 20 | 900 | 735 | 290 | 2.76 | 4.32
+Mangoseed Kernal | Other conc. | No | 3 | 900 | 495 | 54 | 1.08 | 0.864
+Subabul Seeds | Other conc. | No | 4 | 900 | 585 | 261 | 1.944 | 1.188
+Tapioca Peel | Other conc. | No | 5 | 200 | 132.1 | 7.46 | 0.192 | 0.012
+Cashewnut Waste | Other conc. | No | 3 | 900 | 450 | 86 | 1.512 | 0.972
+Cocoa pods | Other conc. | No | 0.5 | 900 | 572 | 57 | 2.462 | 1.102
+Jack Fruit Seed | Other conc. | No | 4 | 550 | 303 | 66 | 1.056 | 0.396
+Barley Sprout | Other conc. | No | 2 | 300 | 180 | 60 | 0.576 | 0.432
+Tomato Waste | Other conc. | No | 0.75 | 200 | 110 | 30 | 0.408 | 0.312
+Biscuit Waste | Other conc. | No | 3 | 900 | 820 | 61 | 0.24 | 0.24
+Apple Pomace | Other conc. | No | 0.75 | 200 | 120 | 24 | 0.192 | 0.144
+Tapioca beer waste - Moist | Other conc. | No | 5 | 200 | 166.4 | 14.44 | 0.096 | 0.12
+Whole Jack Fruit | Other conc. | No | 3 | 220 | 110 | 17 | 0.372 | 0.084
+Maize cob waste | Other roughage | No | 0.8 | 900 | 468 | 20 | 0.132 | 0.708
+Banana Bunch Stalk | Other roughage | No | 1 | 900 | 366 | 9 | 0.18 | 0.132
+Sugarcane trash | Other roughage | No | 0.5 | 900 | 405 | 36 | 0.348 | 1.176
+Banana Roots | Other roughage | No | 1 | 200 | 100 | 24 | 0.672 | 0.144
+Banana Flowers | Other roughage | No | 1 | 200 | 100 | 40 | 0.48 | 0.216
+Maize Sheeth | Other roughage | No | 2 | 900 | 360 | 18 | 1.296 | 0.324
+Banana pseudo stem | Other roughage | No | 1.5 | 200 | 100 | 24 | 0.864 | 0.144
+Pros.juliflora pods | Other roughage | No | 5 | 900 | 585 | 108 | 1.944 | 0.54
+G.nut Shell powder | Other roughage | No | 2 | 900 | 342 | 63 | 1.08 | 0.216
+Whole Sugarcane | Other roughage | No | 1.5 | 350 | 193 | 7 | 0.84 | 0.132
+Cashew apple | Other roughage | No | 1 | 150 | 83.33 | 18.98 | 0.048 | 0.12
+Cashew apple waste | Other roughage | No | 0.8 | 200 | 110 | 27.4 | 0.6 | 0.816
+Swt. potato creepers | Other roughage | No | 2 | 150 | 60 | 26 | 1.296 | 0.144
+Whole carrot | Other roughage | No | 2 | 150 | 123 | 15 | 0.288 | 0.192
+Sugarcane top (dry) | Other roughage | No | 1 | 900 | 378 | 28 | 1.08 | 0.168
+Cauliflower | Other roughage | No | 2 | 200 | 100 | 36 | 3.744 | 0.408
+Cabbage | Other roughage | No | 2 | 200 | 100 | 38 | 3.12 | 0.336
+Sugarcane Bagasse | Other roughage | No | 2 | 800 | 280 | 28 | 1.536 | 0.288
+Cotton Hulls | Other roughage | No | 2 | 900 | 405 | 108 | 0.972 | 0.54
+Banana Suckers | Other roughage | No | 1.5 | 200 | 100 | 24 | 0.864 | 0.144
+Jackfruit leaves | Other roughage | No | 0.5 | 400 | 240 | 62.4 | 0.276 | 0.048
+Banana peel | Other roughage | No | 2 | 100 | 114 | 11.8 | 1.392 | 0.6
+Vaal Bean Plant | Other roughage | No | 1 | 200 | 110 | 46.8 | 1.872 | 0.324
+Rice Husk | Other roughage | No | 1 | 900 | 250 | 80 | 0.24 | 1.404
+Azolla | Other roughage | No | 0.5 | 60 | 42 | 14 | 0.072 | 0.036
+Maize silage | Silage | No | 1 | 300 | 165 | 24 | 0.792 | 0.864
+Oats Silage | Silage | No | 1 | 300 | 162 | 24 | 1.224 | 0.792
+Hybrid Napier silage | Silage | No | 1.25 | 300 | 165 | 19 | 1.728 | 0.648
+Jowar Silage | Silage | No | 1 | 300 | 150 | 18 | 0.864 | 0.684
+Methi straw | Straw | No | 4 | 900 | 396 | 64 | 5.88 | 0.456
+Gram straw | Straw | No | 4 | 900 | 487 | 50 | 6.192 | 0.504
+Ragi Straw | Straw | No | 3.5 | 900 | 405 | 31 | 1.944 | 0.432
+Dhania Straw | Straw | No | 2 | 900 | 405 | 54 | 1.728 | 0.324
+Pulse Straw | Straw | No | 3.5 | 900 | 405 | 36 | 8.64 | 0.648
+Mustard Straw | Straw | No | 2 | 900 | 360 | 54 | 1.512 | 0.324
+Bajra Straw / Stover | Straw | No | 3.5 | 900 | 405 | 32 | 1.836 | 0.54
+Pulse pod straw | Straw | No | 3.5 | 900 | 450 | 90 | 5.28 | 0.54
+Paddy straw urea trtd. | Straw | No | 3.4 | 850 | 383 | 68 | 1.632 | 0.312
+Paddy Straw | Straw | No | 3 | 900 | 378 | 41 | 1.728 | 0.324
+Wheat Straw Urea Treated | Straw | No | 4.4 | 850 | 408 | 43 | 1.836 | 0.408
+Groundnut Straw | Straw | No | 3.5 | 900 | 432 | 54 | 7.668 | 0.54
+Black gram straw | Straw | No | 2.5 | 900 | 405 | 80 | 4.32 | 0.576
+Red gram straw | Straw | No | 3.5 | 900 | 410 | 90 | 2.88 | 0.432
+Soyabean Straw | Straw | No | 3 | 900 | 405 | 45 | 5.4 | 1.296
+Jowar Straw / Stover | Straw | No | 3.5 | 900 | 405 | 36 | 2.7 | 0.432
+Barley Straw | Straw | No | 3 | 900 | 405 | 36 | 1.944 | 1.296
+Wheat Straw | Straw | No | 4 | 900 | 396 | 27 | 1.944 | 0.432
+Maize Straw / Stover | Straw | No | 3.5 | 900 | 405 | 36 | 2.16 | 0.648
+Guar Straw | Straw | No | 3.5 | 900 | 405 | 117 | 3.888 | 1.188
+===== Sheet: Sheet2 =====
+Feed Name | Group | Price | DM | TDN | CP | Ca | P | DM | TDN | CP | Ca | P
+1 | Tamarind seed husk | Husk | 2 | 90 | 25.15 | 7.7 | 0.42 | 0.06 | 900 | 226.35 | 69.3 | 1.8900000000000001 | 0.21600000000000003 | k
+2 | Rosemary hay | Hay | 3 | 90 | 50.37 | 8.22 | 1.74 | 0.08 | 900 | 453.33 | 73.98 | 7.829999999999999 | 0.28800000000000003 | k
+3 | Tamarind waste | Other Con | 9 | 90 | 39.31 | 11.16 | 0.26 | 0.38 | 900 | 353.79 | 100.44 | 1.1700000000000002 | 1.368 | k
+4 | Touch me not (lajwanti) leaves | Leaves | 2 | not added
+5 | Tapioca stem | Other Rough | 2 | 90 | 40 | 3.4 | 1.1 | 0.29 | 900 | 360 | 30.6 | 4.95 | 1.044 | k
+6 | Lily leaves | other rough | 2 | 90 | 70 | 9.38 | 0.78 | 0.39
+20 | 15.555555555555555 | 2.0844444444444448 | 0.17333333333333334 | 0.08666666666666667 | 200 | 140 | 18.760000000000005 | 0.78 | 0.31200000000000006 | k
+===== Sheet: Sheet3 =====
+
+## main feed library
+Source: Knowledge Repository/main feed library.docx | Category: Nutrition
+
+Feed Name
+
+Group
+
+By default
+
+Rate
+
+DM
+
+TDN
+
+CP
+
+Ca
+
+P
+
+Maize Bran
+
+Bran
+
+No
+
+7
+
+900
+
+540
+
+99
+
+1.728
+
+2.268
+
+Bengal Gram Bran
+
+Bran
+
+No
+
+4
+
+900
+
+495
+
+36
+
+0.864
+
+1.944
+
+Wheat Bran
+
+Bran
+
+No
+
+11
+
+900
+
+585
+
+144
+
+1.08
+
+3.996
+
+Maize Bran (HM)
+
+Bran
+
+No
+
+4
+
+310
+
+186
+
+34.1
+
+0.595
+
+0.673
+
+Rice Bran- 16% oil
+
+Bran
+
+No
+
+10
+
+900
+
+765
+
+126
+
+0.432
+
+6.804
+
+Rice Bran Deoiled
+
+Bran
+
+No
+
+9
+
+900
+
+540
+
+153
+
+0.432
+
+5.724
+
+Blackgram Chunni
+
+Chunni
+
+No
+
+7
+
+900
+
+540
+
+153
+
+1.944
+
+1.296
+
+Red gram chunni
+
+Chunni
+
+No
+
+11
+
+900
+
+540
+
+153
+
+2.16
+
+1.26
+
+Tur Chunni
+
+Chunni
+
+No
+
+18
+
+900
+
+540
+
+165
+
+1.776
+
+0.648
+
+Babul seed chunni
+
+Chunni
+
+No
+
+6
+
+900
+
+495
+
+144
+
+3.888
+
+0.864
+
+Masoor Chunni
+
+Chunni
+
+No
+
+8
+
+900
+
+540
+
+171
+
+2.16
+
+1.296
+
+Mung Chunni
+
+Chunni
+
+No
+
+9
+
+900
+
+540
+
+177
+
+2.376
+
+1.944
+
+Urd Chunni
+
+Chunni
+
+No
+
+18
+
+900
+
+540
+
+180
+
+0.78
+
+0.384
+
+Greengram chunni
+
+Chunni
+
+No
+
+8
+
+900
+
+540
+
+153
+
+2.64
+
+0.9
+
+Bengalgram chunni
+
+Chunni
+
+No
+
+9
+
+900
+
+594
+
+135
+
+1.632
+
+0.9
+
+Banas Hyprodaan
+
+Compound Feed
+
+No
+
+17
+
+900
+
+650
+
+198
+
+3.6
+
+2.16
+
+KMF Bypass protein feed
+
+Compound Feed
+
+No
+
+12
+
+900
+
+648
+
+225
+
+3.6
+
+2.7
+
+Cattle feed BIS-II
+
+Compound Feed
+
+No
+
+15
+
+900
+
+585
+
+180
+
+3.6
+
+2.7
+
+Cattle feed BIS-I
+
+Compound Feed
+
+No
+
+16
+
+900
+
+648
+
+198
+
+3.6
+
+2.7
+
+Bypass protein feed
+
+Compound Feed
+
+No
+
+17
+
+900
+
+648
+
+225
+
+3.6
+
+2.7
+
+Buffalo feed
+
+Compound Feed
+
+No
+
+12
+
+900
+
+675
+
+198
+
+6.3
+
+6.3
+
+Samrudhi Dan( Cattle feed)\xA0Mehsana
+
+Compound Feed
+
+No
+
+13.5
+
+900
+
+675
+
+198
+
+2.88
+
+1.35
+
+KMF Cattle feed
+
+Compound Feed
+
+No
+
+11
+
+900
+
+585
+
+180
+
+3.6
+
+2.7
+
+Calf feed
+
+Compound Feed
+
+No
+
+20
+
+900
+
+675
+
+207
+
+7.2
+
+6.3
+
+Cattle feed below BIS
+
+Compound Feed
+
+No
+
+10
+
+900
+
+495
+
+162
+
+3.6
+
+2.7
+
+Cattle Feed High Protein
+
+Compound Feed
+
+No
+
+22
+
+900
+
+720
+
+225
+
+3.6
+
+2.7
+
+Soyabean meal
+
+DOC/Meal
+
+No
+
+19
+
+900
+
+720
+
+477
+
+1.404
+
+2.7
+
+Kardi Meal
+
+DOC/Meal
+
+No
+
+7
+
+900
+
+495
+
+207
+
+1.296
+
+2.592
+
+Sunflower meal
+
+DOC/Meal
+
+No
+
+14
+
+900
+
+594
+
+279
+
+2.16
+
+3.996
+
+Coconut meal
+
+DOC/Meal
+
+No
+
+8
+
+900
+
+648
+
+270
+
+0.972
+
+2.16
+
+Maize Gluten
+
+DOC/Meal
+
+No
+
+10
+
+900
+
+720
+
+522
+
+0.324
+
+1.944
+
+G.nut meal
+
+DOC/Meal
+
+No
+
+12
+
+900
+
+702
+
+396
+
+1.188
+
+2.592
+
+Rapeseed meal
+
+DOC/Meal
+
+No
+
+12
+
+900
+
+666
+
+378
+
+4.752
+
+3.672
+
+Guar korma
+
+DOC/Meal
+
+No
+
+12
+
+900
+
+720
+
+486
+
+2.376
+
+1.944
+
+Cottonseed meal
+
+DOC/Meal
+
+No
+
+11
+
+900
+
+702
+
+369
+
+1.296
+
+2.808
+
+Guar Meal
+
+DOC/Meal
+
+No
+
+9
+
+900
+
+675
+
+450
+
+2.376
+
+1.944
+
+Palm kernel meal
+
+DOC/Meal
+
+No
+
+8
+
+900
+
+540
+
+180
+
+1.512
+
+1.944
+
+Maize Cake
+
+DOC/Meal
+
+No
+
+20
+
+900
+
+720
+
+216
+
+2.484
+
+5.616
+
+Rice Bhardo/ Broken
+
+Grain/Seed
+
+No
+
+9
+
+900
+
+730
+
+87
+
+0.12
+
+1.2
+
+Bengalgram grain
+
+Grain/Seed
+
+No
+
+30
+
+900
+
+675
+
+162
+
+1.128
+
+1.32
+
+Black gram
+
+Grain/Seed
+
+No
+
+25
+
+900
+
+680
+
+23.7
+
+2.64
+
+5.88
+
+Taramira seed
+
+Grain/Seed
+
+No
+
+23
+
+950
+
+880
+
+280
+
+1.56
+
+2.7
+
+Dhaincha seeds (Sesbania)
+
+Grain/Seed
+
+No
+
+30
+
+900
+
+581
+
+309
+
+1.056
+
+2.736
+
+Bajra bhardo/broken
+
+Grain/Seed
+
+No
+
+7.5
+
+900
+
+616
+
+80
+
+0.348
+
+1.188
+
+Maize bhardo/broken
+
+Grain/Seed
+
+No
+
+10
+
+900
+
+713
+
+85
+
+0.132
+
+1.068
+
+Wheat bhardo/broken
+
+Grain/Seed
+
+No
+
+9
+
+900
+
+697
+
+117
+
+0.348
+
+1.296
+
+Greengram
+
+Grain/Seed
+
+No
+
+25
+
+900
+
+690
+
+258
+
+1.92
+
+5.4
+
+Soya seeds
+
+Grain/Seed
+
+No
+
+24
+
+900
+
+820
+
+378
+
+1.596
+
+2.208
+
+Ragi grain
+
+Grain/Seed
+
+No
+
+9
+
+900
+
+700
+
+90
+
+0.48
+
+0.324
+
+Barley Bhardo/ Broken
+
+Grain/Seed
+
+No
+
+10
+
+900
+
+710
+
+108
+
+0.324
+
+1.56
+
+Horse gram grain
+
+Grain/Seed
+
+No
+
+35
+
+900
+
+675
+
+198
+
+1.296
+
+0.492
+
+Cowpea Seed
+
+Grain/Seed
+
+No
+
+20
+
+900
+
+594
+
+240
+
+0.468
+
+1.8
+
+Methi Seeds (Fenugreek)
+
+Grain/Seed
+
+No
+
+30
+
+900
+
+607
+
+240
+
+1.056
+
+1.98
+
+Whole Cotton Seed
+
+Grain/Seed
+
+No
+
+10
+
+900
+
+810
+
+198
+
+1.512
+
+4.104
+
+Blackgram grain
+
+Grain/Seed
+
+No
+
+20
+
+900
+
+702
+
+261
+
+0.648
+
+1.188
+
+Jowar grain
+
+Grain/Seed
+
+No
+
+8
+
+900
+
+720
+
+78
+
+0.216
+
+1.08
+
+Rice grain
+
+Grain/Seed
+
+No
+
+9
+
+900
+
+738
+
+81
+
+0.108
+
+1.188
+
+Barley Grain
+
+Grain/Seed
+
+No
+
+9
+
+900
+
+711
+
+108
+
+0.324
+
+1.62
+
+Oat Grain
+
+Grain/Seed
+
+No
+
+8
+
+900
+
+657
+
+99
+
+0.432
+
+1.296
+
+Wheat grain
+
+Grain/Seed
+
+No
+
+10
+
+900
+
+774
+
+99
+
+0.216
+
+1.188
+
+Bajra grain
+
+Grain/Seed
+
+No
+
+9
+
+900
+
+684
+
+108
+
+0.54
+
+1.62
+
+Maize grain
+
+Grain/Seed
+
+No
+
+11
+
+900
+
+792
+
+81
+
+0.108
+
+1.512
+
+Grass Guinea
+
+Grass
+
+No
+
+0.8
+
+200
+
+110
+
+22
+
+0.624
+
+0.24
+
+Grass Hybrid Napier
+
+Grass
+
+No
+
+0.8
+
+200
+
+110
+
+20
+
+0.648
+
+0.24
+
+Grass Rye
+
+Grass
+
+No
+
+0.8
+
+200
+
+100
+
+20
+
+0.408
+
+0.168
+
+Begharo Grass
+
+Grass
+
+No
+
+0.5
+
+200
+
+110
+
+30
+
+1.968
+
+0.288
+
+Grass Elephant
+
+Grass
+
+No
+
+0.8
+
+200
+
+110
+
+12
+
+0.48
+
+0.192
+
+Grass Para
+
+Grass
+
+No
+
+0.8
+
+200
+
+104
+
+22
+
+0.336
+
+0.144
+
+Guar Grass
+
+Grass
+
+No
+
+0.5
+
+200
+
+104
+
+24
+
+2.736
+
+0.204
+
+Grass- Sorg. Sudan
+
+Grass
+
+No
+
+0.5
+
+300
+
+165
+
+24
+
+1.548
+
+1.476
+
+Dhaman Grass
+
+Grass
+
+No
+
+0.5
+
+200
+
+100
+
+8
+
+5.28
+
+0.144
+
+Grasses
+
+Grass
+
+No
+
+0.8
+
+200
+
+100
+
+8
+
+0.384
+
+0.144
+
+Gandhir Grass
+
+Grass
+
+No
+
+0.5
+
+200
+
+100
+
+16
+
+1.248
+
+0.6
+
+Lano Grass
+
+Grass
+
+No
+
+0.5
+
+200
+
+110
+
+30
+
+1.512
+
+0.336
+
+Lamp Grass
+
+Grass
+
+No
+
+0.5
+
+200
+
+100
+
+12
+
+0.504
+
+0.192
+
+Dhrabal Grass
+
+Grass
+
+No
+
+0.5
+
+200
+
+100
+
+16
+
+1.032
+
+0.144
+
+Puyadi Grass
+
+Grass
+
+No
+
+0.5
+
+200
+
+100
+
+10
+
+0.72
+
+0.12
+
+Liyar Grass
+
+Grass
+
+No
+
+0.5
+
+200
+
+104
+
+24
+
+2.736
+
+0.24
+
+Uein Grass
+
+Grass
+
+No
+
+0.5
+
+200
+
+110
+
+32
+
+3.24
+
+0.36
+
+Liber Waker Grass
+
+Grass
+
+No
+
+0.5
+
+200
+
+104
+
+20
+
+10.992
+
+0.216
+
+Pillipesara
+
+Grass
+
+No
+
+1
+
+200
+
+112.62
+
+33.28
+
+1.814
+
+0.209
+
+Rhodes grass
+
+Grass
+
+No
+
+0.8
+
+200
+
+110
+
+16
+
+0.252
+
+0.24
+
+Johnson grass
+
+Grass
+
+No
+
+0.8
+
+200
+
+113.94
+
+16.9
+
+0.48
+
+0.23
+
+Deer Grass
+
+Grass
+
+No
+
+0.5
+
+200
+
+100
+
+16
+
+0.72
+
+0.384
+
+Wheat Fodder
+
+Green Fodder
+
+No
+
+1.25
+
+200
+
+110
+
+15
+
+0.336
+
+0.216
+
+Barseem Fodder
+
+Green Fodder
+
+No
+
+1.2
+
+200
+
+130
+
+34
+
+1.584
+
+0.216
+
+Mustard Fodder
+
+Green Fodder
+
+No
+
+1.2
+
+200
+
+110
+
+18
+
+3.528
+
+1.032
+
+Bajra Fodder
+
+Green Fodder
+
+No
+
+0.8
+
+200
+
+110
+
+16
+
+0.576
+
+0.144
+
+Barley fodder
+
+Green Fodder
+
+No
+
+0.8
+
+250
+
+120
+
+21
+
+0.588
+
+0.24
+
+Velvet bean fodder
+
+Green Fodder
+
+No
+
+1
+
+300
+
+180
+
+45
+
+2.376
+
+0.648
+
+Stylosanthes fodder
+
+Green Fodder
+
+No
+
+1.2
+
+200
+
+115
+
+24
+
+1.224
+
+0.276
+
+Sunflower Fodder
+
+Green Fodder
+
+No
+
+1.2
+
+200
+
+110
+
+22
+
+0.912
+
+0.168
+
+Ragi fodder / leaves
+
+Green Fodder
+
+No
+
+0.8
+
+200
+
+104
+
+13
+
+0.576
+
+0.492
+
+Napier Bajra / NB-21
+
+Green Fodder
+
+No
+
+1.25
+
+200
+
+115
+
+16
+
+0.504
+
+0.408
+
+Oat Fodder
+
+Green Fodder
+
+No
+
+0.8
+
+200
+
+120
+
+22
+
+0.408
+
+0.192
+
+Cowpea Fodder
+
+Green Fodder
+
+No
+
+1.2
+
+200
+
+130
+
+36
+
+1.368
+
+0.216
+
+Lucerne Fodder
+
+Green Fodder
+
+No
+
+1.2
+
+200
+
+130
+
+34
+
+1.872
+
+0.264
+
+Maize Fodder
+
+Green Fodder
+
+No
+
+0.8
+
+200
+
+130
+
+15
+
+0.648
+
+0.144
+
+Jowar Fodder
+
+Green Fodder
+
+No
+
+0.8
+
+200
+
+110
+
+16
+
+0.384
+
+0.24
+
+Paddy Fodder
+
+Green Fodder
+
+No
+
+0.8
+
+200
+
+110
+
+12
+
+0.288
+
+0.192
+
+Horse gram Fodder
+
+Green Fodder
+
+No
+
+1.2
+
+200
+
+110
+
+30
+
+1.296
+
+0.168
+
+Berseem hay
+
+Hay
+
+No
+
+4.5
+
+900
+
+495
+
+135
+
+12.96
+
+1.62
+
+Grass Hay
+
+Hay
+
+No
+
+3
+
+900
+
+432
+
+63
+
+2.7
+
+1.08
+
+Oats Hay
+
+Hay
+
+No
+
+4.5
+
+900
+
+477
+
+72
+
+1.944
+
+1.512
+
+Jowar Hay
+
+Hay
+
+No
+
+4
+
+900
+
+450
+
+63
+
+5.4
+
+3.24
+
+Cowpea Hay
+
+Hay
+
+No
+
+4
+
+900
+
+477
+
+135
+
+15.12
+
+3.78
+
+Lucerne Hay
+
+Hay
+
+No
+
+4.5
+
+900
+
+495
+
+144
+
+12.96
+
+1.728
+
+Rhodes grass hay
+
+Hay
+
+No
+
+2.5
+
+900
+
+460
+
+54
+
+1.68
+
+0.72
+
+Sun hemp hay
+
+Hay
+
+No
+
+5
+
+900
+
+497.83
+
+140.18
+
+5.64
+
+0.744
+
+Jowar husk
+
+Husk
+
+No
+
+2
+
+900
+
+450
+
+42
+
+0.96
+
+0.288
+
+Maize Husk
+
+Husk
+
+No
+
+4
+
+900
+
+468
+
+91
+
+1.8
+
+2.88
+
+Saunf Husk
+
+Husk
+
+No
+
+2
+
+900
+
+405
+
+81
+
+1.296
+
+0.216
+
+Ragi Husk
+
+Husk
+
+No
+
+4
+
+900
+
+450
+
+40
+
+0.96
+
+0.288
+
+Isabgol (Jeeraru)
+
+Husk
+
+No
+
+14
+
+900
+
+675
+
+170
+
+1.2
+
+2.28
+
+Barley Husk
+
+Husk
+
+No
+
+4
+
+900
+
+450
+
+42
+
+0.96
+
+0.288
+
+Kodra Husk
+
+Husk
+
+No
+
+3
+
+900
+
+450
+
+72
+
+1.512
+
+0.324
+
+Pine Apple Leaves
+
+Leaves
+
+No
+
+0.4
+
+400
+
+180
+
+16
+
+2.112
+
+0.432
+
+Areca sheath
+
+Leaves
+
+No
+
+1
+
+200
+
+98.6
+
+7
+
+0.96
+
+0.192
+
+Coconut Leaves
+
+Leaves
+
+No
+
+0.4
+
+400
+
+160
+
+28
+
+0.816
+
+0.528
+
+Eucalyptus Leaves
+
+Leaves
+
+No
+
+0.5
+
+300
+
+150
+
+48
+
+2.184
+
+0.396
+
+Areca leaves
+
+Leaves
+
+No
+
+1
+
+200
+
+108
+
+8
+
+0.96
+
+0.192
+
+S.cane top/leaves
+
+Leaves
+
+No
+
+2
+
+250
+
+113
+
+8
+
+0.756
+
+0.156
+
+Anjan Leaves
+
+Leaves
+
+No
+
+1
+
+300
+
+150
+
+33
+
+2.58
+
+0.15
+
+Banana Leaves
+
+Leaves
+
+No
+
+0.4
+
+200
+
+100
+
+24
+
+1.344
+
+0.072
+
+Palash leaves
+
+Leaves
+
+No
+
+0.4
+
+400
+
+450
+
+54
+
+10.2
+
+0.3
+
+Glyricidia leaves
+
+Leaves
+
+No
+
+0.8
+
+200
+
+110
+
+40
+
+2.28
+
+0.72
+
+Chinese Cabbage
+
+Leaves
+
+No
+
+1
+
+150
+
+75
+
+27
+
+1.368
+
+0.144
+
+Tapioca leaves
+
+Leaves
+
+No
+
+0.8
+
+200
+
+92
+
+25
+
+2.4
+
+1.92
+
+Mulbery Leaves
+
+Leaves
+
+No
+
+0.4
+
+300
+
+180
+
+66
+
+3.024
+
+0.36
+
+Chicory Leaves
+
+Leaves
+
+No
+
+0.4
+
+150
+
+78
+
+34.5
+
+0.852
+
+0.216
+
+Khejari Leaves
+
+Leaves
+
+No
+
+2
+
+900
+
+450
+
+144
+
+14.256
+
+0.432
+
+Neem Leaves
+
+Leaves
+
+No
+
+0.4
+
+200
+
+80
+
+30
+
+2.4
+
+0.168
+
+Pipal Leaves
+
+Leaves
+
+No
+
+0.4
+
+200
+
+80
+
+14
+
+3.552
+
+0.12
+
+Anjawan Leaves
+
+Leaves
+
+No
+
+0.4
+
+200
+
+90
+
+24
+
+1.152
+
+0.288
+
+Subabul leaves
+
+Leaves
+
+No
+
+1.5
+
+200
+
+120
+
+44
+
+2.4
+
+0.408
+
+Babul Leaves
+
+Leaves
+
+No
+
+0.5
+
+200
+
+120
+
+26
+
+1.68
+
+0.264
+
+Grape leaves
+
+Leaves
+
+No
+
+2
+
+350
+
+290
+
+20
+
+9.6
+
+0.72
+
+Mango Leaves
+
+Leaves
+
+No
+
+0.4
+
+200
+
+80
+
+6
+
+2.592
+
+0.048
+
+Shewari / Sesbania Leaves
+
+Leaves
+
+No
+
+1
+
+200
+
+104
+
+46
+
+8.64
+
+0.72
+
+Bamboo Leaves
+
+Leaves
+
+No
+
+0.4
+
+200
+
+80
+
+10
+
+0.672
+
+0.048
+
+Castor leaves
+
+Leaves
+
+No
+
+1
+
+200
+
+110
+
+50
+
+4.8
+
+0.144
+
+ASMM-Mathura
+
+Minerals
+
+No
+
+30
+
+980
+
+0
+
+0
+
+205.8
+
+122.5
+
+ASMM-Jalgaon
+
+Minerals
+
+No
+
+30
+
+980
+
+0
+
+0
+
+215.6
+
+107.8
+
+ASMM-Etawah
+
+Minerals
+
+No
+
+30
+
+980
+
+0
+
+0
+
+205.8
+
+122.5
+
+ASMM-Chittoor
+
+Minerals
+
+No
+
+30
+
+980
+
+0
+
+0
+
+230.3
+
+122.5
+
+ASMM-Bihar
+
+Minerals
+
+No
+
+30
+
+980
+
+0
+
+0
+
+156.8
+
+88.2
+
+ASMM-Bikaner
+
+Minerals
+
+No
+
+30
+
+980
+
+0
+
+0
+
+220.5
+
+137.2
+
+ASMM-Jodhpur
+
+Minerals
+
+No
+
+30
+
+980
+
+0
+
+0
+
+220.5
+
+137.2
+
+ASMM-Meerut
+
+Minerals
+
+No
+
+30
+
+980
+
+0
+
+0
+
+196
+
+122.5
+
+ASMM-Kolhapur
+
+Minerals
+
+No
+
+30
+
+980
+
+0
+
+0
+
+213.64
+
+122.5
+
+ASMM-Moradabad
+
+Minerals
+
+No
+
+30
+
+980
+
+0
+
+0
+
+215.6
+
+127.4
+
+ASMM-Ajmer
+
+Minerals
+
+No
+
+30
+
+980
+
+0
+
+0
+
+220.5
+
+137.2
+
+ASMM-Dhaulpur
+
+Minerals
+
+No
+
+30
+
+980
+
+0
+
+0
+
+210.7
+
+146.02
+
+ASMM-Mehsana
+
+Minerals
+
+No
+
+30
+
+980
+
+0
+
+0
+
+215.6
+
+141.12
+
+ASMM-Surat
+
+Minerals
+
+No
+
+30
+
+980
+
+0
+
+0
+
+225.4
+
+137.2
+
+ASMM-Panchmahal
+
+Minerals
+
+No
+
+30
+
+980
+
+0
+
+0
+
+225.4
+
+107.8
+
+ASMM-Anand
+
+Minerals
+
+No
+
+30
+
+980
+
+0
+
+0
+
+215.6
+
+137.2
+
+ASMM-Kaira
+
+Minerals
+
+No
+
+30
+
+980
+
+0
+
+0
+
+215.6
+
+137.2
+
+ASMM-Kutch
+
+Minerals
+
+No
+
+30
+
+980
+
+0
+
+0
+
+205.8
+
+135.24
+
+ASMM-Junagadh
+
+Minerals
+
+No
+
+30
+
+980
+
+0
+
+0
+
+215.6
+
+145.04
+
+ASMM-Udaipur
+
+Minerals
+
+No
+
+30
+
+980
+
+0
+
+0
+
+220.5
+
+137.2
+
+ASMM-Bharatpur
+
+Minerals
+
+No
+
+30
+
+980
+
+0
+
+0
+
+210.7
+
+146.02
+
+Mineral Mixture BIS
+
+Minerals
+
+No
+
+45
+
+980
+
+0
+
+0
+
+196
+
+117.6
+
+ASMM - Western UP
+
+Minerals
+
+No
+
+60
+
+980
+
+0
+
+0
+
+250
+
+118
+
+Calcite powder
+
+Minerals
+
+No
+
+3
+
+900
+
+0
+
+0
+
+370
+
+0
+
+ASMM Madhya Pradesh
+
+Minerals
+
+No
+
+55
+
+980
+
+0
+
+0
+
+259
+
+98
+
+ASMM Kerala
+
+Minerals
+
+No
+
+70
+
+980
+
+0
+
+0
+
+220
+
+125
+
+MILMA MIN
+
+Minerals
+
+No
+
+56
+
+980
+
+0
+
+0
+
+220
+
+125
+
+ASMM-Sabarkantha
+
+Minerals
+
+No
+
+50
+
+980
+
+0
+
+0
+
+220
+
+140
+
+Liquid Calcium
+
+Minerals
+
+No
+
+150
+
+450
+
+0
+
+0
+
+15.75
+
+7.87
+
+ASMM - Rajasthan
+
+Minerals
+
+No
+
+57
+
+980
+
+0
+
+0
+
+215.6
+
+137.2
+
+ASMM-Bangalore
+
+Minerals
+
+No
+
+40
+
+980
+
+0
+
+0
+
+192
+
+90
+
+Calsagar
+
+Minerals
+
+No
+
+140
+
+990
+
+0
+
+0
+
+200
+
+100
+
+ASMM-Banaskantha
+
+Minerals
+
+No
+
+30
+
+980
+
+0
+
+0
+
+215.6
+
+141.12
+
+ASMM-J P Nagar
+
+Minerals
+
+No
+
+30
+
+980
+
+0
+
+0
+
+215.6
+
+127.4
+
+ASMM-Agra
+
+Minerals
+
+No
+
+30
+
+980
+
+0
+
+0
+
+205.8
+
+122.5
+
+ASMM-Bulandshahr
+
+Minerals
+
+No
+
+30
+
+980
+
+0
+
+0
+
+215.6
+
+122.5
+
+Cotton seed cake
+
+Oil Cake
+
+No
+
+12
+
+900
+
+720
+
+333
+
+0.756
+
+1.296
+
+Kardi Oil Cake
+
+Oil Cake
+
+No
+
+12
+
+900
+
+523
+
+160
+
+5.4
+
+4.32
+
+Mustard cake
+
+Oil Cake
+
+No
+
+14
+
+900
+
+720
+
+324
+
+4.644
+
+3.996
+
+Sunflower cake
+
+Oil Cake
+
+No
+
+12
+
+900
+
+648
+
+234
+
+2.052
+
+3.996
+
+Und. cottonseed cake
+
+Oil Cake
+
+No
+
+11
+
+900
+
+666
+
+216
+
+0.864
+
+1.512
+
+Rapeseed Cake
+
+Oil Cake
+
+No
+
+14
+
+900
+
+720
+
+342
+
+4.644
+
+3.996
+
+Linseed oil Cake
+
+Oil Cake
+
+No
+
+14
+
+900
+
+648
+
+270
+
+2.592
+
+5.184
+
+Palm kernel oil Cake
+
+Oil Cake
+
+No
+
+10
+
+900
+
+549
+
+153
+
+1.512
+
+1.944
+
+Coconut Cake
+
+Oil Cake
+
+No
+
+10
+
+900
+
+738
+
+234
+
+1.944
+
+2.7
+
+Groundnut cake
+
+Oil Cake
+
+No
+
+17
+
+900
+
+765
+
+360
+
+0.972
+
+2.16
+
+Til Cake
+
+Oil Cake
+
+No
+
+16
+
+900
+
+675
+
+360
+
+8.64
+
+3.888
+
+Karanj Cake
+
+Other conc.
+
+No
+
+5
+
+900
+
+540
+
+306
+
+3.996
+
+2.268
+
+Barley Brewery Waste
+
+Other conc.
+
+No
+
+8
+
+300
+
+168
+
+72
+
+1.32
+
+0.48
+
+Sesame / Gingelly oil
+
+Other conc.
+
+No
+
+150
+
+999
+
+1940
+
+0
+
+0
+
+0
+
+Whey liquid
+
+Other conc.
+
+No
+
+1
+
+60
+
+48
+
+7.2
+
+1.32
+
+0.96
+
+Molasses
+
+Other conc.
+
+No
+
+5
+
+820
+
+492
+
+16
+
+2.364
+
+0.888
+
+Ragi waste
+
+Other conc.
+
+No
+
+11
+
+890
+
+523.8
+
+116.8
+
+0.6
+
+0.384
+
+Babul Pods
+
+Other conc.
+
+No
+
+5
+
+900
+
+495
+
+108
+
+5.616
+
+0.864
+
+Brewery waste maize
+
+Other conc.
+
+No
+
+5
+
+350
+
+259
+
+55
+
+0.096
+
+0.18
+
+Mahua Cake
+
+Other conc.
+
+No
+
+5
+
+900
+
+540
+
+189
+
+0.648
+
+1.944
+
+Tamarind Seed Powder
+
+Other conc.
+
+No
+
+4
+
+900
+
+576
+
+108
+
+1.62
+
+0.972
+
+Spent Pepper Waste
+
+Other conc.
+
+No
+
+3
+
+900
+
+405
+
+117
+
+1.944
+
+0.54
+
+Tapioca Starch Waste
+
+Other conc.
+
+No
+
+4
+
+900
+
+576
+
+108
+
+1.62
+
+0.972
+
+Ambadi Cake
+
+Other conc.
+
+No
+
+7
+
+900
+
+540
+
+211
+
+1.728
+
+2.484
+
+Brewery waste wheat
+
+Other conc.
+
+No
+
+4
+
+250
+
+137
+
+18
+
+0.24
+
+0.324
+
+Brewery waste tapioca
+
+Other conc.
+
+No
+
+5
+
+200
+
+148
+
+10
+
+0.624
+
+0.036
+
+Mustard oil
+
+Other conc.
+
+No
+
+80
+
+999
+
+1940
+
+0
+
+0
+
+0
+
+Whole pomegranate
+
+Other conc.
+
+No
+
+4
+
+200
+
+133
+
+83.4
+
+0.336
+
+0.18
+
+Vaal Bean
+
+Other conc.
+
+No
+
+4
+
+900
+
+585
+
+231
+
+1.344
+
+1.476
+
+TMR
+
+Other conc.
+
+No
+
+10
+
+900
+
+585
+
+140
+
+3.12
+
+1.2
+
+Niger Seed Cake
+
+Other conc.
+
+No
+
+7
+
+900
+
+450
+
+306
+
+1.08
+
+1.296
+
+Soybean flakes
+
+Other conc.
+
+No
+
+12
+
+900
+
+566
+
+120
+
+3.84
+
+0.96
+
+Casia Tora Seeds
+
+Other conc.
+
+No
+
+4
+
+900
+
+495
+
+144
+
+3.24
+
+1.188
+
+Rubber Seed Cake
+
+Other conc.
+
+No
+
+4
+
+900
+
+495
+
+315
+
+4.212
+
+2.7
+
+Bypass Fat
+
+Other conc.
+
+No
+
+120
+
+990
+
+1855
+
+0
+
+96
+
+0
+
+Tapioca Meal
+
+Other conc.
+
+No
+
+5
+
+200
+
+144.8
+
+1
+
+0.144
+
+0.007
+
+Neem Seed Cake
+
+Other conc.
+
+No
+
+9
+
+900
+
+495
+
+135
+
+2.916
+
+0.756
+
+Isabgol (Lali)
+
+Other conc.
+
+No
+
+20
+
+900
+
+735
+
+290
+
+2.76
+
+4.32
+
+Mangoseed Kernal
+
+Other conc.
+
+No
+
+3
+
+900
+
+495
+
+54
+
+1.08
+
+0.864
+
+Subabul Seeds
+
+Other conc.
+
+No
+
+4
+
+900
+
+585
+
+261
+
+1.944
+
+1.188
+
+Tapioca Peel
+
+Other conc.
+
+No
+
+5
+
+200
+
+132.1
+
+7.46
+
+0.192
+
+0.012
+
+Cashewnut Waste
+
+Other conc.
+
+No
+
+3
+
+900
+
+450
+
+86
+
+1.512
+
+0.972
+
+Cocoa pods
+
+Other conc.
+
+No
+
+0.5
+
+900
+
+572
+
+57
+
+2.462
+
+1.102
+
+Jack Fruit Seed
+
+Other conc.
+
+No
+
+4
+
+550
+
+303
+
+66
+
+1.056
+
+0.396
+
+Barley Sprout
+
+Other conc.
+
+No
+
+2
+
+300
+
+180
+
+60
+
+0.576
+
+0.432
+
+Tomato Waste
+
+Other conc.
+
+No
+
+0.75
+
+200
+
+110
+
+30
+
+0.408
+
+0.312
+
+Biscuit Waste
+
+Other conc.
+
+No
+
+3
+
+900
+
+820
+
+61
+
+0.24
+
+0.24
+
+Apple Pomace
+
+Other conc.
+
+No
+
+0.75
+
+200
+
+120
+
+24
+
+0.192
+
+0.144
+
+Tapioca beer waste - Moist
+
+Other conc.
+
+No
+
+5
+
+200
+
+166.4
+
+14.44
+
+0.096
+
+0.12
+
+Whole Jack Fruit
+
+Other conc.
+
+No
+
+3
+
+220
+
+110
+
+17
+
+0.372
+
+0.084
+
+Maize cob waste
+
+Other roughage
+
+No
+
+0.8
+
+900
+
+468
+
+20
+
+0.132
+
+0.708
+
+Banana Bunch Stalk
+
+Other roughage
+
+No
+
+1
+
+900
+
+366
+
+9
+
+0.18
+
+0.132
+
+Sugarcane trash
+
+Other roughage
+
+No
+
+0.5
+
+900
+
+405
+
+36
+
+0.348
+
+1.176
+
+Banana Roots
+
+Other roughage
+
+No
+
+1
+
+200
+
+100
+
+24
+
+0.672
+
+0.144
+
+Banana Flowers
+
+Other roughage
+
+No
+
+1
+
+200
+
+100
+
+40
+
+0.48
+
+0.216
+
+Maize Sheeth
+
+Other roughage
+
+No
+
+2
+
+900
+
+360
+
+18
+
+1.296
+
+0.324
+
+Banana pseudo stem
+
+Other roughage
+
+No
+
+1.5
+
+200
+
+100
+
+24
+
+0.864
+
+0.144
+
+Pros.juliflora pods
+
+Other roughage
+
+No
+
+5
+
+900
+
+585
+
+108
+
+1.944
+
+0.54
+
+G.nut Shell powder
+
+Other roughage
+
+No
+
+2
+
+900
+
+342
+
+63
+
+1.08
+
+0.216
+
+Whole Sugarcane
+
+Other roughage
+
+No
+
+1.5
+
+350
+
+193
+
+7
+
+0.84
+
+0.132
+
+Cashew apple
+
+Other roughage
+
+No
+
+1
+
+150
+
+83.33
+
+18.98
+
+0.048
+
+0.12
+
+Cashew apple waste
+
+Other roughage
+
+No
+
+0.8
+
+200
+
+110
+
+27.4
+
+0.6
+
+0.816
+
+Swt. potato creepers
+
+Other roughage
+
+No
+
+2
+
+150
+
+60
+
+26
+
+1.296
+
+0.144
+
+Whole carrot
+
+Other roughage
+
+No
+
+2
+
+150
+
+123
+
+15
+
+0.288
+
+0.192
+
+Sugarcane top (dry)
+
+Other roughage
+
+No
+
+1
+
+900
+
+378
+
+28
+
+1.08
+
+0.168
+
+Cauliflower
+
+Other roughage
+
+No
+
+2
+
+200
+
+100
+
+36
+
+3.744
+
+0.408
+
+Cabbage
+
+Other roughage
+
+No
+
+2
+
+200
+
+100
+
+38
+
+3.12
+
+0.336
+
+Sugarcane Bagasse
+
+Other roughage
+
+No
+
+2
+
+800
+
+280
+
+28
+
+1.536
+
+0.288
+
+Cotton Hulls
+
+Other roughage
+
+No
+
+2
+
+900
+
+405
+
+108
+
+0.972
+
+0.54
+
+Banana Suckers
+
+Other roughage
+
+No
+
+1.5
+
+200
+
+100
+
+24
+
+0.864
+
+0.144
+
+Jackfruit leaves
+
+Other roughage
+
+No
+
+0.5
+
+400
+
+240
+
+62.4
+
+0.276
+
+0.048
+
+Banana peel
+
+Other roughage
+
+No
+
+2
+
+100
+
+114
+
+11.8
+
+1.392
+
+0.6
+
+Vaal Bean Plant
+
+Other roughage
+
+No
+
+1
+
+200
+
+110
+
+46.8
+
+1.872
+
+0.324
+
+Rice Husk
+
+Other roughage
+
+No
+
+1
+
+900
+
+250
+
+80
+
+0.24
+
+1.404
+
+Azolla
+
+Other roughage
+
+No
+
+0.5
+
+60
+
+42
+
+14
+
+0.072
+
+0.036
+
+Maize silage
+
+Silage
+
+No
+
+1
+
+300
+
+165
+
+24
+
+0.792
+
+0.864
+
+Oats Silage
+
+Silage
+
+No
+
+1
+
+300
+
+162
+
+24
+
+1.224
+
+0.792
+
+Hybrid Napier silage
+
+Silage
+
+No
+
+1.25
+
+300
+
+165
+
+19
+
+1.728
+
+0.648
+
+Jowar Silage
+
+Silage
+
+No
+
+1
+
+300
+
+150
+
+18
+
+0.864
+
+0.684
+
+Methi straw
+
+Straw
+
+No
+
+4
+
+900
+
+396
+
+64
+
+5.88
+
+0.456
+
+Gram straw
+
+Straw
+
+No
+
+4
+
+900
+
+487
+
+50
+
+6.192
+
+0.504
+
+Ragi Straw
+
+Straw
+
+No
+
+3.5
+
+900
+
+405
+
+31
+
+1.944
+
+0.432
+
+Dhania Straw
+
+Straw
+
+No
+
+2
+
+900
+
+405
+
+54
+
+1.728
+
+0.324
+
+Pulse Straw
+
+Straw
+
+No
+
+3.5
+
+900
+
+405
+
+36
+
+8.64
+
+0.648
+
+Mustard Straw
+
+Straw
+
+No
+
+2
+
+900
+
+360
+
+54
+
+1.512
+
+0.324
+
+Bajra Straw / Stover
+
+Straw
+
+No
+
+3.5
+
+900
+
+405
+
+32
+
+1.836
+
+0.54
+
+Pulse pod straw
+
+Straw
+
+No
+
+3.5
+
+900
+
+450
+
+90
+
+5.28
+
+0.54
+
+Paddy straw urea trtd.
+
+Straw
+
+No
+
+3.4
+
+850
+
+383
+
+68
+
+1.632
+
+0.312
+
+Paddy Straw
+
+Straw
+
+No
+
+3
+
+900
+
+378
+
+41
+
+1.728
+
+0.324
+
+Wheat Straw Urea Treated
+
+Straw
+
+No
+
+4.4
+
+850
+
+408
+
+43
+
+1.836
+
+0.408
+
+Groundnut Straw
+
+Straw
+
+No
+
+3.5
+
+900
+
+432
+
+54
+
+7.668
+
+0.54
+
+Black gram straw
+
+Straw
+
+No
+
+2.5
+
+900
+
+405
+
+80
+
+4.32
+
+0.576
+
+Red gram straw
+
+Straw
+
+No
+
+3.5
+
+900
+
+410
+
+90
+
+2.88
+
+0.432
+
+Soyabean Straw
+
+Straw
+
+No
+
+3
+
+900
+
+405
+
+45
+
+5.4
+
+1.296
+
+Jowar Straw / Stover
+
+Straw
+
+No
+
+3.5
+
+900
+
+405
+
+36
+
+2.7
+
+0.432
+
+Barley Straw
+
+Straw
+
+No
+
+3
+
+900
+
+405
+
+36
+
+1.944
+
+1.296
+
+Wheat Straw
+
+Straw
+
+No
+
+4
+
+900
+
+396
+
+27
+
+1.944
+
+0.432
+
+Maize Straw / Stover
+
+Straw
+
+No
+
+3.5
+
+900
+
+405
+
+36
+
+2.16
+
+0.648
+
+Guar Straw
+
+Straw
+
+No
+
+3.5
+
+900
+
+405
+
+117
+
+3.888
+
+1.188
+
+## manual-cow-comfort-english
+Source: Knowledge Repository/manual-cow-comfort-english.pdf | Category: Extension
+
+M o r e c a r e m o r e m i l k
+Understanding
+your bovine
+
+-- 1 of 32 --
+
+2
+
+-- 2 of 32 --
+
+3
+Oh Cows! With your milk and ghee you make the
+physically weak strong, and nurture the sick to
+health. With your sacred utterances, you purify our
+homes. Your glory is discussed in gatherings.
+\u2013 Atharvaveda
+
+-- 3 of 32 --
+
+4
+
+-- 4 of 32 --
+
+5
+Introduction
+The National Dairy Development Board has always been working for
+the uplift of poor and marginal farmers who form the bulk of the milk
+producers in our country. These farmers who mostly own one or two
+milch animals are dependent on the income from its milk for supporting
+their livelihood. The importance of a healthy animal cannot be stressed
+enough for a profitable business in dairying. Keeping this in mind, NDDB
+had developed a \u2018Handbook of Good Dairy Husbandry Practices\u2019 which
+contains all the basic information on animal health, breeding, nutrition,
+fodder production and conservation.
+In addition to having the basic knowledge on scientific dairy husbandry,
+it is very important that the dairy farmers also understand the various
+pointers exhibited by their animals from time to time, which if correctly
+interpreted communicates enough on the management, feeding,
+health, hygiene practices, levels of discomfort etc. The handbook on
+\u2018Understanding your bovine\u2019 has therefore been developed with the aim of
+creating an awareness on these easily discernable signs so that necessary
+corrective measures can be taken well in advance to avoid losses, which
+at times could be catastrophic.
+This handbook would be helpful to dairy farmers who continuously strive
+to improve their dairy husbandry practices.
+
+-- 5 of 32 --
+
+6
+At a glance 1
+1. Health pointers 2
+2. Physiological pointers 3
+3. Activity cycle 8
+4. Calving pointers 9
+(i) Stage I: Pre-calving signals
+(from 24 hours prior to calving): 9
+(ii) Stage II: Calving signals (30 minutes to 4 hours): 10
+(iii) Stage III: Expulsion of placenta (3-8 hours) 10
+5. New born calf pointers 11
+6. Feet and locomotion pointers 13
+7. Feeding pointers 15
+8. Hygiene and teat health pointers 16
+9. Heat stress pointers 17
+10. Housing pointers 17
+11. Vocalizations during stress or pain 19
+A. Body Condition Score (BCS) 20
+B. Rumen fill score 20
+C. Locomotion score 21
+D. Leg score 22
+E. Manure consistency score 23
+F. Manure digestibility score 23
+G. Teat end score 23
+H. Hygiene score 24
+C o n t e n t s
+
+-- 6 of 32 --
+
+7
+A t a g l a n c e
+An animal is able to communicate its well-being through a plethora of signs that the farmer consciously or
+unconsciously interprets as good or bad.
+Interpreting these pointers which have been time tested and are measurable would be an important milestone
+in developing the \u2018gut feeling\u2019 of the farmer regarding the health and well-being of his/her animal into a more
+resolute and correct understanding of the state of the animal.
+Various pointers reflect different aspects of management like feeding, housing, space availability, changes in
+routine, health, hygiene and normal physiology, any deviation of which should be viewed seriously and veterinary
+care solicited. A summary list of such signs and their relevance is given in the table below.
+S.no Pointers Relevance
+1 Health Indicates feeding and management practices
+2 Physiology Indicates general health, feeding practices, diseases, metabolic conditions, heat
+/cold stress, changes in routine, deficiencies, housing , insect menace etc.
+3 Body condition Indicates general health corresponding to stage of lactation, feeding practices,
+probability of occurrence of metabolic diseases or reproductive conditions post
+calving etc.
+4 Calving Helps identify abnormal signs that require immediate attention
+5 New born Helps identify abnormal signals that require special attention
+6 Feet & locomotion Indicates feeding, hoof management, flooring, housing etc.
+7 Rumen fill Indicates ailments, inadequate feeding etc.
+8 Feeding and
+manure
+Indicates imbalance in ration formulation, metabolic diseases etc.
+9 Hygiene Indicates cleanliness in the shed
+10 Teat end Indicates milking practices
+11 Heat stress Indicates level of stress due to heat
+12 Housing Indicates housing management in relation to flooring, ventilation, space requirement,
+proper placement of mangers and railings, effluent disposal, insect menace etc.
+13 Vocalizations in
+stress and pain
+Indicates the psychological status, disease condition and the pain source
+1
+
+-- 7 of 32 --
+
+1. Health pointers
+A healthy animal communicates its wellness through health indicators which can be easily discerned by the
+farmer.
+The muzzle of the animal should always be cool and moist.
+A brief description of the health pointers are given below:
+Description Health pointers
+Muzzle Cool & moist with frequent licking
+Eyes Bright, clear and not runny (no discharge), crusty or bloodshot
+Breathing Should be regular and not laboured
+Coat Glossy, clean and un-matted, free of ticks/lice, other parasites or eruptions. Coat discolouration
+is an indication of mineral deficiency ; ruffled coat is an indication of worm infestation
+Appearance Average weight of the breed; should not be emaciated or thin
+Movement Walking should be easy and free of limps; should not have slow or uneven gait or hunched
+positions while sitting; the animal should be able to rise from seated positions with ease.
+An animal in normal gait will place the hindlimbs where the forelimbs were while walking;
+a lame cow may either under-reach or over-reach
+Udder Size isn\u2019t necessarily an indicator of a good udder. It should sit forward with prominent
+milk veins, not sag and not be too meaty. The udder should not show too much sideways
+movement when the animal walks
+Behaviour Curious, alert and contented; animals should not stand apart from the herd, seem
+disinterested or show signs of a bad temper
+Body score It is an important indicator of the health of the animal. An animal in good health will have a
+body score between 2-3 (based on stage of lactation and pregnancy status)
+Tips: Estimating the weight of the animal
+The body weight of an animal can be estimated by the following formula:
+Body weight (Kgs) = [Hearth Girth(C) (inches)] 2 * Body Length (AB) (inches)
+_________________________________________________
+660
+2
+
+-- 8 of 32 --
+
+2. Physiological pointers
+Physiological pointers reflect the normal physiological processes occurring in the animals. Normal values
+indicate a healthy animal. Any deviation from normal physiology should be attended to by a veterinarian.
+The temperature, respiration and rumination should always be within the normal range.
+Brief descriptions of the physiological pointers are as under:
+T e m p e r a t u r e
+What to know What is abnormal Probable reasons
+y Normal body temperature is
+between 38 to 39 \xB0C (101.5 \xB1 1).
+y Temperature is taken ideally
+during early morning or late
+evening/night
+y Higher temperature (Fever).
+y May be accompanied by rapid
+breathing, shivering and occasional
+diarrhoea
+y Ears, horns and legs are usually cold
+to touch while body is too warm
+y Infection,
+y Heat stress,
+y Hyper excitability
+y Lower temperature (hypothermia) y Hypocalcaemia (milk fever)
+y Shock following serious
+infections/poisoning
+y Exposure to extreme cold
+R e s p i r a t i o n
+ y Normal respiration is 10-30
+times (breathing in + breathing
+out) per minute in adults and 30-
+50 times per minute in calves
+y Increase in respiration rate y Fever
+y Heat stress
+y Animal is in pain or is
+excited
+y Respiration is observed best
+from the animal\u2019s right flank,
+seen from behind
+y Decrease in respiration rate y Milk fever
+y Shock
+y Laboured breathing y Blockage in nasal passage
+y Shock
+Tips: Taking rectal temperature using a digital
+thermometer
+1. Ensure reading is zero before use.
+2. Insert the tip of the thermometer into the rectum
+at an angle so that it touches the rectal wall.
+3. Retain for at least 1 minute.
+4. Wipe the thermometer clean and note the
+reading.
+Tips: Observing respiration
+1. Ensure that the animal
+is calm.
+2. Stand at a safe distance
+behind the animal.
+3. Observe the movement
+of the animal\u2019s right
+flank region (arrow).
+3
+
+-- 9 of 32 --
+
+R u m i n a t i o n
+What to know What is abnormal Probable reasons
+y Rumination occurs 7-10 hours per
+day in 5-25 cycles, each lasting 10-60
+minutes
+y Chewing while ruminating occurs
+around 40-70 times within 45-60
+seconds
+y Rumen motility occurs at a rate of 1-3
+per minute
+y Decrease in rumination y Improperly balanced ration
+y More concentrate in ration
+y Rations with low fibre
+y Inadequate rations
+y Other diseases conditions
+y Decrease in rumen
+motility
+y Milk fever
+y Acidosis
+y Infections
+F e e d i n g
+
+y Animals feed around 5 hours every
+day
+y Feeding is spread out over 10-15
+meals
+y Rumen fill score should correspond
+to the lactation stage.(See rumen fill
+scores)
+y Low rumen fill score
+y Decrease in feeding
+time
+y Inadequate rations or ailing
+animal
+y Depraved feeding
+(eating mud or
+anything that the
+animal comes across)
+y Indicative of Pica (phosphorus
+deficiency)
+D r i n k i n g
+y Clean drinking water is to be made
+available 24x7 to the animals
+y Around 3-5 litres of water is required
+for every litre of milk produced
+y Requirement of water increases
+greatly during summer
+y Reduced milk
+production
+y Constipation
+y Animal not drinking
+water
+y Adequate quantity of clean
+water is not available 24x7
+y The water provided is dirty and
+foul smelling due to soiling with
+mud, dung or algal growth
+y Insects /larvae in water
+y Water engorgement
+(Animal binges on
+water resulting in
+haemoglobinuria-coffee
+coloured urine)
+y Animals are deprived of water
+for long periods
+Tips: Measuring rumen motility
+1. Place a clenched fist on the rumen fossa on the left flank of
+the animal.
+2. Apply a little pressure on the fist and hold for about a minute.
+3. The fist will be pushed back when rumen contraction occurs.
+Do you know?
+The rumen of an adult
+bovine can hold 100-
+150 litres of water!
+4
+
+-- 10 of 32 --
+
+D e f a e c a t i o n
+What to know What is abnormal Probable reasons
+y Defaecation occurs around 10-25
+times per day
+y Quantity of dung is based on the
+body weight
+y An animal weighing 350-400 Kg
+excretes around 20-25 Kg of dung
+a day
+y Manure consistency score
+should be around 3 (see manure
+consistency scoring)
+y Reduction in
+frequency / quantity
+of dung/ constipation /
+inspissated dung
+y Diarrhoea
+y Bloat
+y Milk fever
+y Ketosis
+y Inadequate water intake
+y Poisoning
+y Gastro-intestinal tract
+Infections
+y Internal parasites
+y Lactic acidosis (foamy,
+yellowish brown dung)
+y Johne\u2019s disease(gas bubbles in
+large numbers in dung)
+y Sudden change in feed,
+especially legumes
+y Internal parasites
+y Water-logged areas with snail
+populations have high chances
+of amphistomes & schistosomes
+requiring specific treatment
+y Foetid diarrhoea with
+bottle jaw
+y Diarrhoea, weight loss,
+anaemia; blood may be
+seen after defaecation
+y Amphistomes
+y Schistosomiasis (sub-clinical
+infections with low growth &
+productivity also common)
+y Reduced dry matter intake
+immediately post calving due to
+ketosis/milk fever etc may lead to
+abomasal displacement
+y Exceptionally greasy
+or pasty faeces,
+apparently covered
+with thin oil film
+y Left-sided abomasal
+displacement
+y Abrupt changes in feeding &
+management, inadequate water
+intake, parasitic infection,dental
+abnormalities, coarse feeds,
+highly fermentable feeds etc may
+predispose to intestinal obstruction
+y Difficulty in
+defaecation, mucous
+with blood
+y Intestinal obstruction
+y Manure digestibility score of 1 is
+ideal for milking and dry animals
+(see manure digestibility scoring)
+y Undigested particles in
+dung (1-2 cm)
+y Indigestion
+y Gastro-intestinal infections
+y Matchstick size
+fragments in dung
+y Tooth/ stomach diseases
+5
+
+-- 11 of 32 --
+
+U r i n a t i o n
+What to know What is abnormal Probable reasons
+y Urination occurs around 10
+times a day
+y Quantity of urine is based
+on body weight(around 1
+ml per Kg body weight per
+hour)
+y An animal weighing 350-
+400 Kg excretes around
+8.5-10 litres urine a day
+y Decrease in quantity
+of urine
+y Milk fever
+y Change in urine
+colour
+y Babesiosis
+y Water engorgement
+y Urinary infection
+y Difficulty in urination y Urinary calculi
+y Kidney problems
+M i l k
+
+P r o d u c t i o n
+y Peak yield is reached 1-2
+months after calving
+y Heifers peak at 75% in the
+first and at 90% in 2nd
+calving in comparison to
+mature cows
+y Sudden reduction in
+milk production
+y Change in milking routine/
+personnel(buffaloes take longer time to
+get used to new routines)
+y Adverse climatic conditions
+y Change in feed/feeding pattern
+y Animal in heat
+y Milk fever
+y Ketosis
+y Change in colour of
+milk
+y Mastitis
+y Phosphorus deficiency
+y Teat injury
+y Reduction in fat % y Sub-clinical mastitis
+y Thin or fat animals
+y High energy diet
+y Reduced quantity or low quality roughage
+in diet
+y Reduction in SNF % y Sub-clinical mastitis
+y Low energy diet
+y Heat stress
+y Underfeeding
+y Low quality roughage
+Do you know?
+Around 500 litres of blood need to circulate
+through the udder to make one litre of milk!
+6
+
+-- 12 of 32 --
+
+H e a t
+
+S i g n s
+What to know What is abnormal Probable reasons
+Average age at puberty:
+\uF0A7 Cross bred - 18 months
+\uF0A7 Indigenous breed - 2.5 years.
+\uF0A7 Buffalo- 2.5-3 years
+y Heat is less pronounced in buffalo
+y First heat post calving is seen 40
+days after calving
+y Animal not coming into
+heat after the average
+age at puberty
+y Undernourishment
+y Mineral deficiency
+y Worm infestation
+y Silent heat (especially in buffaloes)
+y Anatomical defects
+y Congenital defects
+y Repeated bellowing, swollen
+vulva, clear discharge from
+vagina, frequent urination,
+mounting and allowing to be
+mounted are major signs of heat
+y Animals not conceiving
+after repeated
+inseminations
+y Uterine infections
+y Hormonal defects
+y Anatomical
+y Congenital defects
+y Animals not coming
+into heat after calving
+y Energy deficiency
+y Mineral deficiency
+S a l i v a t i o n
+y Around 40-150 litres of saliva is
+produced per day based on type
+of ration given
+y Roughages causes production of
+
+[\u2026truncated\u2026]
+
+## Basic Guide to Good Animal Husbandry Practices_Hindi
+Source: Knowledge Repository/Material for AI Chatbot/Booklets/Basic Guide to Good Animal Husbandry Practices_Hindi.pdf | Category: Booklet
+
+Official NDDB extension material: Basic Guide to Good Animal Husbandry Practices_Hindi.
+Topics: dairy husbandry; cow comfort.
+Local file: Material for AI Chatbot/Booklets/Basic Guide to Good Animal Husbandry Practices_Hindi.pdf
+Hindi/Gujarati PDF may use custom fonts \u2014 see Dairy Knowledge Portal for full text.
+
+## Booklet - Understanding your bovine_Guj
+Source: Knowledge Repository/Material for AI Chatbot/Booklets/Booklet - Understanding your bovine_Guj.pdf | Category: Booklet
+
+Official NDDB extension material: Booklet - Understanding your bovine_Guj.
+Topics: dairy husbandry; cow comfort.
+Local file: Material for AI Chatbot/Booklets/Booklet - Understanding your bovine_Guj.pdf
+Hindi/Gujarati PDF may use custom fonts \u2014 see Dairy Knowledge Portal for full text.
+
+## Booklet - Understanding your bovine_Hindi
+Source: Knowledge Repository/Material for AI Chatbot/Booklets/Booklet - Understanding your bovine_Hindi.pdf | Category: Booklet
+
+Official NDDB extension material: Booklet - Understanding your bovine_Hindi.
+Topics: dairy husbandry; cow comfort.
+Local file: Material for AI Chatbot/Booklets/Booklet - Understanding your bovine_Hindi.pdf
+Hindi/Gujarati PDF may use custom fonts \u2014 see Dairy Knowledge Portal for full text.
+
+## Brief fodder crop production activities_Hindi
+Source: Knowledge Repository/Material for AI Chatbot/Booklets/Brief fodder crop production activities_Hindi.pdf | Category: Booklet
+
+Official NDDB extension material: Brief fodder crop production activities_Hindi.
+Topics: green fodder; fodder production.
+Local file: Material for AI Chatbot/Booklets/Brief fodder crop production activities_Hindi.pdf
+Hindi/Gujarati PDF may use custom fonts \u2014 see Dairy Knowledge Portal for full text.
+
+## Handbook of Good Dairy Husbandry Practices_Gujarati
+Source: Knowledge Repository/Material for AI Chatbot/Booklets/Handbook of Good Dairy Husbandry Practices_Gujarati.pdf | Category: Booklet
+
+Official NDDB extension material: Handbook of Good Dairy Husbandry Practices_Gujarati.
+Topics: dairy husbandry; cow comfort.
+Local file: Material for AI Chatbot/Booklets/Handbook of Good Dairy Husbandry Practices_Gujarati.pdf
+Hindi/Gujarati PDF may use custom fonts \u2014 see Dairy Knowledge Portal for full text.
+
+## Handbook of Good Dairy Husbandry Practices_Hindi
+Source: Knowledge Repository/Material for AI Chatbot/Booklets/Handbook of Good Dairy Husbandry Practices_Hindi.pdf | Category: Booklet
+
+Official NDDB extension material: Handbook of Good Dairy Husbandry Practices_Hindi.
+Topics: dairy husbandry; cow comfort.
+Local file: Material for AI Chatbot/Booklets/Handbook of Good Dairy Husbandry Practices_Hindi.pdf
+Hindi/Gujarati PDF may use custom fonts \u2014 see Dairy Knowledge Portal for full text.
+
+## Bypass Fat Supplement (Hindi)
+Source: Knowledge Repository/Material for AI Chatbot/Pamphlets/Bypass Fat Supplement (Hindi).pdf | Category: Pamphlet
+
+Official NDDB extension material: Bypass Fat Supplement (Hindi).
+Topics: dairy extension; livestock advisory.
+Local file: Material for AI Chatbot/Pamphlets/Bypass Fat Supplement (Hindi).pdf
+Hindi/Gujarati PDF may use custom fonts \u2014 see Dairy Knowledge Portal for full text.
+
+## CALF Nutrition (Hindi)
+Source: Knowledge Repository/Material for AI Chatbot/Pamphlets/CALF Nutrition (Hindi).pdf | Category: Pamphlet
+
+Official NDDB extension material: CALF Nutrition (Hindi).
+Topics: calf rearing; heifer nutrition.
+Local file: Material for AI Chatbot/Pamphlets/CALF Nutrition (Hindi).pdf
+Hindi/Gujarati PDF may use custom fonts \u2014 see Dairy Knowledge Portal for full text.
+
+## Calf Rearing Programme (CRP)_2024_Hindi
+Source: Knowledge Repository/Material for AI Chatbot/Pamphlets/Calf Rearing Programme (CRP)_2024_Hindi.pdf | Category: Pamphlet
+
+Official NDDB extension material: Calf Rearing Programme (CRP)_2024_Hindi.
+Topics: calf rearing; heifer nutrition.
+Local file: Material for AI Chatbot/Pamphlets/Calf Rearing Programme (CRP)_2024_Hindi.pdf
+Hindi/Gujarati PDF may use custom fonts \u2014 see Dairy Knowledge Portal for full text.
+
+## Chaf Cutter (Hindi)
+Source: Knowledge Repository/Material for AI Chatbot/Pamphlets/Chaf Cutter (Hindi).pdf | Category: Pamphlet
+
+Official NDDB extension material: Chaf Cutter (Hindi).
+Topics: dairy extension; livestock advisory.
+Local file: Material for AI Chatbot/Pamphlets/Chaf Cutter (Hindi).pdf
+Hindi/Gujarati PDF may use custom fonts \u2014 see Dairy Knowledge Portal for full text.
+
+## Compound Cattle Feed (Hindi) 2024
+Source: Knowledge Repository/Material for AI Chatbot/Pamphlets/Compound Cattle Feed (Hindi) 2024.pdf | Category: Pamphlet
+
+Official NDDB extension material: Compound Cattle Feed (Hindi) 2024.
+Topics: compound cattle feed; concentrate.
+Local file: Material for AI Chatbot/Pamphlets/Compound Cattle Feed (Hindi) 2024.pdf
+Hindi/Gujarati PDF may use custom fonts \u2014 see Dairy Knowledge Portal for full text.
+
+## Crop residue management by using various modern agricultural implements_Hindi 2024
+Source: Knowledge Repository/Material for AI Chatbot/Pamphlets/Crop residue management by using various modern agricultural implements_Hindi 2024.pdf | Category: Pamphlet
+
+Official NDDB extension material: Crop residue management by using various modern agricultural implements_Hindi 2024.
+Topics: dairy extension; livestock advisory.
+Local file: Material for AI Chatbot/Pamphlets/Crop residue management by using various modern agricultural implements_Hindi 2024.pdf
+Hindi/Gujarati PDF may use custom fonts \u2014 see Dairy Knowledge Portal for full text.
+
+## Enrichment and Densification of Crop Residues (Hindi)
+Source: Knowledge Repository/Material for AI Chatbot/Pamphlets/Enrichment and Densification of Crop Residues (Hindi).pdf | Category: Pamphlet
+
+Official NDDB extension material: Enrichment and Densification of Crop Residues (Hindi).
+Topics: dairy extension; livestock advisory.
+Local file: Material for AI Chatbot/Pamphlets/Enrichment and Densification of Crop Residues (Hindi).pdf
+Hindi/Gujarati PDF may use custom fonts \u2014 see Dairy Knowledge Portal for full text.
+
+## Feeding of Dairy Animals in Different Stage of Lactation_Hindi_2024
+Source: Knowledge Repository/Material for AI Chatbot/Pamphlets/Feeding of Dairy Animals in Different Stage of Lactation_Hindi_2024.pdf | Category: Pamphlet
+
+Official NDDB extension material: Feeding of Dairy Animals in Different Stage of Lactation_Hindi_2024.
+Topics: dairy extension; livestock advisory.
+Local file: Material for AI Chatbot/Pamphlets/Feeding of Dairy Animals in Different Stage of Lactation_Hindi_2024.pdf
+Hindi/Gujarati PDF may use custom fonts \u2014 see Dairy Knowledge Portal for full text.
+
+## Improved Green Fodder Production (Eng)
+Source: Knowledge Repository/Material for AI Chatbot/Pamphlets/Improved Green Fodder Production (Eng).pdf | Category: Pamphlet
+
+Improved Green Fodder
+Production
+An important and economic source
+of macro and micro nutrients
+for livestock
+National Dairy Development Board
+Anand
+
+-- 1 of 4 --
+
+Introduction
+In India, an estimated 50 million tonnes of concentrate feed ingredients are available annually
+which yield about 10 million tonnes of crude protein (CP) and 32.5 million tonnes of total
+digestible nutrients (TDN). In comparison, the annual production of green fodder is estimated
+at nearly 500 million tonnes, yielding around 12 million tonnes of crude protein and 55 million
+tonnes of total digestible nutrients. Thus, green fodder is a vital source of nutrients, especially
+vitamins, for livestock.
+Green fodder is primarily obtained through cultivation. Presently, 8.34* million hectares of
+cultivated land is under fodder crops, with a meagre average annual yield of 40 tonnes/
+hectare, which is low. In view of land constraints, efforts need to be put forth to: (i) enhance
+fodder production from available land and (ii) increase availability of fodder by minimising
+wastage.
+Strategies to increase green fodder production and availability
+\u2022 Use quality seeds of high yielding varieties/hybrids of fodder crops
+\u2022 Follow recommended agronomical practices of cultivation
+\u2022 Follow suitable crop rotation
+\u2022 Select short duration fodder crops (sunflower/mustard/turnip) during the switch-over season
+\u2022 Sow legume as an inter-crop or as a mixed crop with a non-legume crop to enhance the
+nutritional value of fodder and improve soil fertility
+\u2022 Plant perennial grasses like hybrid napier bajra/guinea grass in about 15 to 20 per cent of
+the cultivated area to get green fodder round the year
+\u2022 Plant fodder trees/shrubs on farm boundaries to get green fodder during the lean period
+\u2022 Harvest fodder at the appropriate stage to get the maximum nutrients
+\u2022 Adopt modern practices for hay and silage making to ensure supply of fodder during scarcity
+and avoid wastage of surplus green fodder
+\u2022 Use chaff-cutter to minimise wastage of fodder
+Various fodder crops/grasses/trees
+1. Annual Legumes : Berseem, Lucerne, Cowpea, Guar, Rice bean,
+Velvet bean
+Cereals : Sorghum, Oats, Maize, Millets, Barley
+Miscellaneous : Mustard (Chinese cabbage), Turnip, Fodder beet,
+Soya bean, Sunflower
+2. Perennial Grasses : Hybrid napier bajra, Guinea grass, Para grass,
+Congo signal grass
+Range Grasses : Nandi grass, Anjan grass, Blue panic grass, Marvel
+grass, Rhodes grass
+Pasture legumes : Butterfly pea,
+Stylo, Siratro
+Shrubs & trees : Hedge lucerne, Subabool, Siris, Khejari, Shevari,
+Gliricidia
+* For the year 2007-08. Source: Directorate of Economics & Statistics, Department of Agriculture and Cooperation,
+Ministry of Agriculture, Government of India
+
+-- 2 of 4 --
+
+Important fodder crops
+Sorghum
+(Sorghum bicolor): It is the most important cereal fodder crop grown in summer/
+rainy season. Covering the maximum cultivated area among fodder crops, sorghum is grown
+in all parts of the country except the cool hilly areas. It has high tolerance to drought and
+excessive rainfall. There are single, two and multi-cut varieties/hybrids of sorghum giving one
+to six cuts per crop producing 50 to 100 tonnes/hectare of green fodder. To avoid prussic
+acid or cyanide toxicity to livestock, the crop should be harvested at about 50 per cent
+flowering or after irrigation at the pre-flowering stage. The crop is also useful for hay and
+silage making.
+Important varieties: PC-6, PC-9, PC-23, HC-308, HJ-513, SSG-898, COFS-29, Pant Chari-5 and
+Pant Chari-6.
+Berseem
+(Trifolium alexandrinum): It is a legume crop of the winter season grown mainly in
+Bihar, Haryana, Madhya Pradesh, Punjab, Rajasthan and Uttar Pradesh. It gives six to seven cuts
+between November to May and produces 70 to 80 tonnes/hectare of extremely palatable and
+nutritious green fodder containing about 20 per cent crude protein. Berseem fodder is known
+as the \u2018milk multiplier\u2019. Being a leguminous crop it also fixes atmospheric nitrogen in the soil
+and improves soil fertility.
+Important varieties: JB-1, BL-1, BL-10, BL-42, Mescavi and Wardhan.
+Lucerne
+(Medicago sativa): Known as the \u2018queen of fodder\u2019, lucerne is the most popular fodder
+crop in the country after berseem and sorghum. As a winter legume, lucerne is grown mainly
+in Gujarat, Madhya Pradesh, Maharashtra and Rajasthan. The crop can give seven to eight cuts
+from November to June with an average green fodder yield of 60 to 80 tonnes/hectare. The
+fodder contains about 20 per cent crude protein. The crop is appropriate for hay making. In
+some areas, it is cultivated as a perennial crop.
+Important varieties: RL-88, Anand-2, Anand Lucerne-3.
+Cowpea
+(Vigna unguiculata): This legume crop is grown under both irrigated and rainfed
+conditions. It is widely cultivated across the country excluding the temperate hilly areas. It has
+great potential as a mixed crop when sown with maize, sorghum and millets to produce an
+ideal \u2018legume & cereal\u2019 fodder mixture. It grows quickly and can yield 25 to 45 tonnes/hectare
+of green fodder. It also finds use as green manure.
+Important varieties: EC-4216, UPC-9202, UPC-8705, UPC-618 and UPC-628.
+Oats
+(Avena sativa): It is a winter season cereal fodder crop, mainly cultivated in Bihar, Haryana,
+Madhya Pradesh, Punjab, Rajasthan and Uttar Pradesh. It has excellent growth and shows quick
+regeneration capacity after cutting. The green fodder is succulent, rich in carbohydrates and
+palatable. The yield ranges from 30 to 50 tonnes/hectare. The crop can also be used to prepare
+hay and silage.
+Important varieties: Kent, UPO-212, OS-6, OS-7, JHO-822, JHO-851 and RO-19.
+Maize
+(Zea mays): Maize is one of the best cereal fodder crops grown during summer, rainy
+and/or early winter season. It produces rich and nutritious green fodder which is a good source
+of carbohydrates. The green fodder is particularly suitable for silage making. The yield varies
+from 30 to 40 tonnes/hectare.
+Important varieties: African tall, JS-1006, Vijay composite and Pratap Makka Chari-6.
+
+-- 3 of 4 --
+
+Crop rotation
+Suitable rotation of crops not only enhances the productivity of land but also ensures availability
+of green fodder round the year. An indicative list of some crop rotations is given below:
+Sr.
+No. Crop rotations
+Green fodder
+production potential
+(tonnes/hectare/year)
+1. Hybrid napier bajra + Cowpea \u2013 Berseem + Mustard 285
+2. Maize + Cowpea \u2013 Maize \u2013 Cowpea \u2013 Oats \u2013 Maize + Cowpea 165
+3. Maize + Cowpea \u2013 Rice bean \u2013 Berseem + Mustard 110
+4. Hybrid napier bajra + Guar \u2013 Lucerne 250
+5. Sorghum + Cowpea \u2013 Maize + Cowpea \u2013 Maize + Cowpea 110
+6. M.P chari \u2013 Cowpea \u2013 Berseem + Mustard \u2013 Sorghum + Cowpea 168
+Silage
+It is preserved fodder obtained from the anaerobic fermentation of green fodder. Cereal fodder
+crops rich in carbohydrates make good silage. About 5 to 1000 tonnes of green fodder can be
+preserved as silage in a surface silo.
+To make silage: (i) harvest the crop at 30 to 35 per cent dry matter stage (ii) chop the crop
+into small-sized pieces (2-3 centimetres) (iii) fill the chopped fodder into a silo (iv) press the
+green fodder either manually or mechanically to create anaerobic condition (v) seal the silo with
+a polythene sheet and cover with soil and (vi) leave it for a minimum 45 days to complete the
+process of anaerobic fermentation. The silage is ready for feeding animals.
+Cowpea Sorghum
+Chopping of fodder Pressing of fodder in a silo Sealing of silo
+For more information, please contact: Animal Nutrition Group, NDDB, Anand.
+For free pdf version visit www.dairyknowledge.in
+
+-- 4 of 4 --
+
+## Improved Green Fodder Production (Hindi)_2024
+Source: Knowledge Repository/Material for AI Chatbot/Pamphlets/Improved Green Fodder Production (Hindi)_2024.pdf | Category: Pamphlet
+
+Official NDDB extension material: Improved Green Fodder Production (Hindi)_2024.
+Topics: green fodder; fodder production.
+Local file: Material for AI Chatbot/Pamphlets/Improved Green Fodder Production (Hindi)_2024.pdf
+Hindi/Gujarati PDF may use custom fonts \u2014 see Dairy Knowledge Portal for full text.
+
+## Integrated Pest Management (Hindi)
+Source: Knowledge Repository/Material for AI Chatbot/Pamphlets/Integrated Pest Management (Hindi).pdf | Category: Pamphlet
+
+Official NDDB extension material: Integrated Pest Management (Hindi).
+Topics: dairy extension; livestock advisory.
+Local file: Material for AI Chatbot/Pamphlets/Integrated Pest Management (Hindi).pdf
+Hindi/Gujarati PDF may use custom fonts \u2014 see Dairy Knowledge Portal for full text.
+
+## Maize (Hindi) 2025
+Source: Knowledge Repository/Material for AI Chatbot/Pamphlets/Maize (Hindi) 2025.pdf | Category: Pamphlet
+
+Official NDDB extension material: Maize (Hindi) 2025.
+Topics: green fodder; fodder production.
+Local file: Material for AI Chatbot/Pamphlets/Maize (Hindi) 2025.pdf
+Hindi/Gujarati PDF may use custom fonts \u2014 see Dairy Knowledge Portal for full text.
+
+## Methane Emission 21.7.16(Eng)
+Source: Knowledge Repository/Material for AI Chatbot/Pamphlets/Methane Emission 21.7.16(Eng).pdf | Category: Pamphlet
+
+Methane Emission
+Reduction in Dairy Animals
+National Dairy Development Board
+Anand
+Methane emission reduction also helps in
+improving milk production
+
+-- 1 of 4 --
+
+Introduction
+Global climate change has become a major cause of concern due to increase in atmospheric
+concentrations of greenhouse gases (GHGs). Climate change affects animal production and well-
+being, especially due to increase in ambient temperature. Methane is a potent GHG, emitted
+as a result of enteric fermentation of feed by ruminants. Enteric fermentation is responsible for
+about half of the total methane emission in India. Ruminant animals loose 4-12 per cent of
+gross energy intake in the form of methane, which is not only detrimental to environment but
+also results in energy loss to animals.
+Methane production in ruminants
+Ruminant livestock have a unique digestive system comprising of four stomach, which includes
+the rumen, reticulum, omasum and abomasum. The rumen is the first and largest compartment
+amounting to 80 per cent of the total stomach volume where microbes such as bacteria,
+protozoa and fungi break down and ferment the feed material into products like volatile fatty
+acids (VFAs), microbial protein, carbon dioxide and methane.
+Amongst the VFAs, acetate and butyrate are methanogenic and spare hydrogen during formation,
+while propionate is glucogenic in nature and utilises hydrogen. More acetate and butyrate
+production leads to production of more hydrogen and carbon dioxide, the main substrates
+for methane production. Under anaerobic conditions of rumen, methanogenic bacteria utilise
+hydrogen and carbon dioxide to form enteric methane, emitted mainly through belching.
+
+-- 2 of 4 --
+
+Measurement of methane by SF6 tracer technique
+\u2022 Sulfur hexafluoride (SF6) tracer technique is an internationally accepted technique for
+measurement of methane emission from ruminants under natural conditions of feeding and
+management.
+\u2022 In this technique, a small permeation tube containing SF6 is placed in the rumen of an
+animal.
+\u2022 Thereafter, the breath samples are collected daily for four consecutive days in canisters and
+brought to the laboratory for methane and SF6 analysis.
+\u2022 Methane and SF6 concentrations are determined by gas chromatography. Methane emission
+rate is calculated as the product of the permeation tube emission rate and the ratio of CH4
+to SF6 concentration in the breath sample.
+Feeding balanced ration for reducing methane emission
+In India, most of the farmers follow traditional methods of feeding which is generally imbalanced
+in terms of energy, protein and minerals. Animals fed on imbalanced ration produce more methane
+per unit of milk due to lower microbial protein synthesis and higher acetate production.
+In view of this, NDDB has initiated studies on measurement of methane emission reduction
+through ration balancing in different agro-climatic regions, where farmers are advised by the
+village based trained local resource persons (LRP) to balance the ration of animals with locally
+available feed resources, using computer software developed by NDDB.
+Balanced diet alters rumen fermentation pattern towards lower acetate, butyrate and higher
+propionate production. This results in higher microbial protein yield and reduced methane
+production. High propionate and microbial protein synthesis provides energy and protein for
+milk production in lactating ruminants.
+Field trials conducted by NDDB indicate that, ration balancing has potential of improving efficiency
+of milk production, microbial protein synthesis while reducing methane emission per kg milk
+yield.
+Methane emission estimation by SF6 tracer technique under field conditions
+
+-- 3 of 4 --
+
+Benefits of reducing methane emission through ration balancing
+\u2022 Better utilisation of locally available feed resources in the ration of animals
+\u2022 Efficient utilisation of dietary energy and proteins by ruminants
+\u2022 Improved efficiency of microbial protein synthesis
+\u2022 Reduction in loss of gross energy intake
+\u2022 A part of dietary energy lost as methane is channelised for productive purpose
+\u2022 Improved productivity of dairy animals
+\u2022 Reduction in the GHG emissions by dairy animals
+Methane emission reduction through balanced feeding under field conditions
+For more information, please contact: Animal Nutrition Group, NDDB, Anand.
+For free pdf version visit www.dairyknowledge.in
+
+-- 4 of 4 --
+
+## Methane Emission-(Hindi)
+Source: Knowledge Repository/Material for AI Chatbot/Pamphlets/Methane Emission-(Hindi).pdf | Category: Pamphlet
+
+Official NDDB extension material: Methane Emission-(Hindi).
+Topics: government scheme; subsidy.
+Local file: Material for AI Chatbot/Pamphlets/Methane Emission-(Hindi).pdf
+Hindi/Gujarati PDF may use custom fonts \u2014 see Dairy Knowledge Portal for full text.
+
+## Mineral Mixture (Hindi) 2024
+Source: Knowledge Repository/Material for AI Chatbot/Pamphlets/Mineral Mixture (Hindi) 2024.pdf | Category: Pamphlet
+
+Official NDDB extension material: Mineral Mixture (Hindi) 2024.
+Topics: mineral mixture; ASMM.
+Local file: Material for AI Chatbot/Pamphlets/Mineral Mixture (Hindi) 2024.pdf
+Hindi/Gujarati PDF may use custom fonts \u2014 see Dairy Knowledge Portal for full text.
+
+## Moringa oleifera (Hindi)
+Source: Knowledge Repository/Material for AI Chatbot/Pamphlets/Moringa oleifera (Hindi).pdf | Category: Pamphlet
+
+Official NDDB extension material: Moringa oleifera (Hindi).
+Topics: dairy extension; livestock advisory.
+Local file: Material for AI Chatbot/Pamphlets/Moringa oleifera (Hindi).pdf
+Hindi/Gujarati PDF may use custom fonts \u2014 see Dairy Knowledge Portal for full text.
+
+## Moringa Seed Production pamphlet_ Hindi_2025
+Source: Knowledge Repository/Material for AI Chatbot/Pamphlets/Moringa Seed Production pamphlet_ Hindi_2025.pdf | Category: Pamphlet
+
+Official NDDB extension material: Moringa Seed Production pamphlet_ Hindi_2025.
+Topics: dairy extension; livestock advisory.
+Local file: Material for AI Chatbot/Pamphlets/Moringa Seed Production pamphlet_ Hindi_2025.pdf
+Hindi/Gujarati PDF may use custom fonts \u2014 see Dairy Knowledge Portal for full text.
+
+## Quality Fodder Seed Production (Hindi)
+Source: Knowledge Repository/Material for AI Chatbot/Pamphlets/Quality Fodder Seed Production (Hindi).pdf | Category: Pamphlet
+
+Official NDDB extension material: Quality Fodder Seed Production (Hindi).
+Topics: green fodder; fodder production.
+Local file: Material for AI Chatbot/Pamphlets/Quality Fodder Seed Production (Hindi).pdf
+Hindi/Gujarati PDF may use custom fonts \u2014 see Dairy Knowledge Portal for full text.
+
+## Ration Balancing-updated (Hindi) 2025
+Source: Knowledge Repository/Material for AI Chatbot/Pamphlets/Ration Balancing-updated (Hindi) 2025.pdf | Category: Nutrition
+
+Official NDDB extension material: Ration Balancing-updated (Hindi) 2025.
+Topics: ration balancing; least-cost feed; NDDB RBP.
+Local file: Material for AI Chatbot/Pamphlets/Ration Balancing-updated (Hindi) 2025.pdf
+Hindi/Gujarati PDF may use custom fonts \u2014 see Dairy Knowledge Portal for full text.
+
+## Ration Balancing-updated 21.7.16 (Eng)
+Source: Knowledge Repository/Material for AI Chatbot/Pamphlets/Ration Balancing-updated 21.7.16 (Eng).pdf | Category: Nutrition
+
+Ration Balancing
+Programme
+An effective tool to improve milk production
+at least cost
+National Dairy Development Board
+Anand
+Cottonseed Groundnut Rice Wheat Maize Sorghum
+Mineral mixture Oats Sorghum Maize Lucerne Berseem
+Cakes Brans Grains
+Supplement Fodders
+Babool pods Prosopis pods Jackfruit Banana Azolla	Mulberry leaves
+Agro-industrial byproducts
+Commonly used feed ingredients
+
+-- 1 of 4 --
+
+Introduction
+The feed given to animals usually comprises one or two locally available concentrate feed
+ingredients, grasses and crop residues. This leads to imbalanced feeding which means that
+proteins, energy, minerals and vitamins in the ration are either more or less. While imbalanced
+feeding adversely affects the health and productivity of animals in various ways, it also reduces
+the net daily income to milk producers from dairying because the potential of milk production
+of animals is not fully exploited. At times, when the animals are overfed, this can also raise the
+cost of milk production.
+Therefore, milk producers need to understand the implications of imbalanced feeding and
+recognise the importance of giving their animals balanced ration.
+Disadvantages of imbalanced feeding
+\u2022 Low milk production, poor growth and reproduction
+\u2022 Milk production of animals lower than their genetic potential
+\u2022 Shorter lactation length and increased inter-calving period
+\u2022 Animals more prone to metabolic diseases such as milk fever and ketosis
+\u2022 Slow growth of young animals delaying the age of first calving
+\u2022 Low productivity and shorter duration of productive life
+What is ration balancing?
+All species require balanced ration for optimal growth. Ration balancing is the process to balance
+the level of various nutrients of an animal, from the available feed resources, to meet its
+nutrient requirements for maintenance and production.
+Types of dietary feed ingredients
+\u2022 Compound cattle feed: This is considered to be a balanced source of nutrients for growth
+and milk production. However, only 10 to 12 per cent of the total feed ingredients are used
+to produce compound cattle feed. Compound cattle feed does not always complement the
+feed ingredients used by milk producers.
+\u2022 Other feeds: Feed ingredients like rapeseed cake/meal, groundnut cake/meal, sunflower
+meal, cottonseed cake/meal, soya bean meal, guar meal, maize gluten, sesame cake,
+coconut cake, linseed cake, safflower meal, deoiled rice bran, rice polish, wheat bran, maize
+bran, maize grain, sorghum grain, wheat, broken rice, millets and chunnies are fed as such,
+depending on availability and cost.
+\u2022 Crops residues & grasses: Wheat straw, paddy straw, sorghum straw, maize stovers,
+straw of pearl millet and locally available grasses are fed as basal feed.
+\u2022 Green fodder: Maize, sorghum, oats, hybrid napier bajra, lucerne, cowpea and berseem
+are available seasonally and fed in a limited quantity.
+\u2022 Mineral mixture: This is a source of macro and micro minerals, usually lacking in the
+animal\u2019s ration.
+
+-- 2 of 4 --
+
+NDDB\u2019s Ration Balancing Programme
+The objective of this programme is to produce an optimum quantity of milk at the least cost
+from milch animals by readjusting, wherever required, the proportion of locally available dietary
+feed ingredients, so as to provide them adequate amounts of proteins, minerals, vitamins as
+well as energy. NDDB has developed a user-friendly software for ration balancing, that can be
+used by dedicated local resource persons (LRPs).
+The LRP is trained by the implementing agency to effectively use the software in the local
+language and involves the following steps:
+1. Assessing nutrient status of animals: This is assessed on the basis of prevalent feeding
+practices as well as factors such as the level of milk production, milk fat per cent, body
+weight, lactation stage and pregnancy status.
+2. Assessing chemical composition of locally available feed resources: The software
+contains a database of the analyses of the chemical composition of feeds and fodders
+available in various parts of the country. The chemical composition of different grains, oil
+cakes/meals, brans, chunnies, agro-industrial byproducts, cultivated green fodders, grasses,
+crop residues, tree leaves and mineral supplements can be known through this software.
+3. Assessing nutrient requirement of animals: The software has a database of the nutrient
+requirements of the various types of animals based on the feeding standards commonly
+followed in India. The total nutrient requirement of an animal is assessed for dry matter,
+crude protein, total digestible nutrients (TDN), calcium and phosphorus.
+4. Formulating least cost balanced ration using locally available resources: Based
+on chemical composition of available feed resources and in accordance with the nutrient
+requirement of the animal/s, the software computes the least cost ration within the given
+nutritional and available resource constraints. The LRP advises the milk producer to prepare
+the least cost ration using feed ingredients in the proportion as indicated by the software. In
+case there is a change in feed resources, the LRP reformulates the least cost ration through
+the software.
+Demonstration of ration balancing programme to milk producers	Demonstration of ration balancing programme to milk producers
+
+-- 3 of 4 --
+
+The local resource person (LRP) revisits the milk producer according to his/her requirement and
+keeps a record of the various observations related to the quality and quantity of milk, including
+the cost of milk production before and after implementation of the Ration Balancing Programme
+and increase in the net daily income per animal.
+For this purpose, implementing agencies provide the necessary facilities such as a personal
+digital assistant/netbook loaded with NDDB\u2019s Ration Balancing Programme software, a weighing
+balance, measuring tape and ear tags with applicators, to the LRP.
+The LRP functions in a dedicated manner to implement the Ration Balancing Programme in a
+village and provides services to the farmers.
+Implementing agencies for Ration Balancing Programme
+Various agencies such as dairy cooperatives, service providing organisations and NGOs can
+implement the Ration Balancing Programme.
+Benefits of Ration Balancing Programme
+\u2022 Uses locally available feed resources to balance the ration of animals at least cost
+\u2022 Increases milk production with more fat and solids-not-fat
+\u2022 Helps increase the net daily income
+\u2022 Improves reproduction efficiency
+\u2022 Helps reduce inter-calving period, thereby increasing the productive life of animals
+\u2022 Improves the general health of animals
+\u2022 Improves the growth rate in calves leading to early maturity
+A technical officer explaining the concept
+of RBP to LRPs
+A milk producer feeding balanced ration
+to her cow
+For more information, please contact: Animal Nutrition Group, NDDB, Anand.
+For free pdf version visit www.dairyknowledge.in
+
+-- 4 of 4 --
+
+## Silage Making (Hindi) 2025
+Source: Knowledge Repository/Material for AI Chatbot/Pamphlets/Silage Making (Hindi) 2025.pdf | Category: Pamphlet
+
+Official NDDB extension material: Silage Making (Hindi) 2025.
+Topics: silage making; fodder preservation.
+Local file: Material for AI Chatbot/Pamphlets/Silage Making (Hindi) 2025.pdf
+Hindi/Gujarati PDF may use custom fonts \u2014 see Dairy Knowledge Portal for full text.
+
+## Silage pamphlet_ Hindi_2024
+Source: Knowledge Repository/Material for AI Chatbot/Pamphlets/Silage pamphlet_ Hindi_2024.pdf | Category: Pamphlet
+
+Official NDDB extension material: Silage pamphlet_ Hindi_2024.
+Topics: silage making; fodder preservation.
+Local file: Material for AI Chatbot/Pamphlets/Silage pamphlet_ Hindi_2024.pdf
+Hindi/Gujarati PDF may use custom fonts \u2014 see Dairy Knowledge Portal for full text.
+
+## Thorn less Cactus (Hindi)
+Source: Knowledge Repository/Material for AI Chatbot/Pamphlets/Thorn less Cactus (Hindi).pdf | Category: Pamphlet
+
+Official NDDB extension material: Thorn less Cactus (Hindi).
+Topics: dairy extension; livestock advisory.
+Local file: Material for AI Chatbot/Pamphlets/Thorn less Cactus (Hindi).pdf
+Hindi/Gujarati PDF may use custom fonts \u2014 see Dairy Knowledge Portal for full text.
+
+## Trifold_EVM_Eng_low
+Source: Knowledge Repository/Material for AI Chatbot/Pamphlets/Trifold_EVM_Eng_low.pdf | Category: Pamphlet
+
+Official NDDB extension material: Trifold_EVM_Eng_low.
+Topics: ethno-veterinary medicine; traditional remedies.
+Local file: Material for AI Chatbot/Pamphlets/Trifold_EVM_Eng_low.pdf
+Hindi/Gujarati PDF may use custom fonts \u2014 see Dairy Knowledge Portal for full text.
+
+## Advisory for management of dairy animals during rainy season_poster_Guj
+Source: Knowledge Repository/Material for AI Chatbot/Poster/Advisory for management of dairy animals during rainy season_poster_Guj.pdf | Category: Poster
+
+Official NDDB extension material: Advisory for management of dairy animals during rainy season_poster_Guj.
+Topics: dairy extension; livestock advisory.
+Local file: Material for AI Chatbot/Poster/Advisory for management of dairy animals during rainy season_poster_Guj.pdf
+Hindi/Gujarati PDF may use custom fonts \u2014 see Dairy Knowledge Portal for full text.
+
+## Advisory for management of dairy animals during rainy season_poster_Hindi
+Source: Knowledge Repository/Material for AI Chatbot/Poster/Advisory for management of dairy animals during rainy season_poster_Hindi.pdf | Category: Poster
+
+Official NDDB extension material: Advisory for management of dairy animals during rainy season_poster_Hindi.
+Topics: dairy extension; livestock advisory.
+Local file: Material for AI Chatbot/Poster/Advisory for management of dairy animals during rainy season_poster_Hindi.pdf
+Hindi/Gujarati PDF may use custom fonts \u2014 see Dairy Knowledge Portal for full text.
+
+## Calf Rearing_Hindi
+Source: Knowledge Repository/Material for AI Chatbot/Poster/Calf Rearing_Hindi.pdf | Category: Poster
+
+Official NDDB extension material: Calf Rearing_Hindi.
+Topics: calf rearing; heifer nutrition.
+Local file: Material for AI Chatbot/Poster/Calf Rearing_Hindi.pdf
+Hindi/Gujarati PDF may use custom fonts \u2014 see Dairy Knowledge Portal for full text.
+
+## CMP_Hindi
+Source: Knowledge Repository/Material for AI Chatbot/Poster/CMP_Hindi.pdf | Category: Poster
+
+Official NDDB extension material: CMP_Hindi.
+Topics: dairy extension; livestock advisory.
+Local file: Material for AI Chatbot/Poster/CMP_Hindi.pdf
+Hindi/Gujarati PDF may use custom fonts \u2014 see Dairy Knowledge Portal for full text.
+
+## EVM Poster_Gujarati
+Source: Knowledge Repository/Material for AI Chatbot/Poster/EVM Poster_Gujarati.pdf | Category: Poster
+
+Official NDDB extension material: EVM Poster_Gujarati.
+Topics: ethno-veterinary medicine; traditional remedies.
+Local file: Material for AI Chatbot/Poster/EVM Poster_Gujarati.pdf
+Hindi/Gujarati PDF may use custom fonts \u2014 see Dairy Knowledge Portal for full text.
+
+## EVM Poster_Hindi
+Source: Knowledge Repository/Material for AI Chatbot/Poster/EVM Poster_Hindi.pdf | Category: Poster
+
+Official NDDB extension material: EVM Poster_Hindi.
+Topics: ethno-veterinary medicine; traditional remedies.
+Local file: Material for AI Chatbot/Poster/EVM Poster_Hindi.pdf
+Hindi/Gujarati PDF may use custom fonts \u2014 see Dairy Knowledge Portal for full text.
+
+## Green Fodder_Hindi
+Source: Knowledge Repository/Material for AI Chatbot/Poster/Green Fodder_Hindi.pdf | Category: Poster
+
+Official NDDB extension material: Green Fodder_Hindi.
+Topics: green fodder; fodder production.
+Local file: Material for AI Chatbot/Poster/Green Fodder_Hindi.pdf
+Hindi/Gujarati PDF may use custom fonts \u2014 see Dairy Knowledge Portal for full text.
+
+## Lumpy Skin Disease - Poster (Gujarati) High
+Source: Knowledge Repository/Material for AI Chatbot/Poster/Lumpy Skin Disease - Poster (Gujarati) High.pdf | Category: Poster
+
+Official NDDB extension material: Lumpy Skin Disease - Poster (Gujarati) High.
+Topics: lumpy skin disease; LSD.
+Local file: Material for AI Chatbot/Poster/Lumpy Skin Disease - Poster (Gujarati) High.pdf
+Hindi/Gujarati PDF may use custom fonts \u2014 see Dairy Knowledge Portal for full text.
+
+## Lumpy Skin Disease - Poster (Hindi) High
+Source: Knowledge Repository/Material for AI Chatbot/Poster/Lumpy Skin Disease - Poster (Hindi) High.pdf | Category: Poster
+
+Official NDDB extension material: Lumpy Skin Disease - Poster (Hindi) High.
+Topics: lumpy skin disease; LSD.
+Local file: Material for AI Chatbot/Poster/Lumpy Skin Disease - Poster (Hindi) High.pdf
+Hindi/Gujarati PDF may use custom fonts \u2014 see Dairy Knowledge Portal for full text.
+
+## Mastitis control Poster_Gujarati
+Source: Knowledge Repository/Material for AI Chatbot/Poster/Mastitis control Poster_Gujarati.pdf | Category: Poster
+
+Official NDDB extension material: Mastitis control Poster_Gujarati.
+Topics: mastitis control; udder health.
+Local file: Material for AI Chatbot/Poster/Mastitis control Poster_Gujarati.pdf
+Hindi/Gujarati PDF may use custom fonts \u2014 see Dairy Knowledge Portal for full text.
+
+## Mastitis control Poster_Hindi
+Source: Knowledge Repository/Material for AI Chatbot/Poster/Mastitis control Poster_Hindi.pdf | Category: Poster
+
+Official NDDB extension material: Mastitis control Poster_Hindi.
+Topics: mastitis control; udder health.
+Local file: Material for AI Chatbot/Poster/Mastitis control Poster_Hindi.pdf
+Hindi/Gujarati PDF may use custom fonts \u2014 see Dairy Knowledge Portal for full text.
+
+## Napier Hybrid Fodder-Poster_Gujarati
+Source: Knowledge Repository/Material for AI Chatbot/Poster/Napier Hybrid Fodder-Poster_Gujarati.pdf | Category: Poster
+
+Official NDDB extension material: Napier Hybrid Fodder-Poster_Gujarati.
+Topics: green fodder; fodder production.
+Local file: Material for AI Chatbot/Poster/Napier Hybrid Fodder-Poster_Gujarati.pdf
+Hindi/Gujarati PDF may use custom fonts \u2014 see Dairy Knowledge Portal for full text.
+
+## Napier Hybrid Fodder-Poster_Hindi
+Source: Knowledge Repository/Material for AI Chatbot/Poster/Napier Hybrid Fodder-Poster_Hindi.pdf | Category: Poster
+
+Official NDDB extension material: Napier Hybrid Fodder-Poster_Hindi.
+Topics: green fodder; fodder production.
+Local file: Material for AI Chatbot/Poster/Napier Hybrid Fodder-Poster_Hindi.pdf
+Hindi/Gujarati PDF may use custom fonts \u2014 see Dairy Knowledge Portal for full text.
+
+## EVM Pamplet_Trifold_Gujarati
+Source: Knowledge Repository/Material for AI Chatbot/Trifold/EVM Pamplet_Trifold_Gujarati.pdf | Category: Trifold
+
+Official NDDB extension material: EVM Pamplet_Trifold_Gujarati.
+Topics: ethno-veterinary medicine; traditional remedies.
+Local file: Material for AI Chatbot/Trifold/EVM Pamplet_Trifold_Gujarati.pdf
+Hindi/Gujarati PDF may use custom fonts \u2014 see Dairy Knowledge Portal for full text.
+
+## EVM Pamplet_Trifold_Hindi
+Source: Knowledge Repository/Material for AI Chatbot/Trifold/EVM Pamplet_Trifold_Hindi.pdf | Category: Trifold
+
+Official NDDB extension material: EVM Pamplet_Trifold_Hindi.
+Topics: ethno-veterinary medicine; traditional remedies.
+Local file: Material for AI Chatbot/Trifold/EVM Pamplet_Trifold_Hindi.pdf
+Hindi/Gujarati PDF may use custom fonts \u2014 see Dairy Knowledge Portal for full text.
+
+## Trifold_Bee-keeping_Guj
+Source: Knowledge Repository/Material for AI Chatbot/Trifold/Trifold_Bee-keeping_Guj.pdf | Category: Trifold
+
+Official NDDB extension material: Trifold_Bee-keeping_Guj.
+Topics: dairy extension; livestock advisory.
+Local file: Material for AI Chatbot/Trifold/Trifold_Bee-keeping_Guj.pdf
+Hindi/Gujarati PDF may use custom fonts \u2014 see Dairy Knowledge Portal for full text.
+
+## Trifold_Bee-keeping_Hindi
+Source: Knowledge Repository/Material for AI Chatbot/Trifold/Trifold_Bee-keeping_Hindi.pdf | Category: Trifold
+
+Official NDDB extension material: Trifold_Bee-keeping_Hindi.
+Topics: dairy extension; livestock advisory.
+Local file: Material for AI Chatbot/Trifold/Trifold_Bee-keeping_Hindi.pdf
+Hindi/Gujarati PDF may use custom fonts \u2014 see Dairy Knowledge Portal for full text.
+
+## NDDB Website Content
+Source: Knowledge Repository/NDDB Website Content.docx | Category: Extension
+
+National Dairy Development Board (NDDB) \u2014 Full Website Content Extract
+
+Source: https://beta.nddb.coop/ Extracted: June 2026
+
+ABOUT NDDB
+
+The National Dairy Development Board (NDDB) was established in 1965 as a society. In 1987, NDDB was constituted as a body corporate and was declared an institution of national importance by an Act of Parliament.
+
+NDDB has been playing a pivotal role in developing the dairy sector of the country over the past six decades by nurturing and promoting producer-owned institutions with the objective of improving the livelihoods of crores of dairy farmers, the majority of whom are landless, marginal or small.
+
+KEY STATISTICS (At a Glance)
+
+Metric
+
+Value
+
+District Cooperative Milk Unions
+
+243
+
+State Cooperative Federations
+
+22
+
+Milk Producer Organizations
+
+25
+
+Milk Procured
+
+66.2 Million Kg/day
+
+Milk Marketed
+
+439 Lakh Litres per day
+
+WHAT WE DO \u2014 DEPARTMENTS
+
+1. Innovation & Project Management
+
+NDDB's innovation and project management efforts strengthen the dairy value chain through sustainable and innovative practices. Aligned with commitment to innovation and continuous improvement, NDDB plays a pivotal role in designing farmer-friendly interventions and adapting to evolving challenges while upholding the Dairy Board's core values.
+
+Key Focus Areas: Renewable energy, carbon neutrality, manure management, and cooperative development \u2014 contributing to building a self-reliant and resilient dairy industry.
+
+Objective:
+
+Aims to drive sustainable growth in the dairy sector through different innovations like renewable energy integration, waste-to-value initiatives, capacity-building for dairy cooperatives and carbon footprint reduction.
+
+Activities:
+
+Pilots
+
+Research & Development
+
+Collaborations
+
+Development of Mujkuva as a Demonstration place for intervention through Cooperation
+
+Sustainability
+
+2. Quality Assurance
+
+NDDB facilitates Dairy Cooperatives and Producer Companies to provide clean, safe and wholesome milk and milk products through science-based intervention to promote food safety and protect public health. NDDB is involved in multifaceted activities including food safety, quality & plant management, environmental safety, energy conservation & plant efficiency and human safety leading to sustainable operations.
+
+Initiatives undertaken in the area of Quality and Plant Management:
+
+Clean Milk Production (CMP)
+
+Food Safety Management System (FSMS)
+
+Quality & Plant Management Studies
+
+Knowledge Dissemination
+
+Introduction of International Management System
+
+Quality Mark
+
+Food & Nutrition Security
+
+Laboratory Modernisation
+
+Support to National Bodies
+
+3. Animal Nutrition
+
+Animal Nutrition activities focus on the development and implementation of advanced feed and fodder technologies, programs and strategies to enhance milk production efficiency, reduce feeding costs, lower greenhouse gas emissions and encourage environmentally sustainable practices.
+
+Animal nutrition plays a crucial role in exploiting the genetic potential of dairy animals. Proper and adequate nutrition helps dairy animals in producing and reproducing optimally thus ensuring profitability in dairy farming for milk producers.
+
+Overview of Animal Nutrition Activities:
+
+NDDB assists dairy cooperatives in bringing efficiencies in animal feeding, thereby optimizing milk production cost \u2014 as feeding alone accounts for 70% of total cost of milk production.
+
+Provides technical assistance and capacity building support to cooperative cattle feed and seed processing plants.
+
+Supports and promotes quality fodder seed production of improved fodder crop varieties.
+
+Develops Cattle Feed variants, feed supplements, technologies (Bypass Protein, Bypass Fat, UMMB, Silage, TMR) and programmes (Ration Balancing Program and Calf Rearing Program) pertaining to feed and fodder.
+
+Strives for reducing the environmental impact of dairying through various feed and fodder interventions.
+
+Initiatives Undertaken:
+
+Ration Balancing Programme
+
+Calf Rearing Program
+
+Providing Technical Support to Cattle Feed Plants
+
+Promoting Bypass Protein Feed
+
+Developing Feed Supplements:
+
+Area Specific Mineral Mixture
+
+Samvriddhi
+
+Pashu Sheetvardhak
+
+Garbhamin
+
+Urea Molasses Mineral Block (UMMB)
+
+Bypass Fat Supplement
+
+Enhancing Green Fodder Production
+
+Optimizing Crop Residue Management
+
+Promoting Fodder Conservation through Silage
+
+Advocating Total Mixed Ration (TMR) Feeding
+
+Mitigating Enteric Methane Emissions
+
+Implementing Sustainable Farm Practices for GHG Mitigation
+
+Animal nutrition activities under JICA-DTC
+
+Fodder Seed Production under National Livestock Mission (NLM)
+
+4. Strengthening Cooperatives
+
+NDDB's core belief is strengthening dairy cooperatives across India. It provides technical and managerial support to enhance governance, financial management, and operational efficiency in cooperative societies. The Dairy Board works on capacity building, policy advocacy, and institutional development to ensure sustainable growth and self-reliance of dairy cooperatives, ultimately benefiting millions of farmers.
+
+NDDB primarily involves itself in promoting and nurturing village dairy cooperative societies, district cooperative milk unions and state cooperative dairy federations. It has also expanded its horizons to leverage the countrywide network of dairy cooperatives in creating additional livelihood opportunities and better quality of life in villages by suitable interventions in beekeeping, fodder, fruits & vegetables, etc., by creating altogether a new set of cooperative institutions.
+
+Objectives:
+
+To create self-reliant, jointly owned, democratically controlled and professionally managed cooperative institutions, responsive to the socio-economic and cultural expectations of their members.
+
+Enhancing livelihood security of milk producers for improved quality of life.
+
+Strengthening dairying as a viable economic enterprise through farmer-owned collectives.
+
+Promoting good governance in cooperatives \u2014 enhanced fairness and transparency in milk procurement operations.
+
+Promoting enabling legal environment.
+
+Enhancing women participation in the affairs of dairy cooperatives.
+
+Capitalising the field outreach of producer collectives for the well-being of milk producers through NDDB Foundation for Nutrition (NFN).
+
+On-Going Projects:
+
+Revitalising Promising Producers' Owned Institution (RPPOI) Scheme
+
+White Revolution 2.0
+
+NDDB Scheme to support MDCS/MPACS to initiate milk procurement activities
+
+Formation and Promotion of 10,000 Farmer Producer Organisations (FPOs)
+
+Implementation of NBHM Scheme
+
+NDDB Foundation for Nutrition (NFN)
+
+Managed Projects
+
+5. Engineering
+
+NDDB provides support to dairy cooperatives by extending technical assistance in setting up new processing & production facilities and also expanding existing installations, using energy efficient and cost-effective technologies.
+
+The Dairy Board caters to a diverse category of projects including mega Dairy projects, milk powder & cheese plants, cattle feed plants, mineral mixture plants, bypass protein plants, frozen semen stations, solar thermal & PV systems, and highly critical and regulated bio-security laboratories.
+
+Objective: To provide technical support to dairy cooperatives in setting up state-of-the-art infrastructure facilities for milk processing, manufacturing of milk products, milk powder, cattle feed, bypass protein, mineral mixture plants \u2014 maintaining high operational efficiencies & productivity at competitive cost. Technical services for special projects like BioSecurity Labs, Vaccine Production Facilities, and Semen Stations are also extended to cooperatives and government institutions.
+
+Key Specialties:
+
+Concept-to-Commissioning Project Execution
+
+Team of 66 competent engineering professionals
+
+Specialty in Turn-Key project Executions
+
+Innovative approach, State of the Art implementations
+
+Technical consultancy services in dairy & Allied sectors
+
+Environmental Sustainability approach
+
+Activities:
+
+Project Implementation Model
+
+Project Umbrella
+
+List of Milestones
+
+Ongoing Projects
+
+6. Animal Breeding
+
+Animal Breeding activities are focused on enhancing bovine productivity, thereby ensuring profitability and sustainability in the dairy and livestock sector. The group actively implements and monitors scientific breeding programs, including performance recording, genetic evaluation, and genomic selection for animals raised in farmers' herds.
+
+To accelerate the multiplication of superior germplasm, NDDB promotes advanced reproductive technologies such as Ovum Pickup, In Vitro Embryo Production, and Embryo Transfer (OPU-IVEP-ET), making them accessible and affordable for farmers.
+
+The group plays a pivotal role in:
+
+Importing high-quality germplasm to strengthen national breeding programs.
+
+Capacity building of professionals in genetic evaluation and reproductive technologies.
+
+Implementing and monitoring government-sanctioned programmes to improve breeding efficiency.
+
+Providing technical consultancy to various stakeholders on breeding strategies.
+
+NDDB has been implementing multiple projects for genetic improvement during Operation Flood, National Dairy Plan I (NDP I), etc. Since 2019, various central sector scheme projects sanctioned under the Rashtriya Gokul Mission (RGM), Govt. of India in association with State Dept. of Animal Husbandry/Livestock Development Boards, Cooperative Milk Federations, Milk Unions, NGOs, and NDDB subsidiaries are being implemented.
+
+Objectives:
+
+Enhance bovine productivity through scientific breeding interventions, ensuring sustainable and profitable dairying.
+
+Implement genetic improvement programs for major dairy breeds through performance recording for production of high genetic merit bulls.
+
+Implement Genomic selection to accelerate genetic progress in dairy bovines.
+
+Advance research to standardize and make advanced reproductive biotechnologies accessible and affordable for farmers.
+
+Develop and conduct training programs for skill development in OPU-IVEP-ET and Genomics.
+
+Activities:
+
+Implementation of Genetic Improvement Programmes
+
+Innovations and Achievements
+
+Training
+
+Farmers' Corner
+
+Multimedia
+
+Important Links
+
+Sub-areas: Genomic Selection, Assisted Reproductive Technologies, Latest Sire Proofs
+
+7. Animal Health
+
+Animal Health plays an important role in demonstrating a strong field-to-laboratory connect with many horizontals & verticals, robust research & development capabilities. The Dairy Board collaborates with agencies of repute to further the cause of animal health and welfare.
+
+Objective:
+
+To make dairying a sustainable proposition to the small and marginal farmer by promoting scientific, cost-effective and holistic strategies.
+
+Activities undertaken in the sphere of Animal Health:
+
+Training and Extension
+
+Research & Development
+
+One Health Projects
+
+Animal Welfare
+
+Digitalization
+
+Alternate Approach
+
+8. Purchase
+
+The Purchase department handles procurement and supply chain functions for NDDB.
+
+(Dedicated page at: https://beta.nddb.coop/what-we-do/purchase/)
+
+9. Legal
+
+The Legal department handles all legal matters and compliance for NDDB.
+
+(Dedicated page at: https://beta.nddb.coop/what-we-do/legal/)
+
+10. HRD (Human Resource Development)
+
+The HRD department manages human resources, talent development and organizational capacity at NDDB.
+
+(Dedicated page at: https://beta.nddb.coop/what-we-do/hrd/)
+
+11. Cooperative Training
+
+NDDB runs structured cooperative training programs to build capacity among dairy cooperative members and management.
+
+(Dedicated page at: https://beta.nddb.coop/what-we-do/cooperative-training/)
+
+12. Finances
+
+The Finance department manages financial operations, planning, and reporting for NDDB.
+
+(Dedicated page at: https://beta.nddb.coop/what-we-do/finances/)
+
+13. Sectoral Analysis and Planning
+
+The Sectoral Analysis and Planning department is responsible for data-driven policy planning, research, and development of the dairy sector.
+
+Sub-areas: Geographical Information System (GIS)
+
+(Dedicated page at: https://beta.nddb.coop/what-we-do/sectoral-analysis-and-planning/)
+
+14. Product & Process Development
+
+The Product & Process Development department focuses on R&D in dairy product formulation and processing technologies.
+
+(Dedicated page at: https://beta.nddb.coop/what-we-do/product-and-process-development/)
+
+15. Information and Communication Technology (ICT)
+
+The ICT department drives digitalization of dairy operations and develops technology solutions for cooperatives and farmers.
+
+(Dedicated page at: https://beta.nddb.coop/what-we-do/information-and-communication-technology/)
+
+16. Marketing
+
+NDDB's Marketing cell provides marketing support to dairy cooperatives.
+
+Sub-area: Marketing Support (https://beta.nddb.coop/what-we-do/cooperative-services/marketing-support/)
+
+(Dedicated page at: https://beta.nddb.coop/marketing-cell/)
+
+SUBSIDIARIES
+
+Subsidiary
+
+Link
+
+IDMC Ltd
+
+https://beta.nddb.coop/subsidiaries/idmc-ltd/
+
+NDDB MRIDA Ltd
+
+https://beta.nddb.coop/subsidiaries/nddb-mrida-ltd/
+
+NDDB Dairy Services
+
+https://beta.nddb.coop/subsidiaries/nddb-dairy-services/
+
+NDDB CALF Ltd
+
+https://beta.nddb.coop/subsidiaries/nddb-calf-ltd/
+
+Mother Dairy
+
+https://beta.nddb.coop/subsidiaries/mother-dairy/
+
+Indian Immunologicals Limited
+
+https://beta.nddb.coop/subsidiaries/indian-immunologicals-limited/
+
+ABOUT US SECTION
+
+Navigation Sub-pages:
+
+Who We Are \u2014 https://beta.nddb.coop/about-us/who-we-are/
+
+Philosophy \u2014 https://beta.nddb.coop/about-us/philosophy/
+
+Constitution \u2014 https://beta.nddb.coop/about-us/constitution/
+
+Governance \u2014 https://beta.nddb.coop/about-us/governance/
+
+Annual Reports \u2014 https://beta.nddb.coop/about-us/annual-report
+
+INFORMATION SECTION
+
+Media Room \u2014 https://beta.nddb.coop/information/media-room/
+
+Publications:
+
+General \u2014 https://beta.nddb.coop/information/publications/general/
+
+Research & Studies \u2013 Health \u2014 https://beta.nddb.coop/research-studies-health/
+
+Dairying Across Indian States \u2014 https://beta.nddb.coop/dairying-acros
+
+[\u2026truncated\u2026]
+
+## NDDB_Complete_Deep_Content.md
+Source: Knowledge Repository/NDDB_Complete_Deep_Content.md.pdf | Category: Extension
+
+NDDB \u2014 Complete Deep Content Extract (All Pages)
+Source: https://beta.nddb.coop | Extracted: June 2026
+PART 1 \u2014 ABOUT NDDB
+Who We Are
+The National Dairy Development Board (NDDB) was established in 1965 as a society. In
+1987, NDDB was constituted as a body corporate by vesting undertakings of the Indian
+Dairy Corporation in it, and was declared an institution of national importance by an Act
+of Parliament.
+NDDB has been playing a pivotal role in developing the dairy sector over the past six
+decades by nurturing and promoting producer-owned institutions with the objective of
+improving the livelihoods of crores of dairy farmers, the majority of whom are landless,
+marginal or small.
+NDDB launched Operation Flood \u2014 the world's largest food-aid-for-development program
+\u2014 transforming India into the world's leading milk producer. To prepare cooperatives for
+the evolving economic landscape following India's liberalization, NDDB introduced the
+'Perspective Plan 2010' in 2000. This led to the National Dairy Plan (NDP), also known as
+Mission Milk, launched in 2012 \u2014 rated "Highly Satisfactory" by the World Bank, the
+highest rating awarded.
+Building on this, NDDB implements: Rashtriya Gokul Mission (RGM), Central Sector
+Scheme for Formation and Promotion of 10,000 FPOs, National Livestock Mission, JICA-
+funded programmes, and more.
+Wholly-owned subsidiaries:
+Mother Dairy Fruit & Vegetable Private Limited
+IDMC Limited
+Indian Immunologicals Limited
+NDDB Dairy Services
+NDDB Mrida Limited
+NDDB CALF Limited
+Operation Flood
+Launched: 1970 | One of the world's largest rural development programmes.
+
+-- 1 of 28 --
+
+Operation Flood empowered dairy farmers to direct their own development by placing
+control of resources in their own hands. A National Milk Grid links milk producers across
+India with consumers in over 700 towns and cities \u2014 reducing seasonal and regional price
+variations while ensuring fair prices for producers.
+Objectives:
+Increase milk production ("a flood of milk")
+Augment rural incomes
+Ensure reasonable prices for consumers
+Three Phases:
+Phase I (1970\u20131980): Financed by the sale of skimmed milk powder and butter oil gifted by
+the European Union (then EEC) through the World Food Programme. NDDB planned the
+programme and negotiated EEC assistance. Linked 18 of India's premier milksheds with
+consumers in the four major metropolitan cities: Delhi, Mumbai, Kolkata, and Chennai.
+Phase II (1981\u20131985): Expanded milksheds from 18 to 136. Around 290 urban markets
+tapped. By 1985, a self-sustaining system of 43,000 village cooperatives covered 4.25
+million milk producers. Domestic milk powder production increased significantly.
+Phase III (1985\u20131996): Strengthened infrastructure for milk procurement and marketing.
+Services like veterinary first-aid, feed, and AI were extended. 30,000 new cooperatives
+added. Women's participation in DCS rose. Innovations like Theileriosis vaccines and urea-
+molasses blocks enhanced productivity.
+"From the outset, Operation Flood was conceived and implemented as much more than
+a dairy programme. Rather, dairying was seen as an instrument of development \u2014
+generating employment and regular incomes for millions of rural people. Operation
+Flood can be viewed as a twenty-year experiment confirming the rural development
+vision."
+The Anand Pattern
+The Anand Pattern is an integrated cooperative structure that procures, processes and
+markets produce. Supported by professional management, producers decide their own
+business policies, adopt modern production and marketing techniques and receive services
+that they can individually neither afford nor manage.
+The Anand Pattern succeeds because it involves people in their own development through
+cooperatives where professionals are accountable to leaders elected by producers. The
+institutional infrastructure \u2014 village cooperative, dairy and cattle feed plants, state and
+national marketing \u2014 is owned and controlled by farmers.
+Three-Tier Structure:
+
+-- 2 of 28 --
+
+1. Village Dairy Cooperatives \u2014 The fundamental unit. Democratic, producer-owned
+institutions \u2014 voluntary associations of milk producers that aggregate the marketable
+surplus milk. The cooperative movement began with just 2 village-level societies and 247
+litres of milk, and has transformed India into the world's No. 1 dairying nation.
+2. District Cooperative Milk Producers' Union \u2014 All dairy cooperative societies in a milk-
+shed are affiliated with the Union, which manages procurement, processing, and marketing
+of milk and dairy products, ensuring fair payment to members. Also provides feed,
+veterinary care, and artificial insemination services.
+3. State Milk Marketing Federations \u2014 Formed by cooperative milk producers' unions in a
+state; responsible for marketing fluid milk and dairy products from member unions.
+Manages production planning, oversees the State Milk Grid, sets policies for cooperative
+marketing, determines product pricing, and provides joint services.
+Philosophy
+We believe that\u2026
+Cooperation is the preferred form of enterprise, giving people control over the
+resources they create through democratic self-governance.
+Self-reliance is attained when people work together, have a financial stake, and both
+enjoy autonomy and accept accountability for building and managing their own
+institutions.
+Progressive evolution of the society is possible only when development is directed by
+those whom it seeks to benefit.
+In particular, women and the less privileged must be involved in cooperative
+management and decision-making.
+Technological innovation and the constant search for better ways to achieve our
+objectives is the best way to retain our leading position in a dynamic market.
+While our methods change to reflect changing conditions, our purpose and values
+must remain constant.
+Core Values:
+Integrity \u2014 We will ensure honesty, consistency and authenticity in our behaviour, words
+and actions, irrespective of the situation and will focus on development of character and
+wholeness.
+Credibility \u2014 We will inspire belief through our transparency, trustworthiness and
+predictability; demonstrate deep expertise based on scientific and systematic inquiry; take
+wise decisions based on big picture and long-term view; listen to and work for interests of
+others by being level headed and fair; and express enthusiasm and upbeat emotions in our
+interactions inside and outside the organization.
+
+-- 3 of 28 --
+
+Commitment \u2014 We will own and be accountable to our organization's mandate/goals,
+constantly challenge ourselves to perform better and align individual goals to
+organization's goals, and demonstrate strong work ethics and result orientation towards
+achievement of organization mandate/goals.
+Professionalism \u2014 We will continuously update ourselves in our functional domains and
+exhibit knowledge, skills and attitudes aligned in doing our jobs; be timely and consistent;
+be accountable and willing to go the extra mile; communicate respectfully; stay calm and
+focused even in most difficult situations; engage in positive communication and use good
+judgment while carrying out our assignments.
+Innovation \u2014 We will engage in deliberate application of knowledge, information,
+imagination and initiative to derive greater value from resources/processes and generate
+new ideas that can be converted to useful products and services that are replicable and
+create value.
+Governance (Board)
+Name Role
+Dr. Meenesh
+C Shah
+Chairman, NDDB \u2014 Over 39 years in the dairy sector; key contributions in R&D,
+product development, project appraisal, and finance. Govt. of India extended his
+tenure for 3.5 years in January 2026.
+Ms. Varsha
+Joshi
+Senior IAS officer; Additional Secretary, Dept. of Animal Husbandry & Dairying,
+Govt. of India
+Dr. N. Vijaya
+Lakshmi
+Chairperson of COMFED; leads strategic initiatives to strengthen Bihar's dairy
+sector
+Shri Vikeyie
+Kenya
+Chairman, Nagaland State Dairy Cooperative Federation Ltd.; leading dairy
+development in Northeast India
+Dr. G. S.
+Rajorhia
+Former President, Indian Dairy Association (IDA); distinguished figure in India's
+dairy sector
+PART 2 \u2014 WHAT WE DO (DEPARTMENTS \u2014 FULL DEEP
+CONTENT)
+DEPARTMENT 1: Innovation & Project Management (IPMC)
+NDDB's innovation and project management efforts strengthen the dairy value chain
+
+-- 4 of 28 --
+
+through sustainable and innovative practices. Key focus areas: renewable energy, carbon
+neutrality, manure management, and cooperative development.
+Objective: Drive sustainable growth in the dairy sector through renewable energy
+integration, waste-to-value initiatives, capacity-building for dairy cooperatives and carbon
+footprint reduction.
+A. PILOTS
+A.1 Renewable Energy \u2014 Biogas and Manure Management
+Since 2018, NDDB has undertaken various innovations for efficient management of dung,
+resulting in the development of different Manure Management Models.
+A.1.1 Decentralised \u2014 Zakariyapura Model
+NDDB started the manure management initiative with a few farmers in one village of
+Anand district, Gujarat. This became the 'Zakariyapura Model'.
+Flexi biogas plants of 2 cubic meter size installed in backyards of dairy farmers
+Initial investment: Rs. 25,000 per plant
+Output: Clean energy equivalent to 1.5 to 2 LPG cylinders per month (saving Rs.
+1,500\u20132,000/month)
+Slurry produced (higher nutrients than Farm Yard Manure) is used as manure \u2014
+reducing dependency on costly chemical fertilisers and improving soil fertility
+India's first all-women manure cooperative established to process surplus slurry into
+value-added organic fertilisers
+Each beneficiary earns Rs. 1,000\u20132,000/month from sale of surplus slurry
+Combined savings/earnings: Rs. 3,000\u20134,000 per month \u2014 recovering the initial
+investment in the first year itself
+Addresses SDGs: No Poverty (1), Good Health (3), Gender Equality (5), Clean Energy
+(7), Responsible Consumption (12), Climate Action (13)
+More than 30,000 household-level biogas plants installed till date across 11
+locations in 9 states
+NDDB's Zakariyapura model is now included in the GOBARDhan scheme of
+Government of India, with NDDB as technical partner
+A.1.2 Centralised \u2014 Varanasi Model
+With NDDB support, Varanasi Milk Union set up a cow dung-based biogas plant with
+capacity to generate 4,000 cubic meters of biogas daily.
+
+-- 5 of 28 --
+
+Cow dung procured from farmers and Gaushalas within a radius of 10\u201315 km of the
+dairy plant
+At 100% capacity: needs 100 MT of dung per day
+Bio slurry separated into solid and liquid fractions to manufacture Phosphate Rich
+Organic Manure (PROM)
+Inaugurated by PM Narendra Modi on 7 July 2023
+Replaced use of Light Diesel Oil (LDO) \u2014 processing cost of milk reduced by Rs. 0.40
+to 0.50 per litre
+NDDB is in process to replicate 'Varanasi Model' in Barauni Dairy, Bihar with support
+of ONGC
+A.1.3 Centralised \u2014 Banas Model
+Set up by Banas Dairy in Dama village, Banaskantha district, Gujarat (2020).
+Raw biogas generation capacity: 2,000 cubic metres/day
+Generates Bio-CNG from cow dung for vehicles
+Procures 40 MT of dung daily from ~250 dairy farmers in 12 nearby villages
+Farmers paid average Rs. 1.0 per kg of dung
+Digested slurry processed into PROM, Fermented Organic Manure (FOM), and liquid
+fertilisers
+Suzuki R&D Centre India Pvt Ltd (SRDI) \u2014 subsidiary of Suzuki Motor Corporation,
+Japan \u2014 has partnered with NDDB and Banas Dairy to take up 4 CBG projects in
+Banaskantha district
+Goal: design, develop, implement and scale up innovative business models to
+efficiently utilise cow dung as a vehicle fuel source and as rich organic fertiliser while
+achieving carbon neutrality
+NDDB has established a wholly owned subsidiary NDDB Mrida Ltd to scale up
+manure management initiatives
+A.2 Innovation in Dairy Value Chain
+A.2.1 Mobile Milk Collection System
+Mounted on a Maruti Suzuki Super Carry vehicle
+Includes a 300L Bulk Milk Cooler (BMC) powered by the vehicle's engine
+Data Processor-based Milk Collection Unit (DPMCU) supported by a 100W solar
+panel
+Piloted in Ladakh
+
+-- 6 of 28 --
+
+Enables automated testing and on-site cooling, reducing spoilage and enhancing
+procurement efficiency
+Ensures fair pricing through transparent milk testing
+Provides farmers access to organized dairy networks
+A.2.2 Farm-Level Milk & Milk Product Processing Unit
+Developed by NDDB and IDMC
+Enables farmers to produce value-added dairy products: pasteurized milk, dahi,
+lassi, ghee, shrikhand, and mozzarella cheese directly at the farm
+Demonstration unit established in Davalpura village, Anand district
+B. RESEARCH & DEVELOPMENT (IPMC)
+B.1 Research and Development in Organic Fertiliser
+NDDB completed patent registration for three processes:
+1. A System and Method for Dung Quality Testing
+2. A System and Method for Bio Slurry Quality Testing
+3. Process to produce granular organic fertilizer extracted from digested cattle dung
+(without use of any binders)
+B.2 Efficient use of Dairy ETP Sludge
+NDDB developed a dairy Effluent Treatment Plant (ETP) sludge-based organic
+fertiliser named Phosphate Rich Organic Manure (PROM)
+Preliminary analyses of sludge from multiple dairy plants revealed high nutrient
+content
+Scientific field experiment evaluated impact on pearl millet cultivation
+Formulations tested: enriched version with 8% P\u2082O\u2085 and 12% P\u2082O\u2085, against biogas
+slurry-based PROM and conventional fertilisers
+ETP sludge-based organic fertiliser product developed for Banas Dairy
+Exclusive ETP slurry-based organic fertiliser plant being established at Vidya Dairy
+B.3 Hydrogen from Livestock Manure \u2014 Methane Pyrolysis
+NDDB conceptualized and developed methane pyrolysis for hydrogen production
+from dung-based CBG
+In collaboration with Sustain Plus and Banas Dairy, India's trial plant established at
+Banas Bio-CNG plant
+CBG produced at Banas Dairy is being converted into Hydrogen
+Hydrogen can be blended with CBG and dispensed through existing infrastructure,
+enhancing fuel performance
+
+-- 7 of 28 --
+
+Carbon black is a valuable by-product \u2014 potential use in rubber, tyres, coatings
+industries, and agriculture
+C. COLLABORA
+
+[\u2026truncated\u2026]
+
+## Other constraints used for RBP
+Source: Knowledge Repository/Other constraints used for RBP.docx | Category: Nutrition
+
+Other constraints used for LP/ RBP:
+
+Dry matter requirement
+
+Species
+
+Milking Ftag
+
+Calving month range
+
+Dry matter range (%)
+
+Buffalo
+
+N
+
+\xA0
+
+2.00 - 4.00
+
+Buffalo
+
+Y
+
+<= 2.00
+
+2.00 - 2.50
+
+Buffalo
+
+Y
+
+2.00 - 3.00
+
+2.00 - 3.00
+
+Buffalo
+
+Y
+
+3.00 - 24.00
+
+2.00 - 4.00
+
+Cattle
+
+N
+
+\xA0
+
+2.00 - 4.00
+
+Cattle
+
+Y
+
+<= 2.00
+
+2.00 - 2.50
+
+Cattle
+
+Y
+
+2.00 - 3.00
+
+2.00 - 3.00
+
+Cattle
+
+Y
+
+3.00 - 24.00
+
+2.00 - 4.00
+
+Dry matter range is editable
+
+Pregnancy requirement
+
+Species
+
+Pregnancy Months
+
+Cattle
+
+7 and above
+
+Buffalo
+
+7 and above
+
+Fixed constraints
+
+Concentrate forage ratio
+
+Species
+
+Milking stag
+
+Milk production
+
+Range, Kg
+
+Ratio
+
+(L = Lower)
+
+Concentrate %
+
+Buffalo
+
+N
+
+\xA0
+
+L
+
+40
+
+Buffalo
+
+Y
+
+<= 5.00
+
+L
+
+40
+
+Buffalo
+
+Y
+
+5.00 - 10.00
+
+L
+
+50
+
+Buffalo
+
+Y
+
+10.00 - 15.00
+
+L
+
+60
+
+Buffalo
+
+Y
+
+15.00 - 55.00
+
+L
+
+70
+
+Cattle
+
+N
+
+\xA0
+
+L
+
+40
+
+Cattle
+
+Y
+
+<= 5.00
+
+L
+
+40
+
+Cattle
+
+Y
+
+5.00 - 10.00
+
+L
+
+50
+
+Cattle
+
+Y
+
+10.00 - 15.00
+
+L
+
+60
+
+Cattle
+
+Y
+
+15.00 - 55.00
+
+L
+
+70
+
+Ratio is editable - L, E, G \u2013 Lower, Equal, Greater and numeric value is also editable.
+
+Feed item related other logic:
+
+Add mineral mixture in the final formulation
+
+Take \xB1 25 % of the farmer entered value as minimum and maximum range (editable)
+
+At least one forage item should be there in final formulation
+
+Use district specific feed library
+
+## Pashupalan_Nirdeshika_Hindi
+Source: Knowledge Repository/Pashupalan_Nirdeshika_Hindi.pdf | Category: Extension
+
+Official NDDB extension material: Pashupalan_Nirdeshika_Hindi.
+Topics: dairy husbandry; cow comfort.
+Local file: Pashupalan_Nirdeshika_Hindi.pdf
+Hindi/Gujarati PDF may use custom fonts \u2014 see Dairy Knowledge Portal for full text.
+
 ## NDDB Verified YouTube Playlists
-Source: D:\\work\\Innovations\\AI Pashu Sahayak\\c-Users-sinjini-Projects-dairy-sakha\\Material for AI Chatbot\\List of Extension Material & Youtube.xlsx | Category: Extension Video
+Source: D:\\work\\Innovations\\AI Pashu Sahayak\\Knowledge Repository\\Material for AI Chatbot\\List of Extension Material & Youtube.xlsx | Category: Extension Video
 
 - Youtube: https://youtube.com/playlist?list=PLkPThFz3wlysT1IdFeMnPBuA0itwOSZhk&si=RhSQpxVsO_Btxq_o
 - Youtube: https://youtube.com/playlist?list=PLkPThFz3wlyub-d6xmafSoC-ReBeLgRK8&si=rBfPL6w95bwHQorq
@@ -31858,17 +43763,17 @@ Jobs
  Tenders
  Contact Us
 
+ Imparting \xA0training
+ to researchers, academicians, field veterinarians, civil and defense personnels
+
+ Imparts quality graduate & post-graduate education
+ contributes immensely to human resource development in the area of veterinary sciences
+
  Enhancing animal production
  through genetic improvement of cattle, buffalo and other livestock species
 
- Offer UG and Post Graduate education
- in almost all branches of animal and veterinary sciences
-
- Research in frontier and cutting edge areas
- new generation vaccines, diagnostics, therapeutics, stem cells, genomics, bio-sensors, nano-technology etc
-
- Created niche
- in R&D on veterinary biologicals, technology generation and transfer
+ Centre of Advanced Faculty Training
+ in Animal Nutrition and Physiology
 
  Previous
 
@@ -31921,6 +43826,18 @@ Jobs
 
  News at IVRI View All
 
+ Khet Bachao Abhiyaan-organized in Chinilli and Ichhlampur villages under Bongaon Block
+
+ June 30, 2026
+
+ \u092D\u093E\u0930\u0924\u0940\u092F \u092A\u0936\u0941 \u091A\u093F\u0915\u093F\u0924\u094D\u0938\u093E \u0905\u0928\u0941\u0938\u0902\u0927\u093E\u0928 \u0938\u0902\u0938\u094D\u0925\u093E\u0928, \u092E\u0941\u0915\u094D\u0924\u0947\u0936\u094D\u0935\u0930 \u0926\u094D\u0935\u093E\u0930\u093E \u0917\u094D\u0930\u093E\u092E \u0916\u0947\u0930\u0926\u093E \u092E\u0947\u0902 \u0917\u094B\u0937\u094D\u0920\u0940-\u0938\u0939-\u092A\u094D\u0930\u0926\u0930\u094D\u0936\u0928 \u0915\u093E\u0930\u094D\u092F\u0915\u094D\u0930\u092E \u0915\u093E \u0906\u092F\u094B\u091C\u0928
+
+ June 29, 2026
+
+ IVRI Scientists Conduct Farmer Awareness Programmes under MGMG and Khet Bachao Abhiyan : June 29, 2026
+
+ June 29, 2026
+
  \u0906\u0908\u0938\u0940\u090F\u0906\u0930-\u0906\u0908\u0935\u0940\u0906\u0930\u0906\u0908 \u0915\u0940 \u0930\u093E\u0937\u094D\u091F\u094D\u0930\u0940\u092F \u0938\u0947\u0935\u093E \u092F\u094B\u091C\u0928\u093E (NSS) \u0907\u0915\u093E\u0908 \u0926\u094D\u0935\u093E\u0930\u093E \u2018\u0928\u0936\u093E \u092E\u0941\u0915\u094D\u0924 \u092D\u093E\u0930\u0924 \u0905\u092D\u093F\u092F\u093E\u0928\u2019 \u092A\u0930 \u0938\u0902\u0917\u094B\u0937\u094D\u0920\u0940
 
  June 29, 2026
@@ -31932,18 +43849,6 @@ Jobs
  Management of Chronic Kidney Disease Using Intermittent Hemodialysis
 
  June 25, 2026
-
- ERS, ICAR-IVRI, Kolkata, Conducted "Khet Bachao Abhiyaan"- on the theme \u201CHealthy Inputs- Healthier Crops- Sustainable Farming\u201D
-
- June 24, 2026
-
- IVRI Scientists Conduct Farmer Awareness Programmes under MGMG and Khet Bachao Abhiyan
-
- June 25, 2026
-
- IVRI Scientists Conduct Farmer Awareness Programmes under MGMG and Khet Bachao Abhiyan: 23June2026
-
- June 23, 2026
 
  About IVRI
 
@@ -34535,6 +46440,53 @@ Official NDDB resources (https://www.dairyknowledge.in/dkp/section/medicinalplan
 - General Research: https://www.dairyknowledge.in/dkp/section/general-research
 - Methane Emission Reduction / RBP: https://www.dairyknowledge.in/dkp/section/methane-emission-reduction-ration-balancing-programme-rbp
 - Mineral Nutrition: https://www.dairyknowledge.in/dkp/section/mineral-nutrition
+
+## PashuMitra curated \u2014 cattle-purchase-policy
+Source: catalyst/lib/knowledge/cattle-purchase-policy.ts | Category: Curated Knowledge
+
+## 13. BUYING / SELLING LIVE CATTLE (COWS, BUFFALOES) \u2014 FACTUAL RULES
+
+### What dairy cooperatives and milk brands DO NOT do (CRITICAL \u2014 NEVER GET THIS WRONG)
+
+- **Amul, Mother Dairy, Nandini, Saras, Verka, Aavin, Sudha, Parag, Milma, OMFED, etc. are milk marketing federations/unions** \u2014 they **procure and process MILK** from member farmers via village DCS collection centres.
+
+- They **DO NOT sell live cows, buffaloes, or calves** as a retail service. **NEVER tell a farmer to buy an animal from Amul, Mother Dairy, or any milk union/federation.**
+
+- **KRIBHCO / IFFCO / cooperative feed plants** supply **cattle FEED, mineral mixture, fertiliser** \u2014 they **DO NOT sell live animals**. Do not list KRIBHCO as a place to buy cows.
+
+- **NDDB** supports breed improvement, AI, RBP, cooperatives \u2014 it is **not a cattle market**.
+
+### Where farmers CAN buy or source animals (only mention what is in retrieved knowledge or below)
+
+1. **Other farmers / local livestock markets (haat/mela)** \u2014 inspect health, milk records, vaccination; take a paravet/vet; check breed papers if claimed.
+
+2. **1962 Farmer App (Bharat Pashudhan / NDLM)** \u2014 has **buy/sell animals** features in the official ecosystem; farmer can also contact toll-free **1962** for guidance.
+
+3. **Rashtriya Gokul Mission (RGM)** \u2014 **Breed Multiplication Farms (BMF)** and state breed farms for indigenous breeds (Gir, Sahiwal, Murrah etc.) \u2014 apply via **State Animal Husbandry Department** / district veterinary officer \u2014 not via milk unions.
+
+4. **National Livestock Mission (NLM)** \u2014 entrepreneurship/support for sheep/goat/poultry units; state AH department for programmes.
+
+5. **Registered breeders / NDDB-linked AI network** \u2014 for **genetics (semen/AI)**, not usually whole live animals unless through approved farm schemes.
+
+6. **Nearest veterinary hospital / KVK / AH department** \u2014 for verified breeder contacts or government livestock fairs in the district.
+
+### Safe answer pattern when farmer asks "where can I buy cows?"
+
+- Say clearly: milk cooperatives (Amul/Mother Dairy etc.) are for **selling milk**, not buying animals.
+
+- Give 2\u20133 practical routes above (local market + vet check, 1962 app, state AH/RGM breed farm if indigenous breed wanted).
+
+- If district/state unknown: ask location; do **NOT** invent shop names, phone numbers, or prices.
+
+- If not in retrieved knowledge: say you do not have a verified local seller list \u2014 suggest **1962 helpline**, **block veterinary officer**, or **district animal husbandry office**.
+
+### Phrases to NEVER use
+
+- "Amul se gaay kharid sakte hain" / "Buy cows from Mother Dairy"
+
+- "KRIBHCO sells cattle" (wrong \u2014 feed only)
+
+- Any made-up dealer, NGO, or private company name not in RETRIEVED KNOWLEDGE
 `;
 
 // catalyst/functions/pashumitra_api/lib/knowledge/knowledge.ts
@@ -34731,6 +46683,12 @@ function retrieveKeywordRagContext(query, topK = 7) {
   }
   if (/mastitis|fever|disease|vaccin|evm|ethno|breed|heat|calv|pregnan|fmd|hs |black quarter|blackleg|anthrax|lumpy|brucellosis|bloat|tympany|milk fever|hypocal|diarr|scour|lameness|foot and mouth|galghotu/i.test(query)) {
     selected = mergeUnique(selected, pickByTitle(chunks, /HEALTH|EVM|BREEDING|BOVINE|ICAR|DAHD|SVTG|Central Health|CaDDES|Mastitis|FMD|HS |Vaccin/i, 4));
+  }
+  if (/consultancy|farm management|sustainable dairy|body condition|reproductive efficiency|colostrum quality|production trait|key indicator|insemination timing|heat sign/i.test(query)) {
+    selected = mergeUnique(selected, pickByTitle(chunks, /CONSULTANCY|Farm Consultancy|Consultancy Manual|krepo-/i, 3));
+  }
+  if (/1962|bharat pashudhan|ndlm|e-gopala|egopala|pashu poshan|pashu aadhaar|inaph|farmer app|mobile veterinary|mvu|helpline/i.test(query)) {
+    selected = mergeUnique(selected, pickByTitle(chunks, /NDLM|1962|Bharat Pashudhan|DIGITAL PLATFORMS|krepo-bharat/i, 3));
   }
   if (selected.length === 0) {
     selected = chunks.slice(0, Math.min(5, chunks.length));

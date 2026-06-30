@@ -1,9 +1,10 @@
 {
-  "ingestedAt": "2026-06-29T05:44:21.915Z",
-  "sourceDocs": 71,
-  "supplementalDocs": 19,
+  "ingestedAt": "2026-06-30T12:37:18.525Z",
+  "sourceDocs": 85,
+  "supplementalDocs": 80,
   "visionEnabled": false,
   "visionPdfLimit": 12,
-  "materialDir": "D:\\work\\Innovations\\AI Pashu Sahayak\\c-Users-sinjini-Projects-dairy-sakha\\Material for AI Chatbot",
-  "chars": 268462
+  "materialDir": "D:\\work\\Innovations\\AI Pashu Sahayak\\Knowledge Repository\\Material for AI Chatbot",
+  "knowledgeRepositoryDir": "D:\\work\\Innovations\\AI Pashu Sahayak\\Knowledge Repository",
+  "chars": 491576
 }

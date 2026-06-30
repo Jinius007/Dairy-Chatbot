@@ -13,6 +13,10 @@ import { fileURLToPath } from "node:url";
 import { PDFParse } from "pdf-parse";
 import XLSX from "xlsx";
 import * as cheerio from "cheerio";
+import {
+  collectKnowledgeRepositoryFiles,
+  KNOWLEDGE_REPOSITORY_DIR,
+} from "./lib/rag-sources.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, "..");
@@ -25,15 +29,20 @@ const OUT_MANIFEST = path.join(
   "catalyst/functions/pashumitra_api/lib/knowledge/sources/manifest.json",
 );
 
+const KREPO_MATERIAL = path.join(KNOWLEDGE_REPOSITORY_DIR, "Material for AI Chatbot");
+const PROJECT_MATERIAL_DIR = path.join(ROOT, "Material for AI Chatbot");
 const DEFAULT_MATERIAL_DIR = path.join(
   process.env.USERPROFILE || "",
   "Downloads",
   "Material for AI Chatbot",
 );
-const PROJECT_MATERIAL_DIR = path.join(ROOT, "Material for AI Chatbot");
 const MATERIAL_DIR =
   process.env.KNOWLEDGE_MATERIAL_DIR ||
-  (fs.existsSync(PROJECT_MATERIAL_DIR) ? PROJECT_MATERIAL_DIR : DEFAULT_MATERIAL_DIR);
+  (fs.existsSync(KREPO_MATERIAL)
+    ? KREPO_MATERIAL
+    : fs.existsSync(PROJECT_MATERIAL_DIR)
+      ? PROJECT_MATERIAL_DIR
+      : DEFAULT_MATERIAL_DIR);
 
 const MAX_CHARS_PER_DOC = 12_000;
 const MAX_TOTAL_CHARS = 450_000;
@@ -310,13 +319,12 @@ function formatSection({ title, category, source, text }) {
 
 async function main() {
   console.log("Material folder:", MATERIAL_DIR);
-  if (!fs.existsSync(MATERIAL_DIR)) {
+  console.log("Knowledge Repository:", KNOWLEDGE_REPOSITORY_DIR);
+  const useKRepo = fs.existsSync(KNOWLEDGE_REPOSITORY_DIR);
+  if (!useKRepo && !fs.existsSync(MATERIAL_DIR)) {
     console.error("Material folder not found. Set KNOWLEDGE_MATERIAL_DIR env var.");
     process.exit(1);
   }
-
-  const pdfs = walkPdfs(MATERIAL_DIR);
-  console.log(`Found ${pdfs.length} PDFs`);
 
   const xlsxPath = path.join(MATERIAL_DIR, "List of Extension Material & Youtube.xlsx");
   const xlsxRows = readXlsxManifest(xlsxPath);
@@ -326,7 +334,28 @@ async function main() {
   const sections = [];
   let totalChars = 0;
 
-  for (const pdfInfo of pdfs) {
+  if (useKRepo) {
+    console.log("Ingesting full Knowledge Repository (PDF, DOCX, XLSX)…");
+    const krepoDocs = await collectKnowledgeRepositoryFiles(dkpLinks);
+    for (const doc of krepoDocs) {
+      if (totalChars + doc.text.length > MAX_TOTAL_CHARS) {
+        console.warn("  Total char budget reached; stopping Knowledge Repository ingest.");
+        break;
+      }
+      totalChars += doc.text.length;
+      sections.push({
+        id: doc.id,
+        title: doc.title,
+        category: doc.category,
+        source: doc.source,
+        text: doc.text,
+      });
+    }
+  } else {
+    const pdfs = walkPdfs(MATERIAL_DIR);
+    console.log(`Found ${pdfs.length} PDFs`);
+
+    for (const pdfInfo of pdfs) {
     try {
       let text = await extractPdf(pdfInfo.abs);
       const devanagari = (text.match(/[\u0900-\u097F]/g) || []).length;
@@ -366,6 +395,7 @@ async function main() {
     } catch (e) {
       console.warn(`  PDF fail ${pdfInfo.rel}:`, e.message);
     }
+    }
   }
 
   if (youtubeLinks.length) {
@@ -404,6 +434,8 @@ async function main() {
   const manifest = {
     generatedAt: new Date().toISOString(),
     materialDir: MATERIAL_DIR,
+    knowledgeRepositoryDir: KNOWLEDGE_REPOSITORY_DIR,
+    usedKnowledgeRepository: useKRepo,
     sectionCount: sections.length,
     sections: sections.map(({ id, title, category, source, text }) => ({
       id,

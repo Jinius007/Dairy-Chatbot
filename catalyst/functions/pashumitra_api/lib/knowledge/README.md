@@ -6,12 +6,13 @@ Farmer-facing facts for **Sarvam RAG** live here as a bundled markdown corpus.
 
 | Source | Location |
 |--------|----------|
-| NDDB extension PDFs | `Material for AI Chatbot/` (project root) |
+| NDDB extension PDFs | `Knowledge Repository/Material for AI Chatbot/` (preferred) or project `Material for AI Chatbot/` |
+| Knowledge Repository | `../Knowledge Repository/` — all PDF, DOCX, XLSX (consultancy manual, feed library, Bharat Pashudhan MoM, schemes, etc.) |
 | DAHD schemes | dahd.gov.in (scraped at ingest) |
 | NDDB Dairy Knowledge Portal | dairyknowledge.in section indexes |
 | ICAR animal health | [Central Health Key](https://www.icar.org/guidelines/icar-central-health-key/), [DAHD SVTG 2024](https://dahd.gov.in/sites/default/files/2024-10/StandardVeterinaryTreatment.pdf), [CaDDES](https://nivedi.res.in/nicra/CaDDES/), Gaushala manual |
 | Hindi/Gujarati PDFs (optional) | Sarvam Document Digitization (Vision OCR) |
-| Curated bundles | `knowledge.ts`, `icar-livestock-health.ts`, `dahd-schemes.ts`, ration guides |
+| Curated bundles | `knowledge.ts`, `icar-livestock-health.ts`, `dahd-schemes.ts`, `ndlm-digital-platforms.ts` (1962 app / Bharat Pashudhan), ration guides |
 
 ## Sarvam RAG pipeline
 
@@ -35,4 +36,4 @@ Runtime: `lib/sarvam-rag.ts` → `lib/rag-retrieval.ts`
 npm run build:knowledge
 ```
 
-Uses `Material for AI Chatbot` via `scripts/build-knowledge-repo.mjs`.
+Uses `Knowledge Repository/` (full folder) when present, else `Material for AI Chatbot` via `scripts/build-knowledge-repo.mjs`.

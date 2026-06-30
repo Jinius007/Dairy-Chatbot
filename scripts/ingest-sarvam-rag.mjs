@@ -11,7 +11,7 @@
  */
 import fs from "node:fs";
 import path from "node:path";
-import { collectRagDocuments, MATERIAL_DIR, ROOT } from "./lib/rag-sources.mjs";
+import { collectRagDocuments, MATERIAL_DIR, KNOWLEDGE_REPOSITORY_DIR, ROOT } from "./lib/rag-sources.mjs";
 import { digitizePdfCached } from "./lib/sarvam-doc-digitization.mjs";
 
 const OUT_TS = path.join(
@@ -27,7 +27,7 @@ const VISION_CACHE = path.join(
   "catalyst/functions/pashumitra_api/lib/knowledge/sources/vision-cache",
 );
 
-const MAX_TOTAL_CHARS = 480_000;
+const MAX_TOTAL_CHARS = 550_000;
 const VISION_LIMIT = Number(process.env.SARVAM_VISION_PDF_LIMIT || "12");
 const VISION_DELAY_MS = Number(process.env.SARVAM_VISION_DELAY_MS || "7000");
 
@@ -91,11 +91,15 @@ async function enhanceIndicPdfs(docs) {
 
 function filterSupplemental(docs) {
   return docs.filter((d) => {
+    if (d.id.startsWith("bundled-ndlm") || d.id.startsWith("bundled-cattle")) return true;
     if (d.category === "Curated Knowledge") return false;
     if (d.metadata?.visionDigitized) return true;
     if (d.id === "icar-central-health-key") return true;
     if (d.id.startsWith("icar-") || d.id.startsWith("web-") || d.id.startsWith("dkp-")) return true;
     if (d.id.startsWith("pdf-icar-") || d.id.startsWith("pdf-dahd-")) return true;
+    if (d.id.startsWith("krepo-")) return true;
+    if (d.id.startsWith("bundled-ndlm") || d.id.startsWith("bundled-cattle")) return true;
+    if (d.category === "NDLM / Digital Platforms") return true;
     if (d.id === "nddb-youtube") return true;
     return false;
   });
@@ -112,6 +116,15 @@ async function main() {
   }
 
   let supplemental = filterSupplemental(docs);
+  const ndlm = supplemental.filter(
+    (d) =>
+      d.category === "NDLM / Digital Platforms" ||
+      d.id.startsWith("bundled-ndlm") ||
+      /bharat pashudhan|1962|ndlm/i.test(d.title),
+  );
+  const krepo = supplemental.filter((d) => d.id.startsWith("krepo-") && !ndlm.includes(d));
+  const rest = supplemental.filter((d) => !ndlm.includes(d) && !krepo.includes(d));
+  supplemental = [...ndlm, ...krepo, ...rest];
   if (supplemental.length === 0) {
     console.warn("No supplemental docs matched filter; including ICAR + NDDB web only");
     supplemental = docs.filter(
@@ -145,6 +158,7 @@ ${escapeTemplate(body)}
     visionEnabled: useVision,
     visionPdfLimit: VISION_LIMIT,
     materialDir: MATERIAL_DIR,
+    knowledgeRepositoryDir: KNOWLEDGE_REPOSITORY_DIR,
     chars: body.length,
   };
   fs.mkdirSync(path.dirname(OUT_MANIFEST), { recursive: true });
