@@ -4,12 +4,18 @@ import { detectLangForRefusal } from "./languages.ts";
 
 const DAIRY_SIGNAL = new RegExp(
   [
-    "dairy", "dairying", "milk", "milch", "doodh", "dudh", "cheese", "ghee", "paneer", "curd", "yogurt",
-    "cow", "cattle", "buffalo", "gaay", "gai", "gay", "bhains", "bhainsa", "pashu", "livestock", "herd",
-    "calf", "calving", "heifer", "lactation", "mastitis", "udder", "teat",
-    "fodder", "chara", "silage", "hay", "straw", "berseem", "napier", "ration", "feed", "concentrate",
+    "goru", "gorur", "ghorur", "gabhi", "gavu", "pasu", "pashu", "pashuvu", "pashuvulu",
+    "khabar", "khawa", "khavar", "chara", "ghash", "poshan", "poshu", "aahar", "ahara",
+    "doodh", "dudh", "dugdh", "paal", "paalu", "halu", "khir",
+    "bimaari", "bimari", "rog", "byadhi", "ilaj", "chikitsa", "dawai", "osudh",
+    "bukhar", "jwar", "khasi", "dast", "pet", "dard", "sujan", "kamzori",
+    "bachha", "bacha", "baccha", "calf", "bachheda", "bachhedi", "byat", "garbha", "garbhi", "pregnant",
+    "dairy", "dairying", "milk", "milch", "cheese", "ghee", "paneer", "curd", "yogurt",
+    "cow", "cattle", "buffalo", "gaay", "gai", "gay", "bhains", "bhainsa", "livestock", "herd",
+    "calving", "heifer", "lactation", "mastitis", "udder", "teat",
+    "fodder", "silage", "hay", "straw", "berseem", "napier", "ration", "feed", "concentrate",
     "breed", "gir", "sahiwal", "murrah", "jaffarabadi", "surti", "holstein", "jersey", "crossbred",
-    "artificial insemination", "insemination", "semen", "breeding", "heat", "estrus", "oestrus", "pregnancy", "garbha",
+    "artificial insemination", "insemination", "semen", "breeding", "heat", "estrus", "oestrus", "pregnancy",
     "vaccin", "fmd", "brucellosis", "black quarter", "lumpy", "lsd", "theileria", "babesia",
     "vet", "veterinar", "paravet", "doctor", "daktar", "animal health",
     "nddb", "dahd", "dcs", "cooperative", "sahakari", "union", "amul", "milk union",
@@ -18,6 +24,7 @@ const DAIRY_SIGNAL = new RegExp(
     "goat", "sheep", "poultry", "layer", "broiler", "pig", "swine",
     "biogas", "manure", "dung", "vermicompost",
     "snf", "fat%", "milk yield", "procurement", "collection centre", "collection center",
+    "kisan", "kishan", "farmer", "farm", "gaav", "gaon", "village",
   ].join("|"),
   "i",
 );
@@ -64,17 +71,19 @@ export function isDairyRelatedQuery(
 ): boolean {
   const last = String(lastUserText || "").trim();
   if (!last) return false;
+  // Block only clearly non-dairy topics — PashuMitra is a dairy app; allow by default.
   if (isStrictOffTopic(last)) return false;
 
   const userMsgs = messages.filter((m) => m.role === "user").map((m) => m.content);
   const priorUser = userMsgs.slice(0, -1).slice(-4).join(" ");
-  const fullCtx = userMsgs.slice(-4).join(" ");
 
-  if (hasDairySignal(last)) return true;
   if (isFollowUpInDairyThread(last, priorUser)) return true;
-  if (hasDairySignal(fullCtx)) return true;
+  if (hasDairySignal(last)) return true;
 
-  return false;
+  const fullCtx = userMsgs.slice(-4).join(" ");
+  if (fullCtx.trim() && isStrictOffTopic(fullCtx) && !hasDairySignal(fullCtx)) return false;
+
+  return true;
 }
 
 export function offTopicRefusalMessage(lang?: string | null): string {
@@ -101,7 +110,7 @@ KNOWLEDGE BOUNDARY (CRITICAL — NO OPEN WEB):
 - NEVER use general internet knowledge, news, Wikipedia, or training-data guesses.
 - NEVER invent scheme names, subsidy amounts, medicine doses, phone numbers, or statistics not present in RETRIEVED KNOWLEDGE.
 - If RETRIEVED KNOWLEDGE does not contain enough to answer, say clearly in the farmer's language that this information is not in your records and suggest: nearest dairy cooperative / veterinarian / **1962 app** — do NOT guess or fill gaps.
-- Do NOT answer questions outside dairy & livestock even if you know the answer — refuse politely (see DOMAIN rules).
+- When the farmer's question IS about dairy, livestock, milk, fodder, disease, or schemes: answer it — do NOT refuse as "out of scope".
 
 URL RULES (CRITICAL):
 - NEVER paste a web link unless that exact URL (same host and path) appears verbatim in RETRIEVED KNOWLEDGE.
@@ -111,8 +120,8 @@ URL RULES (CRITICAL):
 `;
 
 export const DOMAIN_SCOPE_RULES = `
-DOMAIN SCOPE (STRICT):
-In scope ONLY: dairy & livestock farming — cattle/buffalo/goat/sheep/poultry health, breeding, nutrition, fodder, milk quality, cooperative milk marketing, ethno-veterinary medicine, NDDB/DAHD schemes (RGM, AHIDF, NPDD, NLM, KCC, NDLM), ration balancing, housing, economics of small dairy farms.
-Out of scope (ALWAYS refuse): sports, entertainment, politics, general knowledge, human recipes, coding, finance/crypto, weather, homework, jokes, relationships, AI/tech unrelated to farming.
-If out of scope: one short refusal in farmer's language — do NOT attempt a partial answer.
+DOMAIN SCOPE:
+PashuMitra is a dairy & livestock advisor. When the farmer asks about cattle/buffalo/goat health, breeding, nutrition, fodder, milk, cooperatives, schemes, or farm economics — answer from RETRIEVED KNOWLEDGE.
+ONLY refuse (one short line, no partial answer) for clearly unrelated topics: sports, entertainment, politics, human recipes, coding, finance/crypto, weather, homework, jokes, relationships, general trivia.
+Do NOT refuse valid dairy/livestock questions — even if RETRIEVED KNOWLEDGE is thin, say what you know and what you cannot confirm.
 `;

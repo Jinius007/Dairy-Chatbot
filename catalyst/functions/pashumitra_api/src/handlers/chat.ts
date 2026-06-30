@@ -291,7 +291,7 @@ export async function handleChat(req: Request): Promise<Response> {
     const rationHint = isRationAdvisory || mode === "call" ? null : tryComputeRationHint(safeMessages);
 
     const userCtx = safeMessages.filter((m: { role: string }) => m.role === "user").map((m: { content: string }) => m.content).join("\n");
-    const lastUserText = lastUser?.content || "";
+    const lastUserText = (lastUser?.content || safeMessages.filter((m: { role: string }) => m.role === "user").slice(-1)[0]?.content || "").trim();
 
     if (
       mode !== "ration_advisory"

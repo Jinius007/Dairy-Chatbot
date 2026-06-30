@@ -35263,12 +35263,61 @@ Maaf kijiye, jawab nahi aa paya (${upstream.status}). Dubara koshish karein.`;
 // catalyst/functions/pashumitra_api/lib/domain-guard.ts
 var DAIRY_SIGNAL = new RegExp(
   [
+    "goru",
+    "gorur",
+    "ghorur",
+    "gabhi",
+    "gavu",
+    "pasu",
+    "pashu",
+    "pashuvu",
+    "pashuvulu",
+    "khabar",
+    "khawa",
+    "khavar",
+    "chara",
+    "ghash",
+    "poshan",
+    "poshu",
+    "aahar",
+    "ahara",
+    "doodh",
+    "dudh",
+    "dugdh",
+    "paal",
+    "paalu",
+    "halu",
+    "khir",
+    "bimaari",
+    "bimari",
+    "rog",
+    "byadhi",
+    "ilaj",
+    "chikitsa",
+    "dawai",
+    "osudh",
+    "bukhar",
+    "jwar",
+    "khasi",
+    "dast",
+    "pet",
+    "dard",
+    "sujan",
+    "kamzori",
+    "bachha",
+    "bacha",
+    "baccha",
+    "calf",
+    "bachheda",
+    "bachhedi",
+    "byat",
+    "garbha",
+    "garbhi",
+    "pregnant",
     "dairy",
     "dairying",
     "milk",
     "milch",
-    "doodh",
-    "dudh",
     "cheese",
     "ghee",
     "paneer",
@@ -35282,10 +35331,8 @@ var DAIRY_SIGNAL = new RegExp(
     "gay",
     "bhains",
     "bhainsa",
-    "pashu",
     "livestock",
     "herd",
-    "calf",
     "calving",
     "heifer",
     "lactation",
@@ -35293,7 +35340,6 @@ var DAIRY_SIGNAL = new RegExp(
     "udder",
     "teat",
     "fodder",
-    "chara",
     "silage",
     "hay",
     "straw",
@@ -35319,7 +35365,6 @@ var DAIRY_SIGNAL = new RegExp(
     "estrus",
     "oestrus",
     "pregnancy",
-    "garbha",
     "vaccin",
     "fmd",
     "brucellosis",
@@ -35375,7 +35420,14 @@ var DAIRY_SIGNAL = new RegExp(
     "milk yield",
     "procurement",
     "collection centre",
-    "collection center"
+    "collection center",
+    "kisan",
+    "kishan",
+    "farmer",
+    "farm",
+    "gaav",
+    "gaon",
+    "village"
   ].join("|"),
   "i"
 );
@@ -35438,11 +35490,11 @@ function isDairyRelatedQuery(messages, lastUserText) {
   if (isStrictOffTopic(last)) return false;
   const userMsgs = messages.filter((m) => m.role === "user").map((m) => m.content);
   const priorUser = userMsgs.slice(0, -1).slice(-4).join(" ");
-  const fullCtx = userMsgs.slice(-4).join(" ");
-  if (hasDairySignal(last)) return true;
   if (isFollowUpInDairyThread(last, priorUser)) return true;
-  if (hasDairySignal(fullCtx)) return true;
-  return false;
+  if (hasDairySignal(last)) return true;
+  const fullCtx = userMsgs.slice(-4).join(" ");
+  if (fullCtx.trim() && isStrictOffTopic(fullCtx) && !hasDairySignal(fullCtx)) return false;
+  return true;
 }
 function offTopicRefusalMessage(lang) {
   const code = lang && /^[a-z]{2}$/.test(lang) ? lang : "hi";
@@ -35466,7 +35518,7 @@ KNOWLEDGE BOUNDARY (CRITICAL \u2014 NO OPEN WEB):
 - NEVER use general internet knowledge, news, Wikipedia, or training-data guesses.
 - NEVER invent scheme names, subsidy amounts, medicine doses, phone numbers, or statistics not present in RETRIEVED KNOWLEDGE.
 - If RETRIEVED KNOWLEDGE does not contain enough to answer, say clearly in the farmer's language that this information is not in your records and suggest: nearest dairy cooperative / veterinarian / **1962 app** \u2014 do NOT guess or fill gaps.
-- Do NOT answer questions outside dairy & livestock even if you know the answer \u2014 refuse politely (see DOMAIN rules).
+- When the farmer's question IS about dairy, livestock, milk, fodder, disease, or schemes: answer it \u2014 do NOT refuse as "out of scope".
 
 URL RULES (CRITICAL):
 - NEVER paste a web link unless that exact URL (same host and path) appears verbatim in RETRIEVED KNOWLEDGE.
@@ -35475,10 +35527,10 @@ URL RULES (CRITICAL):
 - YouTube: never paste youtube.com / youtu.be links in chat \u2014 the app attaches verified videos separately.
 `;
 var DOMAIN_SCOPE_RULES = `
-DOMAIN SCOPE (STRICT):
-In scope ONLY: dairy & livestock farming \u2014 cattle/buffalo/goat/sheep/poultry health, breeding, nutrition, fodder, milk quality, cooperative milk marketing, ethno-veterinary medicine, NDDB/DAHD schemes (RGM, AHIDF, NPDD, NLM, KCC, NDLM), ration balancing, housing, economics of small dairy farms.
-Out of scope (ALWAYS refuse): sports, entertainment, politics, general knowledge, human recipes, coding, finance/crypto, weather, homework, jokes, relationships, AI/tech unrelated to farming.
-If out of scope: one short refusal in farmer's language \u2014 do NOT attempt a partial answer.
+DOMAIN SCOPE:
+PashuMitra is a dairy & livestock advisor. When the farmer asks about cattle/buffalo/goat health, breeding, nutrition, fodder, milk, cooperatives, schemes, or farm economics \u2014 answer from RETRIEVED KNOWLEDGE.
+ONLY refuse (one short line, no partial answer) for clearly unrelated topics: sports, entertainment, politics, human recipes, coding, finance/crypto, weather, homework, jokes, relationships, general trivia.
+Do NOT refuse valid dairy/livestock questions \u2014 even if RETRIEVED KNOWLEDGE is thin, say what you know and what you cannot confirm.
 `;
 
 // catalyst/functions/pashumitra_api/lib/allowed-urls.ts
@@ -35770,7 +35822,7 @@ async function handleChat(req) {
     const advisoryHint = isRationAdvisory ? tryRationAdvisoryHint(safeMessages) : null;
     const rationHint = isRationAdvisory || mode === "call" ? null : tryComputeRationHint(safeMessages);
     const userCtx = safeMessages.filter((m) => m.role === "user").map((m) => m.content).join("\n");
-    const lastUserText = lastUser?.content || "";
+    const lastUserText = (lastUser?.content || safeMessages.filter((m) => m.role === "user").slice(-1)[0]?.content || "").trim();
     if (mode !== "ration_advisory" && !isVetContactRequest(lastUserText || userCtx) && !isDairyRelatedQuery(safeMessages, lastUserText)) {
       const refusal = offTopicRefusalMessage(
         detectOffTopicLang(lastUserText, typeof forceLanguage === "string" ? forceLanguage : null)

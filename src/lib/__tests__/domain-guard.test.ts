@@ -6,9 +6,12 @@ import {
 } from "../../../catalyst/functions/pashumitra_api/lib/domain-guard.ts";
 
 describe("domain-guard", () => {
-  it("allows dairy queries", () => {
+  it("allows dairy queries including Banglish without gaay", () => {
     expect(isDairyRelatedQuery([], "gir gaay ke baare mein batao")).toBe(true);
+    expect(isDairyRelatedQuery([], "gorur kemon khabar lagbe")).toBe(true);
+    expect(isDairyRelatedQuery([], "ekti gaay ke kotota khabar dewa uchit")).toBe(true);
     expect(hasDairySignal("kitna doodh deti hai murrah bhains")).toBe(true);
+    expect(hasDairySignal("gorur kemon khabar lagbe")).toBe(true);
   });
 
   it("blocks cricket and general knowledge", () => {
@@ -23,5 +26,10 @@ describe("domain-guard", () => {
       { role: "assistant", content: "..." },
     ];
     expect(isDairyRelatedQuery([...msgs, { role: "user", content: "aur batao" }], "aur batao")).toBe(true);
+  });
+
+  it("allows ambiguous farming questions by default", () => {
+    expect(isDairyRelatedQuery([], "mera pashu kamzor hai kya karun")).toBe(true);
+    expect(isDairyRelatedQuery([], "how to improve milk quality")).toBe(true);
   });
 });
