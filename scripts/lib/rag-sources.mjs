@@ -9,6 +9,7 @@ import { PDFParse } from "pdf-parse";
 import XLSX from "xlsx";
 import * as cheerio from "cheerio";
 import mammoth from "mammoth";
+import AdmZip from "adm-zip";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export const ROOT = path.join(__dirname, "..", "..");
@@ -36,7 +37,7 @@ export const MATERIAL_DIR =
       : DOWNLOADS_MATERIAL);
 
 const MAX_CHARS_PER_DOC = 14_000;
-const KREPO_EXTS = new Set([".pdf", ".docx", ".xlsx", ".md", ".txt"]);
+const KREPO_EXTS = new Set([".pdf", ".docx", ".xlsx", ".pptx", ".md", ".txt"]);
 
 const NDLM_LEGACY_NOTE = `[UPDATE 2025 — NDLM / Bharat Pashudhan: The farmer app formerly known as e-Gopala is now **1962** (Google Play). Do NOT recommend Pashu Poshan or e-Gopala as current apps. Official ecosystem: **Bharat Pashudhan** — https://bharatpashudhan.ndlm.co.in/ — toll-free helpline **1962** for Mobile Veterinary Units.]`;
 
@@ -162,6 +163,7 @@ function inferTopics(name) {
   if (/lumpy/.test(n)) topics.push("lumpy skin disease", "LSD");
   if (/bovine|husbandry|pashupalan|handbook/.test(n)) topics.push("dairy husbandry", "cow comfort");
   if (/consultancy|consultancy manual|farm management|sustainable dairy/.test(n)) topics.push("dairy farm consultancy", "farm management", "production traits", "reproductive efficiency");
+  if (/manure|gobar|dung|biogas|value chain|sustain plus|kpp|vermicompost|compost/.test(n)) topics.push("manure value chain", "gobar gas", "biogas", "organic manure", "NDDB Sustain Plus", "circular dairy");
   if (/scheme|dahd|subsidy|mission/.test(n)) topics.push("government scheme", "subsidy");
   if (!topics.length) topics.push("dairy extension", "livestock advisory");
   return topics;
@@ -197,6 +199,7 @@ function categorize(relPath) {
   if (/ration|feed|fodder|silage|mineral|compound|calf|nutrition/.test(p)) return "Nutrition";
   if (/mastitis|lumpy|disease|health|vaccin/.test(p)) return "Health";
   if (/consultancy|farm management/.test(p)) return "Farm Consultancy";
+  if (/manure|gobar|dung|biogas|sustain plus|kpp|value chain|vermicompost/.test(p)) return "Manure & Sustainability";
   return "Extension";
 }
 
@@ -254,6 +257,58 @@ function walkKnowledgeFiles(dir, base = dir) {
 async function extractDocx(filePath) {
   const result = await mammoth.extractRawText({ path: filePath });
   return cleanText(result.value || "");
+}
+
+function decodeXmlText(s) {
+  return s
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'");
+}
+
+function extractTextFromOoxml(xml) {
+  const texts = [];
+  const re = /<a:t(?:\s[^>]*)?>([^<]*)<\/a:t>/gi;
+  let m;
+  while ((m = re.exec(xml)) !== null) {
+    const t = decodeXmlText(m[1]).trim();
+    if (!t || /xmlns:|schemas\.microsoft|<\/a:/i.test(t)) continue;
+    texts.push(t);
+  }
+  return texts.join(" ");
+}
+
+function extractPptx(filePath) {
+  const zip = new AdmZip(filePath);
+  const slideEntries = zip
+    .getEntries()
+    .filter((e) => /^ppt\/slides\/slide\d+\.xml$/i.test(e.entryName))
+    .sort((a, b) => {
+      const na = Number.parseInt(a.entryName.match(/slide(\d+)/i)?.[1] || "0", 10);
+      const nb = Number.parseInt(b.entryName.match(/slide(\d+)/i)?.[1] || "0", 10);
+      return na - nb;
+    });
+  const parts = [];
+  for (const entry of slideEntries) {
+    const slideText = extractTextFromOoxml(entry.getData().toString("utf8"));
+    if (slideText.trim()) {
+      const n = entry.entryName.match(/slide(\d+)/i)?.[1] || "?";
+      parts.push(`===== Slide ${n} =====`);
+      parts.push(slideText);
+    }
+  }
+  if (parts.length < 3) {
+    const noteEntries = zip
+      .getEntries()
+      .filter((e) => /^ppt\/notesSlides\/notesSlide\d+\.xml$/i.test(e.entryName));
+    for (const entry of noteEntries) {
+      const noteText = extractTextFromOoxml(entry.getData().toString("utf8"));
+      if (noteText.trim()) parts.push(noteText);
+    }
+  }
+  return cleanText(parts.join("\n"));
 }
 
 function extractXlsx(filePath, maxRows = 400) {
@@ -595,6 +650,7 @@ export async function collectKnowledgeRepositoryFiles(dkpLinks) {
 
       if (ext === ".pdf") text = await extractPdf(abs);
       else if (ext === ".docx") text = await extractDocx(abs);
+      else if (ext === ".pptx") text = extractPptx(abs);
       else if (ext === ".xlsx") {
         const isFeedLib = /feed library/i.test(name);
         text = extractXlsx(abs, isFeedLib ? 900 : 250);
@@ -608,10 +664,13 @@ export async function collectKnowledgeRepositoryFiles(dkpLinks) {
       const isBharatMoM = /bharat pashudhan|ndlm|1962|conversational ai/i.test(name);
       const isFeedLib = /feed library|inaph|ration|rbp|constraints/i.test(name);
       const isSchemes = /scheme|farmer.*2025|dahd|government/i.test(name);
+      const isManureSustain =
+        /manure|gobar|dung|biogas|sustain plus|kpp|value chain|vermicompost|samriddhi/i.test(name);
 
       let maxChars = MAX_CHARS_PER_DOC;
       if (isConsultancy) maxChars = 48_000;
       else if (isFeedLib) maxChars = 35_000;
+      else if (isManureSustain) maxChars = 40_000;
       else if (isBharatMoM || isSchemes) maxChars = 25_000;
 
       if (ext === ".pdf") {
@@ -621,6 +680,15 @@ export async function collectKnowledgeRepositoryFiles(dkpLinks) {
           /hindi|gujarati|\bguj\b|_hi\b|\(hindi\)/i.test(name) && !isEnglishDoc;
         if ((isIndicDoc || quality < 0.55) && dkpLinks.length) {
           text = catalogEntry(fileInfo, dkpUrl);
+        } else if (text.length < 500) {
+          text = [
+            `Official NDDB knowledge repository: ${name}.`,
+            `Topics: ${inferTopics(name).join("; ")}.`,
+            `Source: Knowledge Repository/${rel}`,
+            text.length > 40
+              ? `Extracted text (image-based PDF — partial):\n${truncate(text, 2000)}`
+              : "Image-based PDF — see related PPTX/booklets in knowledge repository for full narrative.",
+          ].join("\n\n");
         }
       }
 
@@ -641,6 +709,7 @@ export async function collectKnowledgeRepositoryFiles(dkpLinks) {
       else if (isBharatMoM) category = "NDLM / Digital Platforms";
       else if (isFeedLib) category = "Nutrition";
       else if (isSchemes) category = "Government Scheme";
+      else if (isManureSustain) category = "Manure & Sustainability";
 
       docs.push(
         toDoc({

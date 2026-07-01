@@ -27,7 +27,7 @@ const VISION_CACHE = path.join(
   "catalyst/functions/pashumitra_api/lib/knowledge/sources/vision-cache",
 );
 
-const MAX_TOTAL_CHARS = 550_000;
+const MAX_TOTAL_CHARS = 620_000;
 const VISION_LIMIT = Number(process.env.SARVAM_VISION_PDF_LIMIT || "12");
 const VISION_DELAY_MS = Number(process.env.SARVAM_VISION_DELAY_MS || "7000");
 
@@ -123,8 +123,10 @@ async function main() {
       /bharat pashudhan|1962|ndlm/i.test(d.title),
   );
   const krepo = supplemental.filter((d) => d.id.startsWith("krepo-") && !ndlm.includes(d));
+  const manure = krepo.filter((d) => d.category === "Manure & Sustainability");
+  const krepoRest = krepo.filter((d) => !manure.includes(d));
   const rest = supplemental.filter((d) => !ndlm.includes(d) && !krepo.includes(d));
-  supplemental = [...ndlm, ...krepo, ...rest];
+  supplemental = [...ndlm, ...manure, ...krepoRest, ...rest];
   if (supplemental.length === 0) {
     console.warn("No supplemental docs matched filter; including ICAR + NDDB web only");
     supplemental = docs.filter(

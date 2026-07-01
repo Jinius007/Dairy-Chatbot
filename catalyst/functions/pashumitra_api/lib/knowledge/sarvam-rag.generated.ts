@@ -195,6 +195,1034 @@ Always recommend: **1962 app** (Google Play) + **1962 helpline** for MVU vet vis
 
 Never recommend: Pashu Poshan, e-Gopala (old names only — say "now called 1962 app").
 
+## 4 Manure and Dairy Value Chain - Bangalore Workshop
+Source: Knowledge Repository/4 Manure and Dairy Value Chain - Bangalore Workshop.pptx | Category: Manure & Sustainability
+
+===== Slide 1 =====
+Confidentiality Disclaimer This presentation has been prepared by the National Dairy Development Board (NDDB) and contains confidential and proprietary information. The contents are strictly confidential and intended solely for authorized recipients for official purposes. No part of this presentation may be copied, reproduced, distributed, disclosed, or shared, in whole or in part, with any third party, organization, or individual, without the prior written consent of NDDB. All physical and financial figures, numbers, outlays, and targets are as on date and are subject to change
+===== Slide 2 =====
+NDDB & Sustain Plus Project ( PHASE II ) “Financing Sustainable Dairying Interventions” A Joint Initiative of Regional Stakeholder’s Consultation Workshop (South Region) 17 March 2026
+===== Slide 3 =====
+Manure Value Chain Project Components under NDDB-SPEF Program (Phase-II)
+===== Slide 4 =====
+Manure Value Chain is the process through which cattle dung is collected and converted into useful products such as clean energy (biogas or Bio-CNG) and organic fertilizer , instead of being treated as waste. It creates value at household, community, and commercial levels , while supporting farmers, energy security, and sustainable agriculture Manure Value Chain Household / Dairy Farm / Gaushala Biogas Unit Slurry Processing Market
+===== Slide 5 =====
+1. Standalone Biogas Unit MODEL (2 M 3 ) Household biogas Unit Biogas Utilized as Cooking Fuel
+===== Slide 6 =====
+1. Standalone Biogas Unit MODEL (2 M 3 ) Note: Loan component is also provided for PIA subject to project needs The total cost is estimated 31,205 = 20,000 (Grant) + 11,205 (PIA) The proposed target 10,000 Units | 100 Cluster Challenges in the Pit digging Required regular operations & maintenance Training & capacity building was needed Hence all the above support to be provide for Self Sufficiency & Sustainability Learnings of Phase-I Flexi Biogas Plants: Provided in a cluster of 4-5 continuous villages wherein minimum 100 biogas plants are installed Slurry Pump: Provide to Promote Captive Slurry Usage Baseline & Impact Study: It will be done to access the dung availability, impact study for carbon credit assessment Salary of Local Resource Person: It will provided for pit digging & other such work. Training Farmer Orientation Programme: For Farmer mobilization Training cum handholding for Maintenance of biogas plants: Provided for reduce the downtime & smooth functioning
+===== Slide 7 =====
+Household Biogas Dung + Water (Slurry) Slurry Collection Slurry Processing Market A slurry processing center will be installed in a cluster of household level biogas plants to process the surplus slurry. The project will focus on establishment of an end-to-end manure value chain. Additional income generation of farmers by sale of slurry Production and use of slurry-based agriculture inputs Brief about component Benefits Reduction in methane emission from livestock manure Setting Up of Slurry Processing Centers at Cluster Level TARGET WHY ? : Only 40-50 per cent of digested slurry utilized by the farmers
+===== Slide 8 =====
+Financial for installation of Setting Up of Slurry Processing Centers Sr No Budget Head Grant PIA (Rs) Stage 1 Slurry Testing Equipment at Village Level ✔ I 2 Shed for slurry processing ✔ 3 Slurry Dewatering Machine ✔ 4 Equipment at Slurry Processing Center ✔ 5 Lab Equipments ✔ 6 Salary of Project Manager ✔ 7 Training_Manure Business Management for project staff ✔ 8 Training of Trainers ✔ 9 Training on Operations of Slurry Processing Center ✔ II 10 Slurry Procurement and Processing Operations Supervisors ✔ 11 Executives for Marketing and extension of slurry based products ✔ 12 Maintenance & Contingency cost (@10% of slurry processing center cost) ✔ 13 Regulatory Compliance Fees (hiring of consultant, organic certification, FCO licence, etc.) ✔ Stage-II will be taken up post successful implementation of stage-I
+===== Slide 9 =====
+Financials for installation of Setting Up of Slurry Processing Centers PIA Components For Single Unit Grant Support (Rs in Lakh) 94 Total Target 10 Units PIA to provide the land and basic shed for the slurry processing activity PIA to provide the manpower for operations Providing the Supervisor/Resource Person (Point of Contact) Baseline activities based on project specification and requirements
+===== Slide 10 =====
+Setting Up of Slurry Processing Centers Household biogas Unit Slurry Processing Centre
+===== Slide 11 =====
+Aims to install Community Biogas Plant that will convert cow dung into renewable biogas. This biogas will be piped directly to nearby households, offering a clean, sustainable and cost-effective energy source. Setting up of slurry processing unit to convert slurry into slurry-based fertilizer. Brief about component Project Objective Development of Manure Management Model with Community Biogas Plant Biogas Unit Use of biogas as clean cooking fuel Production and use of slurry-based agriculture inputs Reduction in methane emission from livestock manure Slurry Processing Market Household(s) Benefits To develop new community based model
+===== Slide 12 =====
+Community Biogas Plant Cattle Dung Input Feedstock Dung + Water (Slurry) Digester Slurry Digesters Gas Holder Slurry Processing Unit Village Community (PROM & FOM) Clean Fuel Cooking Organic Farming Biogas Organic Fertilizer
+===== Slide 13 =====
+Cattle Dung Pre-process Front View of Biogas Plant Community Biogas Plant Bhintbudrak Biogas Plant
+===== Slide 14 =====
+Biogas Utilized for Cooking Digested Slurry Utilized for Fertilizer Preparation Community Biogas Plant
+===== Slide 15 =====
+PIA Components For Single Unit Grant Support (Rs. In Lakh) 100 Financials for Development of Manure Management Model with Community Biogas Plant The total target proposed: 2 Units Land identification and allotment Beneficiaries farmer identification Providing the Resource Person (Point of Contact) Formation of local cooperative for the management of the biogas unit. Standard operations and maintenance of biogas unit Carryout all the production and marketing activities Other Baseline activities based on project specification and requirements Following are the project expectations from the PIA NDDB & SPEF has signed a MoU with the Sumul Dairy On-going Projects It is proposed to take a 200 Cubic Meter capacity of Biogas Unit The construction of the proposed project will start in April 2026
+===== Slide 16 =====
+Aims to install Biogas unit of 40 to 200 cubic meters of capacity, based on nos of cattle available. Setting up of slurry processing unit to convert slurry into slurry-based fertilizer. Brief about components Development of Manure Management Model at Gaushala Slurry Processing Market Clean Fuel Cooking Biogas Generator Biogas Cattle Dung Slurry Collection Digester Slurry Renewable Application
+===== Slide 17 =====
+Financial for development of the manure management project for Gaushalas Grant Support (Rs. in Lakh) 55 The total target proposed: 5 Units The cost of baseline, commissioning of the unit including mechanical & civil will be carried out under the grant component NDDB & SPEF has signed a MoU with the Gorakshan Sabha Gaushala Nagpur On-going Projects It is proposed to take a 100 Cubic Meter capacity of Biogas Unit Additionally Slurry Processing Centre will be set up
+===== Slide 18 =====
+Dairy Value Chain Project Components under NDDB-SPEF Program (Phase-II)
+===== Slide 19 =====
+Dairy Value Chain PROCUREMENT PROCESSING DISTRIBUTION FARM MILK COLLECTION MILK COLLECTION: PROCUREMENT : PROCESSING : Project Components Solarization of Village Dairy Cooperative Societies / MPPs Mobile Milk Collection, Testing and Cooling System Small Scale Milk & Milk and Milk Product Processing Equipment TARGET
+===== Slide 20 =====
+Solarization of Dairy Cooperative Societies
+===== Slide 21 =====
+Why Solarization of DCS? Village milk collection centres often face challenges: Frequent power cuts Absence of reliable grid electricity High electricity bills Diesel Generators (DGs) are commonly used to ensure cooling, leading to: High operating costs Increased emissions Risk to milk quality during outages
+===== Slide 22 =====
+Two Sub-Components On Grid Solar System (II) Off Grid Solar System
+===== Slide 23 =====
+On Grid Solar System
+===== Slide 24 =====
+(I) On-Grid Solar System Solar System Components SN Roof Top Solar System Components 1 Solar PV Module / Solar Panel 2 Inverter 3 Wire & Cables 4 Mounting / Solar Structure, Junction Box 5 Protection System (Including PVC Pipe & Accessories, Earthing Kit, Lightning Arrester 6 Battery including Online monitoring system 7 Transportation, Installation & Commissioning (I&C) charges 8 Other Miscellaneous
+===== Slide 25 =====
+Funding Support Estimated total outlay per DCS ₹3,50,000 Funding pattern: Maximum support from NDDB and SPEF is Up to ₹1,75,000 per DCS SN Funding Partner Contribution Amount (Rs in Lakh) Contribution(%) 1 NDDB- SPEF Program 1.75 50% 2 Dairy Cooperatives/MPO 1.75 50% 3 Total 3.5 100%
+===== Slide 26 =====
+Payback Period SN Particulars V alue Unit 1 Installed Solar Capacity 10 KW 2 Average Daily Power Generation (4 units per KW) 40 Units/day 3 Estimated Daily Savings (Electricity Tariff Rs.10 /unit) 400 Rs/day 4 Estimated Annual Savings 1,20,000 Rs/year 5 Payback Period (Without Grant) 2.9 Years 6 Payback Period (With Grant support) 1.5 Years
+===== Slide 27 =====
+Targets Envisaged Grant support for Total 500 Units Envisaged First Project with SUMUL and other Projects status Any Inputs ?
+===== Slide 28 =====
+(II) Off Grid Solar System
+===== Slide 29 =====
+(II) Off Grid Solar System Challenges for Milk Collection Centre operating at off Grid location Heavy dependence on diesel generators High operating cost (~₹1.5 per litre of milk) No dependable system to utilize solar power
+===== Slide 30 =====
+Solar BMC – Integrated Solution To address the challenge, NDDB implemented a Pilot for Off-Grid Solar System –operating BMC on Solar Kashipura Sub-Centre of Mujkuva DCS, near Anand, Gujarat Key Components : Solar power acts as the primary energy source for milk cooling, supported by battery backup. Surplus solar energy generated during peak sunshine hours is stored in batteries. Stored battery energy is utilized to operate the Bulk Milk Cooler during the evening milk collection shift.
+===== Slide 31 =====
+Kashipura Solar BMC – At a Glance Parameter Details Milk handled ~850 litres/day Pourers ~130 BMC capacity 1,000 litres Operating time ~6 hours/day Connected Load: BMC (1000 L) AMCU (1) Fans (2) Lights (4) Geyser (1) System Configuration Solar Panels: 11 kW Battery Storage: 38.4 kWh (Lithium-Ion) Smart Controller: 7 kVA Kashipura BMC, Mujkuva, Anand, Gujarat
+===== Slide 32 =====
+Cost & Payback Analysis Diesel Usage Level Payback Period* High DG usage ~2.5 – 3 years Moderate DG usage ~4 – 5 years Low DG usage ~8 – 9 years Total system cost: ₹10.0 lakh (Solar Panels + Lithium-Ion Battery + Smart Controller, etc.) Indicative Payback Period* *Payback depends on actual DG usage and operating conditions.
+===== Slide 33 =====
+Key Benefits 90%+ solar-based operation Elimination of diesel fuel cost Reduction in electricity bills Clean and environment-friendly solution Step towards carbon-neutral village-level dairy cooperatives
+===== Slide 34 =====
+Grant Support Post pilot findings, NDDB & SPEF has now decided to make Solar BMC as part of the Project with 50 % Grant Support (Grant support up to Rs. 5 Lakh per milk collection centre is envisaged ) Any Inputs?
+===== Slide 35 =====
+Mobile Milk Collection, Testing & Cooling System
+===== Slide 36 =====
+Milk Collection Scenarios Milk Collection Centre Bulk Milk Cooler Milk Chilling Centre Dairy Plant Dairy Plant Dairy Plant Bulk Milk Cooler Dairy Plant Milk Producer Milk Producer Milk Producer Milk Producer Milk Collection Centre Milk Collection Centre
+===== Slide 37 =====
+Challenges in Present Milk Collection Insufficient milk volume makes operation of collection centres economically unviable. Long Transit Distances between collection centres and chilling/dairy plants lead to milk quality loss. Fixed Milk Collection Centres are difficult to establish due to scattered farm location in villages and tough terrain. Low-volume indigenous/specialized milk (e.g. Gir cow milk) lacks dedicated chilling at source, causing quality deterioration during milk collection & transport
+===== Slide 38 =====
+Mobile Milk Collection, Testing & Cooling Unit To address this challenges, NDDB in collaboration with IDMC has developed Mobile, Milk Collection, Testing and Cooling System Milk Collection at farmer’s door step, testing on the spot and cooling on the go Discussion underway with Ashok Leyland for 500 litre and 1000 Litre Unit
+===== Slide 39 =====
+MMCTU in Leh – A Case Study MMCTU in Leh at Ladakh Milk Federation Post successful trial, few Inquiries received from MPCDF, Chhattisgarh and LMF Recently, 1 Unit is being deployed for Manipur Milk Union and 1 Unit for Mujkuva for demonstration 100% Grant support for the hilly regions under NPDD To demonstrate the benefits of the system in Dairy Cooperatives/MPO it is funded under NDDB-SPEF Program Pilot unit is functioning at Leh , Ladakh Milk Federation (LMF) since 15 th June 2024.
+===== Slide 40 =====
+Funding Support Estimated total outlay per unit is ₹15,00,000 Funding pattern: Maximum support from NDDB and SPEF Up to ₹10.5 lakhs per unit SN Funding Partner Contribution Amount (Rs in Lakh) Contribution(%) 1 NDDB- SPEF Program 10.5 70% 2 Dairy Cooperatives/MPO 4.5 30% 3 Total 15 100%
+===== Slide 41 =====
+Targets Envisaged Grant support for Total 10 Units Envisaged NDDB & SPEF will have annual rate contract with IDMC for the unit supply, installation, testing and commission of the System Any Inputs ?
+===== Slide 42 =====
+Small Scale Milk and Milk Product Processing Unit
+===== Slide 43 =====
+Why Small-Scale Processing Equipment? Specialized milk is produced in small volume and dispersed volume Such Small milk volumes are uneconomical to transport daily over long distances for processing. Limited Value Addition - Sale of raw milk only; missed opportunities for income No reliable source of equipment supplier to handle such milk Growing demand of consumer for farm fresh milk products
+===== Slide 44 =====
+The Solution : Small Scale Processing Unit NDDB in collaboration with IDMC Developed small scale processing unit Batch processing capacity: up to ~120 litres of Milk in a single batch Conversion of milk into Paneer, curd, buttermilk, ghee, Shrikhand and Cheese Closed, standardized processing system – Process control – Hygienic production and Improves Quality Designed for low / semi-skilled operators Installed Unit at Atithi Dairy Davalpura, Gujarat Ideal for Small farmer collectives / SHGs/FPOs handling niche milk e.g , Goat milk, camel milk, donkey milk, etc
+===== Slide 45 =====
+Dawalpura- A Case Study NDDB & IDMC set up the first unit in February 2024 for demonstration at Atithi Dairy Farm, Petlad , Gujarat Daily Production Updates Milk Processing – 400 litre/day Daily Products Processing Paneer - 54 Kgs Curd - 100 Kg Ghee and Shrikhand - As per demand Feedback and Observations Improvement in Paneer Yield from 16% to 18% Hygienic processing improved product quality Uniform/consistent product quality Ease of operations Before Set-up After Set-up
+===== Slide 46 =====
+Funding Support Estimated total outlay per beneficiary ₹20,00,000 Funding pattern: SN Funding Partner Contribution Amount (Rs in Lakh) Contribution(%) 1 NDDB- SPEF Program 16.0 80% 2 End Implementing Agency (EIA) 4.0 20% 3 Total 20.0 100% Maximum support from NDDB and SPEF is Up to ₹16,00,000 per beneficiary
+===== Slide 47 =====
+Targets Envisaged Grant support for Total 10 Units Envisaged Any Inputs ?
+===== Slide 48 =====
+Project Implementation Arrangement Project request to NDDB/SPEF 1 Proposal & Planning Execution Documentation Feasibility Assessment & DPR preparation 2 PSC approval by NDDB-SPEF 3 Baseline survey 4 Issue Sanction letter & draft agreement 1 Signing of the tripartite agreement 2 Procurement & Purchase initiation 3 Installation & Commissioning 4 Project closure report 1 Fund utilization certificate 2 Impact assessment study 3 4 Performance trials report Project Specific Joint Project Monitoring
+===== Slide 49 =====
+THANK YOU! 17 March 2026
+
+## Booklet_Gobar Se Samriddhi - Guideline on Manure Value Chain Models in Dairy Sector (Eng)
+Source: Knowledge Repository/Booklet_Gobar Se Samriddhi - Guideline on Manure Value Chain Models in Dairy Sector (Eng).pdf | Category: Manure & Sustainability
+
+1
+
+-- 1 of 24 --
+
+2
+Contents
+1
+2
+10
+• Foreword
+• Informative Guidelines on Decentralised Manure Management Models
+Biogas Cluster of 100-200 plants along with Slurry Processing
+Centre (Zakariyapura Model)
+- Section-I: Biogas And Biogas Plants
+- Section-Ii: Slurry Processing And Slurry Based Products
+• Informative Guidelines on different Centralised Manure Management Models
+- Model-I Setting up of Dung based Compressed Biogas Plant (CBG) 1
+(Banas Model)
+- Model-II Large scale Biogas plant for to suffice energy needs of a dairy
+plant (Varanasi Model)
+
+-- 2 of 24 --
+
+11
+The sustainable management of organic waste and the promotion of renewable energy are critical
+components of modern environmental and agricultural policies. Recognising this, the development
+of biogas-based decentralised model such as the Zakariyapura and centralized model such as
+Banas and Varanasi models represents a significant step toward fostering energy independence,
+reducing carbon emissions, and improving rural livelihoods.
+These guidelines serve as a comprehensive resource for stakeholders, including farmers,
+cooperatives, and policymakers, providing insights into the establishment, operation, and benefits of
+various biogas models. The Decentralised (Zakariyapura) model focuses on small-scale flexi-biogas
+plants for household energy needs while efficiently utilising slurry as an organic fertiliser. Centralised
+Model, The Banas Model demonstrates the potential of large-scale dung-based compressed biogas
+(CBG) plants in replacing conventional fuels in the transportation sector. Meanwhile, the Varanasi
+model showcases how biogas can be leveraged as a sustainable energy source for industrial
+applications, particularly in dairy processing.
+By integrating these models into rural and industrial ecosystems, we can create a circular economy
+where waste is converted into valuable energy and organic fertilisers, enhancing both environmental
+sustainability and economic viability. We hope these guidelines will serve as a valuable reference for
+organisations and individuals working towards a cleaner and greener future.
+Foreword
+
+-- 3 of 24 --
+
+2
+Informative Guidelines on
+Decentralised Model
+2
+
+-- 4 of 24 --
+
+3
+Biogas Cluster of 100-200 plants along with Slurry
+Processing Centre (Zakariyapura Model)
+Section-I: Biogas and Biogas Plants
+About Biogas
+Biogas is a combustible mixture of gases obtained through anaerobic degradation of organic manure
+through microbial action. The primary constituents of biogas are methane and carbon dioxide, along
+with small amounts of hydrogen sulphide and other trace gases and water vapour.
+Different types of Biogas Plant Technologies for households (Ref capacity 2 cubic
+meter) available in India
+In India, the major types of biogas models currently present are:
+• Deenbandhu Model: Deenbandhu Model, developed in 1984, has a fixed-dome type of gas chamber.
+The dome is made from pre-fabricated ferrocement or concrete and is attached to the digester. The
+gas is taken out through a pipe connected at the top and the by-product-digested slurry, is removed
+through an opening in the side of the digester.
+• KVIC Model: The KVIC model consists of a digester for fermentation and a floating drum for the
+collection of gas. The digester has a partition in the center, dividing it vertically. The gas holder is a
+drum constructed of mild steel sheets, which fits into the digester. The holder sinks into the slurry
+when gas is not generated, and floats upwards on the surface of the slurry when gas generation
+takes place
+• Janata Type Biogas Plant: The design of this plant is of Chinese origin but it has been introduced
+under the name of “Janata Biogas Plant”, by Gobar Gas Research Station, Ajitmal. With a highly
+economical design, the main structure is made up of brick and cement masonry. The plant does
+not have any moving parts, hence increasing its durability. The plant has a higher capacity, better
+durability and higher gas pressure than KVIC Model.
+• Flexi Biogas Plant: Flexi-biogas plant is a new technology in which digesters are made of PVC
+coated industrial textile or other such type of material. This type of biogas plant is convenient to
+small dairy farmers with respect to socio-economic implications on long term sustainability.
+
+-- 5 of 24 --
+
+4
+Flexi Biogas Plant vs. conventional biogas models
+The flexi biogas plants are starkly different from earlier used models of conventional biogas. Some of
+the major differences are presented as follows:
+Particulars Conventional Biogas Plants Flexibiogas
+Installation Involves civil work and takes
+minimum 30 days for construction.
+No civil work required. Installation of plant
+can be completed in 4–6 h.
+Manpower Skilled masons are required Semi-skilled or even unskilled labors can
+install within few hours
+Space Permanently occupies the space
+and non-transferrable.
+Does not occupy the space permanently
+and can be transferred to another place
+Chances of damages Cannot be damaged easily. Can be damaged with intentional efforts.
+Repair Difficult to identify gas leakage
+inside the dome or walls of biogas
+as building material used. Once
+identified, difficult to repair by user
+themselves.
+Being flexible material easy to repair using
+small kit users can do it themselves.
+Maintenance Non-regular usage may choke the
+plant which is difficult to repair with
+skilled labors and require high cost.
+In case of non-regular usage, plant may
+choke but can be easily flushed. If required,
+digester can be removed, opened, cleared,
+sealed (heat/weld) and reinstalled.
+Digester life More than 20 years. 10 years of digester guarantee by supplier
+Beneficiaries of the Flexi Biogas Plant
+To operate a 2 cubic meter flexi biogas plant, around 40-50 kg of dung is required every day. Small
+Holder dairy farmers, with 2-3 animals, which can easily produce 40-50 kg of dung per day selected
+as beneficiaries for the flexi biogas plants.
+Biogas Plant for non-dairy farmer
+Dung from dairy animals is necessary in order to generate biogas from the flexi-biogas plant. Non-
+dairy farmers who can source sufficient quantities of dung from nearby areas may also install a flexi-
+biogas plant for their domestic usage, under various schemes and programmes or on a standalone
+basis
+Land required for installation of flexi biogas plant
+An area of less than 5 square meters required for the installation of the digester. A total area of 15ft
+X10 ft may be sufficient for construction of pits for digester installation, slurry pits and other peripheral
+equipment for a 2 cum flexi biogas plant
+Installation timeline for a 2 cubic meter flexi biogas plant
+Flexi biogas plants can be installed within 1 day, with the help of semi-skilled labor, with ease. 1-2
+days of manual labor (7 hours/day) is required for digging the pit for the bio-digester, slurry pit and
+installation of the flexi-biogas plant set, including pipeline and booster pump.
+
+-- 6 of 24 --
+
+5
+Specifications, materials required for functioning of the flexi biogas plant
+The following specifications and materials are required for the efficient functioning of the biogas plant.
+• Plant Specifications: 2 cubic meter gas capacity flexi biogas plant, with daily requirement of 40-50
+kg dung diluted in equal parts water.
+• Retention Period: 30-40 days
+• Total volume of the digester: 6 cubic meter
+• Slurry Tank volume: 4000 liters (Can vary as per actual conditions)
+Materials Required:
+• Digester balloon
+• Double burner stove complying the Indian Standard Biogas Stove Specifications (second revision)
+• Gas Pressure Regulator
+• Feeding tank with mixing devices
+• Inlet and outlet pipes
+• Gas Pipes, minimum 30 meter
+• Pressure release mechanism
+Parties supplying this type of biogas plant
+Some of MNRE’s approved flexi biogas suppliers are Home Biogas, Sistema Bio and S P Eco Fuel.
+More details about the suppliers may be found on MNRE’s website.
+Cost of a 2 cubic meter flexi biogas plant
+A 2 cubic meter flexi biogas plant, with all peripheral equipment costs about \`35,000-45,000/-
+excluding the cost of construction of the pits for digester and slurry collection
+Subsidy by state or central government
+Central Government Subsidy Scheme:
+Two major Central government schemes are currently being implemented for the installation of flexi
+biogas plants.
+National Biogas Programme: Subsidy starting from \`14,250/ is provided by MNRE based on the
+size of the biogas plant under the National Biogas Programme. NDDB Mrida Ltd., a wholly owned
+subsidiary of National Dairy Development Board is one of the national level implementing agencies
+for the scheme. Interested cooperatives/producer companies may avail the subsidy through Mrida.
+GOBARDHAN Scheme: Subsidies are also available under the scheme for setting up district wise
+model projects under Swachh Bharat Mission. This subsidy can be availed through respective State
+Governments
+Additionally, under MGNREGA of Ministry of Rural Development, Deenbandhu type of biogas plant are
+eligible for subsidy. This can be accessed as per existing MGNREGA norms through Grampanchayat
+and line department.
+
+-- 7 of 24 --
+
+6
+Quantity of raw materials required for generation of biogas
+Just after the installation of the biogas plants, a one-time feeding of 400-500 kg of dung along with 1500-
+2000 liters of water is required. The material is retained into the plant for an HRT period ranging from
+30-40days to activate the microbial process for the generation of biogas.
+Subsequently, a daily feeding of 40-50 kg dung along with an equal quantity of water is required to
+generate up to 2 cubic meter of biogas every day.
+Biogas Composition
+Biogas consisting of Methane (55-60%), Carbon Dioxide (40-45%), Water Vapor and Hydrogen Sulfide
+(traces) is produced from the plant.
+Efficient use of household capacity Biogas
+For 2 cubic meter biogas plant, the most efficient use of the biogas generated can be found as cooking
+fuel. The gas generated can also be used for the generation of electricity and thermal energy as well
+as compressed in the form of CBG to be used as automobile fuel. However, the conversion of gas into
+such forms requires sophisticated machineries and equipment, hence it is not feasible on a small scale.
+Type of cooking stove required for the flexi-biogas plant
+As the concentration of Methane is lower (55% of total volume) than that of LPG/PNG (>90% of total
+volume), a higher volume of biogas is required to produce the same quantum of heat as compared to
+LPG/PNG. Hence, standardised biogas stoves are required with the flexi-biogas plant
+Quantity of gas generated out of the plant
+2 cubic meter biogas plant can generate gas equivalent to approximately 0.82 kg of LPG in a day,
+amounting to about 1.5-2 LPG cylinders in a month.
+Possibility of storing and transporting the excess gas
+For 2 cubic meter biogas plant, there are currently no mechanisms to store and transport the excess
+gas produced. The biogas generated has to be utilised at the site of generation and excess gas may
+either be released through a pressure release mechanism passing through water column or used for
+purposes such as heating water, boiling livestock feed etc. It is not advised to release the excess gas
+as it is in the atmosphere.
+Safety measures to follow after installing the Flexi Biogas plant
+Some basic safety measures to be ensured after the installation of the plant are:
+• Do not bring sharp objects such as knives, blades and flames near the biogas plant
+• Ensure the H2S filters are in optimum conditions, and replace the iron wool present inside every 3
+months.
+• Do not allow unattended children around the digester or the slurry pit, do not jump on or run on the
+digester.
+
+-- 8 of 24 --
+
+7
+• Ensure the gas pipes are not twisted or bent, and remain moisture free at all times.
+• Leak in the biogas plant can be detected through the presence of “rotten-egg” like smell. In case of a
+leak, immediately contact maintenance and do not inhale the leaked gas directly.
+• Keep checking the pressure release valve to ensure it is filled with the required amount of water
+Average life-span of one flexi-biogas plant
+The supplier of flexi biogas plants guarantees a life-span of 10 years from the date of commissioning.
+With regular maintenance an average biogas plant can work efficiently without any complaints for a
+period of 10 years.
+Plant Maintenance Responsibility
+The owners/beneficiaries have to ensure the day to day maintenance of the biogas plant. In case of
+issues/ problems faced due to damage etc. the suppliers of the biogas plant need to be contacted. Also,
+if cooperatives/MPCs have grievance redressal mechanism in place then farmers can use it for issue
+resolution.
+Maintenance of the Biogas plant
+Some steps that may be taken to enhance the lifespan and efficiency of the biogas plant are as follows:
+• Regular and balanced feeding.
+• Regular checking of gas pipes to detect and remove moisture
+• Regular checks to detect leakages in the biodigester
+About biogas digested slurry
+Biogas slurry is the decomposed product produced from organic materials in a reduction process in
+presence of anaerobic microbes in the digester of biogas plant.
+Estimated Slurry Production out of flexi biogas tank in a month
+Around 2400-3000 liters of slurry can be produced out of a flexi-biogas plant in a month.
+Benefits of biogas digested slurry
+The bio-slurry produced from the digester is rich in primary and secondary nutrients. Additionally, the
+presence of microbes in the slurry enhances the availability of nutrients in the soil and improves their
+uptake by the plants.
+Biogas slurry can be further processed to produce organic manures and fertilisers such as FOM, PROM,
+Micronutrient Rich liquid etc.
+Use of slurry on agricultural fields
+The slurry is a rich source of macro and micro nutrients and can be used directly on agricultural fields as
+liquid manure during land preparation or in standing crops through irrigation channels.
+
+-- 9 of 24 --
+
+8
+Section-II: Slurry processing and slurry based products
+Characteristics of a good quality slurry
+A good quality slurry is neither too watery nor too thick. A completely digested slurry will have no odour
+and will not attract any flies or pests. A dark coloured, odourless, and semi-liquid slurry, with little to no
+visible undigested dung or other extraneous material is considered to be of optimum quality.
+Value-added fertilizers produced from slurry
+There is a possibility of producing different type of organic fertilisers from slurry. As per Fertilizer Control
+Order specifications FOM and PROM are the two major products which are being produced and
+made available in the market. From the liquid phase of the slurry products which are considered plant
+growth promoters, micronutrient supplements are manufactured. There is further scope to formulate
+and produce new products which can substitute existing chemical fertilisers. NDDB has registered a
+trademark named Sudhan to help dairy cooperatives to market such value-added fertilisers. NDDB
+Mrida Ltd and many other institutions have started using it.
+Slurry procurement from producers
+Slurry is procured from each beneficiary’s doorstep via an optimised procurement route. Dedicated
+slurry tractor operated tanker may be used for this purpose.
+Slurry testing requirement for procurement
+Testing of the slurry can determine the freshness
+and adulteration of the biogas slurry with materials
+such as dung, animal urine, etc., Testing is
+essential to ensure optimum of quality of slurry
+is procured for further processing and value
+addition. Two main field parameters are used
+to determine the quality of slurry, i.e., Electrical
+Conductivity (EC) and BRIX for dissolved solids,
+based on which a rate chart for biogas slurry can
+be prepared and used.
+Processing of slurry into different organic
+manures
+The slurry collected from each beneficiary
+household is aggregated at a local slurry
+processing center. The slurry is further processed
+into different solid and liquid organic products .
+A detailed process flow for the slurry processing
+is provided for better understanding of the
+processing steps and machineries required
+
+-- 10 of 24 --
+
+9
+Organic certification of manufactured products
+For receiving added advantage from the market and support organic farmers, these products can be
+registered as per National Programme for Organic Production (NPOP) process. After registration these
+will receive organic certification.
+Compliance requirements for fertilizers produced from slurry
+Fertilizers produced from slurry must comply with the Fertilizer Control Order (FCO) regulations issued
+by the Government of India. The products need to be tested for nutrient composition, heavy metals,
+and microbial safety before being marketed. FCO guidelines for these products ever evolving and can
+be tracked on Gobardhan portal of Department of Drinking Water and Sanitation (DDWS), GOI.
+Also, for setting up of slurry processing unit there are different approvals required as per existing
+factory establishment norms of the states. These need to be followed.
+Benefits of the Zakariyapura model
+Under this model, the beneficiaries enjoy the convenience of easy cooking fuel availability as well as
+a means to generate income from the sale of slurry produced from biogas plants. Farmers no longer
+have to depend on fuel wood, dung cakes or costly LPG cylinders for their household and instead have
+access to clean, smoke-free biogas. Digested biogas slurry can be used in agricultural fields; surplus
+slurry can be sold for further processing and value addition. The model also contributes to Swachh
+Bharat Mission by offering a sustainable and viable means of dung disposal at farmers’ doorstep.
+Generation of Carbon Credits from a Biogas plants
+Household level biogas plant can generate carbon credits by reducing greenhouse gas emissions
+through the replacement of earlier cooking methods.
+• Emission Reduction Calculation: Carbon Credits can be earned by quantifying the reduction in CO2
+equivalent emissions compared to conventional cooking methods. This involves a baseline study to
+determine the emissions before switching to biogas.
+• Carbon Credit Standards: A project of sufficient number of Household level biogas plants together
+can be registered under global mechanisms like Verified Carbon Standard (VCS), Gold Standard,
+or UNFCC to validate the emission reductions. Also, there is upcoming Indian carbon credits market
+for this type of plants. Higher the number of plants better it is in terms of costs of registrations and
+verifications.
+• Methane Avoidance Credits: Since the plant processes organic waste (e.g., cattle dung), it prevents
+methane emissions from uncontrolled decomposition, qualifying for additional carbon credits.
+• Monitoring and Verification: biogas production its consistent usage, and emission reductions is
+assessed. Third-party verification is needed for credit certification.
+• Revenue Potential: Once verified and issued, carbon credits can be sold in voluntary or compliance
+markets, providing an additional revenue stream from the biogas plant.
+
+-- 11 of 24 --
+
+10
+Informative Guidelines on
+different Centralised Manure
+Management Models
+10
+
+-- 12 of 24 --
+
+11
+Model-I
+Setting up of Dung based Compressed Biogas Plant(CBG)
+(Banas Model)
+Reference capacity-100 MTP of Dung to generate CBG
+Brief about Dung based Compressed Biogas Plant
+A 100 Metric Tons Per Day (MTPD) biogas plant processes 100 tons of cattle dung daily to produce
+biogas through anaerobic digestion. The biogas generated is further processed to produce 1.5-2 MT
+of Compressed Biogas (CBG) per day, which is used as a vehicle fuel.
+In a first such initiative, Banaskantha District Co-operative Milk Producers’ Union Ltd., Palanpur, Gujarat
+has installed the biogas plant of 40 MTPD feeding capacity in the year 2020 and its operational since
+then. The plant produces nearly 1800 cubic meter raw biogas per day. The raw biogas undergoes H2S
+scrubbing, CO2 removal, and compression before being converted into CBG for vehicle use. Thus,
+around 800 KG/day CBG produced is sold through retail outlet operated by the Banas Dairy replacing
+CNG.
+Biogas Plant Capacity
+The plant produces approximately 1.5-2 metric tons of CBG per day from 100 tons of cattle dung.
+Methane Content in Biogas
+Raw biogas typically contains 55-60% methane (CH4), 40-45% carbon dioxide (CO2), and trace
+amounts of H2S and water vapor. CBG is purified to contain more than 90% methane, making it
+suitable for vehicle fuel applications.
+CBG Production Process
+• Biogas undergoes the following treatment processes:
+• H2S Scrubbing: Removal of hydrogen sulfide to prevent corrosion.
+• CO2Removal: Upgrading biogas to increase methane content.
+• Compression: Converting purified biogas into Compressed Biogas (CBG).
+Key components of the biogas plant
+• Cattle dung collection/procurement
+• Digester feeding system
+• Anaerobic digester
+• Biogas purification system (H2S scrubbing and CO2 removal)
+• Gas storage unit
+• Compression and dispensing unit for vehicle fuelling
+• Slurry management system
+
+-- 13 of 24 --
+
+12
+Different digester technologies available for biogas production in India
+For large-scale Compressed Biogas (CBG) production, the following advanced digester technologies
+are commonly used:
+• Continuous Stirred Tank Reactor (CSTR): A widely used technology for high-capacity plants,
+CSTR ensures uniform mixing of feedstock, improving gas yield and process efficiency.
+• Plug Flow Digesters: Suitable for handling high-solids feedstocks like cattle dung and agricultural
+residues, these digesters offer steady biogas production.
+• Upflow Anaerobic Sludge Blanket (UASB) Reactors: Primarily used for liquid-based feedstocks,
+UASB technology enables efficient biogas generation from wastewater and slurry.
+• Anaerobic Sequential Batch Reactors (ASBR): A batch-process digester that offers flexibility in
+operation and high methane yield, making it suitable for industrial-scale CBG plants.
+These technologies are selected based on feedstock type, scalability, gas yield efficiency, and
+operational requirements to ensure sustainable and high-volume CBG production.
+Different purification technologies for converting raw biogas into CBG
+To upgrade raw biogas into Compressed Biogas (CBG), various purification technologies are used
+to remove impurities like CO2, H2S, moisture, and other contaminants. The key technologies include:
+• Water Scrubbing: Uses water to selectively absorb CO2 and H2S, making it a cost-effective and
+widely used method.
+• Pressure Swing Adsorption (PSA): Separates CO2 and other gases using selective adsorption
+under high pressure, offering high methane purity.
+• Chemical Scrubbing: Utilises chemical solvents (e.g., amines) to efficiently absorb CO2 and H2S,
+ensuring high purification efficiency.
+• Membrane Separation: Employs semi-permeable membranes to separate methane from CO2
+and other gases, offering energy-efficient and scalable operation.
+• Cryogenic Separation: Uses extremely low temperatures to liquefy and separate CO2, suitable
+for large-scale biogas upgrading.
+The selection of purification technology depends on factors such as plant capacity, costs, gas
+composition, energy efficiency, and operational costs.
+Options for the sale of CBG (Compressed Biogas)
+CBG can be sold through multiple channels depending on infrastructure and market demand. One
+major option is supplying it to Oil Marketing Companies (OMCs) like Indian Oil, Bharat Petroleum, and
+Hindustan Petroleum under initiatives such as the SATAT (Sustainable Alternative Towards Affordable
+Transportation) scheme. Another key avenue is the transport sector, where CBG can be sold to CNG
+stations for use as a cleaner fuel alternative in vehicles. Additionally, if the necessary infrastructure
+is available, CBG can be injected into the natural gas pipeline network, allowing for wider distribution
+and integration into existing gas supply systems. Each option comes with specific regulatory and
+logistical requirements, so businesses should evaluate feasibility before selecting the most suitable
+sales channel.
+
+-- 14 of 24 --
+
+13
+Benefits of using CBG as vehicle fuel
+• Reduces dependence on fossil fuels by providing a renewable energy alternative.
+• Cost savings compared to conventional fuels like diesel and petrol.
+• Lower carbon emissions, contributing to climate change mitigation.
+• Utilisation of dairy waste, ensuring effective manure management.
+Estimated investment required for setting up the plant
+The tentative capital expenditure (Capex) for installing a 100 MTPD biogas plant is approximately
+\`50 crores, excluding land costs.
+Plant Process Flow
+
+-- 15 of 24 --
+
+14
+Cattle dung (feedstock) procurement for the Biogas Plant
+Cattle dung is sourced from local dairy farms and cattle owners generally within a radius of maximum
+up to 25km so that logistics cost is optimised. Different dung collection options can be deployed
+such as through local dairy cooperative societies/ other such agencies or hiring local youths as dung
+aggregators. These aggregators take care of transport vehicles and collection of dung from farmers.
+They are paid after weighing the dung at receiving dock of plant. Other model is deploying own tractor
+and trolley to buy dung from farmers. In this model direct payment to farmers from plant can be done
+for the supply of dung. In aggregator model, farmers receive payment through these agencies or can
+be paid directly in his/her bank account.
+Farmers payment for the supply of Dung
+Farmers supplying dung for bigoas production are typically paid based on the quantity and quality of
+the dung provided. Payments can be structured in different ways, such as direct cash payments, bank
+transfers, or digital payment methods, depending on the agreement. The pricing is usually determined
+on the quality of dung supplied testing it on certain parameters and then arriving at per kilogram or
+per ton of dung. Incentives or disincentives are incorporated to ensure proper quality dung is received.
+In certain cases, farmers may also receive benefits like organic manure or bio-slurry in return, adding
+value to their agricultural activities. Payment cycles may vary, with some plants offering daily, weekly,
+or monthly settlements based on procurement agreements.
+Dung price determination
+The price of dung is determined by several factors, including market demand, local availability, quality,
+and transportation costs. Government policies or subsidy programs may also influence pricing. In
+certain cases, the price may be linked to the nutrient content of the dung, especially if the plant
+provides bio-slurry or organic manure as part of the payment model.
+Management of the digested slurry (digestate) from the biogas plant
+The digested slurry is rich in organic nutrients and can be used as: Organic fertiliser for agriculture.
+Slurry can be directly used in raw form in farms as input while preparing the land or in standing
+crop through irrigation channel. Further the slurry can be processed by separating into solid and
+liquid phase. Separated solids can be sold in packaged and bulk form as Fermented Organic Manure
+(FOM). The solids after value addition using rock phosphate and other technical material is known
+as Phosphate Rich Organic Manure (PROM). FOM and PROM are high quality organic fertilisers
+and specified under Fertilizer Control Order (FCO). These organic fertilisers supply organic carbon
+and other nutrients to soil. Application rate as per soil type and crops can be decided as per local
+agro-ecological condition. Liquid phase of the slurry is further value added using different technical
+materials and supplied as organic inputs to the farmers.
+Compliance requirements for fertilisers produced from slurry
+Fertilisers produced from slurry must comply with the Fertilizer Control Order (FCO) regulations issued
+by the Government of India. The products need to be tested for nutrient composition, heavy metals,
+and microbial safety before being marketed. FCO guidelines for these products ever evolving and can
+be tracked on Gobardhan portal of DDWS, GOI.
+
+-- 16 of 24 --
+
+15
+Also, for slurry processing unit there are different approvals required as per existing factory establishment
+norms of the states. These need to be followed.
+Compliance requirements for installing a CBG plant
+The installation of a CBG plant requires approvals from multiple regulatory bodies, including but not
+limited to: State Pollution Control Board (SPCB) for environmental clearance, Petroleum and Explosives
+Safety Organization (PESO) for fuel storage and safety compliance, local municipal authorities for
+land use and construction permissions.
+Management of excess filtrate of slurry after separation
+It is important to design and select appropriate digester technologies for the plant so that filtrate is
+recirculated as replacement of fresh water while preparing the feed of the digester. Apart from that
+optimum slurry collection and storage tanks for controlled processing are to be installed.
+Benefit from slurry utilisation by farmers
+• Direct application on fields as a nutrient-rich organic fertiliser.
+• Processed into organic manure and sold for additional revenue.
+• Used in fertigation systems to enhance soil health and crop yield.
+Replacement of chemical fertilisers with slurry-based fertilisers
+Research indicates that slurry-based fertilisers can partially or fully replace chemical fertilisers,
+reducing input costs for farmers while improving soil health and sustainability.
+Generation of Carbon Credits from a 100 MTPD Compressed biogas plant
+A 100 MTPD (Metric Tons Per Day) CBG plant can generate carbon credits by reducing greenhouse
+gas emissions through the replacement of fossil fuels and due to efficient management of manure :
+• Emission Reduction Calculation: The plant earns carbon credits by quantifying the reduction in CO2
+equivalent emissions compared to conventional fuels.
+• Methane Avoidance Credits: Since the plant processes organic waste (e.g., Cattle Dung), it prevents
+methane emissions from uncontrolled decomposition, qualifying for additional carbon credits.
+• Carbon Credit Standards: The project can be registered under global mechanisms like Verified
+Carbon Standard (VCS), Gold Standard, or UNFCC to validate the emission reductions. Also, there
+is upcoming Indian carbon credits market for this type of plants.
+• Monitoring and Verification: Continuous monitoring of biogas production, usage and emission
+reductions is required. Third-party verification is needed for credit certification.
+• Revenue Potential: Once verified, carbon credits can be sold in voluntary or compliance markets,
+providing an additional revenue stream for the biogas plant.
+The exact number of carbon credits generated depends on factors such as biogas production efficiency,
+methane content, and fossil fuel displacement.
+
+-- 17 of 24 --
+
+16
+Model-II
+Large scale Biogas plant for to suffice energy needs of a dairy plant
+(Varanasi Model)
+Reference capacity-100 MTPD of Dung to generate thermal energy
+Brief about the Varanasi Model
+A 100 Metric Tons Per Day (MTPD) biogas plant processes 100 tons of cattle dung daily to produce
+biogas through anaerobic digestion. The biogas generated is scrubbed to remove hydrogen sulphide
+(H2S) and used as fuel in the boiler of a dairy plant for steam generation. This is nothing but thermal
+application of biogas.
+In a first such initiative, Varanasi Dugdh Utpadak Sahakari Sangh Ltd. (DUSSL) through financial and
+technical support of NDDB has installed 100 MTPD plant in Uttar Pradesh. Biogas is used as fuel in
+boiler by replacing Light Diesel Oil (LDO), saving fuel cost and providing income to local dairy farmers.
+The plant is operational since March 2023 and is managed by NDDB’s subsidiary NDDB Mrida Ltd.
+Biogas Plant Capacity
+The plant produces minimum 4000 cubic meters biogas per day from 100 tons of cattle dung.
+Methane Content in Biogas
+Raw biogas typically contains 55-60% methane (CH4), 40-45% carbon dioxide (CO2), and trace
+amounts of H2S and water vapor.
+Steam generation from the biogas
+With a methane content of 55-60%, 1 cubic meter of biogas produces approximately 3-6 kg of steam
+in a standard dairy boiler. This depends upon factors like boiler efficiency, steam consumption rate,
+pressure, etc.
+Key components of the biogas plant
+• Cattle dung collection/procurement
+• Digester feeding system
+• Anaerobic digester
+• Biogas purification system (H2S scrubbing)
+• Gas storage unit
+• Biogas supply pipeline to the dairy boiler
+• Slurry management system
+Different digester technologies available for biogas production in India
+For large-scale biogas production, the following advanced digester technologies are commonly used:
+
+-- 18 of 24 --
+
+17
+Continuous Stirred Tank Reactor (CSTR): A widely used technology for high-capacity plants, CSTR
+ensures uniform mixing of feedstock, improving gas yield and process efficiency.
+Plug Flow Digesters: Suitable for handling high-solids feedstocks like cattle dung and agricultural
+residues, these digesters offer steady biogas production.
+Upflow Anaerobic Sludge Blanket (UASB) Reactors: Primarily used for liquid-based feedstocks,
+UASB technology enables efficient biogas generation from wastewater and slurry.
+Anaerobic Sequential Batch Reactors (ASBR): A batch-process digester that offers flexibility in
+operation and high methane yield, making it suitable for industrial-scale biogas plants.
+These technologies are selected based on feedstock type, scalability, gas yield efficiency, and
+operational requirements to ensure sustainable and high-volume biogas production.
+Benefits of using Biogas as boiler fuel
+• Sustainable energy source, reducing dependency on fossil fuels
+• Cost savings by replacing conventional fuels like LDO, furnace oil or LPG
+• Lower carbon emissions, contributing to climate change mitigation
+• Utilisation of dairy waste, ensuring effective manure management
+Estimated investment required for setting up the plant
+The tentative capital expenditure (Capex) for installing a 100 MTPD biogas plant is approximately
+\`30 crores, excluding land costs.
+
+-- 19 of 24 --
+
+18
+Plant Process Flow
+Cattle dung (feedstock) procurement for the Biogas Plant
+Cattle dung is sourced from local dairy farms and cattle owners generally within a radius of maximum
+up to 25km so that logistics cost is optimised. Different dung collection options can be deployed
+such as through local dairy cooperative societies/ other such agencies or hiring local youths as dung
+aggregators. These aggregators take care of transport vehicles and collection of dung from farmers.
+They are paid after weighing the dung at receiving dock of plant. Other model is deploying own tractor
+and trolley to buy dung from farmers. In this model direct payment to farmers from plant can be done
+for the supply of dung. In aggregator model, farmers receive payment through these agencies or can
+be paid directly in his/her bank account.
+Farmers payment for the supply of Dung
+Farmers supplying dung for bigoas production are typically paid based on the quantity and quality of
+the dung provided. Payments can be structured in different ways, such as direct cash payments, bank
+
+-- 20 of 24 --
+
+19
+transfers, or digital payment methods, depending on the agreement. The pricing is usually determined
+on the quality of dung supplied testing it on certain parameters and then arriving at per kilogram or
+per ton of dung. Incentives or disincentives are incorporated to ensure proper quality dung is received.
+In certain cases, farmers may also receive benefits like organic manure or bio-slurry in return, adding
+value to their agricultural activities. Payment cycles may vary, with some plants offering daily, weekly,
+or monthly settlements based on procurement agreements.
+Dung price determination
+The price of dung is determined by several factors, including market demand, local availability, quality,
+and transportation costs. Government policies or subsidy programs may also influence pricing. In
+certain cases, the price may be linked to the nutrient content of the dung, especially if the plant
+provides bio-slurry or organic manure as part of the payment model.
+Management of the digested slurry (digestate) from the biogas plant
+The digested slurry is rich in organic nutrients and can be used as: Organic fertiliser for agriculture.
+Slurry can be directly used in raw form in farms as input while preparing the land or in standing
+crop through irrigation channel. Further the slurry can be processed by separating into solid and
+liquid phase. Separated solids can be sold in packaged and bulk form as Fermented Organic Manure
+(FOM). The solids after value addition using rock phosphate and other technical material is known
+as Phosphate Rich Organic Manure (PROM). FOM and PROM are high quality organic fertilisers
+and specified under Fertilizer Control Order (FCO). These organic fertilisers supply organic carbon
+and other nutrients to soil. Application rate as per soil type and crops can be decided as per local
+agro-ecological condition. Liquid phase of the slurry is further value added using different technical
+materials and supplied as organic inputs to the farmers.
+Compliance requirements for fertilisers produced from slurry
+Fertilisers produced from slurry must comply with the Fertilizer Control Order (FCO) regulations issued
+by the Government of India. The products need to be tested for nutrient composition, heavy metals,
+and microbial safety before being marketed. FCO guidelines for these products ever evolving and can
+be tracked on Gobardhan portal of DDWS, GOI.
+Also, for slurry processing unit there are different approvals required as per existing factory establishment
+norms of the states. These need to be followed.
+Compliance requirements for installing a Biogas plant
+The installation of a biogas plant requires approvals from multiple regulatory bodies, including but
+not limited to: State Pollution Control Board (SPCB) for environmental clearance, fire safety norms
+compliances, Local municipal authorities for land use and construction permissions.
+Management of excess filtrate of slurry after separation
+It is important to design and select appropriate digester technologies for the plant so that filtrate is
+recirculated as replacement of fresh water while preparing the feed of the digester. Apart from that
+optimum slurry collection and storage tanks for controlled processing are to be installed.
+
+-- 21 of 24 --
+
+20
+Benefit from slurry utilisation by farmers
+• Direct application on fields as a nutrient-rich organic fertiliser.
+• Processed into organic manure and sold for additional revenue.
+• Used in fertigation systems to enhance soil health and crop yield.
+Replacement of chemical fertilisers with slurry-based fertilisers
+Research indicates that slurry-based fertilisers can partially or fully replace
+chemical fertilisers, reducing input costs for farmers while improving soil
+health and sustainability.
+Generation of Carbon Credits from a 100 MTPD biogas plant
+supplying biogas to a dairy plant’s boiler
+A 100 MTPD (Metric Tons Per Day) biogas plant can generate carbon
+credits by reducing greenhouse gas emissions through the replacement of
+fossil fuels in the dairy plant’s boiler. The key considerations include:
+• Emission Reduction Calculation: The plant earns carbon credits by
+quantifying the reduction in CO2 equivalent emissions compared to
+conventional fuels like furnace oil or coal. This involves a baseline study
+to determine the emissions from fossil fuel usage before switching to
+biogas.
+• Carbon Credit Standards: The project can be registered under global
+mechanisms like Verified Carbon Standard (VCS), Gold Standard, or
+UNFCC to validate the emission reductions. Also, there is upcoming
+Indian carbon credits market for this type of plants.
+• Methane Avoidance Credits: Since the plant processes organic waste
+(e.g., dairy effluents, cattle dun
+
+[…truncated…]
+
+## F_Mumbai Presentation KPP_21.01.26
+Source: Knowledge Repository/F_Mumbai Presentation KPP_21.01.26.pptx | Category: Manure & Sustainability
+
+===== Slide 1 =====
+Organic Fertilizers: An Integral Part of Manure Management Initiatives A Joint Initiative of Regional Stakeholder’s Consultation Workshop 21 January 2026 National Dairy Development Board, Mumbai
+===== Slide 2 =====
+Status of Fertilizer Use in India Excess nitrogen consumption compared to P & K The present ratio is 7.7 : 3.1 : 1; Ideal is 4:2:1 Micronutrient usage remains very low Need for alternative nutrient sources
+===== Slide 3 =====
+Why Change is Required? 95% essential nutrients supplied through soil Soil organic carbon is continuously declining Sustainable farming requires organic interventions
+===== Slide 4 =====
+Sources of Plant Nutrients Chemical fertilizers Organic manures / Fertilizers and compost Bio-fertilizers and enriched organics
+===== Slide 5 =====
+What is Biogas (Gobar Gas) Slurry & Key Characteristics ? By-product of anaerobic digestion in biogas plants Contains N, P, K, Fe, Zn and beneficial microbes Improves nutrient availability and soil biology About 93% water and 7% dry matter Balanced C:N ratio Lower pathogens and weed seeds
+===== Slide 6 =====
+Biogas ( Gobar Gas) Slurry : Major Benefits Reduces chemical fertilizer requirement and it can partially replace NPK fertilizers Improves soil fertility and structure and supplies essential micronutrients Reduces greenhouse gas emissions Supports national fertilizer security
+===== Slide 7 =====
+Gobargas Slurry: Agronomic and Economic Advantages Superior to FYM Higher nutrient availability Lower C:N ratio than FYM Enhanced soil microbial activity Recommended Application Field crops: 2–4 tonnes /acre as basal application Forage crops: 4–8 t/ha, basal and split application Compatible with other organic inputs Economic Benefits to Farmers Reduced cost of chemical fertilizers Higher and more stable crop yields Additional income through slurry utilization
+===== Slide 8 =====
+Why Use of Organic Fertilizers? Enhances nutrient recycling in agro -ecosystems Improves soil microbial activity and soil health Supports sustainable increase in crop yield Prepared in accordance with FCO norms Available in solid and liquid formulations Suitable for application before and after sowing
+===== Slide 9 =====
+Sr.No . Products Content Usage/Benefits 1 Sudhan PROM- (Solid) O Carbon: 10% N (min) : 0.4% (P2O5): 8% NPK Consortium Can be an alternate of phosphatic fertiliser in performance , r esolves problem of P fixation 2 SuDhan Micro-nutrient Rich Liquid Zinc: 4.0 % Iron: 2.0% Manganese : 0.5% Copper: 0.3% Boron : 0.5% Promote plant growth , improves uptake of micro nutrients 3 SuDhan RootGuard Humic Acid: 1% Micro-nutrients: Traces Defends root surfaces from pathogens Promotes root growth. 4 SuDhan GrowMax Seaweed Extract: 1% Micro-nutrients: Traces Improves leaf area , photosynthesis and plant growth. Produced exclusively by anaerobic digestion of dung. Soil friendly, enhances maximum plant uptake and no adverse impact 26-07-2022 Slurry based organic fertilizers Products
+===== Slide 10 =====
+Studies, Experiments and Demos
+===== Slide 11 =====
+Study of Slurry based Fertilizers on Crops- study by Anand Agri University Source: Study conducted by AAU
+===== Slide 12 =====
+Crop Wheat Maize Control (100% RDF) Treated (75% RDF + SuDhan Products) Control (100% RDF) Treated (75% RDF + SuDhan Products) Grain yield (kg/ha) 5533 6856 4050 5467 Protein in grain (%) 11.63 12.45 9.45 10.44 Microbial population in soil (CFU/g) 3.7 x 10 3 5.6 x 10 4 6.7 x 10 3 9.1 x 10 4 Growth parameters (height in cm) 86.0 90.2 211.5 213.5 Study of Slurry based fertilisers on Crops- study by Anand Agri University 8 different treatments in both Wheat and Maize (with combination of RDF and SuDhan) Improvement in Yield (20-25%) and Enhanced microbial quantity by many folds in soil Replacement of 25% chemical fertilisers Improvement in soil microbial population, grain nutrients Increase in root growth Source: Study conducted by AAU
+===== Slide 13 =====
+To understand the effect of value-added fertilizers from slurry—study conducted with 650 farmers of Anand and Kheda districts Systematic Study on Farmers’ fields Two phases (Oct-Dec 2020 and Jan-Mar 2021) Districts: Anand and Kheda (covering 19 Talukas) 250 Villages (200 villages of Anand and 50 villages of Kheda districts) SuDhan treatment: Replacement of DAP+SuDhan PROM+MRL
+===== Slide 14 =====
+(contd..) Systematic Study on Farmers’ fields : Vegetables
+===== Slide 15 =====
+(contd..) Systematic Study on Farmers’ fields Cash Crops Demonstration study showed increase of 14-36% yield across different crops
+===== Slide 16 =====
+Average Yield Increase with SuDhan Products (Farmers’ Fields Trials)
+===== Slide 17 =====
+Cotton Other Fertilizer SuDhan Fertilizer
+===== Slide 18 =====
+Marigold Other Fertilizer SuDhan Fertilizer
+===== Slide 19 =====
+Banana Other Fertilizer SuDhan Fertilizer
+===== Slide 20 =====
+Rose Other Fertilizer SuDhan Fertilizer
+===== Slide 21 =====
+Garlic
+===== Slide 22 =====
+Paddy SuDhan Fertilizer Other Fertilizer
+===== Slide 23 =====
+SuDhan Fertilizer Other Fertilizer Chilli
+===== Slide 24 =====
+Slurry Separated Liquid with less than 1% of solid traces too have shown promising results in Banana Crop Study of Slurry Separated Liquid
+===== Slide 25 =====
+Study of Slurry based fertilizers on Crops- by Banaras Hindu University (2022-24) Significant improvement in soil physiochemical and biological properties as well as nutritional values in harvested maize-mustard & rice-wheat The study concluded that there is scope for 25% reduction in chemical fertilizers without compromising grains and straw yield in the crops Improvement in soil properties, with higher nutrient availability in soil was also observed during the study Source: Study conducted by BHU
+===== Slide 26 =====
+Treatment Grain Yield (kg/ha) Straw Yield (kg/ha) 100% RDF 75% RDF + SuDhan Impr . over Control 100% RDF 75% RDF + SuDhan Impr . over Control Rice 6037 6053 0.3 8297 8115 - Wheat 3132 3509 12.0 4792 5049 5.4 Maize 4900 5006 2.2 6829 7511 10.0 Mustard 1572 1794 14.1 4552 4926 8.2 Effect of SuDhan products on yield of different crops at BHU Source: Study conducted by BHU
+===== Slide 27 =====
+Study of Combined effects of Bio-slurry & SuDhan Fertilizers in Gujarat & Jharkhand States 26 Different crops covered across 100 farmer fields SuDhan treatment: replacement of DAP, 25% NK with Slurry & SuDhan Products
+===== Slide 28 =====
+Group of Crop s -wise Yield Improvement With Biogas Slurry (Farmers’ fields of Anand and Ranchi)
+===== Slide 29 =====
+Farmer Name- Dharamnath Shahi Crop-French Bean Location-Ranchi Days after Showing – 42 Without Bio-slurry & SuDhan With Bio-slurry and SuDhan
+===== Slide 30 =====
+Farmer Name- Digambar Ram Crop-Sweetcorn Location-Ranchi Days after Showing – 40 Without Bio-slurry & SuDhan With Bio-slurry and SuDhan
+===== Slide 31 =====
+Farmer Name- Bolko Oraon Crop-Cucumber Location-Ranchi Days after Showing – 76 Without Bio-slurry & SuDhan With Bio-slurry and SuDhan
+===== Slide 32 =====
+Farmer Name- Suhas Patel Crop- Coriander Location- Anand Days after Showing – 44 Without Bio-slurry & SuDhan With Bio-slurry and SuDhan
+===== Slide 33 =====
+Farmer Name- Tusharbhai Patel Crop- Sorghum Location-Anand Days after Showing – 33 Without Bio-slurry & SuDhan With Bio-slurry and SuDhan
+===== Slide 34 =====
+Farmer Name- Kanubhai Padhiyar Crop- Bajra Location-Anand Days after Showing – 70 Without Bio-slurry & SuDhan With Bio-slurry and SuDhan
+===== Slide 35 =====
+Study on Efficacy of Biogas Slurry on Fish Growth Study conducted by Department of Fish Nutrition, WB University of Animal & Fishery Sciences Plankton Growth T1-No slurry, T2-3.0 g slurry L-1, T3-4.5.0 g slurry L-1 , T4-6.0 g slurry L-1
+===== Slide 36 =====
+Study on Efficacy of Biogas Slurry on Fish Growth The use of 4.5g of slurry per litre of water gave best growth in Indian common carp ( Cirrhinus mrigala ) replacing 50 percent of the regular feed Slurry should be applied in every 6-7 days interval for maintaining the level of plankton in the culture environment Para Group 1 (Diet) Group 2 (100d+slurry) Group 3 (50d+slurry) Group 4 (25d+slurry) Group 5 (Slurry) p-value IBW (g) 10.43±0.34 10.08±0.19 10.67±0.44 10.63±0.37 10.10±0.20 0.589 FBW (g) 24.18±0.49 24.17±0.85 26.52±1.50 20.41±1.04 17.80±0.62 0.001 BWG (g) 13.75±0.42 14.08±0.69 15.85±1.11 9.78±0.72 7.70±0.78 0.001 BWG (%) 132.2±6.7 139.6±5.1 148.4±6.4 91.86±4.5 76.53±8.7 0.001 DWG (g) 0.153±0.01 0.157±0.01 0.177±0.01 0.110±0.01 0.087±0.01 0.001 IBW- Initial body weight, FBW- Final body weight, BWG- Body weight gain, DWG- Daily weight gain
+===== Slide 37 =====
+Conclusion 🌱 Organic fertilizers are central to long-term agricultural sustainability ♻️ Biogas slurry strengthens soil fertility and enhances crop health 🌍 Healthy soils are the foundation of a healthy nation The Sustainability Chain Soil Health ➜ Plant Health ➜ Human Health
+===== Slide 38 =====
+Thank You
+
+## Final_Dairy & Manure Chain 21.01.26
+Source: Knowledge Repository/Final_Dairy & Manure Chain 21.01.26.pptx | Category: Manure & Sustainability
+
+===== Slide 2 =====
+NDDB & Sustain Plus Project ( PHASE II ) “Financing Sustainable Dairying Interventions” A Joint Initiative of Regional Stakeholder’s Consultation Workshop 21 January 2026 National Dairy Development Board Mumbai
+===== Slide 3 =====
+Manure Value Chain Project Components under NDDB-SPEF Program (Phase-II)
+===== Slide 4 =====
+Manure Value Chain is the process through which cattle dung is collected and converted into useful products such as clean energy (biogas or Bio-CNG) and organic fertilizer , instead of being treated as waste. It creates value at household, community, and commercial levels , while supporting farmers, energy security, and sustainable agriculture Manure Value Chain Household / Dairy Farm / Gaushala Biogas Unit Slurry Processing Market
+===== Slide 5 =====
+Household Biogas Dung + Water (Slurry) Slurry Collection Farms Standalone Biogas Unit MODEL (2 M 3 ) Aims to install 100-120 flexi biogas plants (in a cluster) Capacity of 2 cubic meters in the backyards of dairy farmers Use of biogas as clean cooking fuel Production and use of slurry-based agriculture inputs Brief about component Benefits Reduction in methane emission from livestock manure Slurry Will be utilized in the farms as a fertilizer TARGET
+===== Slide 6 =====
+1. Standalone Biogas Unit MODEL (2 M 3 ) Household biogas Unit Biogas Utilized as Cooking Fuel
+===== Slide 7 =====
+1. Standalone Biogas Unit MODEL (2 M 3 ) Note: Loan component is also provided for PIA subject to project needs The total cost is estimated 31,205 = 20,000 (Grant) + 11,205 (PIA) The proposed target 10,000 Units | 100 Cluster Challenges in the Pit digging Required regular operations & maintenance Training & capacity building was needed Hence all the above support to be provide for Self Sufficiency & Sustainability Learnings of Phase-I Flexi Biogas Plants: Provided in a cluster of 4-5 continuous villages wherein minimum 100 biogas plants are installed Slurry Pump: Provide to Promote Captive Slurry Usage Baseline & Impact Study: It will be done to access the dung availability, impact study for carbon credit assessment Salary of Local Resource Person: It will provided for pit digging & other such work. Training Farmer Orientation Programme: For Farmer mobilization Training cum handholding for Maintenance of biogas plants: Provided for reduce the downtime & smooth functioning
+===== Slide 8 =====
+Household Biogas Dung + Water (Slurry) Slurry Collection Slurry Processing Market A slurry processing center will be installed in a cluster of household level biogas plants to process the surplus slurry. The project will focus on establishment of an end-to-end manure value chain. Additional income generation of farmers by sale of slurry Production and use of slurry-based agriculture inputs Brief about component Benefits Reduction in methane emission from livestock manure Setting Up of Slurry Processing Centers at Cluster Level TARGET WHY ? : Only 40-50 per cent of digested slurry utilized by the farmers
+===== Slide 9 =====
+Setting Up of Slurry Processing Centers at Cluster Level Click Here
+===== Slide 10 =====
+Financial for installation of Setting Up of Slurry Processing Centers Sr No Budget Head Grant PIA (Rs) Stage 1 Slurry Testing Equipment at Village Level ✔ I 2 Shed for slurry processing ✔ 3 Slurry Dewatering Machine ✔ 4 Equipment at Slurry Processing Center ✔ 5 Lab Equipments ✔ 6 Salary of Project Manager ✔ 7 Training_Manure Business Management for project staff ✔ 8 Training of Trainers ✔ 9 Training on Operations of Slurry Processing Center ✔ II 10 Slurry Procurement and Processing Operations Supervisors ✔ 11 Executives for Marketing and extension of slurry based products ✔ 12 Maintenance & Contingency cost (@10% of slurry processing center cost) ✔ 13 Regulatory Compliance Fees (hiring of consultant, organic certification, FCO licence, etc.) ✔ Stage-II will be taken up post successful implementation of stage-I
+===== Slide 11 =====
+Financials for installation of Setting Up of Slurry Processing Centers PIA Components For Single Unit Grant Support (Rs in Lakh) 94.5 Total Target 10 Units PIA to provide the land and basic shed for the slurry processing activity PIA to provide the manpower for operations Providing the Supervisor/Resource Person (Point of Contact) Baseline activities based on project specification and requirements
+===== Slide 12 =====
+Setting Up of Slurry Processing Centers Household biogas Unit Slurry Processing Centre
+===== Slide 13 =====
+Experience Sharing of People's Education and Development Organization (PEDO) Photos of Slurry Processing Unit
+===== Slide 14 =====
+Aims to install Community Biogas Plant that will convert cow dung into renewable biogas. This biogas will be piped directly to nearby households, offering a clean, sustainable and cost-effective energy source. Setting up of slurry processing unit to convert slurry into slurry-based fertilizer. Brief about component Project Objective Development of Manure Management Model with Community Biogas Plant Biogas Unit Use of biogas as clean cooking fuel Production and use of slurry-based agriculture inputs Reduction in methane emission from livestock manure Slurry Processing Market Household(s) Benefits To develop new community based model
+===== Slide 15 =====
+Community Biogas Plant Cattle Dung Input Feedstock Dung + Water (Slurry) Digester Slurry Digesters Gas Holder Slurry Processing Unit Village Community (PROM & FOM) Clean Fuel Cooking Organic Farming Biogas Organic Fertilizer
+===== Slide 16 =====
+Cattle Dung Pre-process Front View of Biogas Plant Community Biogas Plant Bhintbudrak Biogas Plant
+===== Slide 17 =====
+Biogas Utilized for Cooking Digested Slurry Utilized for Fertilizer Preparation Community Biogas Plant
+===== Slide 18 =====
+PIA Components For Single Unit Grant Support (Rs. In Lakh) 100 Financials for Development of Manure Management Model with Community Biogas Plant The total target proposed: 2 Units Land identification and allotment Beneficiaries farmer identification Providing the Resource Person (Point of Contact) Formation of local cooperative for the management of the biogas unit. Standard operations and maintenance of biogas unit Carryout all the production and marketing activities Other Baseline activities based on project specification and requirements Following are the project expectations from the PIA NDDB & SPEF has signed a MoU with the Sumul Dairy On-going Projects It is proposed to take a 200 Cubic Meter capacity of Biogas Unit The construction of the proposed project will start in February 2026
+===== Slide 19 =====
+Experience Sharing of Surat Milk Union (SUMUL) Photos of Bhintbudrak Community Biogas Project Standalone Biogas Project
+===== Slide 20 =====
+Aims to install Biogas unit of 40 to 200 cubic meters of capacity, based on nos of cattle available. Setting up of slurry processing unit to convert slurry into slurry-based fertilizer. Brief about components Development of Manure Management Model at Gaushala Slurry Processing Market Clean Fuel Cooking Biogas Generator Biogas Cattle Dung Slurry Collection Digester Slurry Renewable Application
+===== Slide 21 =====
+Financial for development of the manure management project for Gaushalas Grant Support (Rs. in Lakh) 55.6 The total target proposed: 5 Units The cost of baseline, commissioning of the unit including mechanical & civil will be carried out under the grant component NDDB & SPEF has signed a MoU with the Gorakshan Sabha Gaushala Nagpur On-going Projects It is proposed to take a 100 Cubic Meter capacity of Biogas Unit Additionally Slurry Processing Centre and the Biogas generator will be provided
+===== Slide 22 =====
+Dairy Value Chain Project Components under NDDB-SPEF Program (Phase-II)
+===== Slide 23 =====
+Dairy Value Chain COLLECTION PROCESSING DISTRIBUTION FARM Dairy Co-op Society (DCS) Dairy Co-op Society (DCS) : COLLECTION : PROCESSING : Project Components Solarization of Village Dairy Cooperative Societies / MPPs Mobile Milk Collection, Testing and Cooling System Small Scale Milk & Milk and Milk Product Processing Equipment TARGET
+===== Slide 24 =====
+Solarization of Dairy Cooperative Societies
+===== Slide 25 =====
+Why Solarization of DCS? Village milk collection centres often face challenges: Frequent power cuts Absence of reliable grid electricity High electricity bills Diesel Generators (DGs) are commonly used to ensure cooling, leading to: High operating costs Increased emissions Risk to milk quality during outages
+===== Slide 26 =====
+Two Sub-Components On Grid Solar System (II) Off Grid Solar System
+===== Slide 27 =====
+On Grid Solar System
+===== Slide 28 =====
+(I) On-Grid Solar System Minimum proposed capacity: Minimum 2 kW Solar PV System SN Roof Top Solar System Components 1 Solar PV Module / Solar Panel 2 Inverter 3 Wire & Cables 4 Mounting / Solar Structure, Junction Box 5 Protection System (Including PVC Pipe & Accessories, Earthing Kit, Lightning Arrester 6 Battery including Online monitoring system 7 Transportation, Installation & Commissioning (I&C) charges 8 Compliance charges 9 Other Miscellaneous
+===== Slide 29 =====
+Funding Support Estimated total outlay per DCS ₹3,50,000 Funding pattern: Maximum support from NDDB and SPEF is Up to ₹1,75,000 per DCS SN Funding Partner Contribution Amount (Rs in Lakh) Contribution(%) 1 NDDB- SPEF Program 1.75 50% 2 Dairy Cooperatives/MPO 1.75 50% 3 Total 3.5 100%
+===== Slide 30 =====
+Targets Envisaged Grant support for Total 500 Units Envisaged First Project with SUMUL - its experience Any Inputs ?
+===== Slide 31 =====
+(II) Off Grid Solar System
+===== Slide 32 =====
+(II) Off Grid Solar System Challenges for Milk Collection Centre operating at off Grid location Heavy dependence on diesel generators High operating cost (~₹1.5 per litre of milk) Risk to milk quality during interruptions of DG operations No dependable system to utilize solar power
+===== Slide 33 =====
+Solar BMC – Integrated Solution To address the challenge, NDDB implemented a Pilot for Off-Grid Solar System –operating BMC on Solar Kashipura Sub-Centre of Mujkuva DCS, near Anand, Gujarat Key Components : Solar Panels + Lithium-Ion Battery + Smart Controller Solar power acts as the primary energy source for milk cooling, supported by battery backup. Surplus solar energy generated during peak sunshine hours is stored in batteries. Stored battery energy is utilized to operate the Bulk Milk Cooler during the evening milk collection shift. Grid electricity used only as backup
+===== Slide 34 =====
+Kashipura Solar BMC – At a Glance Parameter Details Milk handled ~850 litres/day Pourers ~130 BMC capacity 1,000 litres Operating time ~6 hours/day Connected Load: BMC (1000 L) AMCU (1) Fans (2) Lights (4) Geyser (1) System Configuration Solar Panels: 11 kW Battery Storage: 38.4 kWh (Lithium-Ion) Smart Controller: 7 kVA Kashipura BMC, Mujkuva, Anand, Gujarat
+===== Slide 35 =====
+Cost & Payback Analysis Diesel Usage Level Payback Period* High DG usage ~2.5 – 3 years Moderate DG usage ~4 – 5 years Low DG usage ~8 – 9 years Total system cost: ₹10.0 lakh (Solar Panels + Lithium-Ion Battery + Smart Controller, etc.) Indicative Payback Period* *Payback depends on actual DG usage and operating conditions.
+===== Slide 36 =====
+Key Benefits 90%+ solar-based operation Elimination of diesel fuel cost Reduction in electricity bills Clean and environment-friendly solution Step towards carbon-neutral village-level dairy cooperatives
+===== Slide 37 =====
+Grant Support Post pilot findings, NDDB & SPEF has now decided to make Solar BMC as part of the Project with 50 % Grant Support (Grant support up to Rs. 5 Lakh per milk collection centre is envisaged ) Any Inputs?
+===== Slide 38 =====
+Mobile Milk Collection, Testing & Cooling System
+===== Slide 39 =====
+Milk Collection Scenarios Milk Collection Centre Bulk Milk Cooler Milk Chilling Centre Dairy Plant Dairy Plant Dairy Plant Bulk Milk Cooler Dairy Plant Milk Producer Milk Producer Milk Producer Milk Producer Milk Collection Centre Milk Collection Centre
+===== Slide 40 =====
+Challenges in Present Milk Collection Insufficient milk volume makes operation of collection centres economically unviable. Long Transit Distances between collection centres and chilling/dairy plants lead to milk quality loss. Fixed Milk Collection Centres are difficult to establish due to scattered farm location in villages and tough terrain. Low-volume indigenous/specialized milk (e.g. Gir cow milk) lacks dedicated chilling at source, causing quality deterioration during milk collection & transport
+===== Slide 41 =====
+Mobile Milk Collection, Testing & Cooling Unit To address this challenges, NDDB in collaboration with IDMC has designed Mobile, Milk Collection, Testing and Cooling System Milk Collection at farmer’s door step, testing on the spot and cooling on the go Discussion underway with Tata Motors and Ashok Leyland for 500 litre and 1000 Litre Unit
+===== Slide 42 =====
+MMCTU in Leh – A Case Study MMCTU in Leh at Ladakh Milk Federation Post successful trial, few Inquiries received from MPCDF, Chhattisgarh and LMF Recently, 1 Unit is being developed for Manipur Milk Union and 1 Unit for Mujkuva for demonstration To demonstrate the benefits of the system in Dairy Cooperatives/MPO it is funded under NDDB-SPEF Program Pilot unit is functioning at Leh , Ladakh Milk Federation (LMF) since 15 th June 2024.
+===== Slide 43 =====
+Funding Support Estimated total outlay per unit is ₹15,00,000 Funding pattern: Maximum support from NDDB and SPEF Up to ₹10.5 lakhs per unit SN Funding Partner Contribution Amount (Rs in Lakh) Contribution(%) 1 NDDB- SPEF Program 10.5 70% 2 Dairy Cooperatives/MPO 4.5 30% 3 Total 15 100%
+===== Slide 44 =====
+Targets Envisaged Grant support for Total 10 Units Envisaged NDDB & SPEF will have annual rate contract with IDMC for the unit supply, installation, testing and commission of the System Any Inputs ?
+===== Slide 45 =====
+Small Scale Milk and Milk Product Processing Unit
+===== Slide 46 =====
+Why Small-Scale Processing Equipment? Specialized milk is produced in small volume and dispersed volume Such Small milk volumes are uneconomical to transport daily over long distances for processing. Limited Value Addition - Sale of raw milk only; missed opportunities for income No reliable source of equipment supplier to handle such milk Growing demand of consumer for farm fresh milk products
+===== Slide 47 =====
+The Solution : Small Scale Processing Unit NDDB in collaboration with IDMC Developed the Unit Batch processing capacity: up to ~120 litres of Milk in a single batch Conversion of milk into Paneer, curd, buttermilk, ghee, Shrikhand and Cheese Closed, standardized processing system – Process control – Hygienic production and Improves Quality Designed for low / semi-skilled operators Installed Unit at Atithi Dairy Davalpura, Petlad Ideal for Small farmer collectives / SHGs/FPOs handling niche milk e.g , Goat milk, camel milk, donkey milk, etc
+===== Slide 48 =====
+Dawalpura- A Case Study NDDB & IDMC set up the first unit in February 2024 for demonstration at Atithi Dairy Farm, Petlad , Gujarat Daily Production Updates Milk Processing – 400 litre/day Products Paneer- 20 Kgs Curd – 70 Kg Ghee and Shrikhand – As per demand Feedback and Observations Improvement in Paneer Yield from 16% to 18% Hygienic processing improved product quality Uniform/consistent product quality Ease of operations Planning to launch retail product Before Set-up After Set-up
+===== Slide 49 =====
+Funding Support Estimated total outlay per beneficiary ₹20,00,000 Funding pattern: SN Funding Partner Contribution Amount (Rs in Lakh) Contribution(%) 1 NDDB- SPEF Program 16.0 80% 2 End Implementing Agency (EIA) 4.0 20% 3 Total 20.0 100% Maximum support from NDDB and SPEF is Up to ₹16,00,000 per beneficiary
+===== Slide 50 =====
+Targets Envisaged Grant support for Total 10 Units Envisaged Any Inputs ?
+===== Slide 51 =====
+Project Implementation Arrangement Project proposal request to NDDB/SPEF 1 Proposal & Planning Execution Documentation DPR preparation & submission by PIA & support by NDDB & SPEF 2 PSC approval by NDDB-SPEF 3 Baseline survey 4 Issue Sanction letter & draft agreement 1 Signing of the tripartite agreement 2 Procurement & Purchase initiation 3 Project Installation & Commissioning 4 Project closure report 1 Fund utilization certificate 2 Impact assessment study 3 4 Performance trials report Project Specific Joint Project Monitoring
+===== Slide 52 =====
+THANK YOU! 21 Jan 2026
+
+## NDDB & Sustain Plus Project Booklet (Eng)_New
+Source: Knowledge Repository/NDDB & Sustain Plus Project Booklet (Eng)_New.pdf | Category: Manure & Sustainability
+
+Official NDDB knowledge repository: NDDB & Sustain Plus Project Booklet (Eng)_New.
+
+Topics: manure value chain; gobar gas; biogas; organic manure; NDDB Sustain Plus; circular dairy.
+
+Source: Knowledge Repository/NDDB & Sustain Plus Project Booklet (Eng)_New.pdf
+
+Extracted text (image-based PDF — partial):
+-- 1 of 12 --
+
+-- 2 of 12 --
+
+-- 3 of 12 --
+
+-- 4 of 12 --
+
+-- 5 of 12 --
+
+-- 6 of 12 --
+
+-- 7 of 12 --
+
+-- 8 of 12 --
+
+-- 9 of 12 --
+
+-- 10 of 12 --
+
+-- 11 of 12 --
+
+-- 12 of 12 --
+
+## NDDB Sustain Plus Partnership_Phase I_Overview & Learning_Final
+Source: Knowledge Repository/NDDB Sustain Plus Partnership_Phase I_Overview & Learning_Final.pptx | Category: Manure & Sustainability
+
+===== Slide 1 =====
+NDDB & Sustain Plus Partnership Phase I (2021 - 2023) Overview and Learning A Joint Initiative of Regional Stakeholder’s Consultation Workshop 21 January 2026 National Dairy Development Board, Mumbai
+===== Slide 2 =====
+Introduction 2
+===== Slide 3 =====
+About NDDB Institution of National Importance, established by an Act of the Parliament of India Support & Leverage dairy cooperative network, enabling inclusive and farmer-led growth Scale & Reach 230+ dairy cooperatives across the country Operations in 400+ districts 1.9 lakh+ village-level dairy cooperative societies Farmer Inclusion 18 million dairy farmer members Over 5 million women members Predominantly smallholder households having less than 5 animals
+===== Slide 4 =====
+Predominantly practiced by small and marginal farmers 95% of the dairy farmers rear 1 to 5 animals Bovine ownership, more equitable than the land holdings Indian Dairying- A Small Holder phenomenon Source: Livestock Census 2019, NSSO 12-13, BAHS 2025
+===== Slide 5 =====
+Dung from Dairy Farm Anaerobic Digester Biogas Digestate Clean Cooking Fuel Bio Slurry as Manure Management of Cow Dung Potential to fulfill 50% of India's LPG requirement 40% of India's NPK need Traditionally Indian Farming families have been managing dung in multiple ways including manure (raw and FYM), as a supplement to fuelwood, for rituals and air purification, house cleansing etc. In present times and with scale of dairying.. Anaerobic Digestion promises to be the most efficient way
+===== Slide 6 =====
+Genesis of NDDB-Sustain Plus Partnership
+===== Slide 7 =====
+If its at Household level biogas plant Preference to individual ownership and control on usage Ease in installation, repairs & less maintenance Consistency of Gas Pressure Portability of plant Remunerative disposal mechanism for surplus slurry For a centralized biogas plant Remunerative disposal of dung on every day basis Biogas plants- Needs of small holder farmers
+===== Slide 8 =====
+Note A person needs 0.286 kg/ ltr of biogas/day in comparison to 0.142 kg of LPG/day 3 animals produce approx. 50 Kg dung Source: GOBARDhan policy document 2018 House Hold Biogas plants- Satisfying Needs Flexible biogas plants Multiple benefits to HHs especially women But it accrues Savings and Not earnings Efficient use of slurry - captive and sale And hence the need of Value Chain for Slurry
+===== Slide 9 =====
+HH biogas based Manure Management Model evolved Famer 1 Famer 2 Farmer n Famer 3 Woman Biogas owner 1 Cooperative Woman Biogas owner 2 Woman Biogas owner n Woman Biogas owner 3 Manure Management Model Slurry Biogas- Owned by Women Their own cooperative For collective voice and transactions Two such India’s first of its kind established Surplus slurry aggregated by coop and processed Slurry based organic fertilizers produced and sold directly farmers ‘ SuDhan ’- NDDB’s trademark for common identity Existing dairy coops are taking up the role of Manure Coop and serving their farmers who are now Prosumers Fertiliser
+===== Slide 10 =====
+Text here Dummy Dummy Dummy 1 Unique Procurement Mechanism Slurry Testing (at farmer’s doorstep) Passbook Slurry Tanker cum Applicator Geotagged Route Slurry Rate Chart Positive relationship between BRIX value and Organic Carbon Content significant at 95% confidence level. Testing relating to product composition, Transparency, Efficient Aggregation and Support for collective use resources (Applicator) is KEY
+===== Slide 11 =====
+Simplified Slurry Processing Slurry Solid Liquid Separation Wet crushing & Sieving PROM Rock Phosphate Bio Liquid Fortification with Micro Nutrients Liquid Products Solids Solid: Liquid 15:85 Direct Application Equipment to Process Slurry at localized scale Maximizing solid recovery Achieving efficiency for better farmer returns Ensuring compliances
+===== Slide 12 =====
+Sr.No . Products Content Usage/Benefits 1 Sudhan PROM- (Solid) O Carbon: 10% N (min) : 0.4% (P2O5): 8% NPK Consortium Can be an alternate of phosphatic fertiliser in performance , r esolves problem of P fixation 2 SuDhan Micro-nutrient Rich Liquid Zinc: 4.0 % Iron: 2.0% Manganese : 0.5% Copper: 0.3% Boron : 0.5% Promote plant growth , improves uptake of micro nutrients 3 SuDhan RootGuard Humic Acid: 1% Micro-nutrients: Traces Defends root surfaces from pathogens Promotes root growth. 4 SuDhan GrowMax Seaweed Extract: 1% Micro-nutrients: Traces Improves leaf area , photosynthesis and plant growth. Produced exclusively by anaerobic digestion of dung. Soil friendly, enhances maximum plant uptake and no adverse impact Slurry based organic fertilizers Products Direct Reach to Farmers Leveraging Village Network of Dairy Cooperatives Policy push and tie ups with Fertilizer Companies
+===== Slide 13 =====
+Investment and Returns- A case of first all women cooperative (2021-22) With an Investment of ₹ 137 lakh in Biogas plants (including subsidy and farmer contribution) and ₹ 30 lakh slurry processing (grant) Carbon footprint, Slurry consumption/sharing, Impact on yield/quality not accounted so for Slurry procurement price paid ₹ 6 lakh Net Surplus of Coops ₹ 13 lakh Saving accrued on gas for 450 members ₹ 97 lakh Total Value created for biogas owner farmers ₹ 117 lakh Savings to farmers due to purchase of SuDhan fertilizers ₹ 76 lakh Savings on DAP subsidy for the India ₹ 34 lakh Employment (for seven) worth of ₹ 10 lakh Total Value generated by the Model ₹ 237 lakh
+===== Slide 14 =====
+Phase I interventions and learnings 14
+===== Slide 15 =====
+About Sustain Plus Sustain Plus is a collaborative platform with the focus towards achieving sustainable scale for technology-based solutions, across ecosystems to enhance the livelihoods while nurturing the environment. Sustain Plus: 15 Themes: Production Hubs Waste To Energy Clean Mobility Health Non-farm Rural Livelihoods Geographic Coverage 22 States, more than 7000 villages Outreach ( Household) 3.7 lakhs + Technology Deployment Over 26,000 units across 50 proven technology Implementation Partners 87 organizations Solution Providers 152 different vendors / startups
+===== Slide 16 =====
+Intervention 16 Program Nos. Manure Value Chain across 9 locations in 7 States Installation of Household level biogas plants in cluster mode Setup of slurry processing centre at 9 locations More than 2 million litres of slurry processed till date 1,040 Monetization of Carbon Credit generated from biogas digesters 1,040 Studies & Other Intervention Impact of slurry and PROM on productivity and crop yield (Jharkhand and Gujarat) Impact of Slurry in growth of fish (West Bengal Fisheries University) Video on awareness related to slurry-based fertilizers Dung based Hydrogen P roduction Unit ( BioCNG plant, Dama ) 2 1 1 1
+===== Slide 17 =====
+Support provided in Phase I interventions Sr No Head SPEF NDDB EIA 1 Flexi Biogas Plants √ 2 Slurry Testing Equipment at Village Level √ 3 Slurry Pump √ 4 Slurry Dewatering Machine √ 5 Baseline and impact study √ 6 Equipment at Slurry Processing Center √ 7 Project Manager Salary √ 8 Farmer Orientation Programme √ 9 Manure Business Management for project staff √ 10 Training of Trainers √ 11 Operations of Slurry Processing Center √ 12 Plant Staff √ 13 Executives for Marketing and extension √ 14 Maintenance & Contingency cost √ 15 Regulatory Compliance Fees √
+===== Slide 18 =====
+Slurry Processing Unit 18 JMF Harit Pradesh MPC WAMUL Sikkim Kolhapur Pune Bhilwara PEDO Sundarban
+===== Slide 19 =====
+Learnings Social Economic Environment •Reduction in health issues (during baseline 77% respondent reported the health-related concern from smoke during cooking) • Time saving on collection of firewood (wood log & shreds – 22 hrs /HH/ month, dung cakes 9 hrs /HH/ month) • Savin gs of 8-10 cylinders (approx. 8K to 10K in a year) • Selling of slurry – Rs. 5000 to 6000 • Soil quality improve , increasing the crop yield (Avg. 20%) •Dung piled up near HH resolved • Reduction in methane emission (3.6 lakh cu.m . annually from 1040 units) *Source: Baseline Study report for carbon credit and Report on effect of slurry and PROM
+===== Slide 20 =====
+Larger outcomes of Phase I Further scale and policy push impact under NDDB and Sustain Plus partnership: Further led to installation of more than 35,000 biogas digesters by NDDB New vendors registered under MNRE for supplying quality biogas digesters All 9 Slurry processing units are registered on Gobardhan Portal, Govt. of India. Further govt. has issued guidelines to provide market development assistance @Rs. 1500 / ton for a promotion of FOM, LFOM and PROM Streamlining the PROM processing unit licensing and certification issues First time carbon credit generated from biogas was traded and money received from platform has been distributed among 1040 farmers
+===== Slide 21 =====
+Category Major Challenges Operation & Maintenance Digester which are not working - mainly issues related to puncture and less gas generation Quality of cook stoves, stove knobs heat up & melt Filter related issues Water is getting accumulated in gas pipeline biogas Technology provider not responding timely and asking for higher charges Usage Pattern Slurry getting dry at outlet reducing flow and clogging in digester Inappropriate mixing of dung and water dung used is also mixed with the mud and cattle feed in some cases Slurry Processing Unit Utilization of its full capacity Marketing of slurry based product State specific licensing & certification is a major challenge Financing Initial investment for small and marginal farmer Challenges (observations from field)
+===== Slide 22 =====
+Opportunities and Focus required Overall: Biogas Intervention, not to be planned in isolation, Soil health component with Slurry usage should be in complete package Slurry and Slurry Based Product Policy level Intervention and Standardizing the Certification and Licensing of Dung based Manure and similar products Innovations in slurry enrichment into value added product usable by industry and agriculture. Efficient collection, storage, and utilisation for slurry for improved manure management . Innovative business models for creating incentive for farmers to sell/utilize slurry. Financing / Carbon Market Enabling access to carbon markets and unlocking income opportunities to make the product more affordable and maximum benefit to farmers.
+===== Slide 23 =====
+Strategic Partnership of NDDB & Sustain Plus Sustain Plus & NDDB in collaboration initiated the project activities in 2021 with signing of MoU for working in Manure and Dairy Value Chain 23 Distribution of Carbon Credit Amount to farmers (Nov. 2024) Inauguration of Slurry Processing Unit NDDB & Sustain Plus Partnership
+===== Slide 24 =====
+THANK YOU 24
+
 ## Dairy Farm Consultancy Manual
 Source: Knowledge Repository/Dairy Farm Consultancy Manual.pdf | Category: Farm Consultancy
 
@@ -11008,405 +12036,6 @@ Topics: dairy extension; livestock advisory.
 Local file: Material for AI Chatbot/Trifold/Trifold_Bee-keeping_Hindi.pdf
 Hindi/Gujarati PDF may use custom fonts — see Dairy Knowledge Portal for full text.
 
-## NDDB Website Content
-Source: Knowledge Repository/NDDB Website Content.docx | Category: Extension
-
-National Dairy Development Board (NDDB) — Full Website Content Extract
-
-Source: https://beta.nddb.coop/ Extracted: June 2026
-
-ABOUT NDDB
-
-The National Dairy Development Board (NDDB) was established in 1965 as a society. In 1987, NDDB was constituted as a body corporate and was declared an institution of national importance by an Act of Parliament.
-
-NDDB has been playing a pivotal role in developing the dairy sector of the country over the past six decades by nurturing and promoting producer-owned institutions with the objective of improving the livelihoods of crores of dairy farmers, the majority of whom are landless, marginal or small.
-
-KEY STATISTICS (At a Glance)
-
-Metric
-
-Value
-
-District Cooperative Milk Unions
-
-243
-
-State Cooperative Federations
-
-22
-
-Milk Producer Organizations
-
-25
-
-Milk Procured
-
-66.2 Million Kg/day
-
-Milk Marketed
-
-439 Lakh Litres per day
-
-WHAT WE DO — DEPARTMENTS
-
-1. Innovation & Project Management
-
-NDDB's innovation and project management efforts strengthen the dairy value chain through sustainable and innovative practices. Aligned with commitment to innovation and continuous improvement, NDDB plays a pivotal role in designing farmer-friendly interventions and adapting to evolving challenges while upholding the Dairy Board's core values.
-
-Key Focus Areas: Renewable energy, carbon neutrality, manure management, and cooperative development — contributing to building a self-reliant and resilient dairy industry.
-
-Objective:
-
-Aims to drive sustainable growth in the dairy sector through different innovations like renewable energy integration, waste-to-value initiatives, capacity-building for dairy cooperatives and carbon footprint reduction.
-
-Activities:
-
-Pilots
-
-Research & Development
-
-Collaborations
-
-Development of Mujkuva as a Demonstration place for intervention through Cooperation
-
-Sustainability
-
-2. Quality Assurance
-
-NDDB facilitates Dairy Cooperatives and Producer Companies to provide clean, safe and wholesome milk and milk products through science-based intervention to promote food safety and protect public health. NDDB is involved in multifaceted activities including food safety, quality & plant management, environmental safety, energy conservation & plant efficiency and human safety leading to sustainable operations.
-
-Initiatives undertaken in the area of Quality and Plant Management:
-
-Clean Milk Production (CMP)
-
-Food Safety Management System (FSMS)
-
-Quality & Plant Management Studies
-
-Knowledge Dissemination
-
-Introduction of International Management System
-
-Quality Mark
-
-Food & Nutrition Security
-
-Laboratory Modernisation
-
-Support to National Bodies
-
-3. Animal Nutrition
-
-Animal Nutrition activities focus on the development and implementation of advanced feed and fodder technologies, programs and strategies to enhance milk production efficiency, reduce feeding costs, lower greenhouse gas emissions and encourage environmentally sustainable practices.
-
-Animal nutrition plays a crucial role in exploiting the genetic potential of dairy animals. Proper and adequate nutrition helps dairy animals in producing and reproducing optimally thus ensuring profitability in dairy farming for milk producers.
-
-Overview of Animal Nutrition Activities:
-
-NDDB assists dairy cooperatives in bringing efficiencies in animal feeding, thereby optimizing milk production cost — as feeding alone accounts for 70% of total cost of milk production.
-
-Provides technical assistance and capacity building support to cooperative cattle feed and seed processing plants.
-
-Supports and promotes quality fodder seed production of improved fodder crop varieties.
-
-Develops Cattle Feed variants, feed supplements, technologies (Bypass Protein, Bypass Fat, UMMB, Silage, TMR) and programmes (Ration Balancing Program and Calf Rearing Program) pertaining to feed and fodder.
-
-Strives for reducing the environmental impact of dairying through various feed and fodder interventions.
-
-Initiatives Undertaken:
-
-Ration Balancing Programme
-
-Calf Rearing Program
-
-Providing Technical Support to Cattle Feed Plants
-
-Promoting Bypass Protein Feed
-
-Developing Feed Supplements:
-
-Area Specific Mineral Mixture
-
-Samvriddhi
-
-Pashu Sheetvardhak
-
-Garbhamin
-
-Urea Molasses Mineral Block (UMMB)
-
-Bypass Fat Supplement
-
-Enhancing Green Fodder Production
-
-Optimizing Crop Residue Management
-
-Promoting Fodder Conservation through Silage
-
-Advocating Total Mixed Ration (TMR) Feeding
-
-Mitigating Enteric Methane Emissions
-
-Implementing Sustainable Farm Practices for GHG Mitigation
-
-Animal nutrition activities under JICA-DTC
-
-Fodder Seed Production under National Livestock Mission (NLM)
-
-4. Strengthening Cooperatives
-
-NDDB's core belief is strengthening dairy cooperatives across India. It provides technical and managerial support to enhance governance, financial management, and operational efficiency in cooperative societies. The Dairy Board works on capacity building, policy advocacy, and institutional development to ensure sustainable growth and self-reliance of dairy cooperatives, ultimately benefiting millions of farmers.
-
-NDDB primarily involves itself in promoting and nurturing village dairy cooperative societies, district cooperative milk unions and state cooperative dairy federations. It has also expanded its horizons to leverage the countrywide network of dairy cooperatives in creating additional livelihood opportunities and better quality of life in villages by suitable interventions in beekeeping, fodder, fruits & vegetables, etc., by creating altogether a new set of cooperative institutions.
-
-Objectives:
-
-To create self-reliant, jointly owned, democratically controlled and professionally managed cooperative institutions, responsive to the socio-economic and cultural expectations of their members.
-
-Enhancing livelihood security of milk producers for improved quality of life.
-
-Strengthening dairying as a viable economic enterprise through farmer-owned collectives.
-
-Promoting good governance in cooperatives — enhanced fairness and transparency in milk procurement operations.
-
-Promoting enabling legal environment.
-
-Enhancing women participation in the affairs of dairy cooperatives.
-
-Capitalising the field outreach of producer collectives for the well-being of milk producers through NDDB Foundation for Nutrition (NFN).
-
-On-Going Projects:
-
-Revitalising Promising Producers' Owned Institution (RPPOI) Scheme
-
-White Revolution 2.0
-
-NDDB Scheme to support MDCS/MPACS to initiate milk procurement activities
-
-Formation and Promotion of 10,000 Farmer Producer Organisations (FPOs)
-
-Implementation of NBHM Scheme
-
-NDDB Foundation for Nutrition (NFN)
-
-Managed Projects
-
-5. Engineering
-
-NDDB provides support to dairy cooperatives by extending technical assistance in setting up new processing & production facilities and also expanding existing installations, using energy efficient and cost-effective technologies.
-
-The Dairy Board caters to a diverse category of projects including mega Dairy projects, milk powder & cheese plants, cattle feed plants, mineral mixture plants, bypass protein plants, frozen semen stations, solar thermal & PV systems, and highly critical and regulated bio-security laboratories.
-
-Objective: To provide technical support to dairy cooperatives in setting up state-of-the-art infrastructure facilities for milk processing, manufacturing of milk products, milk powder, cattle feed, bypass protein, mineral mixture plants — maintaining high operational efficiencies & productivity at competitive cost. Technical services for special projects like BioSecurity Labs, Vaccine Production Facilities, and Semen Stations are also extended to cooperatives and government institutions.
-
-Key Specialties:
-
-Concept-to-Commissioning Project Execution
-
-Team of 66 competent engineering professionals
-
-Specialty in Turn-Key project Executions
-
-Innovative approach, State of the Art implementations
-
-Technical consultancy services in dairy & Allied sectors
-
-Environmental Sustainability approach
-
-Activities:
-
-Project Implementation Model
-
-Project Umbrella
-
-List of Milestones
-
-Ongoing Projects
-
-6. Animal Breeding
-
-Animal Breeding activities are focused on enhancing bovine productivity, thereby ensuring profitability and sustainability in the dairy and livestock sector. The group actively implements and monitors scientific breeding programs, including performance recording, genetic evaluation, and genomic selection for animals raised in farmers' herds.
-
-To accelerate the multiplication of superior germplasm, NDDB promotes advanced reproductive technologies such as Ovum Pickup, In Vitro Embryo Production, and Embryo Transfer (OPU-IVEP-ET), making them accessible and affordable for farmers.
-
-The group plays a pivotal role in:
-
-Importing high-quality germplasm to strengthen national breeding programs.
-
-Capacity building of professionals in genetic evaluation and reproductive technologies.
-
-Implementing and monitoring government-sanctioned programmes to improve breeding efficiency.
-
-Providing technical consultancy to various stakeholders on breeding strategies.
-
-NDDB has been implementing multiple projects for genetic improvement during Operation Flood, National Dairy Plan I (NDP I), etc. Since 2019, various central sector scheme projects sanctioned under the Rashtriya Gokul Mission (RGM), Govt. of India in association with State Dept. of Animal Husbandry/Livestock Development Boards, Cooperative Milk Federations, Milk Unions, NGOs, and NDDB subsidiaries are being implemented.
-
-Objectives:
-
-Enhance bovine productivity through scientific breeding interventions, ensuring sustainable and profitable dairying.
-
-Implement genetic improvement programs for major dairy breeds through performance recording for production of high genetic merit bulls.
-
-Implement Genomic selection to accelerate genetic progress in dairy bovines.
-
-Advance research to standardize and make advanced reproductive biotechnologies accessible and affordable for farmers.
-
-Develop and conduct training programs for skill development in OPU-IVEP-ET and Genomics.
-
-Activities:
-
-Implementation of Genetic Improvement Programmes
-
-Innovations and Achievements
-
-Training
-
-Farmers' Corner
-
-Multimedia
-
-Important Links
-
-Sub-areas: Genomic Selection, Assisted Reproductive Technologies, Latest Sire Proofs
-
-7. Animal Health
-
-Animal Health plays an important role in demonstrating a strong field-to-laboratory connect with many horizontals & verticals, robust research & development capabilities. The Dairy Board collaborates with agencies of repute to further the cause of animal health and welfare.
-
-Objective:
-
-To make dairying a sustainable proposition to the small and marginal farmer by promoting scientific, cost-effective and holistic strategies.
-
-Activities undertaken in the sphere of Animal Health:
-
-Training and Extension
-
-Research & Development
-
-One Health Projects
-
-Animal Welfare
-
-Digitalization
-
-Alternate Approach
-
-8. Purchase
-
-The Purchase department handles procurement and supply chain functions for NDDB.
-
-(Dedicated page at: https://beta.nddb.coop/what-we-do/purchase/)
-
-9. Legal
-
-The Legal department handles all legal matters and compliance for NDDB.
-
-(Dedicated page at: https://beta.nddb.coop/what-we-do/legal/)
-
-10. HRD (Human Resource Development)
-
-The HRD department manages human resources, talent development and organizational capacity at NDDB.
-
-(Dedicated page at: https://beta.nddb.coop/what-we-do/hrd/)
-
-11. Cooperative Training
-
-NDDB runs structured cooperative training programs to build capacity among dairy cooperative members and management.
-
-(Dedicated page at: https://beta.nddb.coop/what-we-do/cooperative-training/)
-
-12. Finances
-
-The Finance department manages financial operations, planning, and reporting for NDDB.
-
-(Dedicated page at: https://beta.nddb.coop/what-we-do/finances/)
-
-13. Sectoral Analysis and Planning
-
-The Sectoral Analysis and Planning department is responsible for data-driven policy planning, research, and development of the dairy sector.
-
-Sub-areas: Geographical Information System (GIS)
-
-(Dedicated page at: https://beta.nddb.coop/what-we-do/sectoral-analysis-and-planning/)
-
-14. Product & Process Development
-
-The Product & Process Development department focuses on R&D in dairy product formulation and processing technologies.
-
-(Dedicated page at: https://beta.nddb.coop/what-we-do/product-and-process-development/)
-
-15. Information and Communication Technology (ICT)
-
-The ICT department drives digitalization of dairy operations and develops technology solutions for cooperatives and farmers.
-
-(Dedicated page at: https://beta.nddb.coop/what-we-do/information-and-communication-technology/)
-
-16. Marketing
-
-NDDB's Marketing cell provides marketing support to dairy cooperatives.
-
-Sub-area: Marketing Support (https://beta.nddb.coop/what-we-do/cooperative-services/marketing-support/)
-
-(Dedicated page at: https://beta.nddb.coop/marketing-cell/)
-
-SUBSIDIARIES
-
-Subsidiary
-
-Link
-
-IDMC Ltd
-
-https://beta.nddb.coop/subsidiaries/idmc-ltd/
-
-NDDB MRIDA Ltd
-
-https://beta.nddb.coop/subsidiaries/nddb-mrida-ltd/
-
-NDDB Dairy Services
-
-https://beta.nddb.coop/subsidiaries/nddb-dairy-services/
-
-NDDB CALF Ltd
-
-https://beta.nddb.coop/subsidiaries/nddb-calf-ltd/
-
-Mother Dairy
-
-https://beta.nddb.coop/subsidiaries/mother-dairy/
-
-Indian Immunologicals Limited
-
-https://beta.nddb.coop/subsidiaries/indian-immunologicals-limited/
-
-ABOUT US SECTION
-
-Navigation Sub-pages:
-
-Who We Are — https://beta.nddb.coop/about-us/who-we-are/
-
-Philosophy — https://beta.nddb.coop/about-us/philosophy/
-
-Constitution — https://beta.nddb.coop/about-us/constitution/
-
-Governance — https://beta.nddb.coop/about-us/governance/
-
-Annual Reports — https://beta.nddb.coop/about-us/annual-report
-
-INFORMATION SECTION
-
-Media Room — https://beta.nddb.coop/information/media-room/
-
-Publications:
-
-General — https://beta.nddb.coop/information/publications/general/
-
-Research & Studies – Health — https://beta.nddb.coop/research-studies-health/
-
-Dairying Across Indian States — https://beta.nddb.coop/dairying-acros
-
-[…truncated…]
-
 ## NDDB_Complete_Deep_Content.md
 Source: Knowledge Repository/NDDB_Complete_Deep_Content.md.pdf | Category: Extension
 
@@ -15945,17 +16574,17 @@ Jobs
  Tenders
  Contact Us
 
- Imparting  training
- to researchers, academicians, field veterinarians, civil and defense personnels
-
  Imparts quality graduate & post-graduate education
  contributes immensely to human resource development in the area of veterinary sciences
 
- Enhancing animal production
- through genetic improvement of cattle, buffalo and other livestock species
+ One of the oldest  national research institute
+ with glorious history of more than 132 years
 
- Centre of Advanced Faculty Training
- in Animal Nutrition and Physiology
+ Premier research institute
+ dedicated to livestock research and development .
+
+ Research in frontier and cutting edge areas
+ new generation vaccines, diagnostics, therapeutics, stem cells, genomics, bio-sensors, nano-technology etc
 
  Previous
 

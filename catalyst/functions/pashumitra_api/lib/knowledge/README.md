@@ -7,7 +7,7 @@ Farmer-facing facts for **Sarvam RAG** live here as a bundled markdown corpus.
 | Source | Location |
 |--------|----------|
 | NDDB extension PDFs | `Knowledge Repository/Material for AI Chatbot/` (preferred) or project `Material for AI Chatbot/` |
-| Knowledge Repository | `../Knowledge Repository/` — all PDF, DOCX, XLSX (consultancy manual, feed library, Bharat Pashudhan MoM, schemes, etc.) |
+| Knowledge Repository | `../Knowledge Repository/` — PDF, DOCX, XLSX, PPTX (consultancy, feed library, Sustain Plus, manure value chain, etc.) |
 | DAHD schemes | dahd.gov.in (scraped at ingest) |
 | NDDB Dairy Knowledge Portal | dairyknowledge.in section indexes |
 | ICAR animal health | [Central Health Key](https://www.icar.org/guidelines/icar-central-health-key/), [DAHD SVTG 2024](https://dahd.gov.in/sites/default/files/2024-10/StandardVeterinaryTreatment.pdf), [CaDDES](https://nivedi.res.in/nicra/CaDDES/), Gaushala manual |
