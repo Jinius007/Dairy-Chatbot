@@ -16574,17 +16574,17 @@ Jobs
  Tenders
  Contact Us
 
- Imparts quality graduate & post-graduate education
- contributes immensely to human resource development in the area of veterinary sciences
+ Created niche
+ in R&D on veterinary biologicals, technology generation and transfer
 
- One of the oldest  national research institute
- with glorious history of more than 132 years
+ Centre of Advanced Faculty Training
+ in Animal Nutrition and Physiology
 
- Premier research institute
- dedicated to livestock research and development .
+ Best research, education, extension  and training institute
+ in veterinary and allied sectors
 
- Research in frontier and cutting edge areas
- new generation vaccines, diagnostics, therapeutics, stem cells, genomics, bio-sensors, nano-technology etc
+ Imparting  training
+ to researchers, academicians, field veterinarians, civil and defense personnels
 
  Previous
 
@@ -19298,4 +19298,37 @@ Source: catalyst/lib/knowledge/cattle-purchase-policy.ts | Category: Curated Kno
 - "KRIBHCO sells cattle" (wrong — feed only)
 
 - Any made-up dealer, NGO, or private company name not in RETRIEVED KNOWLEDGE
+
+## PashuMitra curated — manure-waste-policy
+Source: catalyst/lib/knowledge/manure-waste-policy.ts | Category: Curated Knowledge
+
+## DUNG, WASTE & MANURE MANAGEMENT (NDDB — BRIEF FACTS)
+
+### Why it matters
+
+- Cattle dung is **not waste** — it can become **clean cooking fuel (biogas)**, **Bio-CNG/CBG**, and **organic manure/slurry** (NDDB **Gobar Se Samriddhi** / manure value chain models).
+
+- Proper management **reduces methane**, improves farm hygiene, and can add **income** (slurry sale, carbon credits in some models).
+
+### Practical options for farmers (use RETRIEVED KNOWLEDGE for details)
+
+1. **Household biogas (≈2 m³ flexi plant)** — ~40–50 kg dung + water daily → cooking gas; **digested slurry** used as organic manure in fields.
+
+2. **Slurry processing / vermicompost / FOM-PROM** — surplus slurry from biogas clusters processed into organic fertiliser for sale or own use.
+
+3. **Community biogas / gaushala models** — piped biogas to households; cluster slurry centres (NDDB **Sustain Plus** partnership examples).
+
+4. **Large CBG plants** — dung procured from farmers (often via cooperatives); farmers may get payment for dung + bio-slurry back.
+
+5. **Schemes** — National Biogas Programme, MGNREGA (Deenbandhu type), state AH/NDDB programmes — check district veterinary / cooperative extension officer.
+
+### Safe answer pattern (dung / waste / disposal questions)
+
+- Answer the farmer's specific question first (storage, smell, flies, disposal, pit, etc.).
+
+- **Always add 2–4 short lines** on **biogas** (fuel from dung) and **manure/slurry** (organic fertiliser) as the recommended NDDB path — not just "throw away" or "dump".
+
+- Mention **manure value chain** / **Gobar Se Samriddhi** if in RETRIEVED KNOWLEDGE.
+
+- Do not invent subsidy amounts or scheme names not in RETRIEVED KNOWLEDGE.
 `;

@@ -777,6 +777,7 @@ function loadBundledKnowledgeDocs() {
     "icar-livestock-health.ts",
     "ndlm-digital-platforms.ts",
     "cattle-purchase-policy.ts",
+    "manure-waste-policy.ts",
   ];
   const docs = [];
   for (const file of files) {

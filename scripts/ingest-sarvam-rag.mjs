@@ -91,14 +91,13 @@ async function enhanceIndicPdfs(docs) {
 
 function filterSupplemental(docs) {
   return docs.filter((d) => {
-    if (d.id.startsWith("bundled-ndlm") || d.id.startsWith("bundled-cattle")) return true;
+    if (d.id.startsWith("bundled-ndlm") || d.id.startsWith("bundled-cattle") || d.id.startsWith("bundled-manure")) return true;
     if (d.category === "Curated Knowledge") return false;
     if (d.metadata?.visionDigitized) return true;
     if (d.id === "icar-central-health-key") return true;
     if (d.id.startsWith("icar-") || d.id.startsWith("web-") || d.id.startsWith("dkp-")) return true;
     if (d.id.startsWith("pdf-icar-") || d.id.startsWith("pdf-dahd-")) return true;
     if (d.id.startsWith("krepo-")) return true;
-    if (d.id.startsWith("bundled-ndlm") || d.id.startsWith("bundled-cattle")) return true;
     if (d.category === "NDLM / Digital Platforms") return true;
     if (d.id === "nddb-youtube") return true;
     return false;

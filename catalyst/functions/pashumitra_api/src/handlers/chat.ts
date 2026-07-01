@@ -26,6 +26,7 @@ import { retrieveRagContext } from "../../lib/sarvam-rag.ts";
 import { getSarvamChatModel, sarvamChatCompletion } from "../../lib/sarvam.ts";
 import { buildCooperativeMarketingPrompt, MILK_MARKETING_SYSTEM_RULES } from "../../lib/cooperative-location.ts";
 import { buildCattlePurchasePrompt, CATTLE_PURCHASE_RULES } from "../../lib/knowledge/cattle-purchase-policy.ts";
+import { buildManureWastePrompt, MANURE_WASTE_RULES } from "../../lib/knowledge/manure-waste-policy.ts";
 import { NATIVE_SCRIPT_RULES, nativeScriptLockPrompt } from "../../lib/languages.ts";
 import { ensureNativeScriptText } from "../../lib/native-script.ts";
 import { getVetContactDirectReply, isVetConsultQuery, isVetContactRequest, normalizeVetQueryText, VET_CONSULT_MARKER } from "../../lib/vet-consult.ts";
@@ -104,6 +105,8 @@ ${MILK_MARKETING_SYSTEM_RULES}
 - **Buying live animals:** milk cooperatives do NOT sell cows/buffaloes — see cattle purchase rules below.
 ${CATTLE_PURCHASE_RULES}
 - EXCEPTION — VET / DOCTOR CONTACT: When farmer asks for veterinarian, paravet, doctor, or Dr. phone/contact — the app shows nearby vets automatically. Say contacts are listed below. NEVER redirect to 1962 helpline or 1962 app instead of the in-app vet directory. Never tell them to ask DCS for vet contacts.
+
+${MANURE_WASTE_RULES}
 
 YOUTUBE / VIDEO LINKS (CRITICAL — NO FAKE URLS):
 - NEVER invent, guess, or fabricate YouTube URLs or video IDs. Broken links harm farmers.
@@ -313,6 +316,7 @@ export async function handleChat(req: Request): Promise<Response> {
     const vetContactDirect = (mode === "chat" || mode === "call") && isVetContactRequest(normalizedUserText);
     const cooperativeHint = buildCooperativeMarketingPrompt(userCtx || lastUserText);
     const cattlePurchaseHint = buildCattlePurchasePrompt(userCtx || lastUserText);
+    const manureWasteHint = buildManureWastePrompt(userCtx || lastUserText);
     const ragChunks = mode === "call" ? 2 : isRationAdvisory ? 7 : 4;
     const lastUserLang = lastUserText.trim() ? detectLangForRefusal(lastUserText) : null;
     const detectedUserLang = userCtx.trim() ? detectLangForRefusal(userCtx) : null;
@@ -351,6 +355,7 @@ export async function handleChat(req: Request): Promise<Response> {
       ...(youtubeHint ? [{ role: "system", content: youtubeHint }] : []),
       ...(cooperativeHint ? [{ role: "system", content: cooperativeHint }] : []),
       ...(cattlePurchaseHint ? [{ role: "system", content: cattlePurchaseHint }] : []),
+      ...(manureWasteHint ? [{ role: "system", content: manureWasteHint }] : []),
       ...(vetConsultQuery ? [{ role: "system", content: vetContactDirect
         ? `VET / DOCTOR CONTACT REQUEST DETECTED:
 Give a SHORT reply in the farmer's language (1–2 lines) saying nearby vets/paravets are listed below with WhatsApp call and video options.

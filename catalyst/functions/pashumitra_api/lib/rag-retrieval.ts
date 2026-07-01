@@ -101,8 +101,11 @@ export function retrieveKeywordRagContext(query: string, topK = 7): string {
   if (/consultancy|farm management|sustainable dairy|body condition|reproductive efficiency|colostrum quality|production trait|key indicator|insemination timing|heat sign/i.test(query)) {
     selected = mergeUnique(selected, pickByTitle(chunks, /CONSULTANCY|Farm Consultancy|Consultancy Manual|krepo-/i, 3));
   }
-  if (/manure|gobar|gobar gas|biogas|dung|cow dung|vermicompost|compost|sustain plus|kpp|value chain|samriddhi|organic manure|methane/i.test(query)) {
+  if (/manure|gobar|gobar gas|biogas|dung|cow dung|buffalo dung|vermicompost|compost|sustain plus|kpp|value chain|samriddhi|organic manure|methane|slurry|bio-cng|cbg/i.test(query)) {
     selected = mergeUnique(selected, pickByTitle(chunks, /MANURE|GOBAR|Sustain Plus|value chain|biogas|Samriddhi|krepo-/i, 3));
+  }
+  if (/waste|waste management|dung management|manure management|disposal|kachra|kuda|garbage|sanitation|gandagi|badbu|smell|flies|farm waste|dairy waste/i.test(query)) {
+    selected = mergeUnique(selected, pickByTitle(chunks, /MANURE|GOBAR|biogas|waste|Samriddhi|Sustain Plus|value chain|slurry|krepo-/i, 3));
   }
   if (/1962|bharat pashudhan|ndlm|e-gopala|egopala|pashu poshan|pashu aadhaar|inaph|farmer app|mobile veterinary|mvu|helpline/i.test(query) && !/vet|paravet|doctor|\bdr\.?\b|chikitsak|contact|number|phone|sampark|whatsapp/i.test(query)) {
     selected = mergeUnique(selected, pickByTitle(chunks, /NDLM|1962|Bharat Pashudhan|DIGITAL PLATFORMS|krepo-bharat/i, 3));

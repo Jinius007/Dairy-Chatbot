@@ -44392,17 +44392,17 @@ Jobs
  Tenders
  Contact Us
 
- Imparts quality graduate & post-graduate education
- contributes immensely to human resource development in the area of veterinary sciences
+ Created niche
+ in R&D on veterinary biologicals, technology generation and transfer
 
- One of the oldest \xA0national research institute
- with glorious history of more than 132 years
+ Centre of Advanced Faculty Training
+ in Animal Nutrition and Physiology
 
- Premier research institute
- dedicated to livestock research and development .
+ Best research, education, extension \xA0and training institute
+ in veterinary and allied sectors
 
- Research in frontier and cutting edge areas
- new generation vaccines, diagnostics, therapeutics, stem cells, genomics, bio-sensors, nano-technology etc
+ Imparting \xA0training
+ to researchers, academicians, field veterinarians, civil and defense personnels
 
  Previous
 
@@ -47116,6 +47116,39 @@ Source: catalyst/lib/knowledge/cattle-purchase-policy.ts | Category: Curated Kno
 - "KRIBHCO sells cattle" (wrong \u2014 feed only)
 
 - Any made-up dealer, NGO, or private company name not in RETRIEVED KNOWLEDGE
+
+## PashuMitra curated \u2014 manure-waste-policy
+Source: catalyst/lib/knowledge/manure-waste-policy.ts | Category: Curated Knowledge
+
+## DUNG, WASTE & MANURE MANAGEMENT (NDDB \u2014 BRIEF FACTS)
+
+### Why it matters
+
+- Cattle dung is **not waste** \u2014 it can become **clean cooking fuel (biogas)**, **Bio-CNG/CBG**, and **organic manure/slurry** (NDDB **Gobar Se Samriddhi** / manure value chain models).
+
+- Proper management **reduces methane**, improves farm hygiene, and can add **income** (slurry sale, carbon credits in some models).
+
+### Practical options for farmers (use RETRIEVED KNOWLEDGE for details)
+
+1. **Household biogas (\u22482 m\xB3 flexi plant)** \u2014 ~40\u201350 kg dung + water daily \u2192 cooking gas; **digested slurry** used as organic manure in fields.
+
+2. **Slurry processing / vermicompost / FOM-PROM** \u2014 surplus slurry from biogas clusters processed into organic fertiliser for sale or own use.
+
+3. **Community biogas / gaushala models** \u2014 piped biogas to households; cluster slurry centres (NDDB **Sustain Plus** partnership examples).
+
+4. **Large CBG plants** \u2014 dung procured from farmers (often via cooperatives); farmers may get payment for dung + bio-slurry back.
+
+5. **Schemes** \u2014 National Biogas Programme, MGNREGA (Deenbandhu type), state AH/NDDB programmes \u2014 check district veterinary / cooperative extension officer.
+
+### Safe answer pattern (dung / waste / disposal questions)
+
+- Answer the farmer's specific question first (storage, smell, flies, disposal, pit, etc.).
+
+- **Always add 2\u20134 short lines** on **biogas** (fuel from dung) and **manure/slurry** (organic fertiliser) as the recommended NDDB path \u2014 not just "throw away" or "dump".
+
+- Mention **manure value chain** / **Gobar Se Samriddhi** if in RETRIEVED KNOWLEDGE.
+
+- Do not invent subsidy amounts or scheme names not in RETRIEVED KNOWLEDGE.
 `;
 
 // catalyst/functions/pashumitra_api/lib/knowledge/knowledge.ts
@@ -47316,8 +47349,11 @@ function retrieveKeywordRagContext(query, topK = 7) {
   if (/consultancy|farm management|sustainable dairy|body condition|reproductive efficiency|colostrum quality|production trait|key indicator|insemination timing|heat sign/i.test(query)) {
     selected = mergeUnique(selected, pickByTitle(chunks, /CONSULTANCY|Farm Consultancy|Consultancy Manual|krepo-/i, 3));
   }
-  if (/manure|gobar|gobar gas|biogas|dung|cow dung|vermicompost|compost|sustain plus|kpp|value chain|samriddhi|organic manure|methane/i.test(query)) {
+  if (/manure|gobar|gobar gas|biogas|dung|cow dung|buffalo dung|vermicompost|compost|sustain plus|kpp|value chain|samriddhi|organic manure|methane|slurry|bio-cng|cbg/i.test(query)) {
     selected = mergeUnique(selected, pickByTitle(chunks, /MANURE|GOBAR|Sustain Plus|value chain|biogas|Samriddhi|krepo-/i, 3));
+  }
+  if (/waste|waste management|dung management|manure management|disposal|kachra|kuda|garbage|sanitation|gandagi|badbu|smell|flies|farm waste|dairy waste/i.test(query)) {
+    selected = mergeUnique(selected, pickByTitle(chunks, /MANURE|GOBAR|biogas|waste|Samriddhi|Sustain Plus|value chain|slurry|krepo-/i, 3));
   }
   if (/1962|bharat pashudhan|ndlm|e-gopala|egopala|pashu poshan|pashu aadhaar|inaph|farmer app|mobile veterinary|mvu|helpline/i.test(query) && !/vet|paravet|doctor|\bdr\.?\b|chikitsak|contact|number|phone|sampark|whatsapp/i.test(query)) {
     selected = mergeUnique(selected, pickByTitle(chunks, /NDLM|1962|Bharat Pashudhan|DIGITAL PLATFORMS|krepo-bharat/i, 3));
@@ -47784,6 +47820,28 @@ LOCATION CONTEXT (${loc.state}):
 - District: ${loc.districtUnion}.
 - State federation: ${loc.stateFederation}.
 Mention these names naturally in the farmer's language. NEVER suggest hotel/private dealer/middleman even as backup.`;
+}
+
+// catalyst/functions/pashumitra_api/lib/knowledge/manure-waste-policy.ts
+var MANURE_WASTE_RULES = `
+DUNG / WASTE / MANURE MANAGEMENT (NON-NEGOTIABLE WHEN TOPIC IS RAISED):
+- If farmer asks about **dung disposal, waste management, gobar, manure handling, slurry, smell, flies, or farm hygiene** \u2192 after the direct answer, **briefly include biogas AND manure/slurry use** (2\u20134 lines minimum).
+- Frame dung as a **resource**: biogas for cooking + organic manure \u2014 NDDB manure value chain / Gobar Se Samriddhi / Sustain Plus models where relevant.
+- Do NOT say dung has "no use" or only suggest dumping \u2014 always mention **biogas plant** and **organic manure** options from RETRIEVED KNOWLEDGE.
+- Keep it practical for village farmers; schemes only if in RETRIEVED KNOWLEDGE.
+`;
+var MANURE_WASTE_QUERY = /\b(dung|cow dung|buffalo dung|cattle dung|manure|gobar|gober|gobar gas|gobar\s*gas|biogas|bio[\s-]?cng|cbg|slurry|digested slurry|vermicompost|compost|organic manure|methane|waste|waste management|dung management|manure management|disposal|dispose|kachra|kuda|garbage|refuse|sanitation|hygiene|smell|odour|odor|stench|badbu|badboo|flies|makh[i]|drain|sewage|effluent|liquid waste|farm waste|dairy waste|cleaning|safai|swachh|udbhr|pit|gutter|soak|leach|litter|bedding|gandagi|gandh)\b|गोबर|गobar|कूड़ा|कचरा|गंदगी|बदबू|मैनर|खाद|बायोगैस|गobar\s*gas|জবর|গোবর|আবর্জনা|gobar\s*vyavastha|pashu\s*gobar|gaay\s*ka\s*gobar|bhains\s*ka\s*gobar/i;
+function isManureWasteQuery(text) {
+  return MANURE_WASTE_QUERY.test(String(text || ""));
+}
+function buildManureWastePrompt(userText2) {
+  if (!isManureWasteQuery(userText2)) return null;
+  return `${MANURE_WASTE_RULES}
+
+ACTIVE QUERY: Farmer asked about **dung / waste / manure management**.
+1) Answer their specific question briefly and practically.
+2) **Mandatory:** Add 2\u20134 lines on **biogas** (cooking fuel from dung) and **manure/slurry** (organic fertiliser, vermicompost, field use) from RETRIEVED KNOWLEDGE \u2014 NDDB manure value chain / Gobar Se Samriddhi / household or community biogas models.
+3) Do not skip biogas and manure even if they only asked about "waste" or "disposal".`;
 }
 
 // catalyst/functions/pashumitra_api/lib/native-script.ts
@@ -48301,6 +48359,8 @@ ${MILK_MARKETING_SYSTEM_RULES}
 ${CATTLE_PURCHASE_RULES}
 - EXCEPTION \u2014 VET / DOCTOR CONTACT: When farmer asks for veterinarian, paravet, doctor, or Dr. phone/contact \u2014 the app shows nearby vets automatically. Say contacts are listed below. NEVER redirect to 1962 helpline or 1962 app instead of the in-app vet directory. Never tell them to ask DCS for vet contacts.
 
+${MANURE_WASTE_RULES}
+
 YOUTUBE / VIDEO LINKS (CRITICAL \u2014 NO FAKE URLS):
 - NEVER invent, guess, or fabricate YouTube URLs or video IDs. Broken links harm farmers.
 - When farmer asks for a video/YouTube link: explain the topic in text but do NOT paste any youtube.com or youtu.be URL \u2014 the app attaches verified working links automatically after your reply.
@@ -48496,6 +48556,7 @@ async function handleChat(req) {
     const vetContactDirect = (mode === "chat" || mode === "call") && isVetContactRequest(normalizedUserText);
     const cooperativeHint = buildCooperativeMarketingPrompt(userCtx || lastUserText);
     const cattlePurchaseHint = buildCattlePurchasePrompt(userCtx || lastUserText);
+    const manureWasteHint = buildManureWastePrompt(userCtx || lastUserText);
     const ragChunks = mode === "call" ? 2 : isRationAdvisory ? 7 : 4;
     const lastUserLang = lastUserText.trim() ? detectLangForRefusal(lastUserText) : null;
     const detectedUserLang = userCtx.trim() ? detectLangForRefusal(userCtx) : null;
@@ -48527,6 +48588,7 @@ ${ragContext2}` },
       ...youtubeHint2 ? [{ role: "system", content: youtubeHint2 }] : [],
       ...cooperativeHint ? [{ role: "system", content: cooperativeHint }] : [],
       ...cattlePurchaseHint ? [{ role: "system", content: cattlePurchaseHint }] : [],
+      ...manureWasteHint ? [{ role: "system", content: manureWasteHint }] : [],
       ...vetConsultQuery ? [{ role: "system", content: vetContactDirect ? `VET / DOCTOR CONTACT REQUEST DETECTED:
 Give a SHORT reply in the farmer's language (1\u20132 lines) saying nearby vets/paravets are listed below with WhatsApp call and video options.
 End your reply with exactly ${VET_CONSULT_MARKER} on its own line (required \u2014 app shows 4\u20135 nearest doctors automatically).` : `ANIMAL HEALTH / DISEASE QUERY DETECTED:
