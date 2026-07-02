@@ -3,6 +3,7 @@ import { getTranscribeHeaders, getTranscribeUrl } from "@/lib/backend-config";
 export interface TranscribeResult {
   transcript: string;
   blocked?: boolean;
+  language?: string;
 }
 
 export async function transcribeAudio(

@@ -48726,7 +48726,10 @@ async function handleTranscribe(req) {
         headers: jsonHeaders3
       });
     }
-    return new Response(JSON.stringify({ transcript: filterAbusiveLanguage(transcript) }), {
+    return new Response(JSON.stringify({
+      transcript: filterAbusiveLanguage(transcript),
+      language: detected
+    }), {
       headers: jsonHeaders3
     });
   } catch (e) {
@@ -49287,6 +49290,141 @@ async function handleVetsStats(_req) {
   return new Response(JSON.stringify(getVetStats()), { headers: jsonHeaders4 });
 }
 
+// catalyst/functions/pashumitra_api/lib/vobiz-i18n.ts
+var VOBIZ_LANGS = [
+  "hi",
+  "bn",
+  "ta",
+  "te",
+  "mr",
+  "gu",
+  "kn",
+  "ml",
+  "pa",
+  "or",
+  "as",
+  "ur",
+  "ne",
+  "sa",
+  "kok",
+  "mai",
+  "mni",
+  "sd",
+  "ks",
+  "doi",
+  "sat",
+  "brx",
+  "en"
+];
+var PHRASES = {
+  greeting: {
+    hi: "\u0928\u092E\u0938\u094D\u0924\u0947! \u092E\u0948\u0902 \u092D\u093E\u0930\u0924 \u092A\u0936\u0941\u0927\u0928 \u090F\u0906\u0908 \u0939\u0942\u0901\u0964 \u0905\u092A\u0928\u0940 \u092D\u093E\u0937\u093E \u092E\u0947\u0902 \u0921\u0947\u092F\u0930\u0940 \u0915\u093E \u0938\u0935\u093E\u0932 \u092C\u094B\u0932\u093F\u090F \u2014 \u0939\u093F\u0928\u094D\u0926\u0940, \u092C\u0902\u0917\u093E\u0932\u0940, \u0924\u092E\u093F\u0932, \u0924\u0947\u0932\u0941\u0917\u0941, \u092E\u0930\u093E\u0920\u0940, \u0917\u0941\u091C\u0930\u093E\u0924\u0940, \u0915\u0928\u094D\u0928\u0921\u093C, \u092E\u0932\u092F\u093E\u0932\u092E, \u092A\u0902\u091C\u093E\u092C\u0940, \u0909\u0921\u093C\u093F\u092F\u093E, \u0905\u0938\u092E\u093F\u092F\u093E, \u0909\u0930\u094D\u0926\u0942, \u0928\u0947\u092A\u093E\u0932\u0940, \u0938\u0902\u0938\u094D\u0915\u0943\u0924, \u0915\u094B\u0902\u0915\u0923\u0940, \u092E\u0948\u0925\u093F\u0932\u0940, \u092E\u0923\u093F\u092A\u0941\u0930\u0940, \u0938\u093F\u0902\u0927\u0940, \u0915\u0936\u094D\u092E\u0940\u0930\u0940, \u0921\u094B\u0917\u0930\u0940, \u0938\u0902\u0924\u093E\u0932\u0940, \u092C\u094B\u0921\u094B, \u092F\u093E \u0905\u0902\u0917\u094D\u0930\u0947\u091C\u093C\u0940\u0964",
+    en: "Hello! I am Bharat Pashudhan AI. Please ask your dairy question in your language \u2014 Hindi, Bengali, Tamil, Telugu, Marathi, Gujarati, Kannada, Malayalam, Punjabi, Odia, Assamese, Urdu, Nepali, Sanskrit, Konkani, Maithili, Manipuri, Sindhi, Kashmiri, Dogri, Santali, Bodo, or English.",
+    bn: "\u09A8\u09AE\u09B8\u09CD\u0995\u09BE\u09B0! \u0986\u09AE\u09BF \u09AD\u09BE\u09B0\u09A4 \u09AA\u09B6\u09C1\u09A7\u09A8 \u098F\u0986\u0987\u0964 \u0986\u09AA\u09A8\u09BE\u09B0 \u09AD\u09BE\u09B7\u09BE\u09AF\u09BC \u09A6\u09C1\u0997\u09CD\u09A7 \u09B8\u09AE\u09CD\u09AA\u09B0\u09CD\u0995\u09BF\u09A4 \u09AA\u09CD\u09B0\u09B6\u09CD\u09A8 \u09AC\u09B2\u09C1\u09A8\u0964",
+    ta: "\u0BB5\u0BA3\u0B95\u0BCD\u0B95\u0BAE\u0BCD! \u0BA8\u0BBE\u0BA9\u0BCD \u0BAA\u0BBE\u0BB0\u0BA4\u0BCD \u0BAA\u0B9A\u0BC1\u0BA4\u0BCD\u0BA4\u0BCA\u0BB4\u0BBF\u0BB2\u0BCD AI. \u0B89\u0B99\u0BCD\u0B95\u0BB3\u0BCD \u0BAE\u0BCA\u0BB4\u0BBF\u0BAF\u0BBF\u0BB2\u0BCD \u0BAA\u0BBE\u0BB2\u0BCD \u0BAA\u0BA3\u0BCD\u0BA3\u0BC8 \u0B95\u0BC7\u0BB3\u0BCD\u0BB5\u0BBF\u0BAF\u0BC8\u0B95\u0BCD \u0B95\u0BC7\u0BB3\u0BC1\u0B99\u0BCD\u0B95\u0BB3\u0BCD.",
+    te: "\u0C28\u0C2E\u0C38\u0C4D\u0C15\u0C3E\u0C30\u0C02! \u0C28\u0C47\u0C28\u0C41 \u0C2D\u0C3E\u0C30\u0C24\u0C4D \u0C2A\u0C36\u0C41\u0C27\u0C28 AI. \u0C2E\u0C40 \u0C2D\u0C3E\u0C37\u0C32\u0C4B \u0C2A\u0C3E\u0C32 \u0C2A\u0C36\u0C41 \u0C38\u0C02\u0C2C\u0C02\u0C27\u0C3F\u0C24 \u0C2A\u0C4D\u0C30\u0C36\u0C4D\u0C28 \u0C05\u0C21\u0C17\u0C02\u0C21\u0C3F.",
+    mr: "\u0928\u092E\u0938\u094D\u0915\u093E\u0930! \u092E\u0940 \u092D\u093E\u0930\u0924 \u092A\u0936\u0941\u0927\u0928 \u090F\u0906\u092F \u0906\u0939\u0947. \u0924\u0941\u092E\u091A\u094D\u092F\u093E \u092D\u093E\u0937\u0947\u0924 \u0926\u0941\u0917\u094D\u0927\u0936\u0947\u0924\u0940\u091A\u093E \u092A\u094D\u0930\u0936\u094D\u0928 \u0935\u093F\u091A\u093E\u0930\u093E.",
+    gu: "\u0AA8\u0AAE\u0AB8\u0ACD\u0AA4\u0AC7! \u0AB9\u0AC1\u0A82 \u0AAD\u0ABE\u0AB0\u0AA4 \u0AAA\u0AB6\u0AC1\u0AA7\u0AA8 AI \u0A9B\u0AC1\u0A82. \u0AA4\u0AAE\u0ABE\u0AB0\u0AC0 \u0AAD\u0ABE\u0AB7\u0ABE\u0AAE\u0ABE\u0A82 \u0AA1\u0AC7\u0AB0\u0AC0\u0AA8\u0ACB \u0AAA\u0ACD\u0AB0\u0AB6\u0ACD\u0AA8 \u0AAA\u0AC2\u0A9B\u0ACB.",
+    kn: "\u0CA8\u0CAE\u0CB8\u0CCD\u0C95\u0CBE\u0CB0! \u0CA8\u0CBE\u0CA8\u0CC1 \u0CAD\u0CBE\u0CB0\u0CA4 \u0CAA\u0CB6\u0CC1\u0CA7\u0CA8 AI. \u0CA8\u0CBF\u0CAE\u0CCD\u0CAE \u0CAD\u0CBE\u0CB7\u0CC6\u0CAF\u0CB2\u0CCD\u0CB2\u0CBF dairy \u0CAA\u0CCD\u0CB0\u0CB6\u0CCD\u0CA8\u0CC6 \u0C95\u0CC7\u0CB3\u0CBF.",
+    ml: "\u0D28\u0D2E\u0D38\u0D4D\u0D15\u0D3E\u0D30\u0D02! \u0D1E\u0D3E\u0D7B \u0D2D\u0D3E\u0D30\u0D24\u0D4D \u0D2A\u0D36\u0D41\u0D27\u0D28 AI \u0D06\u0D23\u0D4D. \u0D28\u0D3F\u0D19\u0D4D\u0D19\u0D33\u0D41\u0D1F\u0D46 \u0D2D\u0D3E\u0D37\u0D2F\u0D3F\u0D7D dairy \u0D1A\u0D4B\u0D26\u0D4D\u0D2F\u0D02 \u0D1A\u0D4B\u0D26\u0D3F\u0D15\u0D4D\u0D15\u0D42.",
+    pa: "\u0A38\u0A24 \u0A38\u0A4D\u0A30\u0A40 \u0A05\u0A15\u0A3E\u0A32! \u0A2E\u0A48\u0A02 \u0A2D\u0A3E\u0A30\u0A24 \u0A2A\u0A38\u0A3C\u0A41\u0A27\u0A28 AI \u0A39\u0A3E\u0A02\u0964 \u0A06\u0A2A\u0A23\u0A40 \u0A2D\u0A3E\u0A38\u0A3C\u0A3E \u0A35\u0A3F\u0A71\u0A1A dairy \u0A38\u0A35\u0A3E\u0A32 \u0A2A\u0A41\u0A71\u0A1B\u0A4B\u0964",
+    or: "\u0B28\u0B2E\u0B38\u0B4D\u0B15\u0B3E\u0B30! \u0B2E\u0B41\u0B01 \u0B2D\u0B3E\u0B30\u0B24 \u0B2A\u0B36\u0B41\u0B27\u0B28 AI\u0964 \u0B06\u0B2A\u0B23\u0B19\u0B4D\u0B15 \u0B2D\u0B3E\u0B37\u0B3E\u0B30\u0B47 dairy \u0B2A\u0B4D\u0B30\u0B36\u0B4D\u0B28 \u0B2A\u0B1A\u0B3E\u0B30\u0B28\u0B4D\u0B24\u0B41\u0964",
+    as: "\u09A8\u09AE\u09B8\u09CD\u0995\u09BE\u09F0! \u09AE\u0987 \u09AD\u09BE\u09F0\u09A4 \u09AA\u09B6\u09C1\u09A7\u09A8 AI\u0964 \u0986\u09AA\u09CB\u09A8\u09BE\u09F0 \u09AD\u09BE\u09B7\u09BE\u09A4 dairy \u09AA\u09CD\u09F0\u09B6\u09CD\u09A8 \u0995\u0993\u0995\u0964",
+    ur: "\u0633\u0644\u0627\u0645! \u0645\u06CC\u06BA \u0628\u06BE\u0627\u0631\u062A \u067E\u0634\u0648\u062F\u06BE\u0646 AI \u06C1\u0648\u06BA\u06D4 \u0627\u067E\u0646\u06CC \u0632\u0628\u0627\u0646 \u0645\u06CC\u06BA dairy \u06A9\u0627 \u0633\u0648\u0627\u0644 \u067E\u0648\u0686\u06BE\u06CC\u06BA\u06D4",
+    ne: "\u0928\u092E\u0938\u094D\u0915\u093E\u0930! \u092E \u092D\u093E\u0930\u0924 \u092A\u0936\u0941\u0927\u0928 AI \u0939\u0941\u0901\u0964 \u0906\u092B\u094D\u0928\u094B \u092D\u093E\u0937\u093E\u092E\u093E dairy \u092A\u094D\u0930\u0936\u094D\u0928 \u0938\u094B\u0927\u094D\u0928\u0941\u0939\u094B\u0938\u094D\u0964"
+  },
+  prompt: {
+    hi: "\u0905\u092A\u0928\u093E \u0938\u0935\u093E\u0932 \u092C\u094B\u0932\u093F\u090F\u0964",
+    en: "Please speak your question.",
+    bn: "\u0986\u09AA\u09A8\u09BE\u09B0 \u09AA\u09CD\u09B0\u09B6\u09CD\u09A8 \u09AC\u09B2\u09C1\u09A8\u0964",
+    ta: "\u0B89\u0B99\u0BCD\u0B95\u0BB3\u0BCD \u0B95\u0BC7\u0BB3\u0BCD\u0BB5\u0BBF\u0BAF\u0BC8\u0BAA\u0BCD \u0BAA\u0BC7\u0B9A\u0BC1\u0B99\u0BCD\u0B95\u0BB3\u0BCD.",
+    te: "\u0C2E\u0C40 \u0C2A\u0C4D\u0C30\u0C36\u0C4D\u0C28 \u0C2E\u0C3E\u0C1F\u0C4D\u0C32\u0C3E\u0C21\u0C02\u0C21\u0C3F.",
+    mr: "\u0924\u0941\u092E\u091A\u093E \u092A\u094D\u0930\u0936\u094D\u0928 \u092C\u094B\u0932\u093E.",
+    gu: "\u0AA4\u0AAE\u0ABE\u0AB0\u0ACB \u0AAA\u0ACD\u0AB0\u0AB6\u0ACD\u0AA8 \u0AAC\u0ACB\u0AB2\u0ACB.",
+    kn: "\u0CA8\u0CBF\u0CAE\u0CCD\u0CAE \u0CAA\u0CCD\u0CB0\u0CB6\u0CCD\u0CA8\u0CC6 \u0CB9\u0CC7\u0CB3\u0CBF.",
+    ml: "\u0D28\u0D3F\u0D19\u0D4D\u0D19\u0D33\u0D41\u0D1F\u0D46 \u0D1A\u0D4B\u0D26\u0D4D\u0D2F\u0D02 \u0D2A\u0D31\u0D2F\u0D42.",
+    pa: "\u0A06\u0A2A\u0A23\u0A3E \u0A38\u0A35\u0A3E\u0A32 \u0A2C\u0A4B\u0A32\u0A4B.",
+    or: "\u0B06\u0B2A\u0B23\u0B19\u0B4D\u0B15 \u0B2A\u0B4D\u0B30\u0B36\u0B4D\u0B28 \u0B15\u0B39\u0B28\u0B4D\u0B24\u0B41\u0964",
+    as: "\u0986\u09AA\u09CB\u09A8\u09BE\u09F0 \u09AA\u09CD\u09F0\u09B6\u09CD\u09A8 \u0995\u0993\u0995\u0964",
+    ur: "\u0627\u067E\u0646\u0627 \u0633\u0648\u0627\u0644 \u0628\u0648\u0644\u06CC\u06BA\u06D4",
+    ne: "\u0906\u092B\u094D\u0928\u094B \u092A\u094D\u0930\u0936\u094D\u0928 \u092C\u094B\u0932\u094D\u0928\u0941\u0939\u094B\u0938\u094D\u0964"
+  },
+  wait: {
+    hi: "\u090F\u0915 \u092A\u0932 \u0930\u0941\u0915\u093F\u090F, \u092E\u0948\u0902 \u0906\u092A\u0915\u093E \u0938\u0935\u093E\u0932 \u0938\u092E\u091D \u0930\u0939\u0940 \u0939\u0942\u0901\u0964",
+    en: "One moment please, I am understanding your question.",
+    bn: "\u098F\u0995 \u09AE\u09C1\u09B9\u09C2\u09B0\u09CD\u09A4 \u0985\u09AA\u09C7\u0995\u09CD\u09B7\u09BE \u0995\u09B0\u09C1\u09A8, \u0986\u09AE\u09BF \u0986\u09AA\u09A8\u09BE\u09B0 \u09AA\u09CD\u09B0\u09B6\u09CD\u09A8 \u09AC\u09C1\u099D\u099B\u09BF\u0964",
+    ta: "\u0B92\u0BB0\u0BC1 \u0BA8\u0BBF\u0BAE\u0BBF\u0B9F\u0BAE\u0BCD, \u0B89\u0B99\u0BCD\u0B95\u0BB3\u0BCD \u0B95\u0BC7\u0BB3\u0BCD\u0BB5\u0BBF\u0BAF\u0BC8 \u0BAA\u0BC1\u0BB0\u0BBF\u0BA8\u0BCD\u0BA4\u0BC1 \u0B95\u0BCA\u0BB3\u0BCD\u0B95\u0BBF\u0BB1\u0BC7\u0BA9\u0BCD.",
+    te: "\u0C12\u0C15\u0C4D\u0C15 \u0C15\u0C4D\u0C37\u0C23\u0C02, \u0C2E\u0C40 \u0C2A\u0C4D\u0C30\u0C36\u0C4D\u0C28 \u0C05\u0C30\u0C4D\u0C25\u0C02 \u0C1A\u0C47\u0C38\u0C41\u0C15\u0C41\u0C02\u0C1F\u0C41\u0C28\u0C4D\u0C28\u0C3E\u0C28\u0C41.",
+    mr: "\u0925\u094B\u0921\u093E \u0925\u093E\u0902\u092C\u093E, \u092E\u0940 \u0924\u0941\u092E\u091A\u093E \u092A\u094D\u0930\u0936\u094D\u0928 \u0938\u092E\u091C\u0924\u0947.",
+    gu: "\u0AA5\u0ACB\u0AA1\u0AC0 \u0AB0\u0ABE\u0AB9 \u0A9C\u0AC1\u0A93, \u0AB9\u0AC1\u0A82 \u0AA4\u0AAE\u0ABE\u0AB0\u0ACB \u0AAA\u0ACD\u0AB0\u0AB6\u0ACD\u0AA8 \u0AB8\u0AAE\u0A9C\u0AC0 \u0AB0\u0AB9\u0AC0 \u0A9B\u0AC1\u0A82.",
+    kn: "\u0CB8\u0CCD\u0CB5\u0CB2\u0CCD\u0CAA \u0C95\u0CBE\u0CAF\u0CBF\u0CB0\u0CBF, \u0CA8\u0CBE\u0CA8\u0CC1 \u0CA8\u0CBF\u0CAE\u0CCD\u0CAE \u0CAA\u0CCD\u0CB0\u0CB6\u0CCD\u0CA8\u0CC6 \u0C85\u0CB0\u0CCD\u0CA5\u0CAE\u0CBE\u0CA1\u0CBF\u0C95\u0CCA\u0CB3\u0CCD\u0CB3\u0CC1\u0CA4\u0CCD\u0CA4\u0CBF\u0CA6\u0CCD\u0CA6\u0CC7\u0CA8\u0CC6.",
+    ml: "\u0D12\u0D30\u0D41 \u0D28\u0D3F\u0D2E\u0D3F\u0D37\u0D02, \u0D1E\u0D3E\u0D7B \u0D28\u0D3F\u0D19\u0D4D\u0D19\u0D33\u0D41\u0D1F\u0D46 \u0D1A\u0D4B\u0D26\u0D4D\u0D2F\u0D02 \u0D2E\u0D28\u0D38\u0D4D\u0D38\u0D3F\u0D32\u0D3E\u0D15\u0D4D\u0D15\u0D41\u0D28\u0D4D\u0D28\u0D41.",
+    pa: "\u0A25\u0A4B\u0A5C\u0A4D\u0A39\u0A3E \u0A07\u0A70\u0A24\u0A1C\u0A3C\u0A3E\u0A30 \u0A15\u0A30\u0A4B, \u0A2E\u0A48\u0A02 \u0A24\u0A41\u0A39\u0A3E\u0A21\u0A3E \u0A38\u0A35\u0A3E\u0A32 \u0A38\u0A2E\u0A1D \u0A30\u0A39\u0A40 \u0A39\u0A3E\u0A02\u0964",
+    or: "\u0B25\u0B4B\u0B21\u0B3C\u0B3E \u0B05\u0B2A\u0B47\u0B15\u0B4D\u0B37\u0B3E \u0B15\u0B30\u0B28\u0B4D\u0B24\u0B41, \u0B2E\u0B41\u0B01 \u0B06\u0B2A\u0B23\u0B19\u0B4D\u0B15 \u0B2A\u0B4D\u0B30\u0B36\u0B4D\u0B28 \u0B2C\u0B41\u0B1D\u0B41\u0B1B\u0B3F\u0964",
+    as: "\u098F\u0995 \u09AE\u09C1\u09B9\u09C2\u09F0\u09CD\u09A4 \u0985\u09AA\u09C7\u0995\u09CD\u09B7\u09BE \u0995\u09F0\u0995, \u09AE\u0987 \u0986\u09AA\u09CB\u09A8\u09BE\u09F0 \u09AA\u09CD\u09F0\u09B6\u09CD\u09A8 \u09AC\u09C1\u099C\u09BF \u09AA\u09BE\u0987\u099B\u09CB\u0964",
+    ur: "\u0627\u06CC\u06A9 \u0644\u0645\u062D\u06C1 \u0631\u06A9\u06CC\u06BA\u060C \u0645\u06CC\u06BA \u0622\u067E \u06A9\u0627 \u0633\u0648\u0627\u0644 \u0633\u0645\u062C\u06BE \u0631\u06C1\u06CC \u06C1\u0648\u06BA\u06D4",
+    ne: "\u090F\u0915 \u0915\u094D\u0937\u0923 \u092A\u0930\u094D\u0916\u0928\u0941\u0939\u094B\u0938\u094D, \u092E \u0924\u092A\u093E\u0908\u0902\u0915\u094B \u092A\u094D\u0930\u0936\u094D\u0928 \u092C\u0941\u091D\u094D\u0926\u0948\u091B\u0941\u0964"
+  },
+  retry: {
+    hi: "\u0925\u094B\u0921\u093C\u093E \u0914\u0930 \u0907\u0902\u0924\u091C\u093C\u093E\u0930 \u0915\u0940\u091C\u093F\u090F, \u091C\u0935\u093E\u092C \u0924\u0948\u092F\u093E\u0930 \u0939\u094B \u0930\u0939\u093E \u0939\u0948\u0964",
+    en: "Please wait a little longer, your answer is being prepared.",
+    bn: "\u0986\u09B0\u0993 \u098F\u0995\u099F\u09C1 \u0985\u09AA\u09C7\u0995\u09CD\u09B7\u09BE \u0995\u09B0\u09C1\u09A8, \u0989\u09A4\u09CD\u09A4\u09B0 \u09A4\u09C8\u09B0\u09BF \u09B9\u099A\u09CD\u099B\u09C7\u0964",
+    ta: "\u0B87\u0BA9\u0BCD\u0BA9\u0BC1\u0BAE\u0BCD \u0B9A\u0BBF\u0BB1\u0BBF\u0BA4\u0BC1 \u0B95\u0BBE\u0BA4\u0BCD\u0BA4\u0BBF\u0BB0\u0BC1\u0B99\u0BCD\u0B95\u0BB3\u0BCD, \u0BAA\u0BA4\u0BBF\u0BB2\u0BCD \u0BA4\u0BAF\u0BBE\u0BB0\u0BBE\u0B95\u0BBF\u0BB1\u0BA4\u0BC1.",
+    te: "\u0C07\u0C02\u0C15\u0C3E \u0C15\u0C4A\u0C02\u0C1A\u0C46\u0C02 \u0C35\u0C47\u0C1A\u0C3F \u0C09\u0C02\u0C21\u0C02\u0C21\u0C3F, \u0C38\u0C2E\u0C3E\u0C27\u0C3E\u0C28\u0C02 \u0C24\u0C2F\u0C3E\u0C30\u0C35\u0C41\u0C24\u0C4B\u0C02\u0C26\u0C3F.",
+    mr: "\u0925\u094B\u0921\u0902 \u0905\u091C\u0942\u0928 \u0925\u093E\u0902\u092C\u093E, \u0909\u0924\u094D\u0924\u0930 \u0924\u092F\u093E\u0930 \u0939\u094B\u0924 \u0906\u0939\u0947.",
+    gu: "\u0AA5\u0ACB\u0AA1\u0AC1\u0A82 \u0AB5\u0AA7\u0AC1 \u0AB0\u0ABE\u0AB9 \u0A9C\u0AC1\u0A93, \u0A9C\u0AB5\u0ABE\u0AAC \u0AA4\u0AC8\u0AAF\u0ABE\u0AB0 \u0AA5\u0A88 \u0AB0\u0AB9\u0ACD\u0AAF\u0ACB \u0A9B\u0AC7.",
+    kn: "\u0CB8\u0CCD\u0CB5\u0CB2\u0CCD\u0CAA \u0CB9\u0CC6\u0C9A\u0CCD\u0C9A\u0CC1 \u0C95\u0CBE\u0CAF\u0CBF\u0CB0\u0CBF, \u0C89\u0CA4\u0CCD\u0CA4\u0CB0 \u0CB8\u0CBF\u0CA6\u0CCD\u0CA7\u0CB5\u0CBE\u0C97\u0CC1\u0CA4\u0CCD\u0CA4\u0CBF\u0CA6\u0CC6.",
+    ml: "\u0D15\u0D41\u0D31\u0D1A\u0D4D\u0D1A\u0D41\u0D15\u0D42\u0D1F\u0D3F \u0D15\u0D3E\u0D24\u0D4D\u0D24\u0D3F\u0D30\u0D3F\u0D15\u0D4D\u0D15\u0D42, \u0D09\u0D24\u0D4D\u0D24\u0D30\u0D02 \u0D24\u0D2F\u0D4D\u0D2F\u0D3E\u0D31\u0D3E\u0D15\u0D41\u0D28\u0D4D\u0D28\u0D41.",
+    pa: "\u0A25\u0A4B\u0A5C\u0A4D\u0A39\u0A3E \u0A39\u0A4B\u0A30 \u0A07\u0A70\u0A24\u0A1C\u0A3C\u0A3E\u0A30 \u0A15\u0A30\u0A4B, \u0A1C\u0A35\u0A3E\u0A2C \u0A24\u0A3F\u0A06\u0A30 \u0A39\u0A4B \u0A30\u0A3F\u0A39\u0A3E \u0A39\u0A48\u0964",
+    or: "\u0B25\u0B4B\u0B21\u0B3C\u0B3E \u0B05\u0B27\u0B3F\u0B15 \u0B05\u0B2A\u0B47\u0B15\u0B4D\u0B37\u0B3E \u0B15\u0B30\u0B28\u0B4D\u0B24\u0B41, \u0B09\u0B24\u0B4D\u0B24\u0B30 \u0B2A\u0B4D\u0B30\u0B38\u0B4D\u0B24\u0B41\u0B24 \u0B39\u0B47\u0B09\u0B1B\u0B3F\u0964",
+    as: "\u0986\u09F0\u09C1 \u0985\u09B2\u09AA \u0985\u09AA\u09C7\u0995\u09CD\u09B7\u09BE \u0995\u09F0\u0995, \u0989\u09A4\u09CD\u09A4\u09F0 \u09AA\u09CD\u09F0\u09B8\u09CD\u09A4\u09C1\u09A4 \u09B9\u09C8 \u0986\u099B\u09C7\u0964",
+    ur: "\u062A\u06BE\u0648\u0691\u0627 \u0627\u0648\u0631 \u0627\u0646\u062A\u0638\u0627\u0631 \u06A9\u0631\u06CC\u06BA\u060C \u062C\u0648\u0627\u0628 \u062A\u06CC\u0627\u0631 \u06C1\u0648 \u0631\u06C1\u0627 \u06C1\u06D2\u06D4",
+    ne: "\u0905\u0932\u093F \u092A\u0930\u094D\u0916\u0928\u0941\u0939\u094B\u0938\u094D, \u091C\u0935\u093E\u092B \u0924\u092F\u093E\u0930 \u0939\u0941\u0901\u0926\u0948\u091B\u0964"
+  },
+  error: {
+    hi: "\u092E\u093E\u092B\u093C \u0915\u0940\u091C\u093F\u090F, \u0905\u092D\u0940 \u091C\u0935\u093E\u092C \u0928\u0939\u0940\u0902 \u0926\u0947 \u092A\u093E\u0908\u0964 \u0915\u0943\u092A\u092F\u093E \u0905\u092A\u0928\u093E \u0938\u0935\u093E\u0932 \u0926\u094B\u092C\u093E\u0930\u093E \u092C\u094B\u0932\u093F\u090F\u0964",
+    en: "Sorry, I could not answer just now. Please ask your question again.",
+    bn: "\u09A6\u09C1\u0983\u0996\u09BF\u09A4, \u098F\u0996\u09A8 \u0989\u09A4\u09CD\u09A4\u09B0 \u09A6\u09BF\u09A4\u09C7 \u09AA\u09BE\u09B0\u099B\u09BF \u09A8\u09BE\u0964 \u0986\u09AC\u09BE\u09B0 \u09AA\u09CD\u09B0\u09B6\u09CD\u09A8 \u09AC\u09B2\u09C1\u09A8\u0964",
+    ta: "\u0BAE\u0BA9\u0BCD\u0BA9\u0BBF\u0B95\u0BCD\u0B95\u0BB5\u0BC1\u0BAE\u0BCD, \u0B87\u0BAA\u0BCD\u0BAA\u0BCB\u0BA4\u0BC1 \u0BAA\u0BA4\u0BBF\u0BB2\u0BCD \u0B85\u0BB3\u0BBF\u0B95\u0BCD\u0B95 \u0BAE\u0BC1\u0B9F\u0BBF\u0BAF\u0BB5\u0BBF\u0BB2\u0BCD\u0BB2\u0BC8. \u0BAE\u0BC0\u0BA3\u0BCD\u0B9F\u0BC1\u0BAE\u0BCD \u0B95\u0BC7\u0BB3\u0BC1\u0B99\u0BCD\u0B95\u0BB3\u0BCD.",
+    te: "\u0C15\u0C4D\u0C37\u0C2E\u0C3F\u0C02\u0C1A\u0C02\u0C21\u0C3F, \u0C07\u0C2A\u0C4D\u0C2A\u0C41\u0C21\u0C41 \u0C38\u0C2E\u0C3E\u0C27\u0C3E\u0C28\u0C02 \u0C07\u0C35\u0C4D\u0C35\u0C32\u0C47\u0C15\u0C2A\u0C4B\u0C2F\u0C3E\u0C28\u0C41. \u0C2E\u0C33\u0C4D\u0C32\u0C40 \u0C05\u0C21\u0C17\u0C02\u0C21\u0C3F.",
+    mr: "\u092E\u093E\u092B \u0915\u0930\u093E, \u0906\u0924\u094D\u0924\u093E \u0909\u0924\u094D\u0924\u0930 \u0926\u0947\u090A \u0936\u0915\u0932\u0947 \u0928\u093E\u0939\u0940. \u092A\u0941\u0928\u094D\u0939\u093E \u092A\u094D\u0930\u0936\u094D\u0928 \u0935\u093F\u091A\u093E\u0930\u093E.",
+    gu: "\u0AAE\u0ABE\u0AAB \u0A95\u0AB0\u0AB6\u0ACB, \u0AB9\u0AAE\u0AA3\u0ABE\u0A82 \u0A9C\u0AB5\u0ABE\u0AAC \u0A86\u0AAA\u0AC0 \u0AB6\u0A95\u0ACD\u0AAF\u0ABE \u0AA8\u0AB9\u0AC0\u0A82. \u0AAB\u0AB0\u0AC0 \u0AAA\u0ACD\u0AB0\u0AB6\u0ACD\u0AA8 \u0AAA\u0AC2\u0A9B\u0ACB.",
+    kn: "\u0C95\u0CCD\u0CB7\u0CAE\u0CBF\u0CB8\u0CBF, \u0C88\u0C97 \u0C89\u0CA4\u0CCD\u0CA4\u0CB0\u0CBF\u0CB8\u0CB2\u0CC1 \u0CB8\u0CBE\u0CA7\u0CCD\u0CAF\u0CB5\u0CBE\u0C97\u0CB2\u0CBF\u0CB2\u0CCD\u0CB2. \u0CAE\u0CA4\u0CCD\u0CA4\u0CC6 \u0C95\u0CC7\u0CB3\u0CBF.",
+    ml: "\u0D15\u0D4D\u0D37\u0D2E\u0D3F\u0D15\u0D4D\u0D15\u0D23\u0D02, \u0D07\u0D2A\u0D4D\u0D2A\u0D4B\u0D7E \u0D09\u0D24\u0D4D\u0D24\u0D30\u0D02 \u0D28\u0D7D\u0D15\u0D3E\u0D7B \u0D15\u0D34\u0D3F\u0D1E\u0D4D\u0D1E\u0D3F\u0D32\u0D4D\u0D32. \u0D35\u0D40\u0D23\u0D4D\u0D1F\u0D41\u0D02 \u0D1A\u0D4B\u0D26\u0D3F\u0D15\u0D4D\u0D15\u0D42.",
+    pa: "\u0A2E\u0A3E\u0A2B\u0A3C \u0A15\u0A30\u0A28\u0A3E, \u0A39\u0A41\u0A23 \u0A1C\u0A35\u0A3E\u0A2C \u0A28\u0A39\u0A40\u0A02 \u0A26\u0A47 \u0A38\u0A15\u0A40\u0964 \u0A2B\u0A3F\u0A30 \u0A38\u0A35\u0A3E\u0A32 \u0A2A\u0A41\u0A71\u0A1B\u0A4B\u0964",
+    or: "\u0B15\u0B4D\u0B37\u0B2E\u0B3E \u0B15\u0B30\u0B28\u0B4D\u0B24\u0B41, \u0B0F\u0B2C\u0B47 \u0B09\u0B24\u0B4D\u0B24\u0B30 \u0B26\u0B47\u0B07 \u0B2A\u0B3E\u0B30\u0B3F\u0B32\u0B3F \u0B28\u0B3E\u0B39\u0B3F\u0B01\u0964 \u0B2A\u0B41\u0B23\u0B3F \u0B2A\u0B1A\u0B3E\u0B30\u0B28\u0B4D\u0B24\u0B41\u0964",
+    as: "\u0995\u09CD\u09B7\u09AE\u09BE \u0995\u09F0\u09BF\u09AC, \u098F\u09A4\u09BF\u09AF\u09BC\u09BE \u0989\u09A4\u09CD\u09A4\u09F0 \u09A6\u09BF\u09AC \u09A8\u09CB\u09F1\u09BE\u09F0\u09BF\u09B2\u09CB\u0981\u0964 \u09AA\u09C1\u09A8\u09F0 \u09AA\u09CD\u09F0\u09B6\u09CD\u09A8 \u0995\u0993\u0995\u0964",
+    ur: "\u0645\u0639\u0630\u0631\u062A\u060C \u0627\u0628\u06BE\u06CC \u062C\u0648\u0627\u0628 \u0646\u06C1\u06CC\u06BA \u062F\u06D2 \u0633\u06A9\u06CC\u06D4 \u062F\u0648\u0628\u0627\u0631\u06C1 \u0633\u0648\u0627\u0644 \u067E\u0648\u0686\u06BE\u06CC\u06BA\u06D4",
+    ne: "\u092E\u093E\u092B \u0917\u0930\u094D\u0928\u0941\u0939\u094B\u0938\u094D, \u0905\u0939\u093F\u0932\u0947 \u091C\u0935\u093E\u092B \u0926\u093F\u0928 \u0938\u0915\u093F\u0928\u0964 \u092B\u0947\u0930\u093F \u092A\u094D\u0930\u0936\u094D\u0928 \u092C\u094B\u0932\u094D\u0928\u0941\u0939\u094B\u0938\u094D\u0964"
+  },
+  goodbye: {
+    hi: "\u0927\u0928\u094D\u092F\u0935\u093E\u0926\u0964 \u092D\u093E\u0930\u0924 \u092A\u0936\u0941\u0927\u0928 \u090F\u0906\u0908 \u0915\u094B \u0915\u0949\u0932 \u0915\u0930\u0928\u0947 \u0915\u0947 \u0932\u093F\u090F \u0936\u0941\u0915\u094D\u0930\u093F\u092F\u093E\u0964",
+    en: "Thank you for calling Bharat Pashudhan AI.",
+    bn: "\u09A7\u09A8\u09CD\u09AF\u09AC\u09BE\u09A6\u0964 \u09AD\u09BE\u09B0\u09A4 \u09AA\u09B6\u09C1\u09A7\u09A8 AI-\u0995\u09C7 \u0995\u09B2 \u0995\u09B0\u09BE\u09B0 \u099C\u09A8\u09CD\u09AF\u0964",
+    ta: "\u0BA8\u0BA9\u0BCD\u0BB1\u0BBF. \u0BAA\u0BBE\u0BB0\u0BA4\u0BCD \u0BAA\u0B9A\u0BC1\u0BA4\u0BCD\u0BA4\u0BCA\u0BB4\u0BBF\u0BB2\u0BCD AI-\u0B90 \u0B85\u0BB4\u0BC8\u0BA4\u0BCD\u0BA4\u0BA4\u0BB1\u0BCD\u0B95\u0BC1.",
+    te: "\u0C27\u0C28\u0C4D\u0C2F\u0C35\u0C3E\u0C26\u0C3E\u0C32\u0C41. \u0C2D\u0C3E\u0C30\u0C24\u0C4D \u0C2A\u0C36\u0C41\u0C27\u0C28 AI \u0C15\u0C3F \u0C15\u0C3E\u0C32\u0C4D \u0C1A\u0C47\u0C38\u0C3F\u0C28\u0C02\u0C26\u0C41\u0C15\u0C41.",
+    mr: "\u0927\u0928\u094D\u092F\u0935\u093E\u0926. \u092D\u093E\u0930\u0924 \u092A\u0936\u0941\u0927\u0928 AI \u0932\u093E \u0915\u0949\u0932 \u0915\u0947\u0932\u094D\u092F\u093E\u092C\u0926\u094D\u0926\u0932.",
+    gu: "\u0A86\u0AAD\u0ABE\u0AB0. \u0AAD\u0ABE\u0AB0\u0AA4 \u0AAA\u0AB6\u0AC1\u0AA7\u0AA8 AI \u0AA8\u0AC7 \u0A95\u0AC9\u0AB2 \u0A95\u0AB0\u0AB5\u0ABE \u0AAC\u0AA6\u0AB2.",
+    kn: "\u0CA7\u0CA8\u0CCD\u0CAF\u0CB5\u0CBE\u0CA6. \u0CAD\u0CBE\u0CB0\u0CA4 \u0CAA\u0CB6\u0CC1\u0CA7\u0CA8 AI \u0C97\u0CC6 \u0C95\u0CB0\u0CC6 \u0CAE\u0CBE\u0CA1\u0CBF\u0CA6\u0CCD\u0CA6\u0C95\u0CCD\u0C95\u0CC6.",
+    ml: "\u0D28\u0D28\u0D4D\u0D26\u0D3F. \u0D2D\u0D3E\u0D30\u0D24\u0D4D \u0D2A\u0D36\u0D41\u0D27\u0D28 AI-\u0D2F\u0D46 \u0D35\u0D3F\u0D33\u0D3F\u0D1A\u0D4D\u0D1A\u0D24\u0D3F\u0D28\u0D4D.",
+    pa: "\u0A27\u0A70\u0A28\u0A35\u0A3E\u0A26\u0964 \u0A2D\u0A3E\u0A30\u0A24 \u0A2A\u0A38\u0A3C\u0A41\u0A27\u0A28 AI \u0A28\u0A42\u0A70 \u0A15\u0A3E\u0A32 \u0A15\u0A30\u0A28 \u0A32\u0A08\u0964",
+    or: "\u0B27\u0B28\u0B4D\u0B5F\u0B2C\u0B3E\u0B26\u0964 \u0B2D\u0B3E\u0B30\u0B24 \u0B2A\u0B36\u0B41\u0B27\u0B28 AI \u0B15\u0B41 \u0B15\u0B32\u0B4D \u0B15\u0B30\u0B3F\u0B25\u0B3F\u0B2C\u0B3E \u0B2A\u0B3E\u0B07\u0B01\u0964",
+    as: "\u09A7\u09A8\u09CD\u09AF\u09AC\u09BE\u09A6\u0964 \u09AD\u09BE\u09F0\u09A4 \u09AA\u09B6\u09C1\u09A7\u09A8 AI \u09B2\u09C8 \u0995\u09B2 \u0995\u09F0\u09BE\u09F0 \u09AC\u09BE\u09AC\u09C7\u0964",
+    ur: "\u0634\u06A9\u0631\u06CC\u06C1\u06D4 \u0628\u06BE\u0627\u0631\u062A \u067E\u0634\u0648\u062F\u06BE\u0646 AI \u06A9\u0648 \u06A9\u0627\u0644 \u06A9\u0631\u0646\u06D2 \u06A9\u0627\u06D4",
+    ne: "\u0927\u0928\u094D\u092F\u0935\u093E\u0926\u0964 \u092D\u093E\u0930\u0924 \u092A\u0936\u0941\u0927\u0928 AI \u0932\u093E\u0908 \u0915\u0932 \u0917\u0930\u094D\u0928\u0941\u092D\u090F\u0915\u094B\u092E\u093E\u0964"
+  }
+};
+function normalizeVobizLang(code) {
+  const raw = String(code || "hi").toLowerCase().replace(/[^a-z]/g, "").slice(0, 4);
+  if (VOBIZ_LANGS.includes(raw)) return raw;
+  return "hi";
+}
+function vobizPhraseText(key, lang) {
+  const l = normalizeVobizLang(lang);
+  const row = PHRASES[key];
+  return row[l] || row.hi || row.en;
+}
+
 // catalyst/functions/pashumitra_api/lib/vobiz-audio-cache.ts
 var store = /* @__PURE__ */ new Map();
 var TTL_MS = 20 * 60 * 1e3;
@@ -49313,71 +49451,8 @@ function getAudio(id) {
   return entry.bytes;
 }
 
-// catalyst/functions/pashumitra_api/lib/vobiz-call.ts
-var GREETING_TEXT = "\u0928\u092E\u0938\u094D\u0924\u0947! \u092E\u0948\u0902 \u092A\u0936\u0941 \u092E\u093F\u0924\u094D\u0930 \u0939\u0942\u0901\u0964 \u0921\u0947\u092F\u0930\u0940 \u0914\u0930 \u092A\u0936\u0941\u092A\u093E\u0932\u0928 \u0915\u0947 \u0938\u0935\u093E\u0932\u094B\u0902 \u092E\u0947\u0902 \u092E\u0948\u0902 \u0906\u092A\u0915\u0940 \u092E\u0926\u0926 \u0915\u0930\u0924\u0940 \u0939\u0942\u0901\u0964 \u091C\u092C \u0924\u0948\u092F\u093E\u0930 \u0939\u094B\u0902, \u0905\u092A\u0928\u093E \u0938\u0935\u093E\u0932 \u092C\u094B\u0932\u093F\u090F\u0964";
-var WAIT_TEXT = "\u090F\u0915 \u092A\u0932 \u0930\u0941\u0915\u093F\u090F, \u092E\u0948\u0902 \u0906\u092A\u0915\u093E \u0938\u0935\u093E\u0932 \u0938\u092E\u091D \u0930\u0939\u0940 \u0939\u0942\u0901\u0964";
-var RETRY_TEXT = "\u0925\u094B\u0921\u093C\u093E \u0914\u0930 \u0907\u0902\u0924\u091C\u093C\u093E\u0930 \u0915\u0940\u091C\u093F\u090F, \u091C\u0935\u093E\u092C \u0924\u0948\u092F\u093E\u0930 \u0939\u094B \u0930\u0939\u093E \u0939\u0948\u0964";
-var ERROR_TEXT = "\u092E\u093E\u092B\u093C \u0915\u0940\u091C\u093F\u090F, \u0905\u092D\u0940 \u091C\u0935\u093E\u092C \u0928\u0939\u0940\u0902 \u0926\u0947 \u092A\u093E\u0908\u0964 \u0915\u0943\u092A\u092F\u093E \u0925\u094B\u0921\u093C\u0940 \u0926\u0947\u0930 \u092C\u093E\u0926 \u092B\u093F\u0930 \u0915\u0949\u0932 \u0915\u0930\u0947\u0902\u0964";
-var replyCache = /* @__PURE__ */ new Map();
-function pickCallUuid(body, query) {
-  return String(
-    body.CallUUID || body.call_uuid || body.CallId || body.call_id || body.RequestUUID || body.request_uuid || query.CallUUID || query.CallId || ""
-  ).trim();
-}
-function pickSpeechText(body, query) {
-  const raw = body.Speech || body.speech || body.Transcription || body.transcript || body.SpeechResult || body.speech_result || query.Speech || query.speech || "";
-  return String(raw).trim();
-}
-function logVobizForm(label, body, extra) {
-  console.log(`vobiz ${label}:`, JSON.stringify({ ...body, ...extra }));
-}
-function stripLangHeader(text) {
-  return text.replace(/^\[\[LANG:[a-z]{2}\]\]\s*/i, "").trim();
-}
-function truncateForCall(text, max = 380) {
-  const clean = cleanTtsText(stripLangHeader(text));
-  if (clean.length <= max) return clean;
-  const cut = clean.lastIndexOf("\u0964", max);
-  if (cut > max * 0.45) return clean.slice(0, cut + 1).trim();
-  return `${clean.slice(0, max).trim()}\u2026`;
-}
-async function getCallChatReply(transcript) {
-  const req = new Request("http://internal/chat", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      messages: [{ role: "user", content: transcript }],
-      stream: false,
-      mode: "call"
-    })
-  });
-  const res = await handleChat(req);
-  if (!res.ok) throw new Error("Chat failed");
-  const data = await res.json();
-  if (!data.text?.trim()) throw new Error(data.error || "Empty reply");
-  return truncateForCall(data.text);
-}
-function cacheReply(key, reply) {
-  replyCache.set(key, { reply, expires: Date.now() + 15 * 60 * 1e3 });
-}
-function getCachedReply(key) {
-  const hit = replyCache.get(key);
-  if (!hit || hit.expires <= Date.now()) {
-    replyCache.delete(key);
-    return null;
-  }
-  return hit.reply;
-}
-async function processSpeechToReply(speech) {
-  const key = speech.slice(0, 200);
-  const cached = getCachedReply(key);
-  if (cached) return cached;
-  if (!speech.trim()) throw new Error("Empty speech");
-  console.log("vobiz farmer speech:", speech.slice(0, 200));
-  const reply = await getCallChatReply(speech);
-  cacheReply(key, reply);
-  return reply;
-}
+// catalyst/functions/pashumitra_api/lib/vobiz-play.ts
+var import_fs2 = __toESM(require("fs"));
 
 // catalyst/functions/pashumitra_api/lib/vobiz-assets.ts
 var import_fs = __toESM(require("fs"));
@@ -49406,55 +49481,54 @@ function readStaticPhrase(name) {
 }
 
 // catalyst/functions/pashumitra_api/lib/vobiz-phrases.ts
-var VOBIZ_PHRASES = {
-  greeting: GREETING_TEXT,
-  prompt: "\u0905\u092A\u0928\u093E \u0938\u0935\u093E\u0932 \u092C\u094B\u0932\u093F\u090F\u0964",
-  wait: WAIT_TEXT,
-  retry: RETRY_TEXT,
-  error: ERROR_TEXT,
-  menu: "\u0914\u0930 \u0915\u094B\u0908 \u0938\u0935\u093E\u0932 \u0939\u0948 \u0924\u094B \u090F\u0915 \u0926\u092C\u093E\u0907\u090F, \u092B\u093F\u0930 \u0938\u0947 \u092C\u094B\u0932\u0928\u0947 \u0915\u0947 \u0932\u093F\u090F \u0926\u094B \u0926\u092C\u093E\u0907\u090F\u0964",
-  goodbye: "\u0927\u0928\u094D\u092F\u0935\u093E\u0926\u0964 \u092A\u0936\u0941 \u092E\u093F\u0924\u094D\u0930 \u0915\u094B \u0915\u0949\u0932 \u0915\u0930\u0928\u0947 \u0915\u0947 \u0932\u093F\u090F \u0936\u0941\u0915\u094D\u0930\u093F\u092F\u093E\u0964"
-};
 var memoryCache = /* @__PURE__ */ new Map();
 var synthInflight = /* @__PURE__ */ new Map();
 var warmStarted = false;
-async function getPhraseBytes(name) {
+function cacheKey(lang, name) {
+  return `${normalizeVobizLang(lang)}:${name}`;
+}
+async function getPhraseBytes(name, lang = "hi") {
   const key = name.replace(/[^a-z0-9-]/gi, "");
+  const l = normalizeVobizLang(lang);
+  const memKey = cacheKey(l, key);
   const fromDisk = readStaticPhrase(key);
-  if (fromDisk) return fromDisk;
-  const cached = memoryCache.get(key);
+  if (fromDisk && l === "hi") return fromDisk;
+  const cached = memoryCache.get(memKey);
   if (cached) return cached;
-  const inflight = synthInflight.get(key);
+  const inflight = synthInflight.get(memKey);
   if (inflight) return inflight;
-  const text = VOBIZ_PHRASES[key];
+  const text = vobizPhraseText(key, l);
   if (!text) return null;
   const job = (async () => {
     try {
-      const { audio } = await synthesizeSpeech(cleanTtsText(text), "hi", { callMode: true });
+      const { audio } = await synthesizeSpeech(cleanTtsText(text, l), l, { callMode: true });
       const buf = Buffer.from(audio);
-      memoryCache.set(key, buf);
+      memoryCache.set(memKey, buf);
       return buf;
     } catch (e) {
-      console.error(`vobiz phrase synth failed (${key}):`, e);
+      console.error(`vobiz phrase synth failed (${memKey}):`, e);
+      if (l !== "hi") return getPhraseBytes(key, "hi");
       return null;
     } finally {
-      synthInflight.delete(key);
+      synthInflight.delete(memKey);
     }
   })();
-  synthInflight.set(key, job);
+  synthInflight.set(memKey, job);
   return job;
 }
-function warmVobizPhrasesBackground() {
+function warmVobizPhrasesBackground(lang = "hi") {
   if (warmStarted) return;
   warmStarted = true;
   void (async () => {
     for (const key of ["greeting", "prompt", "wait", "error"]) {
-      await getPhraseBytes(key);
+      await getPhraseBytes(key, lang);
     }
   })().catch((e) => console.error("warmVobizPhrasesBackground:", e));
 }
-function phrasePlayUrl(base, name) {
-  return `${base}/vobiz/phrase/${name.replace(/[^a-z0-9-]/gi, "")}.mp3`;
+function phrasePlayUrl(base, name, lang = "hi") {
+  const safe = name.replace(/[^a-z0-9-]/gi, "");
+  const l = normalizeVobizLang(lang);
+  return `${base}/vobiz/phrase/${safe}.mp3?lang=${encodeURIComponent(l)}`;
 }
 
 // catalyst/functions/pashumitra_api/lib/vobiz-play.ts
@@ -49464,14 +49538,14 @@ function staticAssetPath(name) {
 function hasStaticAsset(name) {
   try {
     const p = staticAssetPath(name);
-    return fs.existsSync(p) && fs.statSync(p).size > 500;
+    return import_fs2.default.existsSync(p) && import_fs2.default.statSync(p).size > 500;
   } catch {
     return false;
   }
 }
 function readStaticAsset(name) {
   if (!hasStaticAsset(name)) return null;
-  return fs.readFileSync(staticAssetPath(name));
+  return import_fs2.default.readFileSync(staticAssetPath(name));
 }
 function xmlAttrEscape(url) {
   return url.replace(/&/g, "&amp;");
@@ -49479,20 +49553,275 @@ function xmlAttrEscape(url) {
 function playBlock(url) {
   return `<Play>${xmlAttrEscape(url)}</Play>`;
 }
-function playPhraseBlock(base, phraseName) {
-  return playBlock(phrasePlayUrl(base, phraseName));
+function playPhraseBlock(base, phraseName, lang = "hi") {
+  return playBlock(phrasePlayUrl(base, phraseName, lang));
 }
 async function textToPlayBlock(base, text, lang = "hi") {
-  const { audio } = await synthesizeSpeech(cleanTtsText(text), lang, { callMode: true });
+  const { audio } = await synthesizeSpeech(cleanTtsText(text, lang), lang, { callMode: true });
   const id = putAudio(audio);
   return playBlock(`${base}/vobiz/audio/${id}.mp3`);
 }
+function recordBlock(base) {
+  const action = xmlAttrEscape(`${base}/vobiz/recorded`);
+  return `<Record action="${action}" method="POST" maxLength="45" playBeep="false" timeout="10" />`;
+}
+function speechGatherBlock(base, lang) {
+  const action = xmlAttrEscape(`${base}/vobiz/speech`);
+  return `<Gather action="${action}" method="POST" inputType="speech" language="hi-IN" speechModel="telephony" speechEndTimeout="auto" executionTimeout="45">
+
+    ${playPhraseBlock(base, "prompt", lang)}
+
+  </Gather>`;
+}
+function listenLoopBlock(base, lang) {
+  return `${speechGatherBlock(base, lang)}
+
+  ${recordBlock(base)}
+
+  ${playPhraseBlock(base, "error", lang)}
+
+  <Hangup />`;
+}
+
+// catalyst/functions/pashumitra_api/lib/vobiz-session.ts
+var store2 = /* @__PURE__ */ new Map();
+var TTL_MS2 = 30 * 60 * 1e3;
+var MAX_TURNS = 12;
+function purge2() {
+  const now = Date.now();
+  for (const [key, entry] of store2) {
+    if (entry.expires <= now) store2.delete(key);
+  }
+}
+function getCallSession(callUuid) {
+  purge2();
+  const key = callUuid.trim();
+  if (!key) {
+    return { messages: [], lang: null, expires: Date.now() + TTL_MS2 };
+  }
+  const hit = store2.get(key);
+  if (hit && hit.expires > Date.now()) return hit;
+  const fresh = { messages: [], lang: null, expires: Date.now() + TTL_MS2 };
+  store2.set(key, fresh);
+  return fresh;
+}
+function getSessionLang(callUuid) {
+  return getCallSession(callUuid).lang;
+}
+function setSessionLang(callUuid, lang) {
+  if (!callUuid.trim() || !lang) return;
+  const session = getCallSession(callUuid);
+  session.lang = lang;
+  session.expires = Date.now() + TTL_MS2;
+  store2.set(callUuid, session);
+}
+function appendCallTurn(callUuid, userText2, assistantText, lang) {
+  if (!callUuid.trim()) return [];
+  const session = getCallSession(callUuid);
+  session.messages.push({ role: "user", content: userText2 });
+  session.messages.push({ role: "assistant", content: assistantText });
+  if (lang) session.lang = lang;
+  if (session.messages.length > MAX_TURNS * 2) {
+    session.messages = session.messages.slice(-MAX_TURNS * 2);
+  }
+  session.expires = Date.now() + TTL_MS2;
+  store2.set(callUuid, session);
+  return session.messages;
+}
+function clearCallSession(callUuid) {
+  if (callUuid.trim()) store2.delete(callUuid.trim());
+}
+
+// catalyst/functions/pashumitra_api/lib/vobiz-pending.ts
+var store3 = /* @__PURE__ */ new Map();
+var TTL_MS3 = 15 * 60 * 1e3;
+function purge3() {
+  const now = Date.now();
+  for (const [key, entry] of store3) {
+    if (entry.expires <= now) store3.delete(key);
+  }
+}
+function keyFor(callUuid, speech) {
+  const id = callUuid.trim() || "anon";
+  const tail = speech ? `:${speech.slice(0, 48)}` : "";
+  return `${id}${tail}`;
+}
+function setPendingRecord(callUuid, recordUrl, lang) {
+  purge3();
+  const key = keyFor(callUuid);
+  const prev = store3.get(key);
+  store3.set(key, {
+    recordUrl,
+    speech: prev?.speech,
+    lang: lang || prev?.lang,
+    expires: Date.now() + TTL_MS3
+  });
+}
+function getPendingRecord(callUuid) {
+  purge3();
+  return store3.get(keyFor(callUuid))?.recordUrl ?? null;
+}
+function setPendingSpeech(callUuid, speech, lang) {
+  purge3();
+  const key = keyFor(callUuid, speech);
+  store3.set(key, {
+    speech: speech.trim(),
+    recordUrl: store3.get(keyFor(callUuid))?.recordUrl,
+    lang,
+    expires: Date.now() + TTL_MS3
+  });
+}
+function getPendingSpeech(callUuid, speechHint) {
+  purge3();
+  if (speechHint?.trim()) {
+    const hit = store3.get(keyFor(callUuid, speechHint));
+    if (hit?.speech) return hit.speech;
+  }
+  return store3.get(keyFor(callUuid))?.speech ?? null;
+}
+
+// catalyst/functions/pashumitra_api/lib/vobiz-call.ts
+function splitLangHeader(text) {
+  const m = text.match(/^\[\[LANG:([a-z]{2,4})\]\]\s*\n?([\s\S]*)$/i);
+  if (m) return { lang: m[1].toLowerCase(), body: m[2].trim() };
+  return { lang: null, body: text.trim() };
+}
+function pickCallUuid(body, query) {
+  return String(
+    body.CallUUID || body.call_uuid || body.CallId || body.call_id || body.RequestUUID || body.request_uuid || query.CallUUID || query.CallId || ""
+  ).trim();
+}
+function pickSpeechText(body, query) {
+  const raw = body.Speech || body.speech || body.Transcription || body.transcript || body.SpeechResult || body.speech_result || query.Speech || query.speech || "";
+  return String(raw).trim();
+}
+function pickRecordUrl(body, query) {
+  const explicit = body.RecordUrl || body.RecordURL || body.RecordFile || body.RecordingURL || body.RecordingUrl || body.record_url || body.recording_url || query.RecordUrl || query.RecordURL || query.RecordFile || query.RecordingURL || "";
+  const direct = String(explicit).trim();
+  if (direct.startsWith("http")) return direct;
+  for (const src of [body, query]) {
+    for (const v of Object.values(src)) {
+      const s = String(v ?? "").trim();
+      if (s.startsWith("http") && /record|media|\.wav|\.mp3|\.m4a/i.test(s)) return s;
+    }
+  }
+  return "";
+}
+function logVobizForm(label, body, extra) {
+  console.log(`vobiz ${label}:`, JSON.stringify({ ...body, ...extra }));
+}
+function stripLangHeader(text) {
+  return splitLangHeader(text).body;
+}
+function truncateForCall(text, max = 420) {
+  const clean = cleanTtsText(stripLangHeader(text));
+  if (clean.length <= max) return clean;
+  const cut = clean.lastIndexOf("\u0964", max);
+  if (cut > max * 0.45) return clean.slice(0, cut + 1).trim();
+  const cutEn = clean.lastIndexOf(". ", max);
+  if (cutEn > max * 0.45) return clean.slice(0, cutEn + 1).trim();
+  return `${clean.slice(0, max).trim()}\u2026`;
+}
+async function downloadRecording(url, timeoutMs = 12e3) {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+  try {
+    const res = await fetch(url, { signal: ctrl.signal });
+    if (!res.ok) throw new Error(`Recording download ${res.status}`);
+    const mime = res.headers.get("content-type") || "audio/wav";
+    return { bytes: new Uint8Array(await res.arrayBuffer()), mime };
+  } finally {
+    clearTimeout(timer);
+  }
+}
+async function transcribeFarmerAudio(recordUrl, langHint) {
+  const { bytes, mime } = await downloadRecording(recordUrl);
+  let transcript = await sarvamTranscribe(bytes, mime, langHint || void 0);
+  const detected = detectLanguageCode(transcript) || langHint || detectUserLanguage(transcript);
+  transcript = await ensureNativeScriptText(transcript, detected);
+  return { transcript: transcript.trim(), lang: detected };
+}
+async function getCallChatReply(messages, forceLanguage) {
+  const req = new Request("http://internal/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      messages,
+      stream: false,
+      mode: "call",
+      forceLanguage: forceLanguage || null
+    })
+  });
+  const res = await handleChat(req);
+  if (!res.ok) throw new Error("Chat failed");
+  const data = await res.json();
+  if (!data.text?.trim()) throw new Error(data.error || "Empty reply");
+  const parsed = splitLangHeader(data.text);
+  const lang = parsed.lang || forceLanguage || detectUserLanguage(parsed.body || data.text);
+  return {
+    reply: truncateForCall(parsed.body || data.text),
+    lang
+  };
+}
+var replyCache = /* @__PURE__ */ new Map();
+function cacheReply(key, reply, lang) {
+  replyCache.set(key, { reply, lang, expires: Date.now() + 10 * 60 * 1e3 });
+}
+function getCachedReply(key) {
+  const hit = replyCache.get(key);
+  if (!hit || hit.expires <= Date.now()) {
+    replyCache.delete(key);
+    return null;
+  }
+  return { reply: hit.reply, lang: hit.lang };
+}
+async function resolveFarmerSpeech(callUuid, body, query) {
+  const inline = pickSpeechText(body, query);
+  const sessionLang2 = getSessionLang(callUuid);
+  if (inline.length >= 3) {
+    const lang2 = detectLanguageCode(inline) || sessionLang2 || detectUserLanguage(inline);
+    setPendingSpeech(callUuid, inline, lang2);
+    return { speech: inline, lang: lang2 };
+  }
+  const pendingSpeech = getPendingSpeech(callUuid, inline || void 0);
+  if (pendingSpeech && pendingSpeech.length >= 3) {
+    const lang2 = detectLanguageCode(pendingSpeech) || sessionLang2 || detectUserLanguage(pendingSpeech);
+    return { speech: pendingSpeech, lang: lang2 };
+  }
+  const recordUrl = pickRecordUrl(body, query) || getPendingRecord(callUuid);
+  if (!recordUrl) return null;
+  setPendingRecord(callUuid, recordUrl, sessionLang2 || void 0);
+  const { transcript, lang } = await transcribeFarmerAudio(recordUrl, sessionLang2);
+  if (!transcript) return null;
+  setPendingSpeech(callUuid, transcript, lang);
+  return { speech: transcript, lang };
+}
+async function processSpeechToReply(callUuid, speech, langHint) {
+  const normalized = speech.trim();
+  if (!normalized) throw new Error("Empty speech");
+  const cacheKey2 = `${callUuid}:${normalized.slice(0, 160)}`;
+  const cached = getCachedReply(cacheKey2);
+  if (cached) return cached;
+  const lang = langHint || detectLanguageCode(normalized) || getSessionLang(callUuid) || detectUserLanguage(normalized);
+  setSessionLang(callUuid, lang);
+  const session = getCallSession(callUuid);
+  const messages = [
+    ...session.messages,
+    { role: "user", content: normalized }
+  ];
+  console.log(`vobiz farmer speech (${lang}):`, normalized.slice(0, 200));
+  const { reply, lang: replyLang } = await getCallChatReply(messages, lang);
+  appendCallTurn(callUuid, normalized, reply, replyLang);
+  cacheReply(cacheKey2, reply, replyLang);
+  return { reply, lang: replyLang };
+}
 
 // catalyst/functions/pashumitra_api/src/routes/vobiz.mts
-var CATALYST_BASE = "https://project-rainfall-60075686570.development.catalystserverless.in/server/pashumitra_api";
-var MAX_REPLY_ATTEMPTS = 6;
+var DEFAULT_BASE = "https://project-rainfall-60075686570.development.catalystserverless.in/server/pashumitra_api";
+var MAX_REPLY_ATTEMPTS = 8;
 function publicBaseUrl(_req) {
-  return CATALYST_BASE;
+  const fromEnv = process.env.VOBIZ_PUBLIC_BASE_URL || process.env.CATALYST_PUBLIC_BASE_URL || process.env.CATALYST_API_PUBLIC_URL;
+  return (fromEnv || DEFAULT_BASE).replace(/\/$/, "");
 }
 function vobizXml(body) {
   return `<?xml version="1.0" encoding="UTF-8"?>
@@ -49500,21 +49829,23 @@ function vobizXml(body) {
 ${body}
 </Response>`;
 }
-function replyTextUrl(base, speech, attempt) {
-  return xmlAttrEscape(
-    `${base}/vobiz/reply?Speech=${encodeURIComponent(speech)}&n=${attempt}`
-  );
-}
-function speechGatherBlock(base, actionPath) {
-  const action = `${base}${actionPath}`;
-  return `<Gather action="${xmlAttrEscape(action)}" method="POST" inputType="speech" language="hi-IN" speechModel="telephony" speechEndTimeout="auto" executionTimeout="45">
-    ${playPhraseBlock(base, "prompt")}
-  </Gather>`;
+function replyJobUrl(base, callUuid, attempt, lang) {
+  const q = new URLSearchParams({
+    CallUUID: callUuid,
+    n: String(attempt),
+    lang: normalizeVobizLang(lang)
+  });
+  return xmlAttrEscape(`${base}/vobiz/reply?${q.toString()}`);
 }
 function sendXml(res, body) {
   res.status(200);
   res.setHeader("Content-Type", "application/xml; charset=utf-8");
   res.send(vobizXml(body));
+}
+function sessionLang(req, body, query) {
+  const callUuid = pickCallUuid(body, query);
+  const qLang = String(query.lang || body.lang || "").trim();
+  return normalizeVobizLang(qLang || getSessionLang(callUuid) || "hi");
 }
 function handleVobizStaticClip(req, res) {
   const clip = String(req.params.clip || "greeting").replace(/\.mp3$/i, "");
@@ -49534,7 +49865,8 @@ function handleVobizStaticGreeting(req, res) {
 }
 async function handleVobizPhrase(req, res) {
   const name = String(req.params.name || "greeting").replace(/\.mp3$/i, "");
-  const bytes = await getPhraseBytes(name);
+  const lang = normalizeVobizLang(String(req.query.lang || "hi"));
+  const bytes = await getPhraseBytes(name, lang);
   if (!bytes) {
     res.status(404).send("Phrase unavailable");
     return;
@@ -49544,119 +49876,159 @@ async function handleVobizPhrase(req, res) {
   res.setHeader("Cache-Control", "public, max-age=86400");
   res.send(bytes);
 }
-function inboundCallXml(base) {
-  return `${playPhraseBlock(base, "greeting")}
-  ${speechGatherBlock(base, "/vobiz/speech")}
-  ${playPhraseBlock(base, "error")}
-  <Hangup />`;
+function inboundCallXml(base, lang) {
+  return `${playPhraseBlock(base, "greeting", lang)}
+
+  ${listenLoopBlock(base, lang)}`;
 }
-function handleVobizFallback(_req, res) {
-  const base = publicBaseUrl(_req);
-  warmVobizPhrasesBackground();
-  sendXml(res, inboundCallXml(base));
+function handleVobizFallback(req, res) {
+  const base = publicBaseUrl(req);
+  const body = req.body ?? {};
+  const query = req.query;
+  const lang = sessionLang(req, body, query);
+  warmVobizPhrasesBackground(lang);
+  sendXml(res, inboundCallXml(base, lang));
 }
 function handleVobizPing(_req, res) {
   const base = publicBaseUrl(_req);
   sendXml(
     res,
-    `${playPhraseBlock(base, "prompt")}
+    `${playPhraseBlock(base, "prompt", "hi")}
+
   <Hangup />`
   );
 }
 function handleVobizAnswer(req, res) {
   const base = publicBaseUrl(req);
-  warmVobizPhrasesBackground();
-  sendXml(res, inboundCallXml(base));
+  const body = req.body ?? {};
+  const query = req.query;
+  const lang = sessionLang(req, body, query);
+  warmVobizPhrasesBackground(lang);
+  logVobizForm("answer", body, { CallUUID: pickCallUuid(body, query) });
+  sendXml(res, inboundCallXml(base, lang));
 }
 function handleVobizListen(req, res) {
   handleVobizAnswer(req, res);
+}
+function enqueueReplyRedirect(res, base, callUuid, lang, speech) {
+  if (speech) setPendingSpeech(callUuid, speech, lang);
+  sendXml(
+    res,
+    `${playPhraseBlock(base, "wait", lang)}
+
+  <Redirect method="POST">${replyJobUrl(base, callUuid, 0, lang)}</Redirect>`
+  );
 }
 function handleVobizSpeech(req, res) {
   const base = publicBaseUrl(req);
   const body = req.body ?? {};
   const query = req.query;
-  logVobizForm("speech", body, { CallUUID: pickCallUuid(body, query) });
+  const callUuid = pickCallUuid(body, query);
+  const lang = sessionLang(req, body, query);
+  logVobizForm("speech", body, { CallUUID: callUuid });
   const speech = pickSpeechText(body, query);
-  if (!speech) {
-    console.warn("vobiz/speech: no Speech field, keys=", Object.keys(body).join(","));
-    sendXml(
-      res,
-      `${playPhraseBlock(base, "error")}
-  ${speechGatherBlock(base, "/vobiz/speech")}
-  <Hangup />`
-    );
+  if (!speech || speech.length < 3) {
+    sendXml(res, `${playPhraseBlock(base, "error", lang)}
+
+  ${listenLoopBlock(base, lang)}`);
     return;
   }
-  sendXml(
-    res,
-    `${playPhraseBlock(base, "wait")}
-  <Redirect method="POST">${replyTextUrl(base, speech, 0)}</Redirect>`
-  );
+  enqueueReplyRedirect(res, base, callUuid, lang, speech);
+}
+async function handleVobizRecorded(req, res) {
+  const base = publicBaseUrl(req);
+  const body = req.body ?? {};
+  const query = req.query;
+  const callUuid = pickCallUuid(body, query);
+  const lang = sessionLang(req, body, query);
+  logVobizForm("recorded", body, { CallUUID: callUuid });
+  const speech = pickSpeechText(body, query);
+  if (speech.length >= 3) {
+    enqueueReplyRedirect(res, base, callUuid, lang, speech);
+    return;
+  }
+  const recordUrl = pickRecordUrl(body, query);
+  if (recordUrl) {
+    setPendingRecord(callUuid, recordUrl, lang);
+    enqueueReplyRedirect(res, base, callUuid, lang);
+    return;
+  }
+  sendXml(res, `${playPhraseBlock(base, "error", lang)}
+
+  ${listenLoopBlock(base, lang)}`);
 }
 async function handleVobizReply(req, res) {
   const base = publicBaseUrl(req);
   const body = req.body ?? {};
   const query = req.query;
-  logVobizForm("reply", body, { n: query.n, CallUUID: pickCallUuid(body, query) });
-  const speech = pickSpeechText(body, query);
+  const callUuid = pickCallUuid(body, query);
   const attempt = Number(query.n ?? body.n ?? 0) || 0;
-  if (!speech) {
-    sendXml(
-      res,
-      `${playPhraseBlock(base, "error")}
-  <Hangup />`
-    );
-    return;
-  }
+  const lang = sessionLang(req, body, query);
+  logVobizForm("reply", body, { n: attempt, CallUUID: callUuid, lang });
   try {
-    const reply = await processSpeechToReply(speech);
-    const replyPlay = await textToPlayBlock(base, reply, "hi");
+    const resolved = await resolveFarmerSpeech(callUuid, body, query);
+    if (!resolved?.speech) {
+      if (attempt + 1 >= MAX_REPLY_ATTEMPTS) {
+        sendXml(res, `${playPhraseBlock(base, "error", lang)}
+
+  ${listenLoopBlock(base, lang)}`);
+        return;
+      }
+      sendXml(
+        res,
+        `${playPhraseBlock(base, "retry", lang)}
+
+  <Redirect method="POST">${replyJobUrl(base, callUuid, attempt + 1, lang)}</Redirect>`
+      );
+      return;
+    }
+    const { reply, lang: replyLang } = await processSpeechToReply(
+      callUuid,
+      resolved.speech,
+      resolved.lang || lang
+    );
+    const replyPlay = await textToPlayBlock(base, reply, replyLang);
     sendXml(
       res,
       `${replyPlay}
-  <Gather numDigits="1" action="${xmlAttrEscape(`${base}/vobiz/menu`)}" method="POST" executionTimeout="12">
-    ${playPhraseBlock(base, "menu")}
-  </Gather>
-  <Hangup />`
+
+  ${listenLoopBlock(base, replyLang)}`
     );
   } catch (e) {
     console.error(`vobiz/reply attempt ${attempt} failed:`, e);
     if (attempt + 1 >= MAX_REPLY_ATTEMPTS) {
-      sendXml(
-        res,
-        `${playPhraseBlock(base, "error")}
-  <Hangup />`
-      );
+      sendXml(res, `${playPhraseBlock(base, "error", lang)}
+
+  ${listenLoopBlock(base, lang)}`);
       return;
     }
     sendXml(
       res,
-      `${playPhraseBlock(base, "retry")}
-  <Redirect method="POST">${replyTextUrl(base, speech, attempt + 1)}</Redirect>`
+      `${playPhraseBlock(base, "retry", lang)}
+
+  <Redirect method="POST">${replyJobUrl(base, callUuid, attempt + 1, lang)}</Redirect>`
     );
   }
-}
-function handleVobizRecorded(req, res) {
-  handleVobizSpeech(req, res);
 }
 async function handleVobizProcess(req, res) {
   return handleVobizReply(req, res);
 }
 function handleVobizMenu(req, res) {
   const base = publicBaseUrl(req);
-  const digit = String(req.body?.Digits || req.query?.Digits || "").trim();
-  if (digit === "1" || digit === "2") {
-    sendXml(
-      res,
-      `${playPhraseBlock(base, "prompt")}
-  ${speechGatherBlock(base, "/vobiz/speech")}
-  <Hangup />`
-    );
+  const body = req.body ?? {};
+  const query = req.query;
+  const lang = sessionLang(req, body, query);
+  const digit = String(body.Digits || query.Digits || "").trim();
+  if (digit === "1" || digit === "2" || !digit) {
+    sendXml(res, `${playPhraseBlock(base, "prompt", lang)}
+
+  ${listenLoopBlock(base, lang)}`);
     return;
   }
   sendXml(
     res,
-    `${playPhraseBlock(base, "goodbye")}
+    `${playPhraseBlock(base, "goodbye", lang)}
+
   <Hangup />`
   );
 }
@@ -49672,16 +50044,23 @@ function handleVobizAudio(req, res) {
   res.send(Buffer.from(bytes));
 }
 function handleVobizHangup(req, res) {
-  logVobizForm("hangup", req.body ?? {});
+  const body = req.body ?? {};
+  const query = req.query;
+  const callUuid = pickCallUuid(body, query);
+  logVobizForm("hangup", body, { CallUUID: callUuid });
+  if (callUuid) clearCallSession(callUuid);
   res.status(200).send("OK");
 }
 function handleVobizWebhook(_req, res) {
   res.status(200).json({ ok: true });
 }
-function handleVobizError(_req, res) {
-  res.status(200).setHeader("Content-Type", "application/xml; charset=utf-8");
-  res.send(
-    '<?xml version="1.0" encoding="UTF-8"?><Response><Redirect method="POST">https://project-rainfall-60075686570.development.catalystserverless.in/server/pashumitra_api/vobiz/listen</Redirect></Response>'
+function handleVobizError(req, res) {
+  const base = publicBaseUrl(req);
+  sendXml(
+    res,
+    `${playPhraseBlock(base, "error", "hi")}
+
+  <Redirect method="POST">${xmlAttrEscape(`${base}/vobiz/answer`)}</Redirect>`
   );
 }
 

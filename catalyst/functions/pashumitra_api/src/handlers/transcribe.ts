@@ -33,7 +33,10 @@ export async function handleTranscribe(req: Request): Promise<Response> {
         headers: jsonHeaders,
       });
     }
-    return new Response(JSON.stringify({ transcript: filterAbusiveLanguage(transcript) }), {
+    return new Response(JSON.stringify({
+      transcript: filterAbusiveLanguage(transcript),
+      language: detected,
+    }), {
       headers: jsonHeaders,
     });
   } catch (e) {

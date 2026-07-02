@@ -33,7 +33,7 @@ import {
   isYoutubeRequest,
   stripUnverifiedYoutubeUrls,
 } from "@/lib/youtube";
-import { detectLanguageFromMessages } from "@/lib/languages";
+import { detectLanguageFromMessages, detectLanguageCode } from "@/lib/languages";
 import { ensureNativeScriptText } from "@/lib/native-script-api";
 import { getChatCompletionsUrl, getChatRequestHeaders } from "@/lib/chat-api";
 import { trimChatHistory, incompleteReplyFallback } from "@/lib/chat-history";
@@ -488,19 +488,21 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
       toast.error("Backend is not configured on this deployment.");
       return;
     }
+    const priorLang = detectLanguageFromMessages(messages) || activeUserLang || undefined;
     setTranscribing(true);
     const startedAt = Date.now();
-    const transcribeLang = detectLanguageFromMessages(messages) || activeUserLang || "hi";
-    setActiveUserLang(transcribeLang);
     try {
-      const data = await transcribeAudio(b64, mime, transcribeLang);
+      const data = await transcribeAudio(b64, mime, priorLang);
       if (data.blocked) {
         toast.message("Please use respectful language.");
         return;
       }
       const txt = filterAbusiveLanguage(data.transcript || "");
-      if (txt) await send(txt, true, startedAt);
-      else toast.error("Could not transcribe audio");
+      if (txt) {
+        const voiceLang = detectLanguageCode(txt) || data.language || priorLang || "hi";
+        setActiveUserLang(voiceLang);
+        await send(txt, true, startedAt);
+      } else toast.error("Could not transcribe audio");
     } catch (e: any) {
       toast.error(e.message || "Transcription failed");
     } finally {
