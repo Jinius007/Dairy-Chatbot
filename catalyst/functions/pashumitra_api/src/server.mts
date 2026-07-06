@@ -176,6 +176,7 @@ app.get("/", (_req, res) => {
     llm: "sarvam",
     rag: "sarvam-keyword",
     knowledge: "Material for AI Chatbot + DAHD + NDDB DKP + ICAR",
+    vobiz: "/vobiz/answer",
   });
 });
 

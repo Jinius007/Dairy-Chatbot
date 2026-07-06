@@ -108,4 +108,4 @@ Write-Host "  https://project-rainfall-60075686570.development.catalystserverles
 Write-Host ""
 Write-Host "Then set SARVAM_API_KEY on the function and VITE_CATALYST_API_URL on Slate." -ForegroundColor Green
 Write-Host "For Sarvam RAG: npm run build:knowledge && npm run ingest:sarvam-rag, then redeploy." -ForegroundColor Green
-Write-Host "Phone calls: configure Bolna separately (Vobiz steps removed from this deploy script)." -ForegroundColor Green
+Write-Host "Phone calls (local-call): set VOBIZ_AUTH_ID + VOBIZ_AUTH_TOKEN on Catalyst; see docs/VOBIZ_PHONE_CALLS.md" -ForegroundColor Green

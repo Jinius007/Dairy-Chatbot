@@ -17925,7 +17925,7 @@ var require_finalhandler = __commonJS({
     module2.exports = finalhandler;
     function finalhandler(req, res, options) {
       var opts = options || {};
-      var env3 = opts.env || process.env.NODE_ENV || "development";
+      var env4 = opts.env || process.env.NODE_ENV || "development";
       var onerror = opts.onerror;
       return function(err) {
         var headers;
@@ -17942,7 +17942,7 @@ var require_finalhandler = __commonJS({
           } else {
             headers = getErrorHeaders(err);
           }
-          msg = getErrorMessage(err, status, env3);
+          msg = getErrorMessage(err, status, env4);
         } else {
           status = 404;
           msg = "Cannot " + req.method + " " + encodeUrl(getResourceName(req));
@@ -17973,9 +17973,9 @@ var require_finalhandler = __commonJS({
       }
       return headers;
     }
-    function getErrorMessage(err, status, env3) {
+    function getErrorMessage(err, status, env4) {
       var msg;
-      if (env3 !== "production") {
+      if (env4 !== "production") {
         msg = err.stack;
         if (!msg && typeof err.toString === "function") {
           msg = err.toString();
@@ -21956,10 +21956,10 @@ var require_application = __commonJS({
       this.defaultConfiguration();
     };
     app2.defaultConfiguration = function defaultConfiguration() {
-      var env3 = process.env.NODE_ENV || "development";
+      var env4 = process.env.NODE_ENV || "development";
       this.enable("x-powered-by");
       this.set("etag", "weak");
-      this.set("env", env3);
+      this.set("env", env4);
       this.set("query parser", "extended");
       this.set("subdomain offset", 2);
       this.set("trust proxy", false);
@@ -21967,7 +21967,7 @@ var require_application = __commonJS({
         configurable: true,
         value: true
       });
-      debug("booting in %s mode", env3);
+      debug("booting in %s mode", env4);
       this.on("mount", function onmount(parent) {
         if (this.settings[trustProxyDefaultSymbol] === true && typeof parent.settings["trust proxy fn"] === "function") {
           delete this.settings["trust proxy"];
@@ -21984,7 +21984,7 @@ var require_application = __commonJS({
       this.set("view", View);
       this.set("views", resolve("views"));
       this.set("jsonp callback name", "callback");
-      if (env3 === "production") {
+      if (env4 === "production") {
         this.enable("view cache");
       }
       Object.defineProperty(this, "router", {
@@ -47511,6 +47511,17 @@ function appLangToSarvam(code) {
   if (!code) return void 0;
   return APP_TO_SARVAM_LANG[code];
 }
+function sarvamToAppLang(sarvamCode) {
+  if (!sarvamCode?.trim()) return void 0;
+  const normalized = sarvamCode.trim().toLowerCase();
+  for (const [app2, sarvam] of Object.entries(APP_TO_SARVAM_LANG)) {
+    if (normalized === sarvam.toLowerCase()) return app2;
+  }
+  const base = normalized.split("-")[0];
+  if (base === "od") return "or";
+  if (APP_TO_SARVAM_LANG[base]) return base;
+  return void 0;
+}
 function mimeToFilename(mimeType) {
   if (mimeType?.includes("mp4") || mimeType?.includes("m4a")) return "audio.mp4";
   if (mimeType?.includes("wav")) return "audio.wav";
@@ -47588,7 +47599,11 @@ async function sarvamTranscribe(audioBytes, mimeType, languageCode) {
     throw new Error("Transcription failed");
   }
   const data = await res.json();
-  return (data.transcript || "").trim();
+  return {
+    transcript: (data.transcript || "").trim(),
+    languageCode: sarvamToAppLang(data.language_code) || languageCode,
+    languageProbability: data.language_probability ?? void 0
+  };
 }
 function getSarvamTtsSpeaker() {
   return env2("SARVAM_TTS_SPEAKER") || "suhani";
@@ -48717,9 +48732,10 @@ async function handleTranscribe(req) {
     const { audioBase64, mimeType, language } = await req.json();
     if (!audioBase64) throw new Error("audioBase64 required");
     const audioBytes = decodeBase64Audio2(audioBase64);
-    const langHint = typeof language === "string" ? language : void 0;
-    let transcript = await sarvamTranscribe(audioBytes, mimeType, langHint);
-    const detected = detectLanguageCode(transcript) || langHint || "hi";
+    const langHint = typeof language === "string" && language.trim() ? language.trim() : void 0;
+    const stt = await sarvamTranscribe(audioBytes, mimeType, langHint === "hi" ? void 0 : langHint);
+    let transcript = stt.transcript;
+    const detected = stt.languageCode || detectLanguageCode(transcript) || langHint || "hi";
     transcript = await ensureNativeScriptText(transcript, detected);
     if (transcript === "[BLOCKED]" || containsAbusiveLanguage(transcript)) {
       return new Response(JSON.stringify({ transcript: "", blocked: true }), {
@@ -49583,6 +49599,105 @@ function listenLoopBlock(base, lang) {
   <Hangup />`;
 }
 
+// catalyst/functions/pashumitra_api/lib/vobiz-recording.ts
+function env3(key) {
+  if (typeof process !== "undefined" && process.env?.[key]) return process.env[key];
+  if (typeof Deno !== "undefined") return Deno.env.get(key);
+  return void 0;
+}
+function getVobizCredentials() {
+  const authId = env3("VOBIZ_AUTH_ID")?.trim();
+  const authToken = env3("VOBIZ_AUTH_TOKEN")?.trim();
+  if (!authId || !authToken) return null;
+  return { authId, authToken };
+}
+function pickRecordingId(body, query) {
+  return String(
+    body.RecordingID || body.RecordingId || body.recording_id || body.RecordingUUID || query.RecordingID || query.RecordingId || query.recording_id || ""
+  ).trim();
+}
+function sleep(ms) {
+  return new Promise((r) => setTimeout(r, ms));
+}
+async function fetchRecordingBytes(url, auth, timeoutMs = 25e3) {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+  try {
+    const res = await fetch(url, {
+      signal: ctrl.signal,
+      redirect: "follow",
+      headers: {
+        "X-Auth-ID": auth.authId,
+        "X-Auth-Token": auth.authToken,
+        Accept: "audio/*,*/*",
+        "User-Agent": "BharatPashudhan-Vobiz/1.0"
+      }
+    });
+    if (!res.ok) {
+      const detail = await res.text().catch(() => "");
+      throw new Error(`Recording download ${res.status}: ${detail.slice(0, 160)}`);
+    }
+    const mime = res.headers.get("content-type") || guessMimeFromUrl(url);
+    return { bytes: new Uint8Array(await res.arrayBuffer()), mime };
+  } finally {
+    clearTimeout(timer);
+  }
+}
+async function fetchRecordingById(recordingId, auth) {
+  const metaUrl = `https://api.vobiz.ai/api/v1/Account/${encodeURIComponent(auth.authId)}/Recording/${encodeURIComponent(recordingId)}/`;
+  const metaRes = await fetch(metaUrl, {
+    headers: {
+      "X-Auth-ID": auth.authId,
+      "X-Auth-Token": auth.authToken,
+      "Content-Type": "application/json"
+    }
+  });
+  if (!metaRes.ok) {
+    const detail = await metaRes.text().catch(() => "");
+    throw new Error(`Recording metadata ${metaRes.status}: ${detail.slice(0, 160)}`);
+  }
+  const meta = await metaRes.json();
+  const url = meta.recording_url?.trim();
+  if (!url) throw new Error("Vobiz recording metadata missing recording_url");
+  const mime = meta.recording_format === "wav" ? "audio/wav" : "audio/mpeg";
+  const { bytes } = await fetchRecordingBytes(url, auth);
+  return { bytes, mime };
+}
+function guessMimeFromUrl(url) {
+  if (/\.mp3(\?|$)/i.test(url)) return "audio/mpeg";
+  if (/\.wav(\?|$)/i.test(url)) return "audio/wav";
+  if (/\.m4a(\?|$)/i.test(url)) return "audio/mp4";
+  return "audio/wav";
+}
+async function downloadVobizRecording(recordUrl, recordingId) {
+  const auth = getVobizCredentials();
+  if (!auth) {
+    throw new Error("VOBIZ_AUTH_ID and VOBIZ_AUTH_TOKEN must be set on Catalyst for phone STT");
+  }
+  const url = recordUrl.trim();
+  if (!url.startsWith("http")) throw new Error("Invalid recording URL from Vobiz");
+  const delays = [0, 1200, 2400, 4e3];
+  let lastErr;
+  for (const delay of delays) {
+    if (delay > 0) await sleep(delay);
+    try {
+      return await fetchRecordingBytes(url, auth);
+    } catch (e) {
+      lastErr = e;
+      console.warn(`vobiz recording download retry (${delay}ms):`, e instanceof Error ? e.message : e);
+    }
+  }
+  if (recordingId) {
+    try {
+      return await fetchRecordingById(recordingId, auth);
+    } catch (e) {
+      console.error("vobiz recording by ID failed:", e);
+      lastErr = e;
+    }
+  }
+  throw lastErr instanceof Error ? lastErr : new Error("Could not download Vobiz recording");
+}
+
 // catalyst/functions/pashumitra_api/lib/vobiz-session.ts
 var store2 = /* @__PURE__ */ new Map();
 var TTL_MS2 = 30 * 60 * 1e3;
@@ -49722,22 +49837,12 @@ function truncateForCall(text, max = 420) {
   if (cutEn > max * 0.45) return clean.slice(0, cutEn + 1).trim();
   return `${clean.slice(0, max).trim()}\u2026`;
 }
-async function downloadRecording(url, timeoutMs = 12e3) {
-  const ctrl = new AbortController();
-  const timer = setTimeout(() => ctrl.abort(), timeoutMs);
-  try {
-    const res = await fetch(url, { signal: ctrl.signal });
-    if (!res.ok) throw new Error(`Recording download ${res.status}`);
-    const mime = res.headers.get("content-type") || "audio/wav";
-    return { bytes: new Uint8Array(await res.arrayBuffer()), mime };
-  } finally {
-    clearTimeout(timer);
-  }
-}
-async function transcribeFarmerAudio(recordUrl, langHint) {
-  const { bytes, mime } = await downloadRecording(recordUrl);
-  let transcript = await sarvamTranscribe(bytes, mime, langHint || void 0);
-  const detected = detectLanguageCode(transcript) || langHint || detectUserLanguage(transcript);
+async function transcribeFarmerAudio(recordUrl, langHint, meta) {
+  const recordingId = meta?.body && meta?.query ? pickRecordingId(meta.body, meta.query) : null;
+  const { bytes, mime } = await downloadVobizRecording(recordUrl, recordingId);
+  const stt = await sarvamTranscribe(bytes, mime, langHint || void 0);
+  let transcript = stt.transcript;
+  const detected = stt.languageCode || detectLanguageCode(transcript) || langHint || detectUserLanguage(transcript);
   transcript = await ensureNativeScriptText(transcript, detected);
   return { transcript: transcript.trim(), lang: detected };
 }
@@ -49791,8 +49896,7 @@ async function resolveFarmerSpeech(callUuid, body, query) {
   const recordUrl = pickRecordUrl(body, query) || getPendingRecord(callUuid);
   if (!recordUrl) return null;
   setPendingRecord(callUuid, recordUrl, sessionLang2 || void 0);
-  const { transcript, lang } = await transcribeFarmerAudio(recordUrl, sessionLang2);
-  if (!transcript) return null;
+  const { transcript, lang } = await transcribeFarmerAudio(recordUrl, sessionLang2 || void 0, { body, query });
   setPendingSpeech(callUuid, transcript, lang);
   return { speech: transcript, lang };
 }
@@ -50186,7 +50290,8 @@ app.get("/", (_req, res) => {
     service: "pashumitra_api",
     llm: "sarvam",
     rag: "sarvam-keyword",
-    knowledge: "Material for AI Chatbot + DAHD + NDDB DKP + ICAR"
+    knowledge: "Material for AI Chatbot + DAHD + NDDB DKP + ICAR",
+    vobiz: "/vobiz/answer"
   });
 });
 module.exports = app;

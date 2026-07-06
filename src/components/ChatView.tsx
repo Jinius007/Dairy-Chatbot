@@ -49,6 +49,7 @@ import {
   waitTranscribingMessage,
 } from "@/lib/wait-messages";
 import { VetNearbyPanel } from "@/components/VetNearbyPanel";
+import { VobizPhoneBanner } from "@/components/VobizPhoneBanner";
 import { fetchNearbyVets } from "@/lib/vet-api";
 import { FALLBACK_GEO_COORDS, getGeoCoords } from "@/lib/location";
 import type { VetProfessional } from "@/lib/vet-types";
@@ -525,6 +526,8 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
         </div>
         <CallButton />
       </div>
+
+      <VobizPhoneBanner />
 
       <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto chat-bg px-3 py-4">
         {messages.length === 0 && (

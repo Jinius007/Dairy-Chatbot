@@ -48,6 +48,24 @@ export function appLangToSarvam(code?: string): string | undefined {
   return APP_TO_SARVAM_LANG[code];
 }
 
+export function sarvamToAppLang(sarvamCode?: string | null): string | undefined {
+  if (!sarvamCode?.trim()) return undefined;
+  const normalized = sarvamCode.trim().toLowerCase();
+  for (const [app, sarvam] of Object.entries(APP_TO_SARVAM_LANG)) {
+    if (normalized === sarvam.toLowerCase()) return app;
+  }
+  const base = normalized.split("-")[0];
+  if (base === "od") return "or";
+  if (APP_TO_SARVAM_LANG[base]) return base;
+  return undefined;
+}
+
+export interface SarvamTranscribeResult {
+  transcript: string;
+  languageCode?: string;
+  languageProbability?: number;
+}
+
 function mimeToFilename(mimeType?: string): string {
   if (mimeType?.includes("mp4") || mimeType?.includes("m4a")) return "audio.mp4";
   if (mimeType?.includes("wav")) return "audio.wav";
@@ -121,7 +139,7 @@ export async function sarvamTranscribe(
   audioBytes: Uint8Array,
   mimeType?: string,
   languageCode?: string,
-): Promise<string> {
+): Promise<SarvamTranscribeResult> {
   const form = new FormData();
   form.append("file", new Blob([audioBytes], { type: mimeToBlobType(mimeType) }), mimeToFilename(mimeType));
   form.append("model", getSarvamSttModel());
@@ -141,8 +159,16 @@ export async function sarvamTranscribe(
     throw new Error("Transcription failed");
   }
 
-  const data = await res.json() as { transcript?: string };
-  return (data.transcript || "").trim();
+  const data = await res.json() as {
+    transcript?: string;
+    language_code?: string | null;
+    language_probability?: number | null;
+  };
+  return {
+    transcript: (data.transcript || "").trim(),
+    languageCode: sarvamToAppLang(data.language_code) || languageCode,
+    languageProbability: data.language_probability ?? undefined,
+  };
 }
 
 export function getSarvamTtsSpeaker(): string {

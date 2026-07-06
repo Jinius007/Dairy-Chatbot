@@ -23,9 +23,10 @@ export async function handleTranscribe(req: Request): Promise<Response> {
     if (!audioBase64) throw new Error("audioBase64 required");
 
     const audioBytes = decodeBase64Audio(audioBase64);
-    const langHint = typeof language === "string" ? language : undefined;
-    let transcript = await sarvamTranscribe(audioBytes, mimeType, langHint);
-    const detected = detectLanguageCode(transcript) || langHint || "hi";
+    const langHint = typeof language === "string" && language.trim() ? language.trim() : undefined;
+    const stt = await sarvamTranscribe(audioBytes, mimeType, langHint === "hi" ? undefined : langHint);
+    let transcript = stt.transcript;
+    const detected = stt.languageCode || detectLanguageCode(transcript) || langHint || "hi";
     transcript = await ensureNativeScriptText(transcript, detected);
 
     if (transcript === "[BLOCKED]" || containsAbusiveLanguage(transcript)) {
