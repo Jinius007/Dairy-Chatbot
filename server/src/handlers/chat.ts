@@ -23,7 +23,7 @@ import {
 } from "../../lib/content-safety.ts";
 import { tryYoutubeVideoHint } from "../../lib/youtube-search.ts";
 import { retrieveRagContext } from "../../lib/sarvam-rag.ts";
-import { getSarvamChatModel, sarvamChatCompletion } from "../../lib/sarvam.ts";
+import { extractChatText, geminiChatCompletion, getGeminiChatModel, hasGeminiApiKey } from "../../lib/gemini.ts";
 import { buildCooperativeMarketingPrompt, MILK_MARKETING_SYSTEM_RULES } from "../../lib/cooperative-location.ts";
 import { buildCattlePurchasePrompt, CATTLE_PURCHASE_RULES } from "../../lib/knowledge/cattle-purchase-policy.ts";
 import { buildManureWastePrompt, MANURE_WASTE_RULES } from "../../lib/knowledge/manure-waste-policy.ts";
@@ -161,16 +161,7 @@ ${MILK_MARKETING_SYSTEM_RULES}
 ${CONTENT_SAFETY_RULES}`;
 
 function extractSarvamChatText(data: unknown): string {
-  if (!data || typeof data !== "object") return "";
-  const d = data as Record<string, unknown>;
-  if (typeof d.message === "string" && d.message.trim()) return d.message;
-  if (typeof d.response === "string" && d.response.trim()) return d.response;
-  if (typeof d.content === "string" && d.content.trim()) return d.content;
-  const fromChoice = (d.choices as { message?: { content?: string } }[] | undefined)?.[0]?.message?.content;
-  if (typeof fromChoice === "string" && fromChoice.trim()) return fromChoice;
-  if (typeof d.text === "string") return d.text;
-  if (typeof d.output === "string") return d.output;
-  return "";
+  return extractChatText(data);
 }
 
 function callModeFallbackAnswer(lang: string | null): string {
@@ -344,9 +335,15 @@ export async function handleChat(req: Request): Promise<Response> {
       return new Response(JSON.stringify({ text: directReply }), { headers: jsonHeaders });
     }
 
+    if (!hasGeminiApiKey()) {
+      return new Response(JSON.stringify({ error: "GEMINI_API_KEY not configured on server." }), {
+        status: 503, headers: jsonHeaders,
+      });
+    }
+
     const maxTokens = mode === "call" ? 420 : isRationAdvisory ? 2048 : 1200;
 
-    const buildSarvamMessages = (youtubeHint: string | null, ragContext: string) => [
+    const buildChatMessages = (youtubeHint: string | null, ragContext: string) => [
       { role: "system", content: mode === "call" ? CALL_SYSTEM_PROMPT : SYSTEM_PROMPT },
       { role: "system", content: `RETRIEVED KNOWLEDGE (SOLE AUTHORITATIVE SOURCE — NDDB/DAHD/ICAR curated corpus; use ONLY these facts; if missing, say so; do not use open web):\n${ragContext}` },
       ...(isRationAdvisory ? [{ role: "system", content: RATION_ADVISORY_MODE_PROMPT }] : []),
@@ -388,11 +385,11 @@ This is regular chat — NOT a report. Max ~500 words this turn.
           mode === "call" ? Promise.resolve(null) : tryYoutubeVideoHint(safeMessages),
           retrieveRagContext(userCtx || lastUser?.content || "", ragChunks),
         ]);
-        return sarvamChatCompletion({
-          model: getSarvamChatModel(),
+        return geminiChatCompletion({
+          model: getGeminiChatModel(),
           temperature: 0.4,
           max_tokens: maxTokens,
-          messages: buildSarvamMessages(youtubeHint, ragContext),
+          messages: buildChatMessages(youtubeHint, ragContext),
           stream: true,
         });
       });
@@ -401,11 +398,11 @@ This is regular chat — NOT a report. Max ~500 words this turn.
     const youtubeHint = mode === "call" ? null : await tryYoutubeVideoHint(safeMessages);
     const ragContext = await retrieveRagContext(userCtx || lastUser?.content || "", ragChunks);
 
-    const response = await sarvamChatCompletion({
-      model: getSarvamChatModel(),
+    const response = await geminiChatCompletion({
+      model: getGeminiChatModel(),
       temperature: 0.4,
       max_tokens: maxTokens,
-      messages: buildSarvamMessages(youtubeHint, ragContext),
+      messages: buildChatMessages(youtubeHint, ragContext),
       stream: false,
     });
 
@@ -415,13 +412,13 @@ This is regular chat — NOT a report. Max ~500 words this turn.
       });
     }
     if (response.status === 401 || response.status === 403) {
-      return new Response(JSON.stringify({ error: "Sarvam API key invalid or missing." }), {
+      return new Response(JSON.stringify({ error: "Gemini API key invalid or missing." }), {
         status: 500, headers: jsonHeaders,
       });
     }
     if (!response.ok) {
       const t = await response.text();
-      console.error("Sarvam chat error:", response.status, t);
+      console.error("Gemini chat error:", response.status, t);
       return new Response(JSON.stringify({ error: "AI service error" }), {
         status: 500, headers: jsonHeaders,
       });
