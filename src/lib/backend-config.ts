@@ -18,6 +18,11 @@ function readCatalystApiUrl(): string {
   return normalizeCatalystApiUrl(import.meta.env.VITE_CATALYST_API_URL ?? "");
 }
 
+/** Same-origin Vercel rewrite — avoids Catalyst CORS whitelisting. */
+function isVercelCatalystProxy(base: string): boolean {
+  return base === "/catalyst-api" || base.endsWith("/catalyst-api");
+}
+
 /** Misconfiguration hint for Slate banner (null = OK). */
 export function getBackendConfigIssue(): string | null {
   const raw = import.meta.env.VITE_CATALYST_API_URL?.trim() ?? "";
@@ -32,8 +37,11 @@ export function getBackendConfigIssue(): string | null {
   }
 
   if (import.meta.env.PROD) {
+    if (isVercelCatalystProxy(base)) {
+      return null;
+    }
     if (base.includes("/catalyst-api") || base.startsWith("/")) {
-      return "Slate is using the local Vite proxy (/catalyst-api). Set the full Catalyst URL (https://…catalystserverless.in/server/pashumitra_api) and rebuild.";
+      return "Relative API path without Vercel proxy. Set VITE_CATALYST_API_URL=/catalyst-api on Vercel, or use the full Catalyst HTTPS URL and whitelist your domain in Catalyst CORS.";
     }
     if (!base.startsWith("https://")) {
       return "Production requires an https:// Catalyst function URL, not localhost.";
@@ -51,6 +59,7 @@ export function isBackendConfigured(): boolean {
   const base = readCatalystApiUrl();
   if (!base) return false;
   if (import.meta.env.PROD) {
+    if (isVercelCatalystProxy(base)) return true;
     return base.startsWith("https://") && base.includes("catalystserverless");
   }
   return true;

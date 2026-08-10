@@ -7,7 +7,11 @@
   "outputDirectory": "dist",
   "rewrites": [
     {
-      "source": "/((?!assets/).*)",
+      "source": "/catalyst-api/:path*",
+      "destination": "https://project-rainfall-60075686570.development.catalystserverless.in/server/pashumitra_api/:path*"
+    },
+    {
+      "source": "/((?!assets/|catalyst-api/).*)",
       "destination": "/index.html"
     }
   ]
