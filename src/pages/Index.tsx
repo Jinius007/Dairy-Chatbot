@@ -97,8 +97,9 @@ const Index = () => {
 
   const openMainChat = () => {
     const convs = loadConvs();
-    const general = convs.find((c) => !isRationConversation(c.id));
+    const general = convs.find((c) => c.id !== activeId && !isRationConversation(c.id));
     if (general) {
+      setConversations(convs);
       setActiveId(general.id);
       return;
     }
@@ -184,6 +185,7 @@ const Index = () => {
       <main className={`${activeId ? "flex" : "hidden md:flex"} flex-1 flex-col min-h-0 overflow-hidden`}>
         {activeId ? (
           <ChatView
+            key={activeId}
             conversationId={activeId}
             onBack={() => setActiveId(null)}
             onOpenMainChat={openMainChat}

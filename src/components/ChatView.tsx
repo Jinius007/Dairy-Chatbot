@@ -109,7 +109,7 @@ function linkifyText(text: string) {
 
 export function ChatView({ conversationId, onBack, onOpenMainChat, onConversationUpdated }: Props) {
   const [messages, setMessages] = useState<Message[]>([]);
-  const [rationMode] = useState(() => isRationConversation(conversationId));
+  const rationMode = isRationConversation(conversationId);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
   const [transcribing, setTranscribing] = useState(false);
@@ -587,7 +587,7 @@ export function ChatView({ conversationId, onBack, onOpenMainChat, onConversatio
           <button
             type="button"
             onClick={onOpenMainChat}
-            className="hidden sm:inline-flex text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-white/30 hover:bg-white/10 shrink-0"
+            className="inline-flex text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-white/30 hover:bg-white/10 shrink-0"
           >
             {activeUserLang === "en" ? "Main chat" : "मुख्य चैट"}
           </button>
