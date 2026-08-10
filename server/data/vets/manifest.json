@@ -1,0 +1,29 @@
+{
+  "generatedAt": "2026-06-29T06:04:26.580Z",
+  "total": 50000,
+  "vets": 20941,
+  "paravets": 29059,
+  "states": [
+    "PB",
+    "HR",
+    "UP",
+    "UK",
+    "DL",
+    "RJ",
+    "GJ",
+    "MP",
+    "MH",
+    "CG",
+    "KA",
+    "AP",
+    "TS",
+    "TN",
+    "KL",
+    "WB",
+    "BR",
+    "OR",
+    "AS",
+    "JH"
+  ],
+  "note": "Dummy demo database for PashuMitra vet directory"
+}

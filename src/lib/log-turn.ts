@@ -1,4 +1,4 @@
-/** Log Q&A turns to Catalyst Data Store via /log-turn. */
+/** Log Q&A turns via /api/log-turn. */
 import { getLogTurnUrl } from "@/lib/backend-config";
 export type LogMode = "chat" | "voice" | "call";
 

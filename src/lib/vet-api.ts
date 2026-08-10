@@ -1,11 +1,5 @@
 import type { VetProfessional, VetProfessionalType, VetRegistrationInput } from "./vet-types";
-import { getChatRequestHeaders, isBackendConfigured } from "./backend-config";
-
-function catalystBase(): string {
-  const raw = import.meta.env.VITE_CATALYST_API_URL?.trim() ?? "";
-  let base = raw.replace(/^VITE_CATALYST_API_URL\s*=\s*/i, "").replace(/^["']|["']$/g, "").trim();
-  return base.replace(/\/$/, "");
-}
+import { getApiBaseUrl, getChatRequestHeaders, isBackendConfigured } from "./backend-config";
 
 export function getVetsNearbyUrl(lat: number, lng: number, type: "all" | VetProfessionalType = "all", limit = 5): string {
   const params = new URLSearchParams({
@@ -14,15 +8,15 @@ export function getVetsNearbyUrl(lat: number, lng: number, type: "all" | VetProf
     type,
     limit: String(limit),
   });
-  return `${catalystBase()}/vets/nearby?${params}`;
+  return `${getApiBaseUrl()}/vets/nearby?${params}`;
 }
 
 export function getVetsRegisterUrl(): string {
-  return `${catalystBase()}/vets/register`;
+  return `${getApiBaseUrl()}/vets/register`;
 }
 
 export function getVetsStatsUrl(): string {
-  return `${catalystBase()}/vets/stats`;
+  return `${getApiBaseUrl()}/vets/stats`;
 }
 
 const LOCAL_VETS_KEY = "pashumitra_registered_vets_v1";

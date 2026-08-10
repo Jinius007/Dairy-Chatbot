@@ -16,15 +16,15 @@ import { digitizePdfCached } from "./lib/sarvam-doc-digitization.mjs";
 
 const OUT_TS = path.join(
   ROOT,
-  "catalyst/functions/pashumitra_api/lib/knowledge/sarvam-rag.generated.ts",
+  "server/lib/knowledge/sarvam-rag.generated.ts",
 );
 const OUT_MANIFEST = path.join(
   ROOT,
-  "catalyst/functions/pashumitra_api/lib/knowledge/sources/sarvam-rag-manifest.json",
+  "server/lib/knowledge/sources/sarvam-rag-manifest.json",
 );
 const VISION_CACHE = path.join(
   ROOT,
-  "catalyst/functions/pashumitra_api/lib/knowledge/sources/vision-cache",
+  "server/lib/knowledge/sources/vision-cache",
 );
 
 const MAX_TOTAL_CHARS = 620_000;

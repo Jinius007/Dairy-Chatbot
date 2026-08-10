@@ -3,7 +3,7 @@ import {
   hasDairySignal,
   isDairyRelatedQuery,
   isStrictOffTopic,
-} from "../../../catalyst/functions/pashumitra_api/lib/domain-guard.ts";
+} from "../../../server/lib/domain-guard.ts";
 
 describe("domain-guard", () => {
   it("allows dairy queries including Banglish without gaay", () => {

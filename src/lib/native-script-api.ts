@@ -3,7 +3,7 @@ import { needsNativeScriptConversion } from "@/lib/languages";
 
 const NATIVE_SCRIPT_TIMEOUT_MS = 12_000;
 
-/** Convert romanized Indic text to native script via Catalyst + Sarvam (only when needed). */
+/** Convert romanized Indic text to native script via /api/native-script (Sarvam). */
 export async function ensureNativeScriptText(
   text: string,
   language: string | null | undefined,

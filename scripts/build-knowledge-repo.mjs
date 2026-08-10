@@ -5,7 +5,7 @@
  * - DAHD schemes pages (dahd.gov.in)
  * - Dairy Knowledge Portal section index
  *
- * Output: catalyst/functions/pashumitra_api/lib/knowledge/extension-material.generated.ts
+ * Output: server/lib/knowledge/extension-material.generated.ts
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -22,11 +22,11 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, "..");
 const OUT_TS = path.join(
   ROOT,
-  "catalyst/functions/pashumitra_api/lib/knowledge/extension-material.generated.ts",
+  "server/lib/knowledge/extension-material.generated.ts",
 );
 const OUT_MANIFEST = path.join(
   ROOT,
-  "catalyst/functions/pashumitra_api/lib/knowledge/sources/manifest.json",
+  "server/lib/knowledge/sources/manifest.json",
 );
 
 const KREPO_MATERIAL = path.join(KNOWLEDGE_REPOSITORY_DIR, "Material for AI Chatbot");

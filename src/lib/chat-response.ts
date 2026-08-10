@@ -1,4 +1,4 @@
-/** Parse [[LANG:xx]] header and stream chat completions from Catalyst. */
+/** Parse [[LANG:xx]] header and stream chat completions from /api/chat. */
 
 import { readSseChatStream } from "@/lib/chat-stream";
 import { createTimeoutSignal, anyAbortSignal } from "@/lib/abort-utils";

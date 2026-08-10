@@ -1,6 +1,6 @@
 /**
  * Generate dummy vet + paravet database (~50k) partitioned by Indian state.
- * Output: catalyst/functions/pashumitra_api/data/vets/{stateCode}.json
+ * Output: server/data/vets/{stateCode}.json
  *
  * Run: npm run generate:vets
  */
@@ -12,7 +12,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const OUT_DIR = path.join(
   __dirname,
   "..",
-  "catalyst/functions/pashumitra_api/data/vets",
+  "server/data/vets",
 );
 
 const TOTAL = Number(process.env.VET_DB_SIZE || "50000");

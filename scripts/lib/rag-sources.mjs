@@ -768,7 +768,7 @@ async function fetchDkpIndex() {
 
 /** Load curated static knowledge shipped with Catalyst (fallback corpus). */
 function loadBundledKnowledgeDocs() {
-  const knowledgeDir = path.join(ROOT, "catalyst/functions/pashumitra_api/lib/knowledge");
+  const knowledgeDir = path.join(ROOT, "server/lib/knowledge");
   const files = [
     "knowledge.ts",
     "dahd-schemes.ts",

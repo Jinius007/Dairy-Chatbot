@@ -1,111 +1,73 @@
 /**
- * Backend routing — Zoho Catalyst API (chat, transcribe, TTS, logging, YouTube).
- * Set VITE_CATALYST_API_URL in Slate / .env.local.
+ * Backend routing — Vercel serverless API at /api (same origin).
+ * Set VITE_API_URL=/api in Vercel env (default works without env).
  */
 
-/** Slate users often paste the whole `.env` line — strip that. */
-function normalizeCatalystApiUrl(raw: string): string {
+function normalizeApiBase(raw: string): string {
   let base = raw.trim();
-  if (!base) return base;
-
-  // "VITE_CATALYST_API_URL=https://..." pasted into the value field
-  base = base.replace(/^VITE_CATALYST_API_URL\s*=\s*/i, "");
+  base = base.replace(/^VITE_API_URL\s*=\s*/i, "");
   base = base.replace(/^["']|["']$/g, "").trim();
-  return base.replace(/\/$/, "");
+  return base.replace(/\/$/, "") || "/api";
 }
 
-function readCatalystApiUrl(): string {
-  return normalizeCatalystApiUrl(import.meta.env.VITE_CATALYST_API_URL ?? "");
+function readApiBase(): string {
+  const fromEnv = import.meta.env.VITE_API_URL?.trim();
+  if (fromEnv) return normalizeApiBase(fromEnv);
+  return "/api";
 }
 
-/** Same-origin Vercel rewrite — avoids Catalyst CORS whitelisting. */
-function isVercelCatalystProxy(base: string): boolean {
-  return base === "/catalyst-api" || base.endsWith("/catalyst-api");
-}
-
-/** Misconfiguration hint for Slate banner (null = OK). */
+/** Misconfiguration hint (null = OK). */
 export function getBackendConfigIssue(): string | null {
-  const raw = import.meta.env.VITE_CATALYST_API_URL?.trim() ?? "";
-  const base = readCatalystApiUrl();
-
-  if (!base) {
-    return "VITE_CATALYST_API_URL is not set.";
+  const raw = import.meta.env.VITE_API_URL?.trim() ?? "";
+  if (/^VITE_API_URL\s*=/i.test(raw)) {
+    return "Env value includes the variable name — use /api only in the value field.";
   }
-
-  if (/^VITE_CATALYST_API_URL\s*=/i.test(raw)) {
-    return "Slate value includes the variable name — use URL only in the value field, then rebuild. (Using normalized URL for now.)";
-  }
-
-  if (import.meta.env.PROD) {
-    if (isVercelCatalystProxy(base)) {
-      return null;
-    }
-    if (base.includes("/catalyst-api") || base.startsWith("/")) {
-      return "Relative API path without Vercel proxy. Set VITE_CATALYST_API_URL=/catalyst-api on Vercel, or use the full Catalyst HTTPS URL and whitelist your domain in Catalyst CORS.";
-    }
-    if (!base.startsWith("https://")) {
-      return "Production requires an https:// Catalyst function URL, not localhost.";
-    }
-    if (!base.includes("catalystserverless")) {
-      return "VITE_CATALYST_API_URL should be your Catalyst function URL (*.catalystserverless.in or .com).";
-    }
-  }
-
   return null;
 }
 
-/** True when API calls may proceed (normalized URL looks usable). */
 export function isBackendConfigured(): boolean {
-  const base = readCatalystApiUrl();
-  if (!base) return false;
-  if (import.meta.env.PROD) {
-    if (isVercelCatalystProxy(base)) return true;
-    return base.startsWith("https://") && base.includes("catalystserverless");
-  }
-  return true;
+  return Boolean(readApiBase());
 }
 
-function catalystBase(): string {
+function apiBase(): string {
   if (!isBackendConfigured()) {
-    throw new Error(getBackendConfigIssue() ?? "VITE_CATALYST_API_URL is not configured");
+    throw new Error(getBackendConfigIssue() ?? "API base URL is not configured");
   }
-  return readCatalystApiUrl();
+  return readApiBase();
 }
 
-/** Chat + call LLM completions (SSE). */
 export function getChatCompletionsUrl(): string {
-  return `${catalystBase()}/chat`;
+  return `${apiBase()}/chat`;
 }
 
 export function getChatRequestHeaders(): Record<string, string> {
   return { "Content-Type": "application/json" };
 }
 
-/** Voice STT. */
 export function getTranscribeUrl(): string {
-  return `${catalystBase()}/transcribe`;
+  return `${apiBase()}/transcribe`;
 }
 
 export function getTranscribeHeaders(): Record<string, string> {
   return getChatRequestHeaders();
 }
 
-/** Romanized Indic → native script (Sarvam transliteration). */
 export function getNativeScriptUrl(): string {
-  return `${catalystBase()}/native-script`;
+  return `${apiBase()}/native-script`;
 }
 
-/** TTS proxy (Bhashini + Google fallback). */
 export function getTtsUrl(): string {
-  return `${catalystBase()}/tts`;
+  return `${apiBase()}/tts`;
 }
 
-/** Conversation turn logging (Catalyst Data Store). */
 export function getLogTurnUrl(): string {
-  return `${catalystBase()}/log-turn`;
+  return `${apiBase()}/log-turn`;
 }
 
-/** YouTube verified search. */
 export function getYoutubeSearchUrl(): string {
-  return `${catalystBase()}/youtube-search`;
+  return `${apiBase()}/youtube-search`;
+}
+
+export function getApiBaseUrl(): string {
+  return apiBase();
 }

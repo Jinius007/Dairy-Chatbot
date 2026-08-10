@@ -4,8 +4,7 @@ import path from "path";
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
-  const catalystProxyTarget = env.CATALYST_SERVE_URL || "http://localhost:3000";
-  const catalystProxyPath = env.CATALYST_SERVE_PATH || "/server/pashumitra_api";
+  const apiProxyTarget = env.API_SERVE_URL || "http://localhost:3000";
 
   return {
     server: {
@@ -15,10 +14,9 @@ export default defineConfig(({ mode }) => {
         overlay: false,
       },
       proxy: {
-        "/catalyst-api": {
-          target: catalystProxyTarget,
+        "/api": {
+          target: apiProxyTarget,
           changeOrigin: true,
-          rewrite: (p) => p.replace(/^\/catalyst-api/, catalystProxyPath),
         },
       },
     },

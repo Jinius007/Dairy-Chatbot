@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { isManureWasteQuery } from "../../../catalyst/functions/pashumitra_api/lib/knowledge/manure-waste-policy.ts";
+import { isManureWasteQuery } from "../../../server/lib/knowledge/manure-waste-policy.ts";
 
 describe("isManureWasteQuery", () => {
   it("matches dung and waste management queries", () => {

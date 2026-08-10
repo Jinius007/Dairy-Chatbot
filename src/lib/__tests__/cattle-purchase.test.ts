@@ -2,8 +2,8 @@ import { describe, expect, it } from "vitest";
 import {
   buildCattlePurchasePrompt,
   isCattlePurchaseQuery,
-} from "../../../catalyst/functions/pashumitra_api/lib/knowledge/cattle-purchase-policy.ts";
-import { isMilkMarketingQuery } from "../../../catalyst/functions/pashumitra_api/lib/cooperative-location.ts";
+} from "../../../server/lib/knowledge/cattle-purchase-policy.ts";
+import { isMilkMarketingQuery } from "../../../server/lib/cooperative-location.ts";
 
 describe("cattle-purchase-policy", () => {
   it("detects buy-cow queries", () => {
