@@ -135,7 +135,7 @@ export function computeBalancedRationFromVoice(
     return { ok: false, summary: warnings.length ? `${msg} (${warnings.join("; ")})` : msg };
   }
 
-  const result = optimizeRation(inputs, animal, requirement.total);
+  const result = optimizeRation(inputs, animal, requirement);
   const warn = warnings.length ? `\n(${warnings.join("; ")})` : "";
   return { ok: true, summary: formatRationSummary(result, lang) + warn, result };
 }
