@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
-const outFile = join(root, "api/index.js");
+const outFile = join(root, "api/_handler.cjs");
 
 mkdirSync(dirname(outFile), { recursive: true });
 

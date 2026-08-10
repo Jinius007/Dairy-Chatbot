@@ -34,8 +34,8 @@ terminals/
 .vercel
 
 # Vercel API bundle (built by scripts/build-vercel-api.mjs)
-api/index.js
-api/index.js.map
+api/_handler.cjs
+api/_handler.cjs.map
 
 # Catalyst / Slate local CLI (legacy — not used on Vercel)
 .catalystrc

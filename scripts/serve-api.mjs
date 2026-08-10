@@ -6,7 +6,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
 const port = Number(process.env.PORT || 3000);
 
-const app = require(join(root, "api/index.js"));
+const app = require(join(root, "api/_handler.cjs"));
 
 createServer((req, res) => app(req, res)).listen(port, () => {
   console.log(`API listening on http://localhost:${port}`);
