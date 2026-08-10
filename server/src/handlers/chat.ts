@@ -23,7 +23,8 @@ import {
 } from "../../lib/content-safety.ts";
 import { tryYoutubeVideoHint } from "../../lib/youtube-search.ts";
 import { retrieveRagContext } from "../../lib/sarvam-rag.ts";
-import { extractChatText, geminiChatCompletion, getGeminiChatModel, hasGeminiApiKey } from "../../lib/gemini.ts";
+import { extractChatText } from "../../lib/gemini.ts";
+import { getSarvamChatModel, hasSarvamApiKey, sarvamChatCompletion } from "../../lib/sarvam.ts";
 import { buildCooperativeMarketingPrompt, MILK_MARKETING_SYSTEM_RULES } from "../../lib/cooperative-location.ts";
 import { buildCattlePurchasePrompt, CATTLE_PURCHASE_RULES } from "../../lib/knowledge/cattle-purchase-policy.ts";
 import { buildManureWastePrompt, MANURE_WASTE_RULES } from "../../lib/knowledge/manure-waste-policy.ts";
@@ -335,8 +336,8 @@ export async function handleChat(req: Request): Promise<Response> {
       return new Response(JSON.stringify({ text: directReply }), { headers: jsonHeaders });
     }
 
-    if (!hasGeminiApiKey()) {
-      return new Response(JSON.stringify({ error: "GEMINI_API_KEY not configured on server." }), {
+    if (!hasSarvamApiKey()) {
+      return new Response(JSON.stringify({ error: "SARVAM_API_KEY not configured on server." }), {
         status: 503, headers: jsonHeaders,
       });
     }
@@ -385,8 +386,8 @@ This is regular chat — NOT a report. Max ~500 words this turn.
           mode === "call" ? Promise.resolve(null) : tryYoutubeVideoHint(safeMessages),
           retrieveRagContext(userCtx || lastUser?.content || "", ragChunks),
         ]);
-        return geminiChatCompletion({
-          model: getGeminiChatModel(),
+        return sarvamChatCompletion({
+          model: getSarvamChatModel(),
           temperature: 0.4,
           max_tokens: maxTokens,
           messages: buildChatMessages(youtubeHint, ragContext),
@@ -398,8 +399,8 @@ This is regular chat — NOT a report. Max ~500 words this turn.
     const youtubeHint = mode === "call" ? null : await tryYoutubeVideoHint(safeMessages);
     const ragContext = await retrieveRagContext(userCtx || lastUser?.content || "", ragChunks);
 
-    const response = await geminiChatCompletion({
-      model: getGeminiChatModel(),
+    const response = await sarvamChatCompletion({
+      model: getSarvamChatModel(),
       temperature: 0.4,
       max_tokens: maxTokens,
       messages: buildChatMessages(youtubeHint, ragContext),
@@ -412,13 +413,13 @@ This is regular chat — NOT a report. Max ~500 words this turn.
       });
     }
     if (response.status === 401 || response.status === 403) {
-      return new Response(JSON.stringify({ error: "Gemini API key invalid or missing." }), {
+      return new Response(JSON.stringify({ error: "Sarvam API key invalid or missing." }), {
         status: 500, headers: jsonHeaders,
       });
     }
     if (!response.ok) {
       const t = await response.text();
-      console.error("Gemini chat error:", response.status, t);
+      console.error("Sarvam chat error:", response.status, t);
       return new Response(JSON.stringify({ error: "AI service error" }), {
         status: 500, headers: jsonHeaders,
       });
