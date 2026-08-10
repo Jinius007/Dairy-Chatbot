@@ -75,6 +75,8 @@ interface Message {
 interface Props {
   conversationId: string;
   onBack?: () => void;
+  /** Leave ration advisory and open the general assistant chat. */
+  onOpenMainChat?: () => void;
   onConversationUpdated?: () => void;
 }
 
@@ -105,7 +107,7 @@ function linkifyText(text: string) {
   );
 }
 
-export function ChatView({ conversationId, onBack, onConversationUpdated }: Props) {
+export function ChatView({ conversationId, onBack, onOpenMainChat, onConversationUpdated }: Props) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [rationMode] = useState(() => isRationConversation(conversationId));
   const [input, setInput] = useState("");
@@ -561,8 +563,14 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
   return (
     <div className="flex flex-col h-full min-h-0 overflow-hidden">
       <div className="bg-header text-header-foreground px-3 py-2.5 flex items-center gap-3 shadow-md shrink-0 border-b border-black/10">
-        {onBack && (
-          <button type="button" onClick={onBack} className="md:hidden p-1.5 rounded-lg hover:bg-white/10">
+        {(onBack || (rationMode && onOpenMainChat)) && (
+          <button
+            type="button"
+            onClick={rationMode && onOpenMainChat ? onOpenMainChat : onBack}
+            className={`p-1.5 rounded-lg hover:bg-white/10 ${rationMode ? "" : "md:hidden"}`}
+            aria-label={rationMode ? "Back to main chat" : "Back to chats"}
+            title={rationMode ? "Back to main chat" : "Back to chats"}
+          >
             <ArrowLeft className="w-5 h-5" />
           </button>
         )}
@@ -575,6 +583,15 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
             {rationMode ? "Chat · text & voice" : "Online · Live voice available"}
           </div>
         </div>
+        {rationMode && onOpenMainChat ? (
+          <button
+            type="button"
+            onClick={onOpenMainChat}
+            className="hidden sm:inline-flex text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-white/30 hover:bg-white/10 shrink-0"
+          >
+            {activeUserLang === "en" ? "Main chat" : "मुख्य चैट"}
+          </button>
+        ) : null}
         {rationMode ? (
           <CallButton mode="ration" rationLang={activeUserLang === "en" ? "en" : "hi"} conversationId={conversationId} />
         ) : (

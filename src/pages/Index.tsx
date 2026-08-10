@@ -6,7 +6,7 @@ import { MessageSquarePlus, MessagesSquare, Search, Stethoscope, Trash2, Wheat }
 import { Link } from "react-router-dom";
 import { RationAdvisoryView } from "@/components/RationAdvisoryView";
 import { CallView } from "@/components/CallView";
-import { markRationConversation, type PoshanLang } from "@/lib/poshan-conversation";
+import { markRationConversation, isRationConversation, type PoshanLang } from "@/lib/poshan-conversation";
 import { rationChatBootstrap } from "@/lib/ration-chat-flow";
 
 interface Conversation {
@@ -95,6 +95,20 @@ const Index = () => {
     setRationCallOpen(true);
   };
 
+  const openMainChat = () => {
+    const convs = loadConvs();
+    const general = convs.find((c) => !isRationConversation(c.id));
+    if (general) {
+      setActiveId(general.id);
+      return;
+    }
+    const conv = createConversation();
+    const next = [conv, ...convs];
+    saveConvs(next);
+    setConversations(next);
+    setActiveId(conv.id);
+  };
+
   const filtered = conversations.filter((c) =>
     !search || c.title.toLowerCase().includes(search.toLowerCase()) || c.last_message?.toLowerCase().includes(search.toLowerCase())
   );
@@ -169,7 +183,12 @@ const Index = () => {
 
       <main className={`${activeId ? "flex" : "hidden md:flex"} flex-1 flex-col min-h-0 overflow-hidden`}>
         {activeId ? (
-          <ChatView conversationId={activeId} onBack={() => setActiveId(null)} onConversationUpdated={refresh} />
+          <ChatView
+            conversationId={activeId}
+            onBack={() => setActiveId(null)}
+            onOpenMainChat={openMainChat}
+            onConversationUpdated={refresh}
+          />
         ) : (
           <div className="flex-1 flex flex-col items-center justify-center bg-muted text-center p-8">
             <div className="w-32 h-32 rounded-2xl bg-accent flex items-center justify-center mb-6 border border-primary/15 shadow-sm">
