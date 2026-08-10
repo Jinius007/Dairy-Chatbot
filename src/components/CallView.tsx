@@ -11,8 +11,11 @@ import { trimChatHistory } from "@/lib/chat-history";
 import { fetchChatContinuation, looksIncompleteReply } from "@/lib/chat-continuation";
 import { speakText, stopSpeech, unlockAudioPlayback, waitForCallPlaybackIdle } from "@/lib/speech";
 import { startCallBargeInWithStream, type CallBargeInHandle } from "@/lib/call-barge-in";
+import { startBrowserSttWithFallbacks, type BrowserSttSession } from "@/lib/browserStt";
+import { preferBrowserStt } from "@/lib/voice-config";
 import { APP_DISPLAY_NAME } from "@/lib/app-brand";
 import { logConversationTurn } from "@/lib/log-turn";
+import { getSessionId } from "@/lib/session";
 import {
   containsAbusiveLanguage,
   filterAbusiveLanguage,
@@ -114,6 +117,7 @@ export function CallView({ open, onClose, conversationId, history = [], mode = "
   const bargeTriggeredRef = useRef(false);
   const interruptListenTimerRef = useRef<number | null>(null);
   const poshanRef = useRef<PoshanConvState | null>(null);
+  const browserSttRef = useRef<BrowserSttSession | null>(null);
   const rationMode = mode === "ration";
 
   const setPhaseBoth = (p: Phase) => {
@@ -252,28 +256,19 @@ export function CallView({ open, onClose, conversationId, history = [], mode = "
     [interruptAndListen, resumeListening, speak],
   );
 
-  const processBlob = async (blob: Blob, mime: string) => {
-    if (!isBackendConfigured()) {
-      toast.error("Backend is not configured on this deployment.");
-      resumeListening(500);
-      return;
-    }
+  const processUserText = async (userTextRaw: string, startedAt: number) => {
     if (closedRef.current || processingRef.current) return;
     processingRef.current = true;
     setInterrupted(false);
     setPhaseBoth("thinking");
-    const startedAt = Date.now();
     try {
-      const buf = await blob.arrayBuffer();
-      const b64 = arrayBufferToBase64(buf);
-      const tData = await transcribeAudio(b64, mime);
-      if (tData.blocked) {
+      if (userTextRaw === "[BLOCKED]" || containsAbusiveLanguage(userTextRaw)) {
         toast.message("Please use respectful language.");
         processingRef.current = false;
         resumeListening(500);
         return;
       }
-      const userText = filterAbusiveLanguage(tData.transcript?.trim() || "");
+      const userText = filterAbusiveLanguage(userTextRaw.trim());
       if (!userText || containsAbusiveLanguage(userText)) {
         toast.message("Didn't catch that — please speak again.");
         processingRef.current = false;
@@ -308,6 +303,12 @@ export function CallView({ open, onClose, conversationId, history = [], mode = "
         answer = result.reply;
         lang = pState.lang;
       } else {
+        if (!isBackendConfigured()) {
+          toast.error("Backend is not configured on this deployment.");
+          processingRef.current = false;
+          resumeListening(500);
+          return;
+        }
         const chatCtrl = new AbortController();
         chatAbortRef.current = chatCtrl;
         const raw = await fetchChatCompletionText({
@@ -380,6 +381,8 @@ export function CallView({ open, onClose, conversationId, history = [], mode = "
         /* ignore */
       }
       mediaRef.current = null;
+      browserSttRef.current?.stop();
+      browserSttRef.current = null;
 
       await unlockAudioPlayback();
       await playAdvisorSpeech(answer, lang);
@@ -392,10 +395,71 @@ export function CallView({ open, onClose, conversationId, history = [], mode = "
     }
   };
 
+  const processBlob = async (blob: Blob, mime: string) => {
+    if (preferBrowserStt()) {
+      toast.message("Browser speech is enabled — speak when listening.");
+      resumeListening(400);
+      return;
+    }
+    if (!isBackendConfigured()) {
+      toast.error("Backend is not configured on this deployment.");
+      resumeListening(500);
+      return;
+    }
+    if (closedRef.current || processingRef.current) return;
+    setPhaseBoth("thinking");
+    const startedAt = Date.now();
+    try {
+      const buf = await blob.arrayBuffer();
+      const b64 = arrayBufferToBase64(buf);
+      const tData = await transcribeAudio(b64, mime);
+      if (tData.blocked) {
+        toast.message("Please use respectful language.");
+        resumeListening(500);
+        return;
+      }
+      await processUserText(tData.transcript?.trim() || "", startedAt);
+    } catch (e: unknown) {
+      console.error(e);
+      toast.error(e instanceof Error ? e.message : "Something went wrong");
+      if (!closedRef.current) resumeListening(800);
+    }
+  };
+
   function startListening() {
     if (closedRef.current) return;
     if (processingRef.current || phaseRef.current === "thinking") return;
     if (phaseRef.current === "speaking" && !bargeTriggeredRef.current) return;
+
+    if (preferBrowserStt()) {
+      setInterrupted(false);
+      bargeTriggeredRef.current = false;
+      stopSilenceMonitor();
+      browserSttRef.current?.stop();
+      setPhaseBoth("listening");
+      const lang = userLangRef.current || rationLang || "hi";
+      const session = startBrowserSttWithFallbacks(lang, 22000);
+      browserSttRef.current = session;
+      maxRecordTimerRef.current = window.setTimeout(() => {
+        session.stop();
+      }, 22000) as unknown as number;
+      void session.promise
+        .then((text) => {
+          browserSttRef.current = null;
+          if (maxRecordTimerRef.current) window.clearTimeout(maxRecordTimerRef.current);
+          maxRecordTimerRef.current = null;
+          if (closedRef.current || phaseRef.current !== "listening") return;
+          void processUserText(text.trim(), Date.now());
+        })
+        .catch(() => {
+          browserSttRef.current = null;
+          if (maxRecordTimerRef.current) window.clearTimeout(maxRecordTimerRef.current);
+          maxRecordTimerRef.current = null;
+          if (!closedRef.current) resumeListening(400);
+        });
+      return;
+    }
+
     const stream = streamRef.current;
     if (!stream || !stream.active) return;
     if (mediaRef.current?.state === "recording") return;
@@ -526,6 +590,8 @@ export function CallView({ open, onClose, conversationId, history = [], mode = "
       stopSilenceMonitor();
       clearBargeWatch();
       clearInterruptListenTimer();
+      browserSttRef.current?.stop();
+      browserSttRef.current = null;
       try {
         if (mediaRef.current?.state === "recording") mediaRef.current.stop();
       } catch {
@@ -548,6 +614,8 @@ export function CallView({ open, onClose, conversationId, history = [], mode = "
     stopSilenceMonitor();
     clearBargeWatch();
     clearInterruptListenTimer();
+    browserSttRef.current?.stop();
+    browserSttRef.current = null;
     try {
       if (mediaRef.current?.state === "recording") mediaRef.current.stop();
     } catch {

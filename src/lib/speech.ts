@@ -6,6 +6,7 @@ import {
   TTS_LANG,
 } from "@/lib/languages";
 import { filterAbusiveLanguage } from "@/lib/content-safety";
+import { preferBrowserTts } from "@/lib/voice-config";
 import { getTtsUrl } from "@/lib/backend-config";
 
 let activeToken = 0;
@@ -415,6 +416,16 @@ async function runSpeech(
 ): Promise<void> {
   const cleaned = filterAbusiveLanguage(text);
   if (!cleaned.trim() || token !== activeToken) return;
+
+  if (preferBrowserTts()) {
+    if (isCall) {
+      if (await speakViaBrowserSynth(cleaned, lang, token, forceLang, preferFemale)) return;
+    } else if (await speakViaBrowserSynth(cleaned, lang, token, forceLang, preferFemale)) {
+      return;
+    }
+  }
+
+  if (token !== activeToken) return;
   if (isCall) {
     if (await speakViaBhashiniCall(cleaned, lang, token, forceLang)) return;
   } else if (await speakViaBhashini(cleaned, lang, token, forceLang)) {

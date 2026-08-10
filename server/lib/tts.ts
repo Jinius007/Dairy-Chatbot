@@ -1,6 +1,5 @@
-/** Sarvam Bulbul v3 (primary) + Bhashini + Google TTS fallbacks. */
+/** Bhashini + Google TTS fallbacks (no Sarvam). Browser speechSynthesis is preferred on the client. */
 import { BHASHINI_LANG } from "./bhashini.ts";
-import { appLangToSarvam, hasSarvamApiKey, sarvamSynthesizeSpeech } from "./sarvam.ts";
 
 const BHASHINI_SUPPORTED = new Set(["hi", "bn", "ta", "te", "mr", "kn", "ml", "en"]);
 
@@ -169,28 +168,16 @@ export type SynthesizeSpeechResult = {
 export async function synthesizeSpeech(
   text: string,
   lang = "hi",
-  opts?: { callMode?: boolean },
+  _opts?: { callMode?: boolean },
 ): Promise<SynthesizeSpeechResult> {
   const code = String(lang || "hi").toLowerCase();
-  const sarvamLang = appLangToSarvam(code) || "hi-IN";
   const cleaned = cleanTtsText(text, code);
   const parts = splitTtsClauses(cleaned).length > 0 ? splitTtsClauses(cleaned) : chunkText(cleaned);
   const audioChunks: Uint8Array[] = [];
   let contentType = "audio/mpeg";
 
-  const trySarvam = hasSarvamApiKey();
+  const apiKey = Deno.env.get("BHASHINI_API_KEY");
   for (const part of parts) {
-    if (trySarvam) {
-      try {
-        audioChunks.push(await sarvamSynthesizeSpeech(part, sarvamLang, opts));
-        contentType = "audio/mpeg";
-        continue;
-      } catch (err) {
-        console.warn("Sarvam TTS failed, falling back:", err instanceof Error ? err.message : err);
-      }
-    }
-
-    const apiKey = Deno.env.get("BHASHINI_API_KEY");
     if (BHASHINI_SUPPORTED.has(code)) {
       try {
         audioChunks.push(await synthesizeBhashini(part, code, apiKey));

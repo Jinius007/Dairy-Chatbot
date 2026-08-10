@@ -1,4 +1,4 @@
-﻿/** LP ration compute for scripted voice/chat advisory flow. */
+/** LP ration compute for scripted voice/chat advisory flow. */
 import { FEED_LIBRARY, searchFeeds, type FeedItem } from "@/lib/feedLibrary";
 import { pickSeasonFeeds, type Region } from "@/lib/ration-calculator";
 import { regionForState } from "@/lib/india-regions";

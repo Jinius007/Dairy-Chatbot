@@ -4,7 +4,7 @@ import {
 } from "../../lib/content-safety.ts";
 import { detectLanguageCode } from "../../lib/languages.ts";
 import { ensureNativeScriptText } from "../../lib/native-script.ts";
-import { sarvamTranscribe } from "../../lib/sarvam.ts";
+import { hasSarvamApiKey, sarvamTranscribe } from "../../lib/sarvam.ts";
 
 const jsonHeaders = { "Content-Type": "application/json" };
 
@@ -17,6 +17,16 @@ function decodeBase64Audio(audioBase64: string): Uint8Array {
 
 export async function handleTranscribe(req: Request): Promise<Response> {
   if (req.method === "OPTIONS") return new Response(null, { status: 204 });
+
+  if (!hasSarvamApiKey()) {
+    return new Response(
+      JSON.stringify({
+        error:
+          "Server transcription is disabled. Use Chrome or Edge — the app listens with built-in browser speech (no API key).",
+      }),
+      { status: 503, headers: jsonHeaders },
+    );
+  }
 
   try {
     const { audioBase64, mimeType, language } = await req.json();

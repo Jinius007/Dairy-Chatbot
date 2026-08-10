@@ -11,6 +11,7 @@ import { VoiceRecorder } from "@/components/VoiceRecorder";
 import { isBackendConfigured } from "@/lib/backend-config";
 import { transcribeAudio } from "@/lib/transcribe-api";
 import { filterAbusiveLanguage } from "@/lib/content-safety";
+import { preferBrowserStt } from "@/lib/voice-config";
 import type { PoshanLang } from "@/lib/poshan-conversation";
 
 interface Props {
@@ -29,7 +30,23 @@ export function RationAdvisoryView({ open, onClose, onStartChat, onStartCall }: 
     saveRationAdvisoryLang(code);
   }, []);
 
+  const handleWelcomeTranscript = useCallback((txt: string) => {
+    const text = filterAbusiveLanguage(txt.trim());
+    if (!text) {
+      toast.error("Could not hear — tap a language or try again");
+      return;
+    }
+    const code = matchLangCode(text);
+    if (code === "en") pickLang("en");
+    else if (code) pickLang("hi");
+    else toast.error("Say Hindi or English, or tap below");
+  }, [pickLang]);
+
   const handleWelcomeVoice = async (b64: string, mime: string) => {
+    if (preferBrowserStt()) {
+      toast.message("Tap mic and speak — browser speech is enabled.");
+      return;
+    }
     if (!isBackendConfigured()) {
       toast.error("Backend is not configured.");
       return;
@@ -97,7 +114,13 @@ export function RationAdvisoryView({ open, onClose, onStartChat, onStartCall }: 
                 <p className="text-xs text-muted-foreground text-center">
                   बोलकर भाषा चुनें / Or speak Hindi or English
                 </p>
-                <VoiceRecorder onRecorded={handleWelcomeVoice} disabled={transcribingLang} large />
+                <VoiceRecorder
+                  speechLang="hi"
+                  onTranscript={handleWelcomeTranscript}
+                  onRecorded={handleWelcomeVoice}
+                  disabled={transcribingLang}
+                  large
+                />
                 {transcribingLang && (
                   <p className="text-xs text-primary">Listening… / सुन रहे हैं…</p>
                 )}

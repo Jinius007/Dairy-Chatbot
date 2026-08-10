@@ -42,6 +42,7 @@ import { readSseChatStream } from "@/lib/chat-stream";
 import { createTimeoutSignal, anyAbortSignal, isAbortError } from "@/lib/abort-utils";
 import { filterToAllowedUrls } from "@/lib/allowed-urls";
 import { transcribeAudio } from "@/lib/transcribe-api";
+import { preferBrowserStt } from "@/lib/voice-config";
 import {
   SLOW_RESPONSE_MS,
   resolveUserLang,
@@ -533,7 +534,22 @@ export function ChatView({ conversationId, onBack, onOpenMainChat, onConversatio
     }
   };
 
+  const handleTranscript = async (txt: string) => {
+    const text = filterAbusiveLanguage(txt.trim());
+    if (!text) {
+      toast.error("Could not understand — please try again.");
+      return;
+    }
+    const voiceLang = detectLanguageCode(text) || activeUserLang || "hi";
+    setActiveUserLang(voiceLang);
+    await send(text, true, Date.now());
+  };
+
   const handleVoice = async (b64: string, mime: string) => {
+    if (preferBrowserStt()) {
+      toast.message("Use the mic button while it is listening — browser speech is enabled.");
+      return;
+    }
     if (!isBackendConfigured()) {
       toast.error("Backend is not configured on this deployment.");
       return;
@@ -693,11 +709,15 @@ export function ChatView({ conversationId, onBack, onOpenMainChat, onConversatio
         </button>
         <div className="flex-1 bg-card rounded-2xl px-4 py-2 border border-border/80 shadow-sm">
           <input
+            id="chat-message"
+            name="chat-message"
+            type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(input); } }}
             placeholder={transcribing ? waitTranscribingMessage(activeUserLang) : "Type your message"}
             disabled={sending || transcribing}
+            autoComplete="off"
             className="w-full bg-transparent outline-none text-sm font-medium placeholder:font-normal placeholder:text-muted-foreground"
           />
         </div>
@@ -712,7 +732,12 @@ export function ChatView({ conversationId, onBack, onOpenMainChat, onConversatio
             <CircleArrowUp className="w-5 h-5" strokeWidth={2.25} />
           </button>
         ) : (
-          <VoiceRecorder onRecorded={handleVoice} disabled={sending || transcribing} />
+          <VoiceRecorder
+            speechLang={activeUserLang || "hi"}
+            onTranscript={handleTranscript}
+            onRecorded={handleVoice}
+            disabled={sending || transcribing}
+          />
         )}
       </div>
     </div>

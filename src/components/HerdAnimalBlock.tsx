@@ -1,5 +1,6 @@
 import { CheckCircle2, Mic } from "lucide-react";
 import { VoiceRecorder } from "@/components/VoiceRecorder";
+import { preferBrowserStt } from "@/lib/voice-config";
 import type { AnimalFormData, AnimalStatus, RationShareLine } from "@/lib/ration-advisory-session";
 import { isAnimalFilled } from "@/lib/ration-advisory-session";
 import { getAnimalFieldLabels, localizedStatusLabel } from "@/lib/ration-advisory-labels";
@@ -9,6 +10,7 @@ interface Props {
   data: AnimalFormData;
   onChange: (patch: Partial<AnimalFormData>) => void;
   onVoice: (b64: string, mime: string) => void;
+  onTranscript?: (text: string) => void;
   transcribing?: boolean;
   readOnly?: boolean;
   shareLines?: RationShareLine[];
@@ -20,6 +22,7 @@ export function HerdAnimalBlock({
   data,
   onChange,
   onVoice,
+  onTranscript,
   transcribing = false,
   readOnly = false,
   shareLines,
@@ -59,7 +62,12 @@ export function HerdAnimalBlock({
             {transcribing ? (
               <span className="text-xs text-muted-foreground animate-pulse px-2">{L.listening}</span>
             ) : (
-              <VoiceRecorder onRecorded={(b64, mime) => onVoice(b64, mime)} disabled={transcribing} />
+              <VoiceRecorder
+                speechLang={lang || "hi"}
+                onTranscript={onTranscript}
+                onRecorded={(b64, mime) => onVoice(b64, mime)}
+                disabled={transcribing}
+              />
             )}
           </div>
         )}

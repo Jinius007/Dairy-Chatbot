@@ -146,7 +146,16 @@ const Index = () => {
         <div className="p-2 bg-muted/60 border-b border-border/60">
           <div className="flex items-center gap-2 bg-card rounded-xl px-3 py-2 border border-border/70 shadow-sm">
             <Search className="w-4 h-4 text-muted-foreground" strokeWidth={1.75} />
-            <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search chats" className="flex-1 bg-transparent outline-none text-sm font-medium placeholder:font-normal" />
+            <input
+              id="chat-search"
+              name="chat-search"
+              type="search"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search chats"
+              autoComplete="off"
+              className="flex-1 bg-transparent outline-none text-sm font-medium placeholder:font-normal"
+            />
           </div>
         </div>
         <div className="flex-1 overflow-y-auto">
