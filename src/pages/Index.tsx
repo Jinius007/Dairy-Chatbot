@@ -2,8 +2,12 @@ import { useEffect, useState } from "react";
 import { ChatView } from "@/components/ChatView";
 import { BrandAvatar } from "@/components/BrandAvatar";
 import { APP_DISPLAY_NAME } from "@/lib/app-brand";
-import { MessageSquarePlus, MessagesSquare, Search, Stethoscope, Trash2 } from "lucide-react";
+import { MessageSquarePlus, MessagesSquare, Search, Stethoscope, Trash2, Wheat } from "lucide-react";
 import { Link } from "react-router-dom";
+import { RationAdvisoryView } from "@/components/RationAdvisoryView";
+import { CallView } from "@/components/CallView";
+import { markRationConversation, type PoshanLang } from "@/lib/poshan-conversation";
+import { rationChatBootstrap } from "@/lib/ration-chat-flow";
 
 interface Conversation {
   id: string; title: string; last_message: string | null; language: string | null; updated_at: string;
@@ -28,6 +32,10 @@ const Index = () => {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [search, setSearch] = useState("");
+  const [rationOpen, setRationOpen] = useState(false);
+  const [rationCallOpen, setRationCallOpen] = useState(false);
+  const [rationCallLang, setRationCallLang] = useState<PoshanLang>("hi");
+  const [rationCallSession, setRationCallSession] = useState(0);
 
   useEffect(() => {
     let c = loadConvs();
@@ -58,6 +66,35 @@ const Index = () => {
     if (activeId === id) setActiveId(next[0]?.id || null);
   };
 
+  const startRationChat = (lang: PoshanLang) => {
+    const conv = { ...createConversation(), title: "Ration Advisory" };
+    markRationConversation(conv.id, lang);
+    const boot = rationChatBootstrap(lang);
+    const now = new Date().toISOString();
+    localStorage.setItem(
+      `pashumitra_msgs_${conv.id}`,
+      JSON.stringify(
+        boot.map((b, i) => ({
+          id: `boot-${i}`,
+          role: "assistant",
+          content: b.content,
+          language: b.language,
+          created_at: now,
+        })),
+      ),
+    );
+    const next = [conv, ...conversations];
+    saveConvs(next);
+    setConversations(next);
+    setActiveId(conv.id);
+  };
+
+  const startRationCall = (lang: PoshanLang) => {
+    setRationCallLang(lang);
+    setRationCallSession((s) => s + 1);
+    setRationCallOpen(true);
+  };
+
   const filtered = conversations.filter((c) =>
     !search || c.title.toLowerCase().includes(search.toLowerCase()) || c.last_message?.toLowerCase().includes(search.toLowerCase())
   );
@@ -74,6 +111,15 @@ const Index = () => {
             </div>
           </div>
           <div className="flex gap-1">
+            <button
+              type="button"
+              onClick={() => setRationOpen(true)}
+              className="p-2 hover:bg-white/10 rounded-lg"
+              title="Ration Advisory — balanced feed plan"
+              aria-label="Open Ration Advisory"
+            >
+              <Wheat className="w-5 h-5" strokeWidth={1.75} />
+            </button>
             <Link to="/vet" className="p-2 hover:bg-white/10 rounded-lg" title="Vet / Paravet registration">
               <Stethoscope className="w-5 h-5" strokeWidth={1.75} />
             </Link>
@@ -131,12 +177,36 @@ const Index = () => {
             </div>
             <h2 className="text-2xl font-semibold mb-2 tracking-tight text-foreground">{APP_DISPLAY_NAME}</h2>
             <p className="text-muted-foreground max-w-md font-medium leading-relaxed">Your AI companion for livestock care, dairy farming, and government schemes — in Indian languages with text and voice.</p>
-            <button type="button" onClick={newChat} className="mt-6 px-6 py-2.5 bg-primary text-primary-foreground rounded-xl hover:bg-primary-dark font-semibold shadow-sm">
-              Start a new chat
-            </button>
+            <div className="mt-6 flex flex-col sm:flex-row gap-3 items-center justify-center">
+              <button type="button" onClick={newChat} className="px-6 py-2.5 bg-primary text-primary-foreground rounded-xl hover:bg-primary-dark font-semibold shadow-sm">
+                Start a new chat
+              </button>
+              <button
+                type="button"
+                onClick={() => setRationOpen(true)}
+                className="px-6 py-2.5 bg-card text-foreground border border-border rounded-xl hover:bg-muted font-semibold shadow-sm inline-flex items-center gap-2"
+              >
+                <Wheat className="w-4 h-4" strokeWidth={1.75} />
+                Ration Advisory
+              </button>
+            </div>
           </div>
         )}
       </main>
+
+      <RationAdvisoryView
+        open={rationOpen}
+        onClose={() => setRationOpen(false)}
+        onStartChat={startRationChat}
+        onStartCall={startRationCall}
+      />
+      <CallView
+        key={rationCallSession}
+        open={rationCallOpen}
+        onClose={() => setRationCallOpen(false)}
+        mode="ration"
+        rationLang={rationCallLang}
+      />
     </div>
   );
 };

@@ -60,6 +60,8 @@ import {
   stripVetConsultMarker,
   vetContactFallbackReply,
 } from "@/lib/vet-consult";
+import { isRationConversation } from "@/lib/poshan-conversation";
+import { handleRationChatTurn, rationChatBootstrap } from "@/lib/ration-chat-flow";
 
 interface Message {
   id: string;
@@ -105,6 +107,7 @@ function linkifyText(text: string) {
 
 export function ChatView({ conversationId, onBack, onConversationUpdated }: Props) {
   const [messages, setMessages] = useState<Message[]>([]);
+  const [rationMode] = useState(() => isRationConversation(conversationId));
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
   const [transcribing, setTranscribing] = useState(false);
@@ -170,8 +173,22 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
 
   useEffect(() => {
     try {
-      const stored = (JSON.parse(localStorage.getItem(msgKey(conversationId)) || "[]") as Message[])
+      let stored = (JSON.parse(localStorage.getItem(msgKey(conversationId)) || "[]") as Message[])
         .filter((m) => !(m.role === "assistant" && !m.content?.trim()));
+      if (rationMode && stored.length === 0) {
+        const now = new Date().toISOString();
+        const state = JSON.parse(localStorage.getItem(`pashumitra_poshan_${conversationId}`) || "null") as { lang?: string } | null;
+        const lang = state?.lang === "en" ? "en" : state?.lang === "hi" ? "hi" : undefined;
+        const boot = rationChatBootstrap(lang as "hi" | "en" | undefined);
+        stored = boot.map((b, i) => ({
+          id: `boot-${i}`,
+          role: "assistant" as const,
+          content: b.content,
+          language: b.language,
+          created_at: now,
+        }));
+        localStorage.setItem(msgKey(conversationId), JSON.stringify(stored));
+      }
       messagesRef.current = stored;
       setMessages(stored);
     }
@@ -179,7 +196,7 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
       messagesRef.current = [];
       setMessages([]);
     }
-  }, [conversationId]);
+  }, [conversationId, rationMode]);
 
   useEffect(() => { scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" }); }, [messages]);
 
@@ -430,6 +447,36 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
     messagesRef.current = visibleMessages;
     setMessages(visibleMessages);
 
+    if (rationMode) {
+      try {
+        const { reply, language } = handleRationChatTurn(conversationId, text, userLang);
+        const updated = messagesRef.current.map((m) =>
+          m.id === assistantMsg.id ? { ...m, content: reply, language } : m,
+        );
+        messagesRef.current = updated;
+        setMessages(updated);
+        persist(updated);
+        setActiveUserLang(language);
+        void logConversationTurn({
+          session_id: getSessionId(),
+          conversation_id: conversationId,
+          question: text,
+          answer: reply,
+          duration_ms: Date.now() - startedAt,
+          language,
+          is_voice: isVoice,
+          mode: "ration_advisory",
+        });
+        if (isVoice && reply) void speak(reply, language, assistantMsg.id, true);
+      } catch (e: unknown) {
+        toast.error(e instanceof Error ? e.message : "Ration advisory failed");
+        setMessages((m) => m.filter((x) => x.id !== assistantMsg.id));
+      } finally {
+        setSending(false);
+      }
+      return;
+    }
+
     try {
       const wantsVetsDirect = isVetContactRequest(text);
       if (wantsVetsDirect) {
@@ -521,10 +568,18 @@ export function ChatView({ conversationId, onBack, onConversationUpdated }: Prop
         )}
         <BrandAvatar size="md" variant="header" />
         <div className="flex-1 min-w-0">
-          <div className="font-semibold truncate tracking-tight">{APP_DISPLAY_NAME}</div>
-          <div className="text-xs opacity-85 font-medium">Online · Live voice available</div>
+          <div className="font-semibold truncate tracking-tight">
+            {rationMode ? "🌾 Ration Advisory" : APP_DISPLAY_NAME}
+          </div>
+          <div className="text-xs opacity-85 font-medium">
+            {rationMode ? "Chat · text & voice" : "Online · Live voice available"}
+          </div>
         </div>
-        <CallButton />
+        {rationMode ? (
+          <CallButton mode="ration" rationLang={activeUserLang === "en" ? "en" : "hi"} conversationId={conversationId} />
+        ) : (
+          <CallButton />
+        )}
       </div>
 
       <VobizPhoneBanner />

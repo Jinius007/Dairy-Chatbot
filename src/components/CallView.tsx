@@ -26,6 +26,15 @@ import {
   callSpeakingMessage,
   waitTranscribingMessage,
 } from "@/lib/wait-messages";
+import {
+  initialPoshanState,
+  loadPoshanState,
+  openingLine,
+  processPoshanInput,
+  savePoshanState,
+  type PoshanConvState,
+  type PoshanLang,
+} from "@/lib/poshan-conversation";
 
 export const ADVISOR_AVATAR_PATH = "/advisor-smile.jpeg";
 
@@ -46,6 +55,9 @@ interface Props {
   onClose: (turns: CallTurn[]) => void;
   conversationId?: string;
   history?: { role: "user" | "assistant"; content: string }[];
+  /** General LLM call vs scripted ration advisory (Pashu Poshan flow). */
+  mode?: "general" | "ration";
+  rationLang?: PoshanLang;
 }
 
 type Phase = "idle" | "listening" | "thinking" | "speaking";
@@ -71,7 +83,7 @@ function getSupportedMimeType(): string | undefined {
   return ["audio/webm;codecs=opus", "audio/webm", "audio/mp4"].find((type) => MediaRecorder.isTypeSupported(type));
 }
 
-export function CallView({ open, onClose, conversationId, history = [] }: Props) {
+export function CallView({ open, onClose, conversationId, history = [], mode = "general", rationLang = "hi" }: Props) {
   const [seconds, setSeconds] = useState(0);
   const [phase, setPhase] = useState<Phase>("idle");
   const [transcript, setTranscript] = useState<TranscriptItem[]>([]);
@@ -101,6 +113,8 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
   const bargeWatchRef = useRef<CallBargeInHandle | null>(null);
   const bargeTriggeredRef = useRef(false);
   const interruptListenTimerRef = useRef<number | null>(null);
+  const poshanRef = useRef<PoshanConvState | null>(null);
+  const rationMode = mode === "ration";
 
   const setPhaseBoth = (p: Phase) => {
     phaseRef.current = p;
@@ -281,41 +295,56 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
       appendTranscript({ id: userTurn.id, role: "user", content: userText, language: detectedLang });
       historyRef.current.push({ role: "user", content: userText });
 
-      const chatCtrl = new AbortController();
-      chatAbortRef.current = chatCtrl;
-      const raw = await fetchChatCompletionText({
-        messages: trimChatHistory(historyRef.current),
-        mode: "call",
-        forceLanguage: detectedLang,
-        signal: chatCtrl.signal,
-        url: getChatCompletionsUrl(),
-        headers: getChatRequestHeaders(),
-      });
-      if (chatAbortRef.current === chatCtrl) chatAbortRef.current = null;
-      if (chatCtrl.signal.aborted || closedRef.current) return;
+      let answer: string;
+      let lang = detectedLang;
 
-      let fullRaw = raw;
-      if (looksIncompleteReply(fullRaw)) {
-        const extra = await fetchChatContinuation({
-          history: trimChatHistory(historyRef.current),
-          partialAssistant: fullRaw,
-          userLang: detectedLang,
+      if (rationMode) {
+        const convId = conversationId ?? "call-ration";
+        let pState = poshanRef.current ?? loadPoshanState(convId) ?? initialPoshanState(rationLang);
+        const result = processPoshanInput(pState, userText);
+        pState = result.state;
+        poshanRef.current = pState;
+        savePoshanState(convId, pState);
+        answer = result.reply;
+        lang = pState.lang;
+      } else {
+        const chatCtrl = new AbortController();
+        chatAbortRef.current = chatCtrl;
+        const raw = await fetchChatCompletionText({
+          messages: trimChatHistory(historyRef.current),
+          mode: "call",
+          forceLanguage: detectedLang,
           signal: chatCtrl.signal,
           url: getChatCompletionsUrl(),
           headers: getChatRequestHeaders(),
         });
-        if (extra) fullRaw = `${fullRaw.replace(/\s+$/, "")} ${extra}`.trim();
+        if (chatAbortRef.current === chatCtrl) chatAbortRef.current = null;
+        if (chatCtrl.signal.aborted || closedRef.current) return;
+
+        let fullRaw = raw;
+        if (looksIncompleteReply(fullRaw)) {
+          const extra = await fetchChatContinuation({
+            history: trimChatHistory(historyRef.current),
+            partialAssistant: fullRaw,
+            userLang: detectedLang,
+            signal: chatCtrl.signal,
+            url: getChatCompletionsUrl(),
+            headers: getChatRequestHeaders(),
+          });
+          if (extra) fullRaw = `${fullRaw.replace(/\s+$/, "")} ${extra}`.trim();
+        }
+
+        const parsed = splitLangHeader(fullRaw);
+        let body = filterAbusiveLanguage(parsed.body);
+        const replyLang = parsed.lang || detectedLang;
+        if (replyLang && replyLang !== "en") {
+          body = await ensureNativeScriptText(body, replyLang, chatCtrl.signal);
+        }
+        body = filterToAllowedUrls(body);
+        lang = resolveTtsLanguage(body, replyLang);
+        answer = body.trim();
       }
 
-      const parsed = splitLangHeader(fullRaw);
-      let body = filterAbusiveLanguage(parsed.body);
-      const replyLang = parsed.lang || detectedLang;
-      if (replyLang && replyLang !== "en") {
-        body = await ensureNativeScriptText(body, replyLang, chatCtrl.signal);
-      }
-      body = filterToAllowedUrls(body);
-      const lang = resolveTtsLanguage(body, replyLang);
-      const answer = body.trim();
       if (!answer) {
         throw new Error("No answer was generated. Please try again.");
       }
@@ -339,7 +368,7 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
         duration_ms: Date.now() - startedAt,
         language: lang,
         is_voice: true,
-        mode: "call",
+        mode: rationMode ? "ration_advisory" : "call",
       });
 
       if (closedRef.current) return;
@@ -442,6 +471,9 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
     if (!open) return;
     closedRef.current = false;
     greetedRef.current = false;
+    poshanRef.current = rationMode
+      ? (conversationId ? loadPoshanState(conversationId) : null) ?? initialPoshanState(rationLang)
+      : null;
     turnsRef.current = [];
     historyRef.current = [...history];
     setTranscript(
@@ -453,7 +485,8 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
     );
     setSeconds(0);
     setPhaseBoth("idle");
-    setUserLang("hi");
+    setUserLang(rationMode ? rationLang : "hi");
+    userLangRef.current = rationMode ? rationLang : "hi";
     timerRef.current = window.setInterval(() => setSeconds((s) => s + 1), 1000) as unknown as number;
 
     (async () => {
@@ -470,9 +503,11 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
 
         if (!greetedRef.current && history.length === 0) {
           greetedRef.current = true;
-          appendTranscript({ id: "greeting", role: "assistant", content: GREETING_HI, language: "hi" });
-          historyRef.current.push({ role: "assistant", content: GREETING_HI });
-          await playAdvisorSpeech(GREETING_HI, "hi");
+          const greeting = rationMode ? openingLine(rationLang) : GREETING_HI;
+          const greetLang = rationMode ? rationLang : "hi";
+          appendTranscript({ id: "greeting", role: "assistant", content: greeting, language: greetLang });
+          historyRef.current.push({ role: "assistant", content: greeting });
+          await playAdvisorSpeech(greeting, greetLang);
         } else if (!closedRef.current) {
           startListening();
         }
@@ -657,7 +692,15 @@ export function CallView({ open, onClose, conversationId, history = [] }: Props)
   );
 }
 
-export function CallButton() {
+export function CallButton({
+  mode = "general",
+  rationLang = "hi",
+  conversationId,
+}: {
+  mode?: "general" | "ration";
+  rationLang?: PoshanLang;
+  conversationId?: string;
+} = {}) {
   const [callOpen, setCallOpen] = useState(false);
   const [callSession, setCallSession] = useState(0);
   const openCall = useCallback(() => {
@@ -672,8 +715,8 @@ export function CallButton() {
         type="button"
         onClick={openCall}
         className="relative p-2.5 rounded-xl border border-white/30 bg-gradient-to-b from-white/40 via-white/20 to-white/5 shadow-[0_4px_0_rgba(0,0,0,0.18),0_6px_14px_rgba(0,0,0,0.22),inset_0_1px_0_rgba(255,255,255,0.55)] transition hover:from-white/50 hover:to-white/10 active:translate-y-0.5 active:shadow-[0_2px_0_rgba(0,0,0,0.18),0_3px_8px_rgba(0,0,0,0.18)]"
-        title="Start live voice call"
-        aria-label="Start live voice call"
+        title={mode === "ration" ? "Ration voice call" : "Start live voice call"}
+        aria-label={mode === "ration" ? "Start ration voice call" : "Start live voice call"}
       >
         <PhoneCall
           className="w-5 h-5 text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.35)]"
@@ -682,7 +725,14 @@ export function CallButton() {
           fillOpacity={0.22}
         />
       </button>
-      <CallView key={callSession} open={callOpen} onClose={closeCall} />
+      <CallView
+        key={callSession}
+        open={callOpen}
+        onClose={closeCall}
+        mode={mode}
+        rationLang={rationLang}
+        conversationId={conversationId}
+      />
     </>
   );
 }

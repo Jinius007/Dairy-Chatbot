@@ -173,9 +173,9 @@ Type or speak in your language — I will continue in the same language.`,
 
 export const LANG_ORDER = ["hi", "bn", "ta", "te", "mr", "gu", "kn", "ml", "pa", "or", "as", "ur", "en"] as const;
 
-export const RATION_ADVISORY_INTRO = `🌾 संतुलित चारा सलाह
+export const RATION_ADVISORY_INTRO = `🌾 संतुलित चारा सलाह / Balanced Ration Advisory
 
-नीचे अपनी भाषा चुनें:`;
+पहले अपनी भाषा चुनें / First choose your language (भाषा / Language):`;
 
 /** Welcome for one language — shown after farmer picks a language. */
 export function getWelcomeForLang(code: string): string {

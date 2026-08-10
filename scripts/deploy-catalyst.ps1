@@ -101,6 +101,7 @@ Write-Host "  (C) Copy the function URL from deploy output or Console -> Functio
 Write-Host ""
 Write-Host "If verify shows no CORS header:" -ForegroundColor Green
 Write-Host "  Cloud Scale -> Authentication -> Whitelisting -> Add Domain with CORS ON:" -ForegroundColor Green
+Write-Host "    dairy-mitr-uspyrpci.onslate.in" -ForegroundColor Green
 Write-Host "    dairy-mitr-znhzndph.onslate.in" -ForegroundColor Green
 Write-Host ""
 Write-Host "Update Slate VITE_CATALYST_API_URL (India DC uses .in not .com):" -ForegroundColor Green

@@ -1,7 +1,7 @@
 # Verify Catalyst pashumitra_api is deployed and returns CORS headers.
 param(
   [string]$BaseUrl = "https://project-rainfall-60075686570.development.catalystserverless.in/server/pashumitra_api",
-  [string]$Origin = "https://dairy-mitr-znhzndph.onslate.in"
+  [string]$Origin = "https://dairy-mitr-uspyrpci.onslate.in"
 )
 
 $ErrorActionPreference = "Continue"
@@ -39,6 +39,7 @@ if ($preflight -match "Access-Control-Allow-Origin") {
 } else {
   Write-Host "FAIL: No Access-Control-Allow-Origin on preflight." -ForegroundColor Red
   Write-Host "Catalyst Console -> Cloud Scale -> Authentication -> Whitelisting -> Add Domain:" -ForegroundColor Yellow
-  Write-Host "  dairy-mitr-znhzndph.onslate.in  (enable CORS)" -ForegroundColor Yellow
+  Write-Host "  dairy-mitr-uspyrpci.onslate.in  (enable CORS)" -ForegroundColor Yellow
+  Write-Host "  dairy-mitr-znhzndph.onslate.in    (if using older Slate instance)" -ForegroundColor Yellow
   Write-Host "Do NOT add catalystserverless.in/.com - only your Slate origin domain." -ForegroundColor Yellow
 }

@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { getBackendConfigIssue, isBackendConfigured } from "@/lib/backend-config";
 import Index from "./pages/Index.tsx";
+import RationAdvisor from "./pages/RationAdvisor.tsx";
 import VetPortal from "./pages/VetPortal.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
@@ -25,6 +26,7 @@ const App = () => (
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Index />} />
+              <Route path="/ration" element={<RationAdvisor />} />
               <Route path="/vet" element={<VetPortal />} />
               <Route path="*" element={<NotFound />} />
             </Routes>

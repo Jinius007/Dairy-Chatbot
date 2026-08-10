@@ -21,6 +21,7 @@ import {
   parsePregnantFromVoice,
   parsePregMonthFromVoice,
   parseYesNoFromVoice,
+  matchLangCode,
   type NumericContext,
 } from "@/lib/rationVoice";
 import { isBackendConfigured } from "@/lib/backend-config";
@@ -531,6 +532,16 @@ const RationAdvisor = () => {
     const s = stepRef.current;
 
     switch (s) {
+      case "language": {
+        const code = matchLangCode(text);
+        if (code) {
+          chooseLanguage(code, isVoice);
+          return;
+        }
+        userMsg(text, undefined, isVoice);
+        bot(`${t("chooseLanguage", "hi")} / ${t("chooseLanguage", "en")}`, undefined, "hi");
+        return;
+      }
       case "name":
         submitName(text, isVoice);
         return;
@@ -702,7 +713,7 @@ const RationAdvisor = () => {
   };
 
   const micDisabled = busy || transcribing || speaking || ["locating", "optimizing", "done"].includes(step);
-  const showVoiceBar = !["language", "locating", "done"].includes(step);
+  const showVoiceBar = !["locating", "done"].includes(step);
 
   const fmt = (n: number, d = 0) =>
     n.toLocaleString("en-IN", { minimumFractionDigits: d, maximumFractionDigits: d });
@@ -805,8 +816,9 @@ const RationAdvisor = () => {
       <div className="flex-1 overflow-y-auto px-3 py-3 space-y-2">
         {step === "language" && (
           <div className="py-4 px-1">
-            <h2 className="text-center text-lg font-semibold mb-1">{t("title", "hi")}</h2>
-            <p className="text-center text-sm text-muted-foreground mb-4">{t("chooseLanguage", "hi")}</p>
+            <h2 className="text-center text-lg font-semibold mb-1">{t("title", "hi")} / {t("title", "en")}</h2>
+            <p className="text-center text-sm text-muted-foreground mb-1">{t("chooseLanguage", "hi")}</p>
+            <p className="text-center text-sm text-muted-foreground mb-4">{t("chooseLanguage", "en")}</p>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-w-lg mx-auto">
               {LANG_ORDER.map((code) => (
                 <button

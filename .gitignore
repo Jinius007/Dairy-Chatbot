@@ -33,5 +33,20 @@ terminals/
 
 .vercel
 
+# Catalyst / Slate local CLI (machine-specific)
+.catalystrc
+.catalyst/
+catalyst.json
+cli-config.json
+*.__deploy_bak/
+
+# Local reference / experiments (not part of main app)
+Pashu Poshan AI/
+.tmp-livekit-voice/
+voice-agent/.vobiz-public-url
+
 # Runtime vet registrations (generated on server / local dev)
 catalyst/functions/pashumitra_api/data/vets/registrations.json
+# Built Catalyst bundle (regenerate with npm run build:catalyst-api)
+catalyst/functions/pashumitra_api/index.js
+catalyst/functions/pashumitra_api/index.js.map
