@@ -21,7 +21,7 @@ export function createSsePassthroughStream(
         const detail = await upstream.text().catch(() => "AI service error");
         const msg = upstream.status === 429
           ? "[[LANG:hi]]\nBahut requests aa rahe hain — thodi der baad try karein."
-          : `[[LANG:hi]]\nMaaf kijiye, jawab nahi aa paya (${upstream.status}). Dubara koshish karein.`;
+          : `[[LANG:hi]]\nमाफ़ कीजिए, जवाब नहीं आ पाया (${upstream.status}). दुबारा कोशिश करें।`;
         console.error("chat upstream error:", upstream.status, detail.slice(0, 200));
         await writer.write(enc.encode(`data: ${JSON.stringify({ choices: [{ delta: { content: msg } }] })}\n\n`));
         await writer.write(enc.encode("data: [DONE]\n\n"));

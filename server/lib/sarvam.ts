@@ -27,14 +27,38 @@ export function getSarvamSttModel(): string {
   return env("SARVAM_STT_MODEL") || "saaras:v3";
 }
 
+export type SarvamChatMessage = { role: string; content: string };
+
+/** Sarvam rejects multiple system-role messages with HTTP 400 — merge into one. */
+export function consolidateSarvamMessages(messages: SarvamChatMessage[]): SarvamChatMessage[] {
+  const systemParts: string[] = [];
+  const rest: SarvamChatMessage[] = [];
+  for (const m of messages) {
+    if (m.role === "system" && typeof m.content === "string" && m.content.trim()) {
+      systemParts.push(m.content);
+    } else {
+      rest.push(m);
+    }
+  }
+  const out: SarvamChatMessage[] = [];
+  if (systemParts.length > 0) {
+    out.push({ role: "system", content: systemParts.join("\n\n") });
+  }
+  return [...out, ...rest];
+}
+
 export async function sarvamChatCompletion(body: Record<string, unknown>): Promise<Response> {
+  const payload = { ...body };
+  if (Array.isArray(body.messages)) {
+    payload.messages = consolidateSarvamMessages(body.messages as SarvamChatMessage[]);
+  }
   return fetch(SARVAM_CHAT_URL, {
     method: "POST",
     headers: {
       "api-subscription-key": getSarvamApiKey(),
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(body),
+    body: JSON.stringify(payload),
   });
 }
 
