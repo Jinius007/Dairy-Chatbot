@@ -187,3 +187,4 @@ app.get("/", (_req, res) => {
 });
 
 module.exports = app;
+module.exports.config = { maxDuration: 120, memory: 1024 };
