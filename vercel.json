@@ -6,7 +6,7 @@
   "installCommand": "npm install",
   "outputDirectory": "dist",
   "functions": {
-    "api/index.ts": {
+    "api/index.mjs": {
       "includeFiles": "api/_handler.cjs",
       "maxDuration": 120,
       "memory": 1024
