@@ -7,9 +7,7 @@ import { INDIAN_STATES } from "@/lib/india-regions";
 import { matchFeedFromText } from "@/lib/rationVoice";
 import {
   detectSpecies,
-  parseMilkingFromVoice,
   parseNumericAnswer,
-  parsePregnantFromVoice,
 } from "@/lib/rationVoice";
 import { computeBalancedRationFromVoice } from "@/lib/poshan-voice-tools";
 import type { Species } from "@/lib/nutrientRequirements";
@@ -23,10 +21,13 @@ export type ConvStage =
   | "state"
   | "species"
   | "milk_status"
+  | "calving_months"
   | "milk_yield"
   | "pregnancy"
-  | "feed_roughage"
+  | "feed_green"
+  | "feed_dry"
   | "feed_concentrate"
+  | "feed_mineral"
   | "done";
 
 export interface FarmerFeedEntry {
@@ -50,8 +51,16 @@ export interface ConvDraft {
   milkYieldSet?: boolean;
   pregnant: boolean;
   pregnancySet?: boolean;
-  roughageText: string;
+  monthsAfterCalving: number;
+  monthsAfterCalvingSet?: boolean;
+  greenFodderText: string;
+  greenFodderSet?: boolean;
+  dryFodderText: string;
+  dryFodderSet?: boolean;
   concentrateText: string;
+  concentrateSet?: boolean;
+  mineralText: string;
+  mineralSet?: boolean;
   feeds: FarmerFeedEntry[];
 }
 
@@ -76,8 +85,16 @@ export function emptyDraft(): ConvDraft {
     milkYieldSet: false,
     pregnant: false,
     pregnancySet: false,
-    roughageText: "",
+    monthsAfterCalving: 0,
+    monthsAfterCalvingSet: false,
+    greenFodderText: "",
+    greenFodderSet: false,
+    dryFodderText: "",
+    dryFodderSet: false,
     concentrateText: "",
+    concentrateSet: false,
+    mineralText: "",
+    mineralSet: false,
     feeds: [],
   };
 }
@@ -91,7 +108,34 @@ function normalizeDraft(d: ConvDraft): ConvDraft {
     milkStatusSet: d.milkStatusSet ?? false,
     milkYieldSet: d.milkYieldSet ?? (d.milkYieldKg > 0 && d.milkYieldKg !== 8),
     pregnancySet: d.pregnancySet ?? false,
+    monthsAfterCalvingSet: d.monthsAfterCalvingSet ?? (d.monthsAfterCalving > 0),
+    monthsAfterCalving: d.monthsAfterCalving ?? 0,
+    greenFodderSet: d.greenFodderSet ?? Boolean(d.greenFodderText?.trim()),
+    dryFodderSet: d.dryFodderSet ?? Boolean(d.dryFodderText?.trim()),
+    concentrateSet: d.concentrateSet ?? Boolean(d.concentrateText?.trim()),
+    mineralSet: d.mineralSet ?? Boolean(d.mineralText?.trim()),
+    greenFodderText: d.greenFodderText ?? "",
+    dryFodderText: d.dryFodderText ?? "",
+    mineralText: d.mineralText ?? "",
   };
+  // Legacy sessions stored a single roughage answer.
+  const legacyRoughage = (d as ConvDraft & { roughageText?: string }).roughageText?.trim();
+  if (legacyRoughage && !out.greenFodderSet && !out.dryFodderSet) {
+    if (/bhusa|sukha|straw|parali|paddy|hay|silage|bhusa/i.test(legacyRoughage)) {
+      out.dryFodderText = legacyRoughage;
+      out.dryFodderSet = true;
+    } else {
+      out.greenFodderText = legacyRoughage;
+      out.greenFodderSet = true;
+    }
+  }
+  for (const feed of out.feeds) {
+    const kind = feedKindFromId(feed.feedId);
+    if (kind === "green") out.greenFodderSet = true;
+    if (kind === "dry") out.dryFodderSet = true;
+    if (kind === "concentrate") out.concentrateSet = true;
+    if (kind === "mineral") out.mineralSet = true;
+  }
   if (!out.milkYieldSet && out.milkYieldKg === 8) out.milkYieldKg = 0;
   return out;
 }
@@ -150,7 +194,108 @@ const FEED_ALIASES: Record<string, string> = {
   mustard: "mustard_cake", sarson: "mustard_cake", khali: "mustard_cake",
   chokar: "wheat_bran", bran: "wheat_bran", groundnut: "groundnut_cake",
   moongphali: "groundnut_cake", napier: "napier_bajra___nb_21",
+  mineral: "mineral_mixture_bis", khurak: "mineral_mixture_bis",
 };
+
+type FeedKind = "green" | "dry" | "concentrate" | "mineral";
+
+const DRY_ROUGHAGE_GROUPS = new Set(["Straw", "Hay", "Silage"]);
+
+function feedKindFromId(feedId: string): FeedKind | null {
+  const lib = FEED_LIBRARY.find((f) => f.id === feedId);
+  if (!lib) return null;
+  if (lib.category === "mineral") return "mineral";
+  if (lib.category === "concentrate") return "concentrate";
+  if (lib.category === "roughage") {
+    if (lib.group === "Green Fodder" || lib.group === "Grass") return "green";
+    if (DRY_ROUGHAGE_GROUPS.has(lib.group)) return "dry";
+    return "dry";
+  }
+  return null;
+}
+
+function isFeedDeclined(text: string): boolean {
+  const t = clean(text).toLowerCase();
+  if (!t) return false;
+  if (/^(nahi|na|no|nah|nahi dete|nahi khilate|nahi dalte|kuch nahi|koi nahi|nothing|none)$/i.test(t)) return true;
+  return parseYes(text) === false && !/\d/.test(t);
+}
+
+function feedKindsInText(text: string): FeedKind[] {
+  const t = clean(text).toLowerCase();
+  const kinds = new Set<FeedKind>();
+  if (/\bhara\b|green fodder|berseem|barseem|lasun|napier|makka chara|maize fodder|jowar fodder|hybrid napier/i.test(t)) {
+    kinds.add("green");
+  }
+  if (/bhusa|bhoosa|sukha chara|straw|parali|paddy straw|wheat straw|hay|silage|dry fodder/i.test(t)) {
+    kinds.add("dry");
+  }
+  if (/sarson|khali|chokar|bran|mustard cake|groundnut|moongfali|cattle feed|compound feed|concentrate|binola|soya/i.test(t)) {
+    kinds.add("concentrate");
+  }
+  if (/mineral mixture|mineral mix|mineral|khurak mixture|salt lick/i.test(t)) {
+    kinds.add("mineral");
+  }
+  for (const entry of parseFeedsFromSpeech(text)) {
+    const kind = feedKindFromId(entry.feedId);
+    if (kind) kinds.add(kind);
+  }
+  return [...kinds];
+}
+
+function isFeedKindSet(draft: ConvDraft, kind: FeedKind): boolean {
+  switch (kind) {
+    case "green": return Boolean(draft.greenFodderSet);
+    case "dry": return Boolean(draft.dryFodderSet);
+    case "concentrate": return Boolean(draft.concentrateSet);
+    case "mineral": return Boolean(draft.mineralSet);
+  }
+}
+
+function setFeedKind(draft: ConvDraft, kind: FeedKind, text: string): void {
+  switch (kind) {
+    case "green":
+      draft.greenFodderSet = true;
+      if (text.trim()) draft.greenFodderText = text.slice(0, 80);
+      break;
+    case "dry":
+      draft.dryFodderSet = true;
+      if (text.trim()) draft.dryFodderText = text.slice(0, 80);
+      break;
+    case "concentrate":
+      draft.concentrateSet = true;
+      if (text.trim()) draft.concentrateText = text.slice(0, 80);
+      break;
+    case "mineral":
+      draft.mineralSet = true;
+      if (text.trim()) draft.mineralText = text.slice(0, 80);
+      break;
+  }
+}
+
+function applyFeedAnswer(draft: ConvDraft, text: string, primaryKind: FeedKind): void {
+  if (isFeedKindSet(draft, primaryKind)) return;
+
+  const parsed = parseFeedsFromSpeech(text);
+  for (const entry of parsed) {
+    if (draft.feeds.some((x) => x.feedId === entry.feedId)) continue;
+    draft.feeds.push(entry);
+    const kind = feedKindFromId(entry.feedId);
+    if (kind) setFeedKind(draft, kind, text);
+  }
+
+  for (const kind of feedKindsInText(text)) {
+    setFeedKind(draft, kind, text);
+  }
+
+  if (!isFeedKindSet(draft, primaryKind)) {
+    if (isFeedDeclined(text)) {
+      setFeedKind(draft, primaryKind, "");
+    } else if (text.trim()) {
+      setFeedKind(draft, primaryKind, text);
+    }
+  }
+}
 
 function resolveFeed(spoken: string): FarmerFeedEntry | null {
   const t = spoken.toLowerCase();
@@ -195,7 +340,10 @@ function buildCtx(draft: ConvDraft, extra: Record<string, string | number> = {})
     pregnant: draft.pregnant ? 1 : 0,
     milkYieldKg: draft.milkYieldKg,
     milkYieldSet: draft.milkYieldSet ? 1 : 0,
-    roughageText: draft.roughageText.slice(0, 48),
+    monthsAfterCalving: draft.monthsAfterCalving,
+    monthsAfterCalvingSet: draft.monthsAfterCalvingSet ? 1 : 0,
+    greenFodderText: draft.greenFodderText.slice(0, 48),
+    dryFodderText: draft.dryFodderText.slice(0, 48),
     ...extra,
   };
 }
@@ -206,25 +354,26 @@ const HI: Record<ConvStage, ScriptFn> = {
   language: () => "नीचे अपनी भाषा चुनें — Hindi या English बोलिए।",
   name: () =>
     "Namaste! Main aapka Pashu Sahayak hoon — gaon ke livestock officer ki tarah. Thodi si baat karke santulit khurak banaunga. Shuru karte hain — aap apna naam batayiye.",
-  district: (c) => `${c.name} ji! Bahut achha. Kis jile mein rehte hain?`,
-  village: (c) => `${c.district} jila — theek hai. Aapka gaanv ka naam kya hai?`,
-  state: (c) => `${c.village} gaanv — achha. Ye gaanv kis rajya mein pada hai? Jaise Gujarat, UP…`,
-  species: (c) => `${c.state} — samajh gaya. ${c.name} ji, gaay hai ya bhains?`,
+  district: () => "Kis jile mein rehte hain?",
+  village: () => "Aapka gaanv ka naam kya hai?",
+  state: () => "Ye gaanv kis rajya mein pada hai? Jaise Gujarat, UP…",
+  species: (c) => `${c.name} ji, gaay hai ya bhains?`,
   milk_status: (c) =>
     c.species === "buffalo"
-      ? "Bhains hai — kya abhi doodh de rahi hai? Ya sukhi, ya garbh?"
-      : "Gaay hai — kya abhi doodh de rahi hai? Ya sukhi, ya garbh?",
-  milk_yield: (c) =>
-    c.milkYieldSet
-      ? `${c.milkYieldKg} litre — note kar liya. Roz kya chara khilate ho? Naam, kitna kilogram, aur daam batayiye.`
-      : "Roz kitna doodh milta hai? Litron mein boliye.",
-  pregnancy: () => "Theek hai, sukhi hai. Kya abhi garbh hai? Haan ya nahi boliye.",
-  feed_roughage: (c) =>
-    c.roughageText
-      ? `Achha, ${c.roughageText} — sun liya. Ab concentrate kya dete ho? Sarson khali, chokar, dan?`
-      : "Sun liya. Ab concentrate — sarson khali, chokar? Naam aur kitna kilogram batayiye.",
-  feed_concentrate: (c) =>
-    `${c.name} ji, sab samajh aa gaya. Main ab santulit khurak nikal raha hoon… bas ek pal.`,
+      ? "Kya abhi doodh de rahi hai? Ya sukhi, ya garbhwati?"
+      : "Kya abhi doodh de rahi hai? Ya sukhi, ya garbhwati?",
+  milk_yield: () => "Roz kitna doodh milta hai? Litron mein boliye.",
+  calving_months: () =>
+    "Pichhli baar bachcha hone ke kitne mahine ho gaye? Jaise 2 ya 3 mahine.",
+  pregnancy: () => "Kya abhi garbhwati hai? Haan ya nahi boliye.",
+  feed_green: () =>
+    "Roz hara chara kya dete ho? Jaise berseem, napier — naam aur kitna kilogram batayiye.",
+  feed_dry: () =>
+    "Sukha chara kya dete ho? Jaise gehu bhusa, parali — naam aur kitna kilogram batayiye.",
+  feed_concentrate: () =>
+    "Concentrate kya dete ho — sarson khali, chokar, dan? Naam aur kitna kilogram batayiye.",
+  feed_mineral: () =>
+    "Mineral mixture dete ho? Kitna gram ya kilogram — agar nahi dete to 'nahi' boliye.",
   done: () => "Bahut achha raha. Phir kabhi zaroorat ho to dubara poochhiye. Dhanyavaad!",
 };
 
@@ -232,25 +381,18 @@ const EN: Record<ConvStage, ScriptFn> = {
   language: () => "Choose your language — say Hindi or English.",
   name: () =>
     "Hello! I'm your Pashu Sahayak — like the livestock officer in your village. I'll ask a few questions and work out a balanced ration. What's your name?",
-  district: (c) => `Nice to meet you, ${c.name}! Which district do you live in?`,
-  village: (c) => `${c.district} — got it. What's your village name?`,
-  state: (c) => `${c.village} — which state is that in?`,
-  species: (c) => `${c.state} — do you have a cow or a buffalo, ${c.name}?`,
-  milk_status: (c) =>
-    c.species === "buffalo"
-      ? "A buffalo — is she giving milk, dry, or pregnant?"
-      : "A cow — is she giving milk, dry, or pregnant?",
-  milk_yield: (c) =>
-    c.milkYieldSet
-      ? `${c.milkYieldKg} litres — noted. What fodder do you feed daily? Name, kg, and price.`
-      : "How many litres of milk per day?",
-  pregnancy: () => "Okay, she's dry. Is she pregnant right now? Yes or no.",
-  feed_roughage: (c) =>
-    c.roughageText
-      ? `Got it — ${c.roughageText}. What concentrates — mustard cake, bran?`
-      : "Thanks. Now concentrates — mustard cake, bran, grain?",
-  feed_concentrate: (c) =>
-    `${c.name}, that's everything — working out your balanced ration for ${c.district}…`,
+  district: () => "Which district do you live in?",
+  village: () => "What's your village name?",
+  state: () => "Which state is that in?",
+  species: (c) => `Do you have a cow or a buffalo, ${c.name}?`,
+  milk_status: () => "Is she giving milk, dry, or pregnant?",
+  milk_yield: () => "How many litres of milk per day?",
+  calving_months: () => "How many months ago was her last calving? Like 2 or 3 months.",
+  pregnancy: () => "Is she pregnant right now? Yes or no.",
+  feed_green: () => "What green fodder do you feed daily? Name and kg — like berseem or napier.",
+  feed_dry: () => "What dry fodder — wheat straw, paddy straw? Name and kg.",
+  feed_concentrate: () => "What concentrate — mustard cake, bran, cattle feed? Name and kg.",
+  feed_mineral: () => "Do you give mineral mixture? How much — or say no if you don't.",
   done: () => "Great talking with you. Come back anytime. Thank you!",
 };
 
@@ -270,9 +412,12 @@ function reprompt(lang: PoshanLang, stage: ConvStage, ctx: Record<string, string
       species: "Cow or buffalo?",
       milk_status: "In milk, dry, or pregnant?",
       milk_yield: "How many litres per day? Like 8 or 10.",
+      calving_months: "How many months since her last calving? Like 2 or 3.",
       pregnancy: "Is she pregnant? Yes or no.",
-      feed_roughage: "What fodder do you give? Name and kg amount.",
+      feed_green: "What green fodder — berseem, napier? Name and kg.",
+      feed_dry: "What dry fodder — straw, bhusa? Name and kg.",
       feed_concentrate: "What concentrate — mustard cake, bran?",
+      feed_mineral: "Mineral mixture — how much, or say no?",
     };
     return en[stage] ?? "Could you say that once more?";
   }
@@ -282,25 +427,20 @@ function reprompt(lang: PoshanLang, stage: ConvStage, ctx: Record<string, string
     village: `${n}gaanv ka naam kya hai?`,
     state: "Kaunsa rajya — Gujarat, UP…?",
     species: "Gaay hai ya bhains?",
-    milk_status: "Doodh de rahi hai, sukhi, ya garbh?",
+    milk_status: "Doodh de rahi hai, sukhi, ya garbhwati?",
     milk_yield: "Roz kitna litre doodh? Jaise 6 ya 8.",
-    pregnancy: "Kya garbh hai? Haan ya nahi.",
-    feed_roughage: "Roz kya chara dalte ho?",
-    feed_concentrate: "Concentrate kya dete ho — sarson khali, chokar?",
+    calving_months: "Pichhli baar bachcha hone ke kitne mahine ho gaye?",
+    pregnancy: "Kya garbhwati hai? Haan ya nahi.",
+    feed_green: "Hara chara kya dete ho — berseem, napier? Naam aur kg.",
+    feed_dry: "Sukha chara — bhusa, parali? Naam aur kg.",
+    feed_concentrate: "Concentrate — sarson khali, chokar? Naam aur kg.",
+    feed_mineral: "Mineral mixture dete ho? Kitna, ya nahi?",
   };
   return hi[stage] ?? "Thoda clear boliye, phir se sun leta hoon.";
 }
 
 function feedCategory(feedId: string): FeedItem["category"] | undefined {
   return FEED_LIBRARY.find((f) => f.id === feedId)?.category;
-}
-
-function hasRoughage(d: ConvDraft): boolean {
-  return Boolean(d.roughageText.trim()) || d.feeds.some((f) => feedCategory(f.feedId) === "roughage");
-}
-
-function hasConcentrate(d: ConvDraft): boolean {
-  return Boolean(d.concentrateText.trim()) || d.feeds.some((f) => feedCategory(f.feedId) === "concentrate");
 }
 
 type StageOrCompute = ConvStage | "compute";
@@ -314,111 +454,63 @@ function firstMissingStage(d: ConvDraft): StageOrCompute {
   if (!d.milkStatusSet) return "milk_status";
   if (d.inMilk && !d.milkYieldSet) return "milk_yield";
   if (!d.inMilk && !d.pregnancySet) return "pregnancy";
-  if (!hasRoughage(d)) return "feed_roughage";
-  if (!hasConcentrate(d)) return "feed_concentrate";
+  if (!d.monthsAfterCalvingSet) return "calving_months";
+  if (!d.greenFodderSet) return "feed_green";
+  if (!d.dryFodderSet) return "feed_dry";
+  if (!d.concentrateSet) return "feed_concentrate";
+  if (!d.mineralSet) return "feed_mineral";
   return "compute";
 }
 
-/** Pull any ration fields the farmer mentioned in one utterance (ElevenLabs-style). */
-function applyFreeformParse(draft: ConvDraft, text: string): string[] {
-  const ack: string[] = [];
-  const t = clean(text);
-  if (!t) return ack;
-
-  const nameMatch = t.match(/(?:mera\s+)?naam\s+(?:hai\s+)?(\S+)/i)
-    || t.match(/(?:my\s+name\s+is|i\s+am|i'm)\s+(\S+)/i);
-  if (nameMatch && !draft.name.trim()) {
-    draft.name = nameMatch[1].replace(/ji$|bhai$|ben$/i, "");
-    ack.push(draft.name);
-  }
-
-  const districtMatch = t.match(/(\S+(?:\s+\S+)?)\s+jila\b/i) || t.match(/\bjila\s+(\S+(?:\s+\S+)?)/i);
-  if (districtMatch && !draft.district.trim()) {
-    draft.district = districtMatch[1].replace(/\s*jila\s*$/i, "").trim();
-    ack.push(draft.district);
-  }
-
-  const villageMatch = t.match(/(\S+(?:\s+\S+)?)\s+(?:gaon|gaanv|village)\b/i)
-    || t.match(/\b(?:gaon|gaanv|village)\s+(\S+(?:\s+\S+)?)/i);
-  if (villageMatch && !draft.village.trim()) {
-    draft.village = villageMatch[1].trim();
-    ack.push(draft.village);
-  }
-
-  const st = matchState(t);
-  if (st && !draft.state.trim()) {
-    draft.state = st.name;
-    draft.stateCode = st.code;
-    ack.push(st.name);
-  }
-
-  const sp = parseSpecies(t) || detectSpecies(t);
-  if (sp && !draft.speciesSet) {
-    draft.species = sp;
-    draft.speciesSet = true;
-    ack.push(sp === "buffalo" ? "bhains" : "gaay");
-  }
-
-  const preg = parsePregnantFromVoice(t);
-  if (preg === true) {
-    draft.pregnant = true;
-    draft.inMilk = false;
-    draft.milkStatusSet = true;
-    draft.pregnancySet = true;
-    ack.push("garbh");
-  } else if (preg === false && draft.milkStatusSet === false) {
-    draft.pregnant = false;
-    draft.pregnancySet = true;
-  }
-
-  const milking = parseMilkingFromVoice(t);
-  if (milking === true) {
-    draft.inMilk = true;
-    draft.milkStatusSet = true;
-    if (!ack.some((a) => /doodh|milk/i.test(a))) ack.push("doodh de rahi");
-  } else if (milking === false) {
-    draft.inMilk = false;
-    draft.milkStatusSet = true;
-    ack.push("sukhi");
-  }
-
-  const yieldL = parseNumericAnswer(t, "yield");
-  if (yieldL !== null && yieldL > 0 && yieldL <= 40) {
-    draft.milkYieldKg = yieldL;
-    draft.milkYieldSet = true;
-    if (!draft.milkStatusSet) {
-      draft.inMilk = true;
-      draft.milkStatusSet = true;
-    }
-    ack.push(`${yieldL} litre`);
-  }
-
-  const parsedFeeds = parseFeedsFromSpeech(t);
-  if (parsedFeeds.length) {
-    for (const entry of parsedFeeds) {
-      if (draft.feeds.some((x) => x.feedId === entry.feedId)) continue;
-      draft.feeds.push(entry);
-      const cat = feedCategory(entry.feedId);
-      if (cat === "roughage" && !draft.roughageText) draft.roughageText = t.slice(0, 80);
-      if (cat === "concentrate" && !draft.concentrateText) draft.concentrateText = t.slice(0, 80);
-      ack.push(entry.feedName);
+function ackForAnsweredStage(lang: PoshanLang, stage: ConvStage, draft: ConvDraft): string {
+  if (lang === "en") {
+    switch (stage) {
+      case "name": return draft.name ? `${draft.name} — nice.` : "";
+      case "district": return draft.district ? `${draft.district} — got it.` : "";
+      case "village": return draft.village ? `${draft.village} — noted.` : "";
+      case "state": return draft.state ? `${draft.state} — understood.` : "";
+      case "species": return draft.species === "buffalo" ? "Buffalo — okay." : "Cow — okay.";
+      case "milk_status":
+        if (draft.inMilk) return "In milk — noted.";
+        if (draft.pregnant) return "Pregnant — noted.";
+        return "Dry — noted.";
+      case "milk_yield": return `${draft.milkYieldKg} litres — noted.`;
+      case "calving_months": return `${draft.monthsAfterCalving} months since calving — noted.`;
+      case "pregnancy": return draft.pregnant ? "Pregnant — noted." : "Not pregnant — noted.";
+      case "feed_green": return draft.greenFodderText ? `Green fodder — ${draft.greenFodderText.slice(0, 40)}.` : "No green fodder — noted.";
+      case "feed_dry": return draft.dryFodderText ? `Dry fodder — ${draft.dryFodderText.slice(0, 40)}.` : "No dry fodder — noted.";
+      case "feed_concentrate": return draft.concentrateText ? `Concentrate — ${draft.concentrateText.slice(0, 40)}.` : "Concentrate — noted.";
+      case "feed_mineral": return draft.mineralText ? `Mineral — ${draft.mineralText.slice(0, 40)}.` : "No mineral mixture — noted.";
+      default: return "";
     }
   }
-
-  return ack;
-}
-
-function buildAck(lang: PoshanLang, parts: string[]): string {
-  const uniq = [...new Set(parts.filter(Boolean))];
-  if (!uniq.length) return "";
-  if (lang === "en") return `Got it — ${uniq.join(", ")}.`;
-  return `Theek hai — ${uniq.join(", ")} sun liya.`;
+  switch (stage) {
+    case "name": return draft.name ? `${draft.name} ji — achha.` : "";
+    case "district": return draft.district ? `${draft.district} jila — samajh gaya.` : "";
+    case "village": return draft.village ? `${draft.village} gaanv — achha.` : "";
+    case "state": return draft.state ? `${draft.state} — theek.` : "";
+    case "species": return draft.species === "buffalo" ? "Bhains — samajh gaya." : "Gaay — samajh gaya.";
+    case "milk_status":
+      if (draft.inMilk) return "Doodh de rahi hai — achha.";
+      if (draft.pregnant) return "Garbhwati hai — samajh gaya.";
+      return "Sukhi hai — achha.";
+    case "milk_yield": return `${draft.milkYieldKg} litre — note kar liya.`;
+    case "calving_months": return `${draft.monthsAfterCalving} mahine — sun liya.`;
+    case "pregnancy": return draft.pregnant ? "Garbhwati hai." : "Garbhwati nahi hai.";
+    case "feed_green": return draft.greenFodderText ? `Hara chara — ${draft.greenFodderText.slice(0, 40)}.` : "Hara chara nahi — sun liya.";
+    case "feed_dry": return draft.dryFodderText ? `Sukha chara — ${draft.dryFodderText.slice(0, 40)}.` : "Sukha chara nahi — sun liya.";
+    case "feed_concentrate": return draft.concentrateText ? `Concentrate — ${draft.concentrateText.slice(0, 40)}.` : "Concentrate — sun liya.";
+    case "feed_mineral": return draft.mineralText ? `Mineral mixture — ${draft.mineralText.slice(0, 40)}.` : "Mineral mixture nahi — sun liya.";
+    default: return "";
+  }
 }
 
 function computeRationReply(lang: PoshanLang, draft: ConvDraft): ProcessResult {
   const working = { ...draft, feeds: [...draft.feeds] };
   if (working.feeds.length < 2) {
-    for (const f of FEED_LIBRARY.filter((x) => x.category === "roughage" || x.category === "concentrate").slice(0, 2)) {
+    for (const f of FEED_LIBRARY.filter((x) =>
+      x.category === "roughage" || x.category === "concentrate" || x.category === "mineral",
+    ).slice(0, 3)) {
       if (!working.feeds.some((x) => x.feedId === f.id)) {
         working.feeds.push({
           feedId: f.id,
@@ -442,10 +534,12 @@ function computeRationReply(lang: PoshanLang, draft: ConvDraft): ProcessResult {
     milk_yield_litres: working.milkYieldKg,
     milk_fat_percent: working.species === "buffalo" ? 7 : 4,
     pregnant: working.pregnant,
+    months_after_calving: working.monthsAfterCalvingSet ? working.monthsAfterCalving : undefined,
     feeds_json: feedsJson,
   });
-  const ctx = buildCtx(working, { summary: computed.summary, milkYieldSet: working.milkYieldSet ? 1 : 0 });
-  const closing = `${agentLine(lang, "feed_concentrate", ctx)}\n\n${computed.summary}`;
+  const closingHi = `${working.name} ji, sab samajh aa gaya. Main ab santulit khurak nikal raha hoon… bas ek pal.`;
+  const closingEn = `${working.name}, that's everything — working out your balanced ration…`;
+  const closing = `${lang === "en" ? closingEn : closingHi}\n\n${computed.summary}`;
   return {
     reply: closing,
     state: { lang, stage: "done", draft: working },
@@ -454,9 +548,14 @@ function computeRationReply(lang: PoshanLang, draft: ConvDraft): ProcessResult {
   };
 }
 
-function replyForStage(lang: PoshanLang, stage: ConvStage, draft: ConvDraft, ackParts: string[]): string {
-  const ack = buildAck(lang, ackParts);
-  const question = agentLine(lang, stage, buildCtx(draft, { milkYieldSet: draft.milkYieldSet ? 1 : 0 }));
+function replyForStage(
+  lang: PoshanLang,
+  nextStage: ConvStage,
+  draft: ConvDraft,
+  answeredStage: ConvStage,
+): string {
+  const ack = answeredStage !== nextStage ? ackForAnsweredStage(lang, answeredStage, draft) : "";
+  const question = agentLine(lang, nextStage, buildCtx(draft));
   return ack ? `${ack}\n\n${question}` : question;
 }
 
@@ -507,13 +606,12 @@ export function processPoshanInput(state: PoshanConvState, input: string): Proce
     return { reply: reprompt(lang, next, buildCtx(draft)), state: { lang, stage: next, draft }, done: false };
   }
 
-  const ackParts = applyFreeformParse(draft, text);
+  const answeredStage = stage;
 
   switch (stage) {
     case "name": {
       if (!draft.name.trim()) {
         draft.name = text.split(/\s+/)[0].replace(/ji$|bhai$|ben$/i, "") || text;
-        ackParts.push(draft.name);
       }
       break;
     }
@@ -551,7 +649,7 @@ export function processPoshanInput(state: PoshanConvState, input: string): Proce
       if (!draft.milkStatusSet) {
         const lower = text.toLowerCase();
         const yn = parseYes(text);
-        if (/garbh|pregnant|gaabhin/i.test(lower)) {
+        if (/garbhwati|garbh|pregnant|gaabhin/i.test(lower)) {
           draft.inMilk = false;
           draft.pregnant = true;
           draft.milkStatusSet = true;
@@ -583,26 +681,39 @@ export function processPoshanInput(state: PoshanConvState, input: string): Proce
       }
       break;
     }
+    case "calving_months": {
+      if (!draft.monthsAfterCalvingSet) {
+        const n = parseNumericAnswer(text, "months") ?? firstNumber(text);
+        if (n === null || n < 0 || n > 24) {
+          return { reply: reprompt(lang, "calving_months", buildCtx(draft)), state: { lang, stage, draft }, done: false };
+        }
+        draft.monthsAfterCalving = Math.round(n);
+        draft.monthsAfterCalvingSet = true;
+      }
+      break;
+    }
     case "pregnancy": {
       if (!draft.pregnancySet) {
         const yn = parseYes(text);
-        draft.pregnant = yn === true || /garbh|pregnant/i.test(text);
+        draft.pregnant = yn === true || /garbhwati|garbh|pregnant/i.test(text);
         draft.pregnancySet = true;
       }
       break;
     }
-    case "feed_roughage": {
-      if (!hasRoughage(draft)) {
-        draft.roughageText = text;
-        draft.feeds = [...draft.feeds, ...parseFeedsFromSpeech(text)];
-      }
+    case "feed_green": {
+      applyFeedAnswer(draft, text, "green");
+      break;
+    }
+    case "feed_dry": {
+      applyFeedAnswer(draft, text, "dry");
       break;
     }
     case "feed_concentrate": {
-      if (!hasConcentrate(draft)) {
-        draft.concentrateText = text;
-        draft.feeds = [...draft.feeds, ...parseFeedsFromSpeech(text)];
-      }
+      applyFeedAnswer(draft, text, "concentrate");
+      break;
+    }
+    case "feed_mineral": {
+      applyFeedAnswer(draft, text, "mineral");
       break;
     }
     default:
@@ -613,7 +724,7 @@ export function processPoshanInput(state: PoshanConvState, input: string): Proce
   if (next === "compute") return computeRationReply(lang, draft);
 
   return {
-    reply: replyForStage(lang, next, draft, ackParts),
+    reply: replyForStage(lang, next, draft, answeredStage),
     state: { lang, stage: next, draft },
     done: false,
   };
@@ -627,12 +738,23 @@ export function convModeKey(conversationId: string): string {
   return `pashumitra_conv_mode_${conversationId}`;
 }
 
+function migrateStage(stage: string, draft: ConvDraft): ConvStage {
+  if (stage === "feed_roughage") {
+    if (!draft.greenFodderSet) return "feed_green";
+    if (!draft.dryFodderSet) return "feed_dry";
+    if (!draft.concentrateSet) return "feed_concentrate";
+    return "feed_mineral";
+  }
+  return stage as ConvStage;
+}
+
 export function loadPoshanState(conversationId: string): PoshanConvState | null {
   try {
     const raw = localStorage.getItem(convStateKey(conversationId));
     if (!raw) return null;
     const parsed = JSON.parse(raw) as PoshanConvState;
-    return { ...parsed, draft: normalizeDraft(parsed.draft) };
+    const draft = normalizeDraft(parsed.draft);
+    return { ...parsed, stage: migrateStage(parsed.stage, draft), draft };
   } catch {
     return null;
   }
