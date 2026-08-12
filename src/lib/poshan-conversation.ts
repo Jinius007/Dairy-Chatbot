@@ -5,6 +5,12 @@
 import { FEED_LIBRARY, type FeedItem } from "@/lib/feedLibrary";
 import { INDIAN_STATES } from "@/lib/india-regions";
 import { matchFeedFromText } from "@/lib/rationVoice";
+import {
+  detectSpecies,
+  parseMilkingFromVoice,
+  parseNumericAnswer,
+  parsePregnantFromVoice,
+} from "@/lib/rationVoice";
 import { computeBalancedRationFromVoice } from "@/lib/poshan-voice-tools";
 import type { Species } from "@/lib/nutrientRequirements";
 
@@ -37,9 +43,13 @@ export interface ConvDraft {
   state: string;
   stateCode: string;
   species: Species;
+  speciesSet?: boolean;
   inMilk: boolean;
+  milkStatusSet?: boolean;
   milkYieldKg: number;
+  milkYieldSet?: boolean;
   pregnant: boolean;
+  pregnancySet?: boolean;
   roughageText: string;
   concentrateText: string;
   feeds: FarmerFeedEntry[];
@@ -59,13 +69,31 @@ export function emptyDraft(): ConvDraft {
     state: "",
     stateCode: "UP",
     species: "cattle",
-    inMilk: true,
-    milkYieldKg: 8,
+    speciesSet: false,
+    inMilk: false,
+    milkStatusSet: false,
+    milkYieldKg: 0,
+    milkYieldSet: false,
     pregnant: false,
+    pregnancySet: false,
     roughageText: "",
     concentrateText: "",
     feeds: [],
   };
+}
+
+function normalizeDraft(d: ConvDraft): ConvDraft {
+  const out: ConvDraft = {
+    ...emptyDraft(),
+    ...d,
+    feeds: [...(d.feeds || [])],
+    speciesSet: d.speciesSet ?? false,
+    milkStatusSet: d.milkStatusSet ?? false,
+    milkYieldSet: d.milkYieldSet ?? (d.milkYieldKg > 0 && d.milkYieldKg !== 8),
+    pregnancySet: d.pregnancySet ?? false,
+  };
+  if (!out.milkYieldSet && out.milkYieldKg === 8) out.milkYieldKg = 0;
+  return out;
 }
 
 export function initialPoshanState(lang: PoshanLang = "hi"): PoshanConvState {
@@ -166,6 +194,7 @@ function buildCtx(draft: ConvDraft, extra: Record<string, string | number> = {})
     inMilk: draft.inMilk ? 1 : 0,
     pregnant: draft.pregnant ? 1 : 0,
     milkYieldKg: draft.milkYieldKg,
+    milkYieldSet: draft.milkYieldSet ? 1 : 0,
     roughageText: draft.roughageText.slice(0, 48),
     ...extra,
   };
@@ -186,10 +215,10 @@ const HI: Record<ConvStage, ScriptFn> = {
       ? "Bhains hai — kya abhi doodh de rahi hai? Ya sukhi, ya garbh?"
       : "Gaay hai — kya abhi doodh de rahi hai? Ya sukhi, ya garbh?",
   milk_yield: (c) =>
-    c.milkYieldKg
+    c.milkYieldSet
       ? `${c.milkYieldKg} litre — note kar liya. Roz kya chara khilate ho? Naam, kitna kilogram, aur daam batayiye.`
-      : "Roz kitna doodh milta hai? Litron mein boliye. Phir chara batayiye.",
-  pregnancy: () => "Theek hai. Ab chara ke baare mein — roz kya dalte ho?",
+      : "Roz kitna doodh milta hai? Litron mein boliye.",
+  pregnancy: () => "Theek hai, sukhi hai. Kya abhi garbh hai? Haan ya nahi boliye.",
   feed_roughage: (c) =>
     c.roughageText
       ? `Achha, ${c.roughageText} — sun liya. Ab concentrate kya dete ho? Sarson khali, chokar, dan?`
@@ -212,10 +241,10 @@ const EN: Record<ConvStage, ScriptFn> = {
       ? "A buffalo — is she giving milk, dry, or pregnant?"
       : "A cow — is she giving milk, dry, or pregnant?",
   milk_yield: (c) =>
-    c.milkYieldKg
+    c.milkYieldSet
       ? `${c.milkYieldKg} litres — noted. What fodder do you feed daily? Name, kg, and price.`
-      : "How many litres of milk per day? Then tell me about fodder.",
-  pregnancy: () => "Okay. What roughage do you give each day?",
+      : "How many litres of milk per day?",
+  pregnancy: () => "Okay, she's dry. Is she pregnant right now? Yes or no.",
   feed_roughage: (c) =>
     c.roughageText
       ? `Got it — ${c.roughageText}. What concentrates — mustard cake, bran?`
@@ -262,6 +291,175 @@ function reprompt(lang: PoshanLang, stage: ConvStage, ctx: Record<string, string
   return hi[stage] ?? "Thoda clear boliye, phir se sun leta hoon.";
 }
 
+function feedCategory(feedId: string): FeedItem["category"] | undefined {
+  return FEED_LIBRARY.find((f) => f.id === feedId)?.category;
+}
+
+function hasRoughage(d: ConvDraft): boolean {
+  return Boolean(d.roughageText.trim()) || d.feeds.some((f) => feedCategory(f.feedId) === "roughage");
+}
+
+function hasConcentrate(d: ConvDraft): boolean {
+  return Boolean(d.concentrateText.trim()) || d.feeds.some((f) => feedCategory(f.feedId) === "concentrate");
+}
+
+type StageOrCompute = ConvStage | "compute";
+
+function firstMissingStage(d: ConvDraft): StageOrCompute {
+  if (!d.name.trim()) return "name";
+  if (!d.district.trim()) return "district";
+  if (!d.village.trim()) return "village";
+  if (!d.state.trim()) return "state";
+  if (!d.speciesSet) return "species";
+  if (!d.milkStatusSet) return "milk_status";
+  if (d.inMilk && !d.milkYieldSet) return "milk_yield";
+  if (!d.inMilk && !d.pregnancySet) return "pregnancy";
+  if (!hasRoughage(d)) return "feed_roughage";
+  if (!hasConcentrate(d)) return "feed_concentrate";
+  return "compute";
+}
+
+/** Pull any ration fields the farmer mentioned in one utterance (ElevenLabs-style). */
+function applyFreeformParse(draft: ConvDraft, text: string): string[] {
+  const ack: string[] = [];
+  const t = clean(text);
+  if (!t) return ack;
+
+  const nameMatch = t.match(/(?:mera\s+)?naam\s+(?:hai\s+)?(\S+)/i)
+    || t.match(/(?:my\s+name\s+is|i\s+am|i'm)\s+(\S+)/i);
+  if (nameMatch && !draft.name.trim()) {
+    draft.name = nameMatch[1].replace(/ji$|bhai$|ben$/i, "");
+    ack.push(draft.name);
+  }
+
+  const districtMatch = t.match(/(\S+(?:\s+\S+)?)\s+jila\b/i) || t.match(/\bjila\s+(\S+(?:\s+\S+)?)/i);
+  if (districtMatch && !draft.district.trim()) {
+    draft.district = districtMatch[1].replace(/\s*jila\s*$/i, "").trim();
+    ack.push(draft.district);
+  }
+
+  const villageMatch = t.match(/(\S+(?:\s+\S+)?)\s+(?:gaon|gaanv|village)\b/i)
+    || t.match(/\b(?:gaon|gaanv|village)\s+(\S+(?:\s+\S+)?)/i);
+  if (villageMatch && !draft.village.trim()) {
+    draft.village = villageMatch[1].trim();
+    ack.push(draft.village);
+  }
+
+  const st = matchState(t);
+  if (st && !draft.state.trim()) {
+    draft.state = st.name;
+    draft.stateCode = st.code;
+    ack.push(st.name);
+  }
+
+  const sp = parseSpecies(t) || detectSpecies(t);
+  if (sp && !draft.speciesSet) {
+    draft.species = sp;
+    draft.speciesSet = true;
+    ack.push(sp === "buffalo" ? "bhains" : "gaay");
+  }
+
+  const preg = parsePregnantFromVoice(t);
+  if (preg === true) {
+    draft.pregnant = true;
+    draft.inMilk = false;
+    draft.milkStatusSet = true;
+    draft.pregnancySet = true;
+    ack.push("garbh");
+  } else if (preg === false && draft.milkStatusSet === false) {
+    draft.pregnant = false;
+    draft.pregnancySet = true;
+  }
+
+  const milking = parseMilkingFromVoice(t);
+  if (milking === true) {
+    draft.inMilk = true;
+    draft.milkStatusSet = true;
+    if (!ack.some((a) => /doodh|milk/i.test(a))) ack.push("doodh de rahi");
+  } else if (milking === false) {
+    draft.inMilk = false;
+    draft.milkStatusSet = true;
+    ack.push("sukhi");
+  }
+
+  const yieldL = parseNumericAnswer(t, "yield");
+  if (yieldL !== null && yieldL > 0 && yieldL <= 40) {
+    draft.milkYieldKg = yieldL;
+    draft.milkYieldSet = true;
+    if (!draft.milkStatusSet) {
+      draft.inMilk = true;
+      draft.milkStatusSet = true;
+    }
+    ack.push(`${yieldL} litre`);
+  }
+
+  const parsedFeeds = parseFeedsFromSpeech(t);
+  if (parsedFeeds.length) {
+    for (const entry of parsedFeeds) {
+      if (draft.feeds.some((x) => x.feedId === entry.feedId)) continue;
+      draft.feeds.push(entry);
+      const cat = feedCategory(entry.feedId);
+      if (cat === "roughage" && !draft.roughageText) draft.roughageText = t.slice(0, 80);
+      if (cat === "concentrate" && !draft.concentrateText) draft.concentrateText = t.slice(0, 80);
+      ack.push(entry.feedName);
+    }
+  }
+
+  return ack;
+}
+
+function buildAck(lang: PoshanLang, parts: string[]): string {
+  const uniq = [...new Set(parts.filter(Boolean))];
+  if (!uniq.length) return "";
+  if (lang === "en") return `Got it — ${uniq.join(", ")}.`;
+  return `Theek hai — ${uniq.join(", ")} sun liya.`;
+}
+
+function computeRationReply(lang: PoshanLang, draft: ConvDraft): ProcessResult {
+  const working = { ...draft, feeds: [...draft.feeds] };
+  if (working.feeds.length < 2) {
+    for (const f of FEED_LIBRARY.filter((x) => x.category === "roughage" || x.category === "concentrate").slice(0, 2)) {
+      if (!working.feeds.some((x) => x.feedId === f.id)) {
+        working.feeds.push({
+          feedId: f.id,
+          feedName: f.name,
+          qtyKg: f.category === "roughage" ? 20 : 3,
+          priceRs: f.rate,
+        });
+      }
+    }
+  }
+  const feedsJson = JSON.stringify(
+    working.feeds.map((f) => ({ name: f.feedName, qty_kg: f.qtyKg, price_rs: f.priceRs })),
+  );
+  const computed = computeBalancedRationFromVoice({
+    farmer_name: working.name,
+    lang,
+    district: working.district,
+    state: working.state,
+    species: working.species,
+    in_milk: working.inMilk,
+    milk_yield_litres: working.milkYieldKg,
+    milk_fat_percent: working.species === "buffalo" ? 7 : 4,
+    pregnant: working.pregnant,
+    feeds_json: feedsJson,
+  });
+  const ctx = buildCtx(working, { summary: computed.summary, milkYieldSet: working.milkYieldSet ? 1 : 0 });
+  const closing = `${agentLine(lang, "feed_concentrate", ctx)}\n\n${computed.summary}`;
+  return {
+    reply: closing,
+    state: { lang, stage: "done", draft: working },
+    done: true,
+    rationSummary: computed.summary,
+  };
+}
+
+function replyForStage(lang: PoshanLang, stage: ConvStage, draft: ConvDraft, ackParts: string[]): string {
+  const ack = buildAck(lang, ackParts);
+  const question = agentLine(lang, stage, buildCtx(draft, { milkYieldSet: draft.milkYieldSet ? 1 : 0 }));
+  return ack ? `${ack}\n\n${question}` : question;
+}
+
 export function openingLine(lang: PoshanLang): string {
   return agentLine(lang, "name");
 }
@@ -279,7 +477,7 @@ export interface ProcessResult {
 
 export function processPoshanInput(state: PoshanConvState, input: string): ProcessResult {
   const lang = state.lang;
-  const draft = { ...state.draft, feeds: [...state.draft.feeds] };
+  const draft = normalizeDraft({ ...state.draft, feeds: [...state.draft.feeds] });
   let stage = state.stage;
   const text = clean(input);
 
@@ -299,134 +497,126 @@ export function processPoshanInput(state: PoshanConvState, input: string): Proce
     };
   }
 
-  if (!text) {
-    return { reply: reprompt(lang, stage, buildCtx(draft)), state: { ...state, draft }, done: false };
+  if (stage === "done") {
+    return { reply: agentLine(lang, "done", buildCtx(draft)), state: { lang, stage: "done", draft }, done: true };
   }
+
+  if (!text) {
+    const next = firstMissingStage(draft);
+    if (next === "compute") return computeRationReply(lang, draft);
+    return { reply: reprompt(lang, next, buildCtx(draft)), state: { lang, stage: next, draft }, done: false };
+  }
+
+  const ackParts = applyFreeformParse(draft, text);
 
   switch (stage) {
     case "name": {
-      draft.name = text.split(/\s+/)[0].replace(/ji$|bhai$|ben$/i, "") || text;
-      stage = "district";
-      return { reply: agentLine(lang, "district", buildCtx(draft)), state: { lang, stage, draft }, done: false };
+      if (!draft.name.trim()) {
+        draft.name = text.split(/\s+/)[0].replace(/ji$|bhai$|ben$/i, "") || text;
+        ackParts.push(draft.name);
+      }
+      break;
     }
     case "district": {
-      draft.district = text.replace(/\s*jila\s*$/i, "").trim();
-      stage = "village";
-      return { reply: agentLine(lang, "village", buildCtx(draft)), state: { lang, stage, draft }, done: false };
+      if (!draft.district.trim()) draft.district = text.replace(/\s*jila\s*$/i, "").trim();
+      break;
     }
     case "village": {
-      draft.village = text.replace(/\s*gaanv\s*$/i, "").trim();
-      stage = "state";
-      return { reply: agentLine(lang, "state", buildCtx(draft)), state: { lang, stage, draft }, done: false };
+      if (!draft.village.trim()) draft.village = text.replace(/\s*gaanv\s*$/i, "").trim();
+      break;
     }
     case "state": {
-      const st = matchState(text);
-      if (!st) {
-        return { reply: reprompt(lang, "state", buildCtx(draft)), state: { lang, stage, draft }, done: false };
+      if (!draft.state.trim()) {
+        const st = matchState(text);
+        if (!st) {
+          return { reply: reprompt(lang, "state", buildCtx(draft)), state: { lang, stage, draft }, done: false };
+        }
+        draft.state = st.name;
+        draft.stateCode = st.code;
       }
-      draft.state = st.name;
-      draft.stateCode = st.code;
-      stage = "species";
-      return { reply: agentLine(lang, "species", buildCtx(draft)), state: { lang, stage, draft }, done: false };
+      break;
     }
     case "species": {
-      const sp = parseSpecies(text);
-      if (!sp) {
-        return { reply: reprompt(lang, "species", buildCtx(draft)), state: { lang, stage, draft }, done: false };
+      if (!draft.speciesSet) {
+        const sp = parseSpecies(text) || detectSpecies(text);
+        if (!sp) {
+          return { reply: reprompt(lang, "species", buildCtx(draft)), state: { lang, stage, draft }, done: false };
+        }
+        draft.species = sp;
+        draft.speciesSet = true;
       }
-      draft.species = sp;
-      stage = "milk_status";
-      return { reply: agentLine(lang, "milk_status", buildCtx(draft)), state: { lang, stage, draft }, done: false };
+      break;
     }
     case "milk_status": {
-      const yn = parseYes(text);
-      const lower = text.toLowerCase();
-      if (/doodh|milk|दूध/i.test(lower) || (yn === true && !/garbh|pregnant|sukhi|dry/i.test(lower))) {
-        draft.inMilk = true;
-      } else if (/garbh|pregnant/i.test(lower)) {
-        draft.inMilk = false;
-        draft.pregnant = true;
-      } else if (/sukhi|dry/i.test(lower)) {
-        draft.inMilk = false;
-        draft.pregnant = false;
-      } else if (yn === true) draft.inMilk = true;
-      else if (yn === false) draft.inMilk = false;
-      else {
-        return { reply: reprompt(lang, "milk_status", buildCtx(draft)), state: { lang, stage, draft }, done: false };
-      }
-      if (draft.inMilk) {
-        stage = "milk_yield";
-        return { reply: agentLine(lang, "milk_yield", buildCtx(draft)), state: { lang, stage, draft }, done: false };
-      }
-      if (draft.pregnant) {
-        stage = "feed_roughage";
-        return { reply: agentLine(lang, "milk_status", buildCtx(draft)), state: { lang, stage, draft }, done: false };
-      }
-      const followUp = lang === "en"
-        ? `Okay, she's dry. Is she pregnant right now? Yes or no.`
-        : `Theek hai, sukhi hai. Kya abhi garbh hai? Haan ya nahi boliye.`;
-      stage = "pregnancy";
-      return { reply: followUp, state: { lang, stage, draft }, done: false };
-    }
-    case "milk_yield": {
-      const n = firstNumber(text);
-      if (!n || n <= 0 || n > 40) {
-        return { reply: reprompt(lang, "milk_yield", buildCtx(draft)), state: { lang, stage, draft }, done: false };
-      }
-      draft.milkYieldKg = n;
-      stage = "feed_roughage";
-      return { reply: agentLine(lang, "milk_yield", buildCtx(draft)), state: { lang, stage, draft }, done: false };
-    }
-    case "pregnancy": {
-      const yn = parseYes(text);
-      draft.pregnant = yn === true || /garbh|pregnant/i.test(text);
-      stage = "feed_roughage";
-      return { reply: agentLine(lang, "pregnancy", buildCtx(draft)), state: { lang, stage, draft }, done: false };
-    }
-    case "feed_roughage": {
-      draft.roughageText = text;
-      draft.feeds = parseFeedsFromSpeech(text);
-      stage = "feed_concentrate";
-      return { reply: agentLine(lang, "feed_roughage", buildCtx(draft)), state: { lang, stage, draft }, done: false };
-    }
-    case "feed_concentrate": {
-      draft.concentrateText = text;
-      draft.feeds = [...draft.feeds, ...parseFeedsFromSpeech(text)];
-      if (draft.feeds.length < 2) {
-        for (const f of FEED_LIBRARY.filter((x) => x.category === "roughage" || x.category === "concentrate").slice(0, 2)) {
-          if (!draft.feeds.some((x) => x.feedId === f.id)) {
-            draft.feeds.push({ feedId: f.id, feedName: f.name, qtyKg: f.category === "roughage" ? 20 : 3, priceRs: f.rate });
-          }
+      if (!draft.milkStatusSet) {
+        const lower = text.toLowerCase();
+        const yn = parseYes(text);
+        if (/garbh|pregnant|gaabhin/i.test(lower)) {
+          draft.inMilk = false;
+          draft.pregnant = true;
+          draft.milkStatusSet = true;
+          draft.pregnancySet = true;
+        } else if (/sukhi|dry/i.test(lower)) {
+          draft.inMilk = false;
+          draft.pregnant = false;
+          draft.milkStatusSet = true;
+        } else if (/doodh|milk|दूध/i.test(lower) || yn === true) {
+          draft.inMilk = true;
+          draft.milkStatusSet = true;
+        } else if (yn === false) {
+          draft.inMilk = false;
+          draft.milkStatusSet = true;
+        } else {
+          return { reply: reprompt(lang, "milk_status", buildCtx(draft)), state: { lang, stage, draft }, done: false };
         }
       }
-      const feedsJson = JSON.stringify(
-        draft.feeds.map((f) => ({ name: f.feedName, qty_kg: f.qtyKg, price_rs: f.priceRs })),
-      );
-      const computed = computeBalancedRationFromVoice({
-        farmer_name: draft.name,
-        lang,
-        district: draft.district,
-        state: draft.state,
-        species: draft.species,
-        in_milk: draft.inMilk,
-        milk_yield_litres: draft.milkYieldKg,
-        milk_fat_percent: draft.species === "buffalo" ? 7 : 4,
-        pregnant: draft.pregnant,
-        feeds_json: feedsJson,
-      });
-      const ctx = buildCtx(draft, { summary: computed.summary });
-      const closing = `${agentLine(lang, "feed_concentrate", ctx)}\n\n${computed.summary}`;
-      stage = "done";
-      return {
-        reply: closing,
-        state: { lang, stage, draft },
-        done: true,
-        rationSummary: computed.summary,
-      };
+      break;
+    }
+    case "milk_yield": {
+      if (!draft.milkYieldSet) {
+        const n = parseNumericAnswer(text, "yield") ?? firstNumber(text);
+        if (!n || n <= 0 || n > 40) {
+          return { reply: reprompt(lang, "milk_yield", buildCtx(draft)), state: { lang, stage, draft }, done: false };
+        }
+        draft.milkYieldKg = n;
+        draft.milkYieldSet = true;
+      }
+      break;
+    }
+    case "pregnancy": {
+      if (!draft.pregnancySet) {
+        const yn = parseYes(text);
+        draft.pregnant = yn === true || /garbh|pregnant/i.test(text);
+        draft.pregnancySet = true;
+      }
+      break;
+    }
+    case "feed_roughage": {
+      if (!hasRoughage(draft)) {
+        draft.roughageText = text;
+        draft.feeds = [...draft.feeds, ...parseFeedsFromSpeech(text)];
+      }
+      break;
+    }
+    case "feed_concentrate": {
+      if (!hasConcentrate(draft)) {
+        draft.concentrateText = text;
+        draft.feeds = [...draft.feeds, ...parseFeedsFromSpeech(text)];
+      }
+      break;
     }
     default:
-      return { reply: agentLine(lang, "done", buildCtx(draft)), state: { lang, stage: "done", draft }, done: true };
+      break;
   }
+
+  const next = firstMissingStage(draft);
+  if (next === "compute") return computeRationReply(lang, draft);
+
+  return {
+    reply: replyForStage(lang, next, draft, ackParts),
+    state: { lang, stage: next, draft },
+    done: false,
+  };
 }
 
 export function convStateKey(conversationId: string): string {
@@ -441,7 +631,8 @@ export function loadPoshanState(conversationId: string): PoshanConvState | null 
   try {
     const raw = localStorage.getItem(convStateKey(conversationId));
     if (!raw) return null;
-    return JSON.parse(raw) as PoshanConvState;
+    const parsed = JSON.parse(raw) as PoshanConvState;
+    return { ...parsed, draft: normalizeDraft(parsed.draft) };
   } catch {
     return null;
   }
