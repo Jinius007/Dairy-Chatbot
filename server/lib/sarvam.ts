@@ -19,8 +19,21 @@ export function hasSarvamApiKey(): boolean {
   return Boolean(env("SARVAM_API_KEY"));
 }
 
+const ALLOWED_CHAT_MODELS = new Set(["sarvam-105b", "sarvam-105b-conversations"]);
+
+/** Sarvam chat API only accepts sarvam-105b / sarvam-105b-conversations (not sarvam-30b). */
 export function getSarvamChatModel(): string {
-  return env("SARVAM_CHAT_MODEL") || "sarvam-30b";
+  const raw = env("SARVAM_CHAT_MODEL") || "sarvam-105b";
+  if (ALLOWED_CHAT_MODELS.has(raw)) return raw;
+  if (raw === "sarvam-30b" || raw === "sarvam-m") return "sarvam-105b";
+  return "sarvam-105b";
+}
+
+export function getSarvamCallChatModel(): string {
+  const raw = env("SARVAM_CALL_CHAT_MODEL") || env("SARVAM_CHAT_MODEL") || "sarvam-105b-conversations";
+  if (raw === "sarvam-105b-conversations") return raw;
+  if (raw === "sarvam-105b") return "sarvam-105b-conversations";
+  return "sarvam-105b-conversations";
 }
 
 export function getSarvamSttModel(): string {

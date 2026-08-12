@@ -24,7 +24,7 @@ import {
 import { tryYoutubeVideoHint } from "../../lib/youtube-search.ts";
 import { retrieveRagContext } from "../../lib/sarvam-rag.ts";
 import { extractChatText } from "../../lib/gemini.ts";
-import { getSarvamChatModel, hasSarvamApiKey, sarvamChatCompletion } from "../../lib/sarvam.ts";
+import { getSarvamCallChatModel, getSarvamChatModel, hasSarvamApiKey, sarvamChatCompletion } from "../../lib/sarvam.ts";
 import { buildCooperativeMarketingPrompt, MILK_MARKETING_SYSTEM_RULES } from "../../lib/cooperative-location.ts";
 import { buildCattlePurchasePrompt, CATTLE_PURCHASE_RULES } from "../../lib/knowledge/cattle-purchase-policy.ts";
 import { buildManureWastePrompt, MANURE_WASTE_RULES } from "../../lib/knowledge/manure-waste-policy.ts";
@@ -380,6 +380,8 @@ This is regular chat — NOT a report. Max ~500 words this turn.
       ...(effectiveForceLang && effectiveForcedLabel ? [{ role: "system", content: `FINAL CHECK BEFORE ANSWERING: Reply in ${effectiveForcedLabel} only, with [[LANG:${effectiveForceLang}]] as the first line. Keep it simple enough for a farmer.${effectiveForceLang !== "en" ? " Use native script — NOT Roman transliteration." : ""}` }] : []),
     ];
 
+    const chatModel = mode === "call" ? getSarvamCallChatModel() : getSarvamChatModel();
+
     if (stream) {
       return createSsePassthroughStream(async () => {
         const [youtubeHint, ragContext] = await Promise.all([
@@ -387,7 +389,7 @@ This is regular chat — NOT a report. Max ~500 words this turn.
           retrieveRagContext(userCtx || lastUser?.content || "", ragChunks),
         ]);
         return sarvamChatCompletion({
-          model: getSarvamChatModel(),
+          model: chatModel,
           temperature: 0.4,
           max_tokens: maxTokens,
           messages: buildChatMessages(youtubeHint, ragContext),
@@ -400,7 +402,7 @@ This is regular chat — NOT a report. Max ~500 words this turn.
     const ragContext = await retrieveRagContext(userCtx || lastUser?.content || "", ragChunks);
 
     const response = await sarvamChatCompletion({
-      model: getSarvamChatModel(),
+      model: chatModel,
       temperature: 0.4,
       max_tokens: maxTokens,
       messages: buildChatMessages(youtubeHint, ragContext),
