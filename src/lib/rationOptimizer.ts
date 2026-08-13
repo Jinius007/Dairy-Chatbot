@@ -63,13 +63,17 @@ function suggestedCap(feed: FeedItem): number {
   }
 }
 
+function isDryRoughageFeed(feed: FeedItem): boolean {
+  return feed.category === "roughage" && (feed.group === "Straw" || feed.group === "Hay");
+}
+
 function buildModel(
   inputs: RationFeedInput[],
   requirement: NutrientVector,
   dmMinG: number,
   dmMaxG: number,
   concMaxPct: number,
-  options: { enforceMinerals: boolean; enforceCaP: boolean; enforceDmMax: boolean }
+  options: { enforceMinerals: boolean; enforceDryRoughage: boolean; enforceCaP: boolean; enforceDmMax: boolean }
 ): LpModel {
   const constraints: LpModel["constraints"] = {
     tdn: { min: requirement.tdn },
@@ -83,6 +87,10 @@ function buildModel(
   if (options.enforceCaP) {
     constraints.ca = { min: requirement.ca };
     constraints.p = { min: requirement.p };
+  }
+  if (options.enforceDryRoughage) {
+    // Practical minimum dry fodder (straw/hay) in the final ration
+    constraints.dryrough = { min: 2 };
   }
 
   const variables: LpModel["variables"] = {};
@@ -98,6 +106,7 @@ function buildModel(
       dm: f.dm,
       concbal: f.dm * (isConc - concMaxPct / 100),
       forage: f.category === "roughage" ? 1 : 0,
+      dryrough: isDryRoughageFeed(f) ? 1 : 0,
     };
     // per-variable bounds via dedicated constraint rows
     const boundKey = `qty_${f.id}`;
@@ -152,11 +161,13 @@ export function optimizeRation(
   const concMaxPct = maxConcentratePercent(animal);
   const req = requirement.total;
   const enforceMinerals = inputs.some((i) => i.feed.category === "mineral");
+  const enforceDryRoughage = inputs.some((i) => isDryRoughageFeed(i.feed));
 
   const attempts: { relaxed: string[]; opts: Parameters<typeof buildModel>[5] }[] = [
-    { relaxed: [], opts: { enforceMinerals, enforceCaP: true, enforceDmMax: true } },
-    { relaxed: ["caP"], opts: { enforceMinerals, enforceCaP: false, enforceDmMax: true } },
-    { relaxed: ["caP", "dmMax"], opts: { enforceMinerals, enforceCaP: false, enforceDmMax: false } },
+    { relaxed: [], opts: { enforceMinerals, enforceDryRoughage, enforceCaP: true, enforceDmMax: true } },
+    { relaxed: ["dryRoughage"], opts: { enforceMinerals, enforceDryRoughage: false, enforceCaP: true, enforceDmMax: true } },
+    { relaxed: ["dryRoughage", "caP"], opts: { enforceMinerals, enforceDryRoughage: false, enforceCaP: false, enforceDmMax: true } },
+    { relaxed: ["dryRoughage", "caP", "dmMax"], opts: { enforceMinerals, enforceDryRoughage: false, enforceCaP: false, enforceDmMax: false } },
   ];
 
   for (const attempt of attempts) {
