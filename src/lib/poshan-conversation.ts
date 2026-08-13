@@ -155,6 +155,7 @@ function sanitizeNameToken(raw: string): string {
 const NAME_STOPWORDS = new Set([
   "mera", "mere", "meri", "main", "hum", "naam", "name", "my", "i", "am", "is",
   "hai", "hoon", "hu", "the", "a", "an",
+  "pas", "paas", "achha", "achchha", "accha", "theek", "haan", "han", "ok", "okay", "ji",
 ]);
 
 function parseFarmerName(text: string): string {
@@ -180,12 +181,6 @@ function parseFarmerName(text: string): string {
   }
   const fallback = sanitizeNameToken(t.split(/\s+/)[0] || t);
   return NAME_STOPWORDS.has(fallback.toLowerCase()) ? "" : fallback;
-}
-
-function farmerDisplayName(name: string): string {
-  const n = sanitizeNameToken(name);
-  if (!n || n.length < 2 || NAME_STOPWORDS.has(n.toLowerCase())) return "";
-  return n;
 }
 
 function firstNumber(text: string): number | null {
@@ -453,10 +448,7 @@ const HI: Record<ConvStage, ScriptFn> = {
   district: () => "Kis jile mein rehte hain?",
   village: () => "Aapka gaanv ka naam kya hai?",
   state: () => "Ye gaanv kis rajya mein pada hai? Jaise Gujarat, UP…",
-  species: (c) => {
-    const n = farmerDisplayName(String(c.name));
-    return n ? `${n} ji, gaay hai ya bhains?` : "Gaay hai ya bhains?";
-  },
+  species: () => "Gaay hai ya bhains?",
   milk_status: (c) =>
     c.species === "buffalo"
       ? "Kya abhi doodh de rahi hai? Ya sukhi, ya garbhwati?"
@@ -483,10 +475,7 @@ const EN: Record<ConvStage, ScriptFn> = {
   district: () => "Which district do you live in?",
   village: () => "What's your village name?",
   state: () => "Which state is that in?",
-  species: (c) => {
-    const n = farmerDisplayName(String(c.name));
-    return n ? `Do you have a cow or a buffalo, ${n}?` : "Do you have a cow or a buffalo?";
-  },
+  species: () => "Do you have a cow or a buffalo?",
   milk_status: () => "Is she giving milk, dry, or pregnant?",
   milk_yield: () => "How many litres of milk per day?",
   calving_months: () => "How many months ago was her last calving? Like 2 or 3 months.",
@@ -504,13 +493,11 @@ function agentLine(lang: PoshanLang, stage: ConvStage, ctx: Record<string, strin
 }
 
 function reprompt(lang: PoshanLang, stage: ConvStage, ctx: Record<string, string | number>): string {
-  const n = farmerDisplayName(String(ctx.name ?? ""));
-  const prefix = n ? `${n} ji, ` : "";
   if (lang === "en") {
     const en: Partial<Record<ConvStage, string>> = {
       name: "Sorry, I didn't catch your name. Could you say it again?",
-      district: `${prefix}which district are you in?`,
-      village: `${prefix}what's your village called?`,
+      district: "Which district are you in?",
+      village: "What's your village called?",
       state: "Which state — Gujarat, UP, Maharashtra…?",
       species: "Cow or buffalo?",
       milk_status: "In milk, dry, or pregnant?",
@@ -526,8 +513,8 @@ function reprompt(lang: PoshanLang, stage: ConvStage, ctx: Record<string, string
   }
   const hi: Partial<Record<ConvStage, string>> = {
     name: "Maaf kijiye, naam clear nahi suna. Ek baar phir boliye.",
-    district: `${prefix}kis jile mein rehte hain?`,
-    village: `${prefix}gaanv ka naam kya hai?`,
+    district: "Kis jile mein rehte hain?",
+    village: "Gaanv ka naam kya hai?",
     state: "Kaunsa rajya — Gujarat, UP…?",
     species: "Gaay hai ya bhains?",
     milk_status: "Doodh de rahi hai, sukhi, ya garbhwati?",
@@ -565,49 +552,6 @@ function firstMissingStage(d: ConvDraft): StageOrCompute {
   return "compute";
 }
 
-function ackForAnsweredStage(lang: PoshanLang, stage: ConvStage, draft: ConvDraft): string {
-  if (lang === "en") {
-    switch (stage) {
-      case "name": return farmerDisplayName(draft.name) ? `${farmerDisplayName(draft.name)} — nice.` : "";
-      case "district": return draft.district ? `${draft.district} — got it.` : "";
-      case "village": return draft.village ? `${draft.village} — noted.` : "";
-      case "state": return draft.state ? `${draft.state} — understood.` : "";
-      case "species": return draft.species === "buffalo" ? "Buffalo — okay." : "Cow — okay.";
-      case "milk_status":
-        if (draft.inMilk) return "In milk — noted.";
-        if (draft.pregnant) return "Pregnant — noted.";
-        return "Dry — noted.";
-      case "milk_yield": return `${draft.milkYieldKg} litres — noted.`;
-      case "calving_months": return `${draft.monthsAfterCalving} months since calving — noted.`;
-      case "pregnancy": return draft.pregnant ? "Pregnant — noted." : "Not pregnant — noted.";
-      case "feed_green": return draft.greenFodderText ? `Green fodder — ${draft.greenFodderText.slice(0, 40)}.` : "No green fodder — noted.";
-      case "feed_dry": return draft.dryFodderText ? `Dry fodder — ${draft.dryFodderText.slice(0, 40)}.` : "No dry fodder — noted.";
-      case "feed_concentrate": return draft.concentrateText ? `Concentrate — ${draft.concentrateText.slice(0, 40)}.` : "Concentrate — noted.";
-      case "feed_mineral": return draft.mineralText ? `Mineral — ${draft.mineralText.slice(0, 40)}.` : "No mineral mixture — noted.";
-      default: return "";
-    }
-  }
-  switch (stage) {
-    case "name": return farmerDisplayName(draft.name) ? `${farmerDisplayName(draft.name)} ji — achha.` : "";
-    case "district": return draft.district ? `${draft.district} jila — samajh gaya.` : "";
-    case "village": return draft.village ? `${draft.village} gaanv — achha.` : "";
-    case "state": return draft.state ? `${draft.state} — theek.` : "";
-    case "species": return draft.species === "buffalo" ? "Bhains — samajh gaya." : "Gaay — samajh gaya.";
-    case "milk_status":
-      if (draft.inMilk) return "Doodh de rahi hai — achha.";
-      if (draft.pregnant) return "Garbhwati hai — samajh gaya.";
-      return "Sukhi hai — achha.";
-    case "milk_yield": return `${draft.milkYieldKg} litre — note kar liya.`;
-    case "calving_months": return `${draft.monthsAfterCalving} mahine — sun liya.`;
-    case "pregnancy": return draft.pregnant ? "Garbhwati hai." : "Garbhwati nahi hai.";
-    case "feed_green": return draft.greenFodderText ? `Hara chara — ${draft.greenFodderText.slice(0, 40)}.` : "Hara chara nahi — sun liya.";
-    case "feed_dry": return draft.dryFodderText ? `Sukha chara — ${draft.dryFodderText.slice(0, 40)}.` : "Sukha chara nahi — sun liya.";
-    case "feed_concentrate": return draft.concentrateText ? `Concentrate — ${draft.concentrateText.slice(0, 40)}.` : "Concentrate — sun liya.";
-    case "feed_mineral": return draft.mineralText ? `Mineral mixture — ${draft.mineralText.slice(0, 40)}.` : "Mineral mixture nahi — sun liya.";
-    default: return "";
-  }
-}
-
 function computeRationReply(lang: PoshanLang, draft: ConvDraft): ProcessResult {
   const working = { ...draft, feeds: [...draft.feeds] };
   const feedsJson = JSON.stringify(
@@ -626,12 +570,8 @@ function computeRationReply(lang: PoshanLang, draft: ConvDraft): ProcessResult {
     months_after_calving: working.monthsAfterCalvingSet ? working.monthsAfterCalving : undefined,
     feeds_json: feedsJson,
   });
-  const closingHi = farmerDisplayName(working.name)
-    ? `${farmerDisplayName(working.name)} ji, sab samajh aa gaya. Main ab santulit khurak nikal raha hoon… bas ek pal.`
-    : "Sab samajh aa gaya. Main ab santulit khurak nikal raha hoon… bas ek pal.";
-  const closingEn = farmerDisplayName(working.name)
-    ? `${farmerDisplayName(working.name)}, that's everything — working out your balanced ration…`
-    : "That's everything — working out your balanced ration…";
+  const closingHi = "Main ab santulit khurak nikal raha hoon… bas ek pal.";
+  const closingEn = "Working out your balanced ration…";
   const closing = `${lang === "en" ? closingEn : closingHi}\n\n${computed.summary}`;
   return {
     reply: closing,
@@ -641,15 +581,8 @@ function computeRationReply(lang: PoshanLang, draft: ConvDraft): ProcessResult {
   };
 }
 
-function replyForStage(
-  lang: PoshanLang,
-  nextStage: ConvStage,
-  draft: ConvDraft,
-  answeredStage: ConvStage,
-): string {
-  const ack = answeredStage !== nextStage ? ackForAnsweredStage(lang, answeredStage, draft) : "";
-  const question = agentLine(lang, nextStage, buildCtx(draft));
-  return ack ? `${ack}\n\n${question}` : question;
+function replyForStage(lang: PoshanLang, nextStage: ConvStage, draft: ConvDraft): string {
+  return agentLine(lang, nextStage, buildCtx(draft));
 }
 
 export function openingLine(lang: PoshanLang): string {
@@ -698,8 +631,6 @@ export function processPoshanInput(state: PoshanConvState, input: string): Proce
     if (next === "compute") return computeRationReply(lang, draft);
     return { reply: reprompt(lang, next, buildCtx(draft)), state: { lang, stage: next, draft }, done: false };
   }
-
-  const answeredStage = stage;
 
   switch (stage) {
     case "name": {
@@ -817,7 +748,7 @@ export function processPoshanInput(state: PoshanConvState, input: string): Proce
   if (next === "compute") return computeRationReply(lang, draft);
 
   return {
-    reply: replyForStage(lang, next, draft, answeredStage),
+    reply: replyForStage(lang, next, draft),
     state: { lang, stage: next, draft },
     done: false,
   };
