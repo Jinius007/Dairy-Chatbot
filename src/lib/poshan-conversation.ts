@@ -144,6 +144,10 @@ export function initialPoshanState(lang: PoshanLang = "hi"): PoshanConvState {
   return { lang, stage: "name", draft: emptyDraft() };
 }
 
+function clean(text: string): string {
+  return text.replace(/\s+/g, " ").trim();
+}
+
 function sanitizeNameToken(raw: string): string {
   return raw.replace(/ji$|bhai$|ben$|[.,!?]/gi, "").trim();
 }
