@@ -31,6 +31,7 @@ import { buildManureWastePrompt, MANURE_WASTE_RULES } from "../../lib/knowledge/
 import { NATIVE_SCRIPT_RULES, nativeScriptLockPrompt } from "../../lib/languages.ts";
 import { ensureNativeScriptText } from "../../lib/native-script.ts";
 import { getVetContactDirectReply, isVetConsultQuery, isVetContactRequest, normalizeVetQueryText, VET_CONSULT_MARKER } from "../../lib/vet-consult.ts";
+import { isFeedRationQuery, RATION_ADVISORY_OFFER_MARKER } from "../../lib/ration-advisory-offer.ts";
 import { trimChatMessages } from "../../lib/chat-history.ts";
 import { createSsePassthroughStream } from "../../lib/sse-passthrough.ts";
 import { NDLM_DIGITAL_RULES } from "../../lib/knowledge/ndlm-digital-platforms.ts";
@@ -305,6 +306,7 @@ export async function handleChat(req: Request): Promise<Response> {
     }
 
     const vetConsultQuery = mode === "chat" && isVetConsultQuery(normalizedUserText);
+    const feedRationQuery = mode === "chat" && !isRationAdvisory && isFeedRationQuery(normalizedUserText);
     const vetContactDirect = (mode === "chat" || mode === "call") && isVetContactRequest(normalizedUserText);
     const cooperativeHint = buildCooperativeMarketingPrompt(userCtx || lastUserText);
     const cattlePurchaseHint = buildCattlePurchasePrompt(userCtx || lastUserText);
@@ -362,6 +364,11 @@ End your reply with exactly ${VET_CONSULT_MARKER} on its own line (required — 
 After giving a SHORT practical answer (symptoms, first aid, when to call vet — no full drug doses unless from retrieved knowledge):
 Ask the farmer in their language: "Would you like to consult a nearby veterinarian or paravet?"
 End your reply with exactly ${VET_CONSULT_MARKER} on its own line (required — app will show nearest doctors).` }] : []),
+      ...(feedRationQuery ? [{ role: "system", content: `FEED / RATION QUERY DETECTED (main chat — NOT Ration Advisory panel yet):
+1) Give a SHORT general feeding answer first (2–4 sentences) — practical village advice from retrieved knowledge only.
+2) Do NOT compute detailed kg/day ration or ₹ costs in this message — that belongs in Ration Advisory.
+3) Ask in the farmer's language whether they want a balanced ration plan for each animal (you will ask simple questions one by one in Ration Advisory).
+4) End your reply with exactly ${RATION_ADVISORY_OFFER_MARKER} on its own line (required — app opens Ration Advisory if farmer says yes).` }] : []),
       ...(!isRationAdvisory && mode !== "call" ? [{ role: "system", content: `INTERACTIVE CHAT TURN (CRITICAL):
 This is regular chat — NOT a report. Max ~500 words this turn.
 1) Answer the farmer's latest question only — short and practical.

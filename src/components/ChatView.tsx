@@ -64,6 +64,16 @@ import {
 import { isRationConversation } from "@/lib/poshan-conversation";
 import { handleRationChatTurn, rationChatBootstrap, displayRationReply } from "@/lib/ration-chat-flow";
 import { toRationLang } from "@/lib/rationI18n";
+import {
+  hasRationAdvisoryOfferMarker,
+  isAffirmativeRationOfferReply,
+  isFeedRationQuery,
+  isNegativeRationOfferReply,
+  rationAdvisoryOfferPrompt,
+  rationOfferNoLabel,
+  rationOfferYesLabel,
+  stripRationAdvisoryOfferMarker,
+} from "@/lib/ration-advisory-offer";
 
 interface Message {
   id: string;
@@ -79,6 +89,8 @@ interface Props {
   onBack?: () => void;
   /** Leave ration advisory and open the general assistant chat. */
   onOpenMainChat?: () => void;
+  /** Open the Ration Advisory panel (language pick + chat/call). */
+  onOpenRationAdvisory?: (lang?: string) => void;
   onConversationUpdated?: () => void;
 }
 
@@ -109,7 +121,7 @@ function linkifyText(text: string) {
   );
 }
 
-export function ChatView({ conversationId, onBack, onOpenMainChat, onConversationUpdated }: Props) {
+export function ChatView({ conversationId, onBack, onOpenMainChat, onOpenRationAdvisory, onConversationUpdated }: Props) {
   const [messages, setMessages] = useState<Message[]>([]);
   const rationMode = isRationConversation(conversationId);
   const [input, setInput] = useState("");
@@ -120,6 +132,7 @@ export function ChatView({ conversationId, onBack, onOpenMainChat, onConversatio
   const [slowWaitByMsg, setSlowWaitByMsg] = useState<Record<string, string>>({});
   const [activeUserLang, setActiveUserLang] = useState("hi");
   const [vetOfferForMsg, setVetOfferForMsg] = useState<string | null>(null);
+  const [rationOfferForMsg, setRationOfferForMsg] = useState<string | null>(null);
   const [vetResultsByMsg, setVetResultsByMsg] = useState<Record<string, VetProfessional[]>>({});
   const [loadingVetsFor, setLoadingVetsFor] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -367,6 +380,16 @@ export function ChatView({ conversationId, onBack, onOpenMainChat, onConversatio
         }
       }
 
+      const feedQuery = isFeedRationQuery(latestUserText);
+      const wantsRationOffer = hasRationAdvisoryOfferMarker(body);
+      if (wantsRationOffer) {
+        body = stripRationAdvisoryOfferMarker(body);
+        setRationOfferForMsg(assistantId);
+      } else if (feedQuery) {
+        body = `${body.trim()}\n\n${rationAdvisoryOfferPrompt(replyLang)}`.trim();
+        setRationOfferForMsg(assistantId);
+      }
+
       let videos: Awaited<ReturnType<typeof fetchVerifiedVideos>> = [];
       if (wantsVideo) {
         const videoQuery = buildVideoQuery(latestUserText, recentUser, body);
@@ -411,6 +434,49 @@ export function ChatView({ conversationId, onBack, onOpenMainChat, onConversatio
     if (!text.trim() || sending) return;
 
     const userLang = resolveUserLang(text, detectLanguageFromMessages(messages) || activeUserLang || "hi");
+
+    if (isAffirmativeRationOfferReply(text) && rationOfferForMsg) {
+      const userMsg: Message = {
+        id: crypto.randomUUID(),
+        role: "user",
+        content: text,
+        is_voice: isVoice,
+        created_at: new Date().toISOString(),
+      };
+      const updated = [...messagesRef.current, userMsg];
+      messagesRef.current = updated;
+      setMessages(updated);
+      persist(updated);
+      setActiveUserLang(userLang);
+      setRationOfferForMsg(null);
+      onOpenRationAdvisory?.(toRationLang(userLang));
+      return;
+    }
+
+    if (isNegativeRationOfferReply(text) && rationOfferForMsg) {
+      const userMsg: Message = {
+        id: crypto.randomUUID(),
+        role: "user",
+        content: text,
+        is_voice: isVoice,
+        created_at: new Date().toISOString(),
+      };
+      const assistantMsg: Message = {
+        id: crypto.randomUUID(),
+        role: "assistant",
+        content: userLang === "en"
+          ? "Alright. Ask anytime if you want a balanced ration plan later."
+          : "ठीक है। जब चाहें संतुलित खुराक के लिए फिर पूछिए।",
+        language: userLang,
+        created_at: new Date().toISOString(),
+      };
+      const updated = [...messagesRef.current, userMsg, assistantMsg];
+      messagesRef.current = updated;
+      setMessages(updated);
+      persist(updated);
+      setRationOfferForMsg(null);
+      return;
+    }
 
     if (isAffirmativeConsultReply(text) && vetOfferForMsg) {
       const userMsg: Message = {
@@ -611,7 +677,7 @@ export function ChatView({ conversationId, onBack, onOpenMainChat, onConversatio
           </button>
         ) : null}
         {rationMode ? (
-          <CallButton mode="ration" rationLang={activeUserLang === "en" ? "en" : "hi"} conversationId={conversationId} />
+          <CallButton mode="ration" rationLang={toRationLang(activeUserLang)} conversationId={conversationId} />
         ) : (
           <CallButton />
         )}
@@ -650,6 +716,27 @@ export function ChatView({ conversationId, onBack, onOpenMainChat, onConversatio
                   </span>
                 )}
                 </div>
+                {!out && rationOfferForMsg === m.id && (
+                  <div className="flex flex-wrap gap-2 mt-3 pt-2 border-t border-border/50">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setRationOfferForMsg(null);
+                        onOpenRationAdvisory?.(toRationLang(m.language || activeUserLang));
+                      }}
+                      className="rounded-lg bg-emerald-700 text-white px-3 py-1.5 text-xs font-medium hover:opacity-90"
+                    >
+                      {rationOfferYesLabel(m.language || activeUserLang)}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setRationOfferForMsg(null)}
+                      className="rounded-lg border border-border px-3 py-1.5 text-xs hover:bg-muted"
+                    >
+                      {rationOfferNoLabel(m.language || activeUserLang)}
+                    </button>
+                  </div>
+                )}
                 {!out && vetOfferForMsg === m.id && !vetResultsByMsg[m.id] && loadingVetsFor !== m.id && (
                   <div className="flex flex-wrap gap-2 mt-3 pt-2 border-t border-border/50">
                     <button

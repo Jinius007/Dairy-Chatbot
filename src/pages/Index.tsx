@@ -9,6 +9,7 @@ import { CallView } from "@/components/CallView";
 import { markRationConversation, isRationConversation } from "@/lib/poshan-conversation";
 import { rationChatBootstrap } from "@/lib/ration-chat-flow";
 import type { RationLang } from "@/lib/rationI18n";
+import { saveRationAdvisoryLang } from "@/lib/ration-advisory-welcome";
 
 interface Conversation {
   id: string; title: string; last_message: string | null; language: string | null; updated_at: string;
@@ -199,6 +200,10 @@ const Index = () => {
             conversationId={activeId}
             onBack={() => setActiveId(null)}
             onOpenMainChat={openMainChat}
+            onOpenRationAdvisory={(lang) => {
+              if (lang) saveRationAdvisoryLang(lang);
+              setRationOpen(true);
+            }}
             onConversationUpdated={refresh}
           />
         ) : (
