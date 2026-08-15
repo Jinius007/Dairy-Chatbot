@@ -62,7 +62,7 @@ import {
   vetContactFallbackReply,
 } from "@/lib/vet-consult";
 import { isRationConversation } from "@/lib/poshan-conversation";
-import { handleRationChatTurn, rationChatBootstrap } from "@/lib/ration-chat-flow";
+import { handleRationChatTurn, rationChatBootstrap, displayRationReply } from "@/lib/ration-chat-flow";
 
 interface Message {
   id: string;
@@ -453,8 +453,9 @@ export function ChatView({ conversationId, onBack, onOpenMainChat, onConversatio
     if (rationMode) {
       try {
         const { reply, language } = handleRationChatTurn(conversationId, text, userLang);
+        const displayReply = await displayRationReply(reply, language);
         const updated = messagesRef.current.map((m) =>
-          m.id === assistantMsg.id ? { ...m, content: reply, language } : m,
+          m.id === assistantMsg.id ? { ...m, content: displayReply, language } : m,
         );
         messagesRef.current = updated;
         setMessages(updated);
@@ -464,13 +465,13 @@ export function ChatView({ conversationId, onBack, onOpenMainChat, onConversatio
           session_id: getSessionId(),
           conversation_id: conversationId,
           question: text,
-          answer: reply,
+          answer: displayReply,
           duration_ms: Date.now() - startedAt,
           language,
           is_voice: isVoice,
           mode: "ration_advisory",
         });
-        if (isVoice && reply) void speak(reply, language, assistantMsg.id, true);
+        if (isVoice && displayReply) void speak(displayReply, language, assistantMsg.id, true);
       } catch (e: unknown) {
         toast.error(e instanceof Error ? e.message : "Ration advisory failed");
         setMessages((m) => m.filter((x) => x.id !== assistantMsg.id));

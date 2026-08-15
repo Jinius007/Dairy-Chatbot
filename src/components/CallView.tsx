@@ -302,6 +302,9 @@ export function CallView({ open, onClose, conversationId, history = [], mode = "
         savePoshanState(convId, pState);
         answer = result.reply;
         lang = pState.lang;
+        if (lang && lang !== "en") {
+          answer = await ensureNativeScriptText(answer, lang, chatAbortRef.current?.signal);
+        }
       } else {
         if (!isBackendConfigured()) {
           toast.error("Backend is not configured on this deployment.");

@@ -442,30 +442,27 @@ function buildCtx(draft: ConvDraft, extra: Record<string, string | number> = {})
 type ScriptFn = (ctx: Record<string, string | number>) => string;
 
 const HI: Record<ConvStage, ScriptFn> = {
-  language: () => "नीचे अपनी भाषा चुनें — Hindi या English बोलिए।",
+  language: () => "नीचे अपनी भाषा चुनें — हिन्दी या अंग्रेज़ी बोलिए।",
   name: () =>
-    "Namaste! Main aapka Pashu Sahayak hoon — gaon ke livestock officer ki tarah. Thodi si baat karke santulit khurak banaunga. Shuru karte hain — aap apna naam batayiye.",
-  district: () => "Kis jile mein rehte hain?",
-  village: () => "Aapka gaanv ka naam kya hai?",
-  state: () => "Ye gaanv kis rajya mein pada hai? Jaise Gujarat, UP…",
-  species: () => "Gaay hai ya bhains?",
-  milk_status: (c) =>
-    c.species === "buffalo"
-      ? "Kya abhi doodh de rahi hai? Ya sukhi, ya garbhwati?"
-      : "Kya abhi doodh de rahi hai? Ya sukhi, ya garbhwati?",
-  milk_yield: () => "Roz kitna doodh milta hai? Litron mein boliye.",
+    "नमस्ते! मैं आपका पशु सहायक हूँ — गाँव के पशुपालन अधिकारी की तरह। थोड़ी सी बात करके संतुलित खुराक बनाऊँगा। शुरू करते हैं — आप अपना नाम बताइए।",
+  district: () => "किस जिले में रहते हैं?",
+  village: () => "आपका गाँव का नाम क्या है?",
+  state: () => "ये गाँव किस राज्य में पड़ा है? जैसे गुजरात, यूपी…",
+  species: () => "गाय है या भैंस?",
+  milk_status: () => "क्या अभी दूध दे रही है? या सूखी, या गर्भवती?",
+  milk_yield: () => "रोज़ कितना दूध मिलता है? लीटर में बोलिए।",
   calving_months: () =>
-    "Pichhli baar bachcha hone ke kitne mahine ho gaye? Jaise 2 ya 3 mahine.",
-  pregnancy: () => "Kya abhi garbhwati hai? Haan ya nahi boliye.",
+    "पिछली बार बच्चा होने के कितने महीने हो गए? जैसे २ या ३ महीने।",
+  pregnancy: () => "क्या अभी गर्भवती है? हाँ या नहीं बोलिए।",
   feed_green: () =>
-    "Roz hara chara kya dete ho? Jaise berseem, napier — naam aur kitna kilogram batayiye.",
+    "रोज़ हरा चारा क्या देते हो? जैसे बरसीम, नेपियर — नाम और कितना किलोग्राम बताइए।",
   feed_dry: () =>
-    "Sukha chara kya dete ho? Jaise gehu bhusa, parali — naam aur kitna kilogram batayiye.",
+    "सूखा चारा क्या देते हो? जैसे गेहूँ भूसा, पराली — नाम और कितना किलोग्राम बताइए।",
   feed_concentrate: () =>
-    "Concentrate kya dete ho — sarson khali, chokar, dan? Naam aur kitna kilogram batayiye.",
+    "कंसन्ट्रेट क्या देते हो — सरसों खली, चोकर, दाना? नाम और कितना किलोग्राम बताइए।",
   feed_mineral: () =>
-    "Mineral mixture dete ho? Kitna gram ya kilogram — agar nahi dete to 'nahi' boliye.",
-  done: () => "Bahut achha raha. Phir kabhi zaroorat ho to dubara poochhiye. Dhanyavaad!",
+    "मिनरल मिक्सचर देते हो? कितना ग्राम या किलोग्राम — अगर नहीं देते तो 'नहीं' बोलिए।",
+  done: () => "बहुत अच्छा रहा। फिर कभी ज़रूरत हो तो दोबारा पूछिए। धन्यवाद!",
 };
 
 const EN: Record<ConvStage, ScriptFn> = {
@@ -512,21 +509,21 @@ function reprompt(lang: PoshanLang, stage: ConvStage, ctx: Record<string, string
     return en[stage] ?? "Could you say that once more?";
   }
   const hi: Partial<Record<ConvStage, string>> = {
-    name: "Maaf kijiye, naam clear nahi suna. Ek baar phir boliye.",
-    district: "Kis jile mein rehte hain?",
-    village: "Gaanv ka naam kya hai?",
-    state: "Kaunsa rajya — Gujarat, UP…?",
-    species: "Gaay hai ya bhains?",
-    milk_status: "Doodh de rahi hai, sukhi, ya garbhwati?",
-    milk_yield: "Roz kitna litre doodh? Jaise 6 ya 8.",
-    calving_months: "Pichhli baar bachcha hone ke kitne mahine ho gaye?",
-    pregnancy: "Kya garbhwati hai? Haan ya nahi.",
-    feed_green: "Hara chara kya dete ho — berseem, napier? Naam aur kg.",
-    feed_dry: "Sukha chara — bhusa, parali? Naam aur kg.",
-    feed_concentrate: "Concentrate — sarson khali, chokar? Naam aur kg.",
-    feed_mineral: "Mineral mixture dete ho? Kitna, ya nahi?",
+    name: "माफ़ कीजिए, नाम साफ़ नहीं सुना। एक बार फिर बोलिए।",
+    district: "किस जिले में रहते हैं?",
+    village: "गाँव का नाम क्या है?",
+    state: "कौनसा राज्य — गुजरात, यूपी…?",
+    species: "गाय है या भैंस?",
+    milk_status: "दूध दे रही है, सूखी, या गर्भवती?",
+    milk_yield: "रोज़ कितना लीटर दूध? जैसे ६ या ८।",
+    calving_months: "पिछली बार बच्चा होने के कितने महीने हो गए?",
+    pregnancy: "क्या गर्भवती है? हाँ या नहीं।",
+    feed_green: "हरा चारा क्या देते हो — बरसीम, नेपियर? नाम और किग्रा।",
+    feed_dry: "सूखा चारा — भूसा, पराली? नाम और किग्रा।",
+    feed_concentrate: "कंसन्ट्रेट — सरसों खली, चोकर? नाम और किग्रा।",
+    feed_mineral: "मिनरल मिक्सचर देते हो? कितना, या नहीं?",
   };
-  return hi[stage] ?? "Thoda clear boliye, phir se sun leta hoon.";
+  return hi[stage] ?? "थोड़ा साफ़ बोलिए, फिर से सुन लेता हूँ।";
 }
 
 function feedCategory(feedId: string): FeedItem["category"] | undefined {
@@ -570,7 +567,7 @@ function computeRationReply(lang: PoshanLang, draft: ConvDraft): ProcessResult {
     months_after_calving: working.monthsAfterCalvingSet ? working.monthsAfterCalving : undefined,
     feeds_json: feedsJson,
   });
-  const closingHi = "Main ab santulit khurak nikal raha hoon… bas ek pal.";
+  const closingHi = "मैं अब संतुलित खुराक निकाल रहा हूँ… बस एक पल।";
   const closingEn = "Working out your balanced ration…";
   const closing = `${lang === "en" ? closingEn : closingHi}\n\n${computed.summary}`;
   return {

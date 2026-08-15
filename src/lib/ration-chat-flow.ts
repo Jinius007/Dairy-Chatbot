@@ -8,7 +8,18 @@ import {
   type PoshanConvState,
   type PoshanLang,
 } from "@/lib/poshan-conversation";
+import { ensureNativeScriptText } from "@/lib/native-script-api";
 import { matchLangCode } from "@/lib/rationVoice";
+
+/** Show ration reply in native script for Indic languages (bn, ta, mr, …). */
+export async function displayRationReply(
+  reply: string,
+  language: string,
+  signal?: AbortSignal,
+): Promise<string> {
+  if (!reply?.trim() || !language || language === "en") return reply;
+  return ensureNativeScriptText(reply, language, signal);
+}
 
 /** Seed first assistant messages for a new ration chat. */
 export function rationChatBootstrap(lang?: PoshanLang): { content: string; language: string }[] {

@@ -122,34 +122,37 @@ function formatRationSummary(result: RationResult, lang: RationLang): string {
   if (!result.feasible || !result.lines.length) {
     return lang === "en"
       ? "Could not build a feasible ration with the feeds given. Try adding green fodder, dry fodder and concentrate."
-      : "Diye gaye chara se santulit khurak nahi bani. Hara chara, sukha chara aur dana add karke phir try karein.";
+      : "दिए गए चारे से संतुलित खुराक नहीं बनी। हरा चारा, सूखा चारा और दाना जोड़कर फिर कोशिश करें।";
   }
 
   const sorted = [...result.lines].sort((a, b) => feedSortKey(a.feed) - feedSortKey(b.feed));
   const lines = sorted
     .map((l) => {
-      const qty = l.qty < 0.25 ? `${Math.round(l.qty * 1000)} g` : `${l.qty.toFixed(1)} kg`;
-      return `• ${l.feed.name}: ${qty} — ₹${l.cost.toFixed(0)}/din`;
+      const qty = l.qty < 0.25 ? `${Math.round(l.qty * 1000)} ग्राम` : `${l.qty.toFixed(1)} किग्रा`;
+      const qtyEn = l.qty < 0.25 ? `${Math.round(l.qty * 1000)} g` : `${l.qty.toFixed(1)} kg`;
+      const q = lang === "en" ? qtyEn : qty;
+      const perDay = lang === "en" ? "/day" : "/दिन";
+      return `• ${l.feed.name}: ${q} — ₹${l.cost.toFixed(0)}${perDay}`;
     })
     .join("\n");
 
   const header =
     lang === "en"
       ? `Balanced ration (LP, INAPH minimums met). Daily cost ₹${result.totalCost.toFixed(0)}.`
-      : `Santulit khurak (LP se, INAPH minimum poora). Roz ka kharch ₹${result.totalCost.toFixed(0)}.`;
+      : `संतुलित खुराक (एलपी से, आईएनएपीह न्यूनतम पूरा)। रोज़ का खर्च ₹${result.totalCost.toFixed(0)}।`;
 
   const nutrients =
     lang === "en"
       ? `TDN ${result.supply.tdn}/${result.requirement.tdn} g, CP ${result.supply.cp}/${result.requirement.cp} g.`
-      : `TDN ${result.supply.tdn}/${result.requirement.tdn} gram, CP ${result.supply.cp}/${result.requirement.cp} gram.`;
+      : `टीडीएन ${result.supply.tdn}/${result.requirement.tdn} ग्राम, सीपी ${result.supply.cp}/${result.requirement.cp} ग्राम।`;
 
   const hasMineral = sorted.some((l) => l.feed.category === "mineral");
   const mineralNote =
     lang === "en"
       ? "Mineral mixture is essential for milk, health and pregnancy — feed daily."
       : hasMineral
-        ? "Mineral mixture bahut zaroori hai — doodh, sehat aur garbh ke liye roz dena chahiye."
-        : "Mineral mixture zaroor lagayein — doodh aur sehat ke liye bahut zaroori hai.";
+        ? "मिनरल मिक्सचर बहुत ज़रूरी है — दूध, सेहत और गर्भ के लिए रोज़ देना चाहिए।"
+        : "मिनरल मिक्सचर ज़रूर लगाएँ — दूध और सेहत के लिए बहुत ज़रूरी है।";
 
   return `${header}\n${nutrients}\n${lines}\n\n${mineralNote}`;
 }
@@ -213,7 +216,7 @@ export function computeBalancedRationFromVoice(
     const msg =
       lang === "en"
         ? "Need at least 2 feeds (roughage + concentrate). Ask farmer what they feed."
-        : "Kam se kam 2 chara chahiye (hara/sukha + dana). Pashu palak se poochhein kya khilata hai.";
+        : "कम से कम २ चारे चाहिए (हरा/सूखा + दाना)। पशुपालक से पूछें क्या खिलाता है।";
     return { ok: false, summary: warnings.length ? `${msg} (${warnings.join("; ")})` : msg };
   }
 
