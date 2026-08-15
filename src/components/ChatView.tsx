@@ -63,6 +63,7 @@ import {
 } from "@/lib/vet-consult";
 import { isRationConversation } from "@/lib/poshan-conversation";
 import { handleRationChatTurn, rationChatBootstrap, displayRationReply } from "@/lib/ration-chat-flow";
+import { toRationLang } from "@/lib/rationI18n";
 
 interface Message {
   id: string;
@@ -181,8 +182,8 @@ export function ChatView({ conversationId, onBack, onOpenMainChat, onConversatio
       if (rationMode && stored.length === 0) {
         const now = new Date().toISOString();
         const state = JSON.parse(localStorage.getItem(`pashumitra_poshan_${conversationId}`) || "null") as { lang?: string } | null;
-        const lang = state?.lang === "en" ? "en" : state?.lang === "hi" ? "hi" : undefined;
-        const boot = rationChatBootstrap(lang as "hi" | "en" | undefined);
+        const lang = state?.lang ? toRationLang(state.lang) : undefined;
+        const boot = rationChatBootstrap(lang);
         stored = boot.map((b, i) => ({
           id: `boot-${i}`,
           role: "assistant" as const,

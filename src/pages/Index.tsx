@@ -6,8 +6,9 @@ import { MessageSquarePlus, MessagesSquare, Search, Stethoscope, Trash2, Wheat }
 import { Link } from "react-router-dom";
 import { RationAdvisoryView } from "@/components/RationAdvisoryView";
 import { CallView } from "@/components/CallView";
-import { markRationConversation, isRationConversation, type PoshanLang } from "@/lib/poshan-conversation";
+import { markRationConversation, isRationConversation } from "@/lib/poshan-conversation";
 import { rationChatBootstrap } from "@/lib/ration-chat-flow";
+import type { RationLang } from "@/lib/rationI18n";
 
 interface Conversation {
   id: string; title: string; last_message: string | null; language: string | null; updated_at: string;
@@ -34,7 +35,7 @@ const Index = () => {
   const [search, setSearch] = useState("");
   const [rationOpen, setRationOpen] = useState(false);
   const [rationCallOpen, setRationCallOpen] = useState(false);
-  const [rationCallLang, setRationCallLang] = useState<PoshanLang>("hi");
+  const [rationCallLang, setRationCallLang] = useState<RationLang>("hi");
   const [rationCallSession, setRationCallSession] = useState(0);
 
   useEffect(() => {
@@ -66,7 +67,7 @@ const Index = () => {
     if (activeId === id) setActiveId(next[0]?.id || null);
   };
 
-  const startRationChat = (lang: PoshanLang) => {
+  const startRationChat = (lang: RationLang) => {
     const conv = { ...createConversation(), title: "Ration Advisory" };
     markRationConversation(conv.id, lang);
     const boot = rationChatBootstrap(lang);
@@ -89,7 +90,7 @@ const Index = () => {
     setActiveId(conv.id);
   };
 
-  const startRationCall = (lang: PoshanLang) => {
+  const startRationCall = (lang: RationLang) => {
     setRationCallLang(lang);
     setRationCallSession((s) => s + 1);
     setRationCallOpen(true);

@@ -4,12 +4,12 @@ import {
   loadPoshanState,
   openingLine,
   processPoshanInput,
+  resolveTurnLang,
   savePoshanState,
   type PoshanConvState,
-  type PoshanLang,
 } from "@/lib/poshan-conversation";
 import { ensureNativeScriptText } from "@/lib/native-script-api";
-import { matchLangCode } from "@/lib/rationVoice";
+import { toRationLang, type RationLang } from "@/lib/rationI18n";
 
 /** Show ration reply in native script for Indic languages (bn, ta, mr, …). */
 export async function displayRationReply(
@@ -22,7 +22,7 @@ export async function displayRationReply(
 }
 
 /** Seed first assistant messages for a new ration chat. */
-export function rationChatBootstrap(lang?: PoshanLang): { content: string; language: string }[] {
+export function rationChatBootstrap(lang?: RationLang): { content: string; language: string }[] {
   if (lang) {
     return [{ content: openingLine(lang), language: lang }];
   }
@@ -38,15 +38,8 @@ export function handleRationChatTurn(
   let state = loadPoshanState(conversationId);
 
   if (!state) {
-    const code = matchLangCode(userText) || explicitLang;
-    const lang: PoshanLang = code === "en" ? "en" : "hi";
-    if (/english|angrezi|en\b/i.test(userText.toLowerCase()) || code === "en") {
-      state = initialPoshanState("en");
-    } else if (/hindi|हिन्दी|हिंदी|hi\b/i.test(userText.toLowerCase()) || code === "hi") {
-      state = initialPoshanState("hi");
-    } else {
-      state = { lang: "hi", stage: "language", draft: initialPoshanState("hi").draft };
-    }
+    const lang = resolveTurnLang(toRationLang(explicitLang), userText);
+    state = initialPoshanState(lang);
   }
 
   const result = processPoshanInput(state, userText);

@@ -36,8 +36,8 @@ import {
   processPoshanInput,
   savePoshanState,
   type PoshanConvState,
-  type PoshanLang,
 } from "@/lib/poshan-conversation";
+import type { RationLang } from "@/lib/rationI18n";
 
 export const ADVISOR_AVATAR_PATH = "/advisor-smile.jpeg";
 
@@ -60,7 +60,7 @@ interface Props {
   history?: { role: "user" | "assistant"; content: string }[];
   /** General LLM call vs scripted ration advisory (Pashu Poshan flow). */
   mode?: "general" | "ration";
-  rationLang?: PoshanLang;
+  rationLang?: RationLang;
 }
 
 type Phase = "idle" | "listening" | "thinking" | "speaking";
@@ -769,7 +769,7 @@ export function CallButton({
   conversationId,
 }: {
   mode?: "general" | "ration";
-  rationLang?: PoshanLang;
+  rationLang?: RationLang;
   conversationId?: string;
 } = {}) {
   const [callOpen, setCallOpen] = useState(false);

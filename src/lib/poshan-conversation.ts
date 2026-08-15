@@ -11,8 +11,13 @@ import {
 } from "@/lib/rationVoice";
 import { computeBalancedRationFromVoice } from "@/lib/poshan-voice-tools";
 import type { Species } from "@/lib/nutrientRequirements";
+import { detectLanguageCode } from "@/lib/languages";
+import { matchLangCode } from "@/lib/rationVoice";
+import { t, toRationLang, RATION_LANG_CODES, type RationLang } from "@/lib/rationI18n";
+import { LANG_NAMES } from "@/lib/languages";
 
-export type PoshanLang = "hi" | "en";
+/** @deprecated Use RationLang from rationI18n */
+export type PoshanLang = RationLang;
 export type ConvStage =
   | "language"
   | "name"
@@ -65,7 +70,7 @@ export interface ConvDraft {
 }
 
 export interface PoshanConvState {
-  lang: PoshanLang;
+  lang: RationLang;
   stage: ConvStage;
   draft: ConvDraft;
 }
@@ -140,9 +145,36 @@ function normalizeDraft(d: ConvDraft): ConvDraft {
   return out;
 }
 
-export function initialPoshanState(lang: PoshanLang = "hi"): PoshanConvState {
+export function initialPoshanState(lang: RationLang = "hi"): PoshanConvState {
   return { lang, stage: "name", draft: emptyDraft() };
 }
+
+/** Detect language from farmer speech; keep current when unclear. */
+export function resolveTurnLang(current: RationLang, text: string): RationLang {
+  const explicit = matchLangCode(text);
+  if (explicit) return toRationLang(explicit, current);
+  const detected = detectLanguageCode(text);
+  if (detected) return toRationLang(detected, current);
+  return current;
+}
+
+const STAGE_I18N: Record<ConvStage, string> = {
+  language: "chooseLanguage",
+  name: "poshanOpening",
+  district: "askDistrict",
+  village: "askVillage",
+  state: "askState",
+  species: "askCowOrBuffalo",
+  milk_status: "askMilkStatus",
+  milk_yield: "askYield",
+  calving_months: "askMonths",
+  pregnancy: "askPregnant",
+  feed_green: "askGreenFodder",
+  feed_dry: "askDryFodder",
+  feed_concentrate: "askConcentrateFeed",
+  feed_mineral: "askMineralMixture",
+  done: "poshanDone",
+};
 
 function clean(text: string): string {
   return text.replace(/\s+/g, " ").trim();
@@ -439,92 +471,23 @@ function buildCtx(draft: ConvDraft, extra: Record<string, string | number> = {})
   };
 }
 
-type ScriptFn = (ctx: Record<string, string | number>) => string;
-
-const HI: Record<ConvStage, ScriptFn> = {
-  language: () => "नीचे अपनी भाषा चुनें — हिन्दी या अंग्रेज़ी बोलिए।",
-  name: () =>
-    "नमस्ते! मैं आपका पशु सहायक हूँ — गाँव के पशुपालन अधिकारी की तरह। थोड़ी सी बात करके संतुलित खुराक बनाऊँगा। शुरू करते हैं — आप अपना नाम बताइए।",
-  district: () => "किस जिले में रहते हैं?",
-  village: () => "आपका गाँव का नाम क्या है?",
-  state: () => "ये गाँव किस राज्य में पड़ा है? जैसे गुजरात, यूपी…",
-  species: () => "गाय है या भैंस?",
-  milk_status: () => "क्या अभी दूध दे रही है? या सूखी, या गर्भवती?",
-  milk_yield: () => "रोज़ कितना दूध मिलता है? लीटर में बोलिए।",
-  calving_months: () =>
-    "पिछली बार बच्चा होने के कितने महीने हो गए? जैसे २ या ३ महीने।",
-  pregnancy: () => "क्या अभी गर्भवती है? हाँ या नहीं बोलिए।",
-  feed_green: () =>
-    "रोज़ हरा चारा क्या देते हो? जैसे बरसीम, नेपियर — नाम और कितना किलोग्राम बताइए।",
-  feed_dry: () =>
-    "सूखा चारा क्या देते हो? जैसे गेहूँ भूसा, पराली — नाम और कितना किलोग्राम बताइए।",
-  feed_concentrate: () =>
-    "कंसन्ट्रेट क्या देते हो — सरसों खली, चोकर, दाना? नाम और कितना किलोग्राम बताइए।",
-  feed_mineral: () =>
-    "मिनरल मिक्सचर देते हो? कितना ग्राम या किलोग्राम — अगर नहीं देते तो 'नहीं' बोलिए।",
-  done: () => "बहुत अच्छा रहा। फिर कभी ज़रूरत हो तो दोबारा पूछिए। धन्यवाद!",
-};
-
-const EN: Record<ConvStage, ScriptFn> = {
-  language: () => "Choose your language — say Hindi or English.",
-  name: () =>
-    "Hello! I'm your Pashu Sahayak — like the livestock officer in your village. I'll ask a few questions and work out a balanced ration. What's your name?",
-  district: () => "Which district do you live in?",
-  village: () => "What's your village name?",
-  state: () => "Which state is that in?",
-  species: () => "Do you have a cow or a buffalo?",
-  milk_status: () => "Is she giving milk, dry, or pregnant?",
-  milk_yield: () => "How many litres of milk per day?",
-  calving_months: () => "How many months ago was her last calving? Like 2 or 3 months.",
-  pregnancy: () => "Is she pregnant right now? Yes or no.",
-  feed_green: () => "What green fodder do you feed daily? Name and kg — like berseem or napier.",
-  feed_dry: () => "What dry fodder — wheat straw, paddy straw? Name and kg.",
-  feed_concentrate: () => "What concentrate — mustard cake, bran, cattle feed? Name and kg.",
-  feed_mineral: () => "Do you give mineral mixture? How much — or say no if you don't.",
-  done: () => "Great talking with you. Come back anytime. Thank you!",
-};
-
-function agentLine(lang: PoshanLang, stage: ConvStage, ctx: Record<string, string | number> = {}): string {
-  const pack = lang === "en" ? EN : HI;
-  return pack[stage](ctx);
+function agentLine(lang: RationLang, stage: ConvStage, ctx: Record<string, string | number> = {}): string {
+  const key = STAGE_I18N[stage];
+  return t(key, lang, ctx as Record<string, string | number>);
 }
 
-function reprompt(lang: PoshanLang, stage: ConvStage, ctx: Record<string, string | number>): string {
-  if (lang === "en") {
-    const en: Partial<Record<ConvStage, string>> = {
-      name: "Sorry, I didn't catch your name. Could you say it again?",
-      district: "Which district are you in?",
-      village: "What's your village called?",
-      state: "Which state — Gujarat, UP, Maharashtra…?",
-      species: "Cow or buffalo?",
-      milk_status: "In milk, dry, or pregnant?",
-      milk_yield: "How many litres per day? Like 8 or 10.",
-      calving_months: "How many months since her last calving? Like 2 or 3.",
-      pregnancy: "Is she pregnant? Yes or no.",
-      feed_green: "What green fodder — berseem, napier? Name and kg.",
-      feed_dry: "What dry fodder — straw, bhusa? Name and kg.",
-      feed_concentrate: "What concentrate — mustard cake, bran?",
-      feed_mineral: "Mineral mixture — how much, or say no?",
-    };
-    return en[stage] ?? "Could you say that once more?";
+function reprompt(lang: RationLang, stage: ConvStage, ctx: Record<string, string | number>): string {
+  const key = STAGE_I18N[stage];
+  if (key && RATION_STAGE_KEYS.has(stage)) {
+    return t(key, lang, ctx as Record<string, string | number>);
   }
-  const hi: Partial<Record<ConvStage, string>> = {
-    name: "माफ़ कीजिए, नाम साफ़ नहीं सुना। एक बार फिर बोलिए।",
-    district: "किस जिले में रहते हैं?",
-    village: "गाँव का नाम क्या है?",
-    state: "कौनसा राज्य — गुजरात, यूपी…?",
-    species: "गाय है या भैंस?",
-    milk_status: "दूध दे रही है, सूखी, या गर्भवती?",
-    milk_yield: "रोज़ कितना लीटर दूध? जैसे ६ या ८।",
-    calving_months: "पिछली बार बच्चा होने के कितने महीने हो गए?",
-    pregnancy: "क्या गर्भवती है? हाँ या नहीं।",
-    feed_green: "हरा चारा क्या देते हो — बरसीम, नेपियर? नाम और किग्रा।",
-    feed_dry: "सूखा चारा — भूसा, पराली? नाम और किग्रा।",
-    feed_concentrate: "कंसन्ट्रेट — सरसों खली, चोकर? नाम और किग्रा।",
-    feed_mineral: "मिनरल मिक्सचर देते हो? कितना, या नहीं?",
-  };
-  return hi[stage] ?? "थोड़ा साफ़ बोलिए, फिर से सुन लेता हूँ।";
+  return t("sayAgain", lang);
 }
+
+const RATION_STAGE_KEYS = new Set<ConvStage>([
+  "name", "district", "village", "state", "species", "milk_status", "milk_yield",
+  "calving_months", "pregnancy", "feed_green", "feed_dry", "feed_concentrate", "feed_mineral",
+]);
 
 function feedCategory(feedId: string): FeedItem["category"] | undefined {
   return FEED_LIBRARY.find((f) => f.id === feedId)?.category;
@@ -549,7 +512,7 @@ function firstMissingStage(d: ConvDraft): StageOrCompute {
   return "compute";
 }
 
-function computeRationReply(lang: PoshanLang, draft: ConvDraft): ProcessResult {
+function computeRationReply(lang: RationLang, draft: ConvDraft): ProcessResult {
   const working = { ...draft, feeds: [...draft.feeds] };
   const feedsJson = JSON.stringify(
     working.feeds.map((f) => ({ name: f.feedName, qty_kg: f.qtyKg, price_rs: f.priceRs })),
@@ -567,9 +530,7 @@ function computeRationReply(lang: PoshanLang, draft: ConvDraft): ProcessResult {
     months_after_calving: working.monthsAfterCalvingSet ? working.monthsAfterCalving : undefined,
     feeds_json: feedsJson,
   });
-  const closingHi = "मैं अब संतुलित खुराक निकाल रहा हूँ… बस एक पल।";
-  const closingEn = "Working out your balanced ration…";
-  const closing = `${lang === "en" ? closingEn : closingHi}\n\n${computed.summary}`;
+  const closing = `${t("optimizing", lang)}\n\n${computed.summary}`;
   return {
     reply: closing,
     state: { lang, stage: "done", draft: working },
@@ -578,16 +539,16 @@ function computeRationReply(lang: PoshanLang, draft: ConvDraft): ProcessResult {
   };
 }
 
-function replyForStage(lang: PoshanLang, nextStage: ConvStage, draft: ConvDraft): string {
+function replyForStage(lang: RationLang, nextStage: ConvStage, draft: ConvDraft): string {
   return agentLine(lang, nextStage, buildCtx(draft));
 }
 
-export function openingLine(lang: PoshanLang): string {
+export function openingLine(lang: RationLang): string {
   return agentLine(lang, "name");
 }
 
 export function languagePrompt(): string {
-  return "🌾 पशु पोषण / Ration Advisory\n\nपहले भाषा चुनें / Choose language — Hindi (हिन्दी) or English:";
+  return `🌾 ${t("title", "hi")} / Ration Advisory\n\n${t("chooseLanguage", "hi")} — ${RATION_LANG_CODES.map((c) => LANG_NAMES[c]).join(", ")}:`;
 }
 
 export interface ProcessResult {
@@ -598,23 +559,17 @@ export interface ProcessResult {
 }
 
 export function processPoshanInput(state: PoshanConvState, input: string): ProcessResult {
-  const lang = state.lang;
+  const text = clean(input);
+  let lang = state.stage === "language" ? state.lang : resolveTurnLang(state.lang, text);
   const draft = normalizeDraft({ ...state.draft, feeds: [...state.draft.feeds] });
   let stage = state.stage;
-  const text = clean(input);
 
   if (stage === "language") {
-    const lower = text.toLowerCase();
-    if (/english|angrezi|en\b/i.test(lower)) {
-      return {
-        reply: openingLine("en"),
-        state: { lang: "en", stage: "name", draft: emptyDraft() },
-        done: false,
-      };
-    }
+    const picked = matchLangCode(text) || detectLanguageCode(text);
+    lang = toRationLang(picked ?? lang);
     return {
-      reply: openingLine("hi"),
-      state: { lang: "hi", stage: "name", draft: emptyDraft() },
+      reply: openingLine(lang),
+      state: { lang, stage: "name", draft: emptyDraft() },
       done: false,
     };
   }
@@ -775,7 +730,12 @@ export function loadPoshanState(conversationId: string): PoshanConvState | null 
     if (!raw) return null;
     const parsed = JSON.parse(raw) as PoshanConvState;
     const draft = normalizeDraft(parsed.draft);
-    return { ...parsed, stage: migrateStage(parsed.stage, draft), draft };
+    return {
+      ...parsed,
+      lang: toRationLang(parsed.lang),
+      stage: migrateStage(parsed.stage, draft),
+      draft,
+    };
   } catch {
     return null;
   }
@@ -789,7 +749,7 @@ export function isRationConversation(conversationId: string): boolean {
   return localStorage.getItem(convModeKey(conversationId)) === "ration";
 }
 
-export function markRationConversation(conversationId: string, lang?: PoshanLang): void {
+export function markRationConversation(conversationId: string, lang?: RationLang): void {
   localStorage.setItem(convModeKey(conversationId), "ration");
   if (lang) {
     savePoshanState(conversationId, { lang, stage: "name", draft: emptyDraft() });
